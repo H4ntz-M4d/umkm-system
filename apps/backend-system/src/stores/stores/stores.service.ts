@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { prisma } from '@repo/db';
-import { CreateStoreDto } from 'stores/dto/dto.store';
+import { CreateStoreDto, UpdateStoreDto } from 'stores/dto/dto.store';
 
 @Injectable()
 export class StoresService {
@@ -11,6 +11,15 @@ export class StoresService {
 
     async create(data: CreateStoreDto) {
         return await prisma.store.create({
+            data: data
+        })
+    }
+
+    async update(id: bigint, data: UpdateStoreDto){
+        return await prisma.store.update({
+            where: {
+                id: id
+            }, 
             data: data
         })
     }

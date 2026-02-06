@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { StoresService } from './stores.service';
-import { CreateStoreDto } from 'stores/dto/dto.store';
+import { CreateStoreDto, UpdateStoreDto } from 'stores/dto/dto.store';
 
 @Controller('/api/v1/stores')
 export class StoresController {
@@ -16,6 +16,14 @@ export class StoresController {
     @Post()
     create(@Body() dto: CreateStoreDto){
         return this.service.create(dto)
+    }
+
+    @Patch(':id')
+    update(
+        @Param('id') id: string,
+        @Body() dto: UpdateStoreDto
+    ){
+        return this.service.update(BigInt(id), dto)
     }
 
     @Delete(':id')
