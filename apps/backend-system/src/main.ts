@@ -1,8 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ZodValidationPipe } from 'nestjs-zod';
+import { ResponseInterceptor } from 'common/interceptors/response.interceptors';
+import { GlobalExceptionFilter } from 'common/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ZodValidationPipe())
+  app.useGlobalInterceptors(new ResponseInterceptor())
+  app.useGlobalFilters(new GlobalExceptionFilter())
+
   await app.listen(process.env.PORT ?? 3001);
 }
 

@@ -9,8 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@repo/schemas": "workspace:*",
+    "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
+    "ky": "^1.14.3",
     "lucide-react": "^0.563.0",
     "next": "16.1.6",
     "radix-ui": "^1.4.3",
@@ -20,6 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tanstack/eslint-plugin-query": "^5.91.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
