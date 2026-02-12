@@ -1,3 +1,4 @@
+"use client"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -12,8 +13,31 @@ import {
 } from "@/components/ui/sidebar"
 import { InputGroupInlineStart } from "@/components/ui/search"
 import { Button } from "@/components/ui/button"
+import { DataTableStore } from "./data-table"
+import { columnsStore } from "./columns"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createStore, fetchStore } from "@/lib/stores/stores.query"
+import StoreForm from "@/components/management/stores/store-form"
+import { useRouter } from "next/navigation"
 
 export default function Page() {
+    const { data, isLoading } = useQuery({
+        queryKey: ['store'],
+        queryFn: fetchStore
+    })
+
+    const router = useRouter()
+    const qc = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: createStore,
+        onSuccess: () => {
+            qc.invalidateQueries({ queryKey: ['store'] });
+        },
+        onError: (error) => {
+            console.error("Gagal simpan:", error)
+        }
+    })
     return (
         <>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b">
@@ -41,12 +65,10 @@ export default function Page() {
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                 <div className="flex sm:flex-row flex-col gap-2 justify-between mt-5">
                     <InputGroupInlineStart />
-                    <Button className="w-30">
-                        Add Store
-                    </Button>
+                    <StoreForm onSubmit={(data) => mutation.mutate(data)} />
                 </div>
-                <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min">
-                    
+                <div className="bg-muted/50 rounded-xl md:min-h-min">
+                    <DataTableStore data={data ?? []} columns={columnsStore} />
                 </div>
             </div>
         </>

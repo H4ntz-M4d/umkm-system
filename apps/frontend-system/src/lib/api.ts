@@ -14,3 +14,5 @@ export const api = ky.create({
     ],
   },
 });
+
+export default api

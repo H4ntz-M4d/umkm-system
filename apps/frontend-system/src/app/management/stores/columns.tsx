@@ -1,9 +1,12 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { StoreSchema } from "@repo/schemas"
+import { StoreResponse } from "@repo/schemas"
 
-export const columns: ColumnDef<typeof StoreSchema>[] = [
+export const columnsStore: ColumnDef<StoreResponse>[] = [
+  {
+    accessorKey: "id"
+  },
   {
     accessorKey: "name",
     header: "Nama",
