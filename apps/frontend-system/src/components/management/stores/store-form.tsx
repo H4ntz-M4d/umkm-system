@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { StoreInput, StoreSchema, z } from "@repo/schemas";
+import { StoreSchema, z } from "@repo/schemas";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -40,11 +40,11 @@ export default function StoreForm({ onSubmit }: { onSubmit: (v: FormData) => voi
                     </DialogHeader>
                     <FieldGroup className="pt-1 pb-8">
                         <Field>
-                            <FieldContent>
+                            <FieldContent className="p-1">
                                 <Label>Nama</Label>
                                 <Input {...form.register('name')} placeholder="Nama Toko" />
                             </FieldContent>
-                            <FieldContent>
+                            <FieldContent className="p-1">
                                 <Label>Status</Label>
                                 <Controller
                                     control={form.control}
@@ -54,10 +54,10 @@ export default function StoreForm({ onSubmit }: { onSubmit: (v: FormData) => voi
                                             onValueChange={(val) => field.onChange(val === "true")}
                                             value={field.value?.toString()}
                                         >
-                                            <SelectTrigger>
+                                            <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Pilih status" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="py-2">
                                                 <SelectItem value="true">Aktif</SelectItem>
                                                 <SelectItem value="false">Non Aktif</SelectItem>
                                             </SelectContent>

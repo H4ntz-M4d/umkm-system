@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { CreateStoreDto, UpdateStoreDto } from 'stores/dto/dto.store';
+import { Pagination } from 'common/paginate/pagination';
 
 @Controller('/api/v1/stores')
 export class StoresController {
@@ -9,8 +10,8 @@ export class StoresController {
     ) {}
 
     @Get()
-    findAll(){
-        return this.service.findAll()
+    findAll(@Query() pagination: Pagination){
+        return this.service.findAll(pagination)
     }
 
     @Post()

@@ -1,12 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { prisma } from '@repo/db';
+import { Pagination } from 'common/paginate/pagination';
 import { CreateStoreDto, UpdateStoreDto } from 'stores/dto/dto.store';
 
 @Injectable()
 export class StoresService {
 
-    async findAll(){
-        return await prisma.store.findMany()
+    async findAll(pagination: Pagination){
+        const skip = pagination.skip ?? 0
+        const limit = pagination.limit ?? 10
+        const data = await prisma.store.findMany({
+            skip,
+            take: limit ?? 10
+        })
+        const total = await prisma.store.count()
+        return {
+            success: true,
+            data,
+            meta: {skip, limit, total, timestamp: new Date().toISOString()}
+        }
     }
 
     async create(data: CreateStoreDto) {
