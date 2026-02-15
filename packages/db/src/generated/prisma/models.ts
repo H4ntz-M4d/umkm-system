@@ -10,4 +10,10 @@
  */
 export type * from './models/Store.js'
 export type * from './models/Users.js'
+export type * from './models/ProductMaster.js'
+export type * from './models/ProductVariant.js'
+export type * from './models/ProductVariantType.js'
+export type * from './models/ProductVariantValue.js'
+export type * from './models/ProductVariantOption.js'
+export type * from './models/Customer.js'
 export type * from './commonInputTypes.js'
