@@ -49,3 +49,33 @@ export type Store = Prisma.StoreModel
  * 
  */
 export type Users = Prisma.UsersModel
+/**
+ * Model ProductMaster
+ * 
+ */
+export type ProductMaster = Prisma.ProductMasterModel
+/**
+ * Model ProductVariant
+ * 
+ */
+export type ProductVariant = Prisma.ProductVariantModel
+/**
+ * Model ProductVariantType
+ * 
+ */
+export type ProductVariantType = Prisma.ProductVariantTypeModel
+/**
+ * Model ProductVariantValue
+ * 
+ */
+export type ProductVariantValue = Prisma.ProductVariantValueModel
+/**
+ * Model ProductVariantOption
+ * 
+ */
+export type ProductVariantOption = Prisma.ProductVariantOptionModel
+/**
+ * Model Customer
+ * 
+ */
+export type Customer = Prisma.CustomerModel

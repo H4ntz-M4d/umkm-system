@@ -203,7 +203,7 @@ export type UsersGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type UsersGroupByOutputType = {
   id: bigint
-  storeId: bigint
+  storeId: bigint | null
   name: string
   email: string
   password: string
@@ -237,19 +237,19 @@ export type UsersWhereInput = {
   OR?: Prisma.UsersWhereInput[]
   NOT?: Prisma.UsersWhereInput | Prisma.UsersWhereInput[]
   id?: Prisma.BigIntFilter<"Users"> | bigint | number
-  storeId?: Prisma.BigIntFilter<"Users"> | bigint | number
+  storeId?: Prisma.BigIntNullableFilter<"Users"> | bigint | number | null
   name?: Prisma.StringFilter<"Users"> | string
   email?: Prisma.StringFilter<"Users"> | string
   password?: Prisma.StringFilter<"Users"> | string
   role?: Prisma.EnumUserRoleFilter<"Users"> | $Enums.UserRole
   isActive?: Prisma.BoolFilter<"Users"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Users"> | Date | string
-  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
+  store?: Prisma.XOR<Prisma.StoreNullableScalarRelationFilter, Prisma.StoreWhereInput> | null
 }
 
 export type UsersOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
@@ -265,18 +265,18 @@ export type UsersWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.UsersWhereInput | Prisma.UsersWhereInput[]
   OR?: Prisma.UsersWhereInput[]
   NOT?: Prisma.UsersWhereInput | Prisma.UsersWhereInput[]
-  storeId?: Prisma.BigIntFilter<"Users"> | bigint | number
+  storeId?: Prisma.BigIntNullableFilter<"Users"> | bigint | number | null
   name?: Prisma.StringFilter<"Users"> | string
   password?: Prisma.StringFilter<"Users"> | string
   role?: Prisma.EnumUserRoleFilter<"Users"> | $Enums.UserRole
   isActive?: Prisma.BoolFilter<"Users"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Users"> | Date | string
-  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
+  store?: Prisma.XOR<Prisma.StoreNullableScalarRelationFilter, Prisma.StoreWhereInput> | null
 }, "id" | "email">
 
 export type UsersOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   password?: Prisma.SortOrder
@@ -295,7 +295,7 @@ export type UsersScalarWhereWithAggregatesInput = {
   OR?: Prisma.UsersScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UsersScalarWhereWithAggregatesInput | Prisma.UsersScalarWhereWithAggregatesInput[]
   id?: Prisma.BigIntWithAggregatesFilter<"Users"> | bigint | number
-  storeId?: Prisma.BigIntWithAggregatesFilter<"Users"> | bigint | number
+  storeId?: Prisma.BigIntNullableWithAggregatesFilter<"Users"> | bigint | number | null
   name?: Prisma.StringWithAggregatesFilter<"Users"> | string
   email?: Prisma.StringWithAggregatesFilter<"Users"> | string
   password?: Prisma.StringWithAggregatesFilter<"Users"> | string
@@ -312,12 +312,12 @@ export type UsersCreateInput = {
   role: $Enums.UserRole
   isActive?: boolean
   createdAt?: Date | string
-  store: Prisma.StoreCreateNestedOneWithoutUsersInput
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
 }
 
 export type UsersUncheckedCreateInput = {
   id?: bigint | number
-  storeId: bigint | number
+  storeId?: bigint | number | null
   name: string
   email: string
   password: string
@@ -334,12 +334,12 @@ export type UsersUpdateInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  store?: Prisma.StoreUpdateOneRequiredWithoutUsersNestedInput
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
 }
 
 export type UsersUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
@@ -350,7 +350,7 @@ export type UsersUncheckedUpdateInput = {
 
 export type UsersCreateManyInput = {
   id?: bigint | number
-  storeId: bigint | number
+  storeId?: bigint | number | null
   name: string
   email: string
   password: string
@@ -371,7 +371,7 @@ export type UsersUpdateManyMutationInput = {
 
 export type UsersUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
@@ -479,6 +479,14 @@ export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
 }
 
+export type NullableBigIntFieldUpdateOperationsInput = {
+  set?: bigint | number | null
+  increment?: bigint | number
+  decrement?: bigint | number
+  multiply?: bigint | number
+  divide?: bigint | number
+}
+
 export type UsersCreateWithoutStoreInput = {
   id?: bigint | number
   name: string
@@ -530,7 +538,7 @@ export type UsersScalarWhereInput = {
   OR?: Prisma.UsersScalarWhereInput[]
   NOT?: Prisma.UsersScalarWhereInput | Prisma.UsersScalarWhereInput[]
   id?: Prisma.BigIntFilter<"Users"> | bigint | number
-  storeId?: Prisma.BigIntFilter<"Users"> | bigint | number
+  storeId?: Prisma.BigIntNullableFilter<"Users"> | bigint | number | null
   name?: Prisma.StringFilter<"Users"> | string
   email?: Prisma.StringFilter<"Users"> | string
   password?: Prisma.StringFilter<"Users"> | string
@@ -590,7 +598,7 @@ export type UsersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   role?: boolean
   isActive?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.Users$storeArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
 export type UsersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -602,7 +610,7 @@ export type UsersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   role?: boolean
   isActive?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.Users$storeArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
 export type UsersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -614,7 +622,7 @@ export type UsersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   role?: boolean
   isActive?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.Users$storeArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
 export type UsersSelectScalar = {
@@ -630,23 +638,23 @@ export type UsersSelectScalar = {
 
 export type UsersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "name" | "email" | "password" | "role" | "isActive" | "createdAt", ExtArgs["result"]["users"]>
 export type UsersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.Users$storeArgs<ExtArgs>
 }
 export type UsersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.Users$storeArgs<ExtArgs>
 }
 export type UsersIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.Users$storeArgs<ExtArgs>
 }
 
 export type $UsersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Users"
   objects: {
-    store: Prisma.$StorePayload<ExtArgs>
+    store: Prisma.$StorePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
-    storeId: bigint
+    storeId: bigint | null
     name: string
     email: string
     password: string
@@ -1047,7 +1055,7 @@ readonly fields: UsersFieldRefs;
  */
 export interface Prisma__UsersClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  store<T extends Prisma.StoreDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StoreDefaultArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  store<T extends Prisma.Users$storeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$storeArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1478,6 +1486,25 @@ export type UsersDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Users to delete.
    */
   limit?: number
+}
+
+/**
+ * Users.store
+ */
+export type Users$storeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Store
+   */
+  select?: Prisma.StoreSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Store
+   */
+  omit?: Prisma.StoreOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StoreInclude<ExtArgs> | null
+  where?: Prisma.StoreWhereInput
 }
 
 /**

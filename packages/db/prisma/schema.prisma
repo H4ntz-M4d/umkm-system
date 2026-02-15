@@ -26,7 +26,7 @@ model Store {
 
 model Users {
   id        BigInt   @id @default(autoincrement())
-  storeId  BigInt
+  storeId   BigInt?
   name      String   @db.VarChar(255)
   email     String   @unique @db.VarChar(255)
   password  String   @db.VarChar(255)
@@ -34,7 +34,7 @@ model Users {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
-  store Store @relation(fields: [storeId], references: [id])
+  store Store? @relation(fields: [storeId], references: [id])
 
   @@map("users")
 }
@@ -45,4 +45,91 @@ enum UserRole {
   KASIR
   GUDANG
   CUSTOMER
+}
+
+model ProductMaster {
+  id          BigInt        @id @default(autoincrement())
+  name        String
+  description String?
+  slug        String        @unique
+  useVariant  Boolean       @default(false)
+  status      ProductStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+
+  variants     ProductVariant[]
+  variantTypes ProductVariantType[]
+
+  @@map("product_master")
+}
+
+model ProductVariant {
+  id              BigInt   @id @default(autoincrement())
+  productMasterId BigInt
+  sku             String   @unique
+  price           Decimal  @db.Decimal(18, 2)
+  cost            Decimal? @db.Decimal(18, 2)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+
+  productMaster ProductMaster          @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
+  options       ProductVariantOption[]
+
+  @@index([productMasterId])
+  @@map("product_variant")
+}
+
+model ProductVariantType {
+  id              BigInt @id @default(autoincrement())
+  productMasterId BigInt
+  name            String
+
+  productMaster ProductMaster         @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
+  values        ProductVariantValue[]
+
+  @@unique([productMasterId, name])
+  @@index([productMasterId])
+  @@map("product_variant_type")
+}
+
+model ProductVariantValue {
+  id            BigInt @id @default(autoincrement())
+  variantTypeId BigInt
+  value         String
+
+  variantType ProductVariantType     @relation(fields: [variantTypeId], references: [id], onDelete: Cascade)
+  options     ProductVariantOption[]
+
+  @@unique([variantTypeId, value])
+  @@index([variantTypeId])
+  @@map("product_variant_value")
+}
+
+model ProductVariantOption {
+  id               BigInt @id @default(autoincrement())
+  productVariantId BigInt
+  variantValueId   BigInt
+
+  productVariant ProductVariant      @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  variantValue   ProductVariantValue @relation(fields: [variantValueId], references: [id], onDelete: Cascade)
+
+  @@unique([productVariantId, variantValueId])
+  @@index([productVariantId])
+  @@index([variantValueId])
+  @@map("product_variant_option")
+}
+
+enum ProductStatus {
+  ACTIVE
+  NONACTIVE
+  DRAFT
+}
+
+model Customer {
+  id        BigInt   @id @default(autoincrement())
+  name      String
+  email     String?
+  phone     String?
+  createdAt DateTime @default(now())
+
+  @@map("customer")
 }

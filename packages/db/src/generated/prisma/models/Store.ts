@@ -334,9 +334,9 @@ export type StoreSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
-export type StoreScalarRelationFilter = {
-  is?: Prisma.StoreWhereInput
-  isNot?: Prisma.StoreWhereInput
+export type StoreNullableScalarRelationFilter = {
+  is?: Prisma.StoreWhereInput | null
+  isNot?: Prisma.StoreWhereInput | null
 }
 
 export type BigIntFieldUpdateOperationsInput = {
@@ -365,10 +365,12 @@ export type StoreCreateNestedOneWithoutUsersInput = {
   connect?: Prisma.StoreWhereUniqueInput
 }
 
-export type StoreUpdateOneRequiredWithoutUsersNestedInput = {
+export type StoreUpdateOneWithoutUsersNestedInput = {
   create?: Prisma.XOR<Prisma.StoreCreateWithoutUsersInput, Prisma.StoreUncheckedCreateWithoutUsersInput>
   connectOrCreate?: Prisma.StoreCreateOrConnectWithoutUsersInput
   upsert?: Prisma.StoreUpsertWithoutUsersInput
+  disconnect?: Prisma.StoreWhereInput | boolean
+  delete?: Prisma.StoreWhereInput | boolean
   connect?: Prisma.StoreWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutUsersInput, Prisma.StoreUpdateWithoutUsersInput>, Prisma.StoreUncheckedUpdateWithoutUsersInput>
 }
