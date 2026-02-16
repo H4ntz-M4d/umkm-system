@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { prisma } from '@repo/db';
 import { CreateUsersDto, UpdateUsersDto } from 'users/dto/dto.users';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -15,9 +16,28 @@ export class UsersService {
   }
 
   async create(data: CreateUsersDto) {
-    return await prisma.users.create({
-      data: data,
-    });
+    const userIsExist = await prisma.users.count({
+      where: {
+        email: data.email
+      }
+    })
+
+    if (userIsExist != 0) {
+      throw new HttpException("Users is already exist", 400)
+    }
+
+    data.password = await bcrypt.hash(data.password, 10)
+
+    const user = await prisma.users.create({
+      data: data
+    })
+
+    return {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive
+    }
   }
 
   async update(id: bigint, data: UpdateUsersDto) {

@@ -412,10 +412,6 @@ export type ProductMasterScalarRelationFilter = {
   isNot?: Prisma.ProductMasterWhereInput
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type EnumProductStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProductStatus
 }
