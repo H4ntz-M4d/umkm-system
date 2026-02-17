@@ -33,6 +33,7 @@ model Users {
   role      UserRole
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+  refreshToken String?
 
   store Store? @relation(fields: [storeId], references: [id])
 
