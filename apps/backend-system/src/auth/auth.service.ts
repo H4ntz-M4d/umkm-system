@@ -66,8 +66,8 @@ export class AuthService {
 
     res.cookie('refresh_token', token.refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
+      secure: false, // jika production berikan true
+      sameSite: 'lax', //jika production berikan strict
       maxAge: 7 * 60 * 60 * 1000,
     });
 
@@ -121,8 +121,8 @@ export class AuthService {
 
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
+      secure: false, // jika production berikan true
+      sameSite: 'lax', //jika production berikan strict
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
