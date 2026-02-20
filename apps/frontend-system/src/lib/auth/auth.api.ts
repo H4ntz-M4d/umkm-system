@@ -1,7 +1,7 @@
 import api from "../api"
 
 export const loginAdmin = async (email: string, password: string) => {
-    const response = await api.post("auth/admin/login", {
+    const response = await api.post("auth/management/login", {
         json: {email, password}
     }).json<any>();
 
@@ -9,6 +9,6 @@ export const loginAdmin = async (email: string, password: string) => {
 }
 
 export const getProfile = async () => {
-    const response = await api.get("auth/admin/me").json<any>();
+    const response = await api.get("auth/management/me").json<any>();
     return response
 }
