@@ -12,28 +12,47 @@ import {
 } from "lucide-react";
 import customerHero from "@/assets/customer-hero.jpg";
 import { useState } from "react";
+import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
+import { CustomerRegisterSchema, LoginSchema } from "@repo/schemas";
+
+type FormDataLogin = z.infer<typeof LoginSchema>;
+type FormDataRegister = z.infer<typeof CustomerRegisterSchema>
 
 export default function CustomerAuth() {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Login state
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-
-  // Register state
-  const [registerName, setRegisterName] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [registerPhone, setRegisterPhone] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
+  const { loginCustomer, registerCustomerData, } = useAuthOperations();
   const [registerConfirm, setRegisterConfirm] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
-  };
+  // Login state
+  const {
+    register: loginData,
+    handleSubmit: loginSubmit,
+    formState: { errors: loginErrors },
+  } = useForm<FormDataLogin>({
+    resolver: zodResolver(LoginSchema),
+  });
+
+  const loginMutate = (data: FormDataLogin) => {
+    loginCustomer(data)
+  }
+
+  // Register state
+  const {
+    register: registerData,
+    handleSubmit: registerSubmit,
+    formState: {errors: registerErrors }
+  } = useForm<FormDataRegister>({
+    resolver: zodResolver(CustomerRegisterSchema)
+  })
+
+  const registerMutate = (data: FormDataRegister) => {
+    registerCustomerData(data)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -104,7 +123,7 @@ export default function CustomerAuth() {
           <div className="p-6 sm:p-8">
             {activeTab === "login" ? (
               /* Login Form */
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={loginSubmit(loginMutate)} className="space-y-5">
                 <div className="text-center mb-6">
                   <h2 className="font-display text-xl font-semibold text-foreground">
                     Selamat Datang Kembali
@@ -122,8 +141,7 @@ export default function CustomerAuth() {
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type="email"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
+                      {...loginData("email")}
                       placeholder="email@contoh.com"
                       className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
                       required
@@ -147,8 +165,7 @@ export default function CustomerAuth() {
                     <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type={showPassword ? "text" : "password"}
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
+                      {...loginData("password")}
                       placeholder="Masukkan password"
                       className="w-full pl-10 pr-11 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
                       required
@@ -223,7 +240,7 @@ export default function CustomerAuth() {
               </form>
             ) : (
               /* Register Form */
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={registerSubmit(registerMutate)} className="space-y-4">
                 <div className="text-center mb-5">
                   <h2 className="font-display text-xl font-semibold text-foreground">
                     Buat Akun Baru
@@ -241,8 +258,7 @@ export default function CustomerAuth() {
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type="text"
-                      value={registerName}
-                      onChange={(e) => setRegisterName(e.target.value)}
+                      {...registerData("name")}
                       placeholder="Masukkan nama lengkap"
                       className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
                       required
@@ -258,8 +274,7 @@ export default function CustomerAuth() {
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type="email"
-                      value={registerEmail}
-                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      {...registerData("email")}
                       placeholder="email@contoh.com"
                       className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
                       required
@@ -275,8 +290,7 @@ export default function CustomerAuth() {
                     <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type="tel"
-                      value={registerPhone}
-                      onChange={(e) => setRegisterPhone(e.target.value)}
+                      {...registerData("phone")}
                       placeholder="+62 812 3456 7890"
                       className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
                       required
@@ -292,8 +306,7 @@ export default function CustomerAuth() {
                     <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                       type={showPassword ? "text" : "password"}
-                      value={registerPassword}
-                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      {...registerData("password")}
                       placeholder="Minimal 8 karakter"
                       className="w-full pl-10 pr-11 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
                       required

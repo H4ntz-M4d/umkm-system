@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/dto.login';
+import { CustomerRegisterDto, LoginDto } from './dto/dto.login';
 import { Roles } from '../common/decorator/roles.decorator';
 import { JwtAuthGuard } from '../common/guards/guard.jwt-auth';
 import { RolesGuard } from '../common/guards/guard.roles';
@@ -21,16 +21,16 @@ export class AuthController {
   constructor(private service: AuthService) {}
 
   @Post('management/refresh')
-  async refresh(@Req() req, @Res({ passthrough: true }) res: Response) {
+  async refreshAdmin(@Req() req, @Res({ passthrough: true }) res: Response) {
     return this.service.refreshAdminToken(req, res);
   }
 
   @Post('management/login')
-  async login(
+  async loginAdmin(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.service.loginAdmin(dto.email, dto.password, res);
+    const result = await this.service.loginAdminService(dto.email, dto.password, res);
     return result;
   }
 
@@ -39,6 +39,18 @@ export class AuthController {
   @Get('management/me')
   async me(@Req() req) {
     return this.service.getAdminProfile(req.user.sub);
+  }
+
+  
+  // =============================== Customer ====================================
+  
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(
+    @AuthUser() user: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.service.logoutService(user.sub, user.role, res);
   }
 
   // =============================== Customer ====================================
@@ -50,26 +62,25 @@ export class AuthController {
     return this.service.getCustomerProfile(req.user.sub);
   }
 
+  @Post('customer/register')
+  async registerCustomer (
+    @Body() dto: CustomerRegisterDto
+  ) {
+    return this.service.registerCustomerService(dto)
+  }
+
   @Post('customer/login')
   async loginCustomer(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.service.loginCustomer(dto, res);
+    const result = await this.service.loginCustomerService(dto, res);
     return result;
   }
 
-  @Post('customer/refresh')
+  @Post('c/ref')
   async refreshCustomer(@Req() req, @Res({ passthrough: true }) res: Response) {
-    return this.service.refreshAdminToken(req, res);
+    return this.service.refreshCustomerToken(req, res);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('logout')
-  async logout(
-    @AuthUser() user: any,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    return this.service.logout(user.sub, res);
-  }
 }
