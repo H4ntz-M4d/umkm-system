@@ -1,13 +1,14 @@
 import ky from 'ky';
-import { useAuth } from './auth/useAuth';
+import { useCustomerAuth } from './auth/userCustomerAuth';
 
-export const api = ky.create({
+export const customerApi = ky.create({
   prefixUrl: process.env.NEXT_PUBLIC_API_URL,
   credentials: 'include',
   hooks: {
     beforeRequest: [
       (request) => {
-        const token = useAuth.getState().accessToken;
+        const token = useCustomerAuth.getState().accessToken;
+        console.log("Ini token harus masuk ke header:", token);
 
         if (token) {
           request.headers.set("Authorization", `Bearer ${token}`)
@@ -16,15 +17,15 @@ export const api = ky.create({
     ],
     afterResponse: [
       async (_req, _opt, res) => {
-        if (res.status === 401 && !_req.url.includes("auth/admin/refresh")) {
+        if (res.status === 401 && !_req.url.includes("auth/c/ref")) {
           try {
-            const refreshResponse = await ky.post(`${process.env.NEXT_PUBLIC_API_URL}auth/admin/refresh`, {
+            const refreshResponse = await ky.post(`${process.env.NEXT_PUBLIC_API_URL}auth/c/ref`, {
               credentials: "include"
             }).json<any>();
 
             const newAccessToken = refreshResponse.data.accessToken
 
-            useAuth.getState().setToken(newAccessToken)
+            useCustomerAuth.getState().setToken(newAccessToken)
 
             _req.headers.set(
               "Authorization", `Bearer ${newAccessToken}`
@@ -32,8 +33,9 @@ export const api = ky.create({
 
             return ky(_req);
           } catch (error) {
-            useAuth.getState().logout()
-            window.location.href = "/auth/internal"
+            useCustomerAuth.getState().logout()
+            localStorage.removeItem('is_customer_logged_in')
+            throw error
           }
         }
 
@@ -47,4 +49,4 @@ export const api = ky.create({
   },
 });
 
-export default api
+export default customerApi

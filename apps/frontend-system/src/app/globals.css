@@ -115,6 +115,9 @@
   --shadow-lg: 0px 6px 15px 2px hsl(0 0% 0% / 0.20), 0px 4px 6px 1px hsl(0 0% 0% / 0.20);
   --shadow-xl: 0px 6px 15px 2px hsl(0 0% 0% / 0.20), 0px 8px 10px 1px hsl(0 0% 0% / 0.20);
   --shadow-2xl: 0px 6px 15px 2px hsl(0 0% 0% / 0.50);
+
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
 }
 
 @theme inline {

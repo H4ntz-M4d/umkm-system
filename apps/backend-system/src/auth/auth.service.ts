@@ -35,8 +35,8 @@ export class AuthService {
     };
   }
 
-  private async validateRefreshToken(req: any) {
-    const refreshToken = req.cookies['refresh_token'];
+  private async validateRefreshToken(req: any, cookieName: string) {
+    const refreshToken = req.cookies[cookieName];
 
     if (!refreshToken) throw new UnauthorizedException('No refresh token');
 
@@ -59,7 +59,7 @@ export class AuthService {
     }
   }
 
-  async loginAdmin(email: string, password: string, res: Response) {
+  async loginAdminService(email: string, password: string, res: Response) {
     const user = await prisma.users.findUnique({
       where: { email },
     });
@@ -93,7 +93,7 @@ export class AuthService {
       },
     });
 
-    res.cookie('refresh_token', token.refreshToken, {
+    res.cookie('refresh_token_admin', token.refreshToken, {
       httpOnly: true,
       secure: false, // jika production berikan true
       sameSite: 'lax', //jika production berikan strict
@@ -122,7 +122,7 @@ export class AuthService {
   }
 
   async refreshAdminToken(req: Request, res: Response) {
-    const { refreshToken, user } = await this.validateRefreshToken(req);
+    const { refreshToken, user } = await this.validateRefreshToken(req, 'refresh_token_admin');
 
     const isMatch = await bcrypt.compare(refreshToken, user.refreshToken!);
 
@@ -137,7 +137,7 @@ export class AuthService {
       data: { refreshToken: hashedRefresh },
     });
 
-    res.cookie('refresh_token', tokens.refreshToken, {
+    res.cookie('refresh_token_admin', tokens.refreshToken, {
       httpOnly: true,
       secure: false, // jika production berikan true
       sameSite: 'lax', //jika production berikan strict
@@ -149,7 +149,9 @@ export class AuthService {
     };
   }
 
-  async logout(userId: bigint, res: Response) {
+  // ================================ Admin ⬆️ ====================================
+
+  async logoutService(userId: bigint, role: string, res: Response) {
     await prisma.users.update({
       where: {
         id: userId,
@@ -158,14 +160,21 @@ export class AuthService {
         refreshToken: null,
       },
     });
-    res.clearCookie('refresh_token');
+
+    console.log(role);
+
+    if (role === UserRole.CUSTOMER) {
+      res.clearCookie('refresh_token_customer');
+    } else {
+      res.clearCookie('refresh_token_admin');
+    }
 
     return { message: 'Logged Out' };
   }
 
-  // ================================ Customer Register ====================================
+  // ================================ Customer ⬇️ ====================================
 
-  async registerCustomer(data: CustomerRegisterDto) {
+  async registerCustomerService(data: CustomerRegisterDto) {
     const existing = await prisma.users.findUnique({
       where: { email: data.email },
     });
@@ -187,7 +196,11 @@ export class AuthService {
     });
 
     const customer = await prisma.customer.create({
-      data: data,
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+      },
     });
 
     return {
@@ -196,7 +209,7 @@ export class AuthService {
     };
   }
 
-  async loginCustomer(data: LoginDto, res: Response) {
+  async loginCustomerService(data: LoginDto, res: Response) {
     const user = await prisma.users.findUnique({
       where: {
         email: data.email,
@@ -224,7 +237,7 @@ export class AuthService {
       },
     });
 
-    res.cookie('refresh_token', token.refreshToken, {
+    res.cookie('refresh_token_customer', token.refreshToken, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
@@ -236,7 +249,7 @@ export class AuthService {
   }
 
   async refreshCustomerToken(req: Request, res: Response) {
-    const { refreshToken, user } = await this.validateRefreshToken(req);
+    const { refreshToken, user } = await this.validateRefreshToken(req, 'refresh_token_customer');
 
     if (user.role !== UserRole.CUSTOMER) {
       throw new UnauthorizedException('Invalid credentials');
@@ -255,7 +268,7 @@ export class AuthService {
       data: { refreshToken: hashedRefresh },
     });
 
-    res.cookie('refresh_token', tokens.refreshToken, {
+    res.cookie('refresh_token_customer', tokens.refreshToken, {
       httpOnly: true,
       secure: false, // jika production berikan true
       sameSite: 'lax', //jika production berikan strict
@@ -275,7 +288,6 @@ export class AuthService {
         name: true,
         email: true,
         role: true,
-        storeId: true,
         isActive: true,
       },
     });

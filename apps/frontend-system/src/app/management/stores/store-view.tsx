@@ -1,8 +1,8 @@
 "use client";
 
 import { InputGroupInlineStart } from "@/components/ui/search";
-import { DataTableStore } from "./data-table";
-import { columnsStore } from "./columns";
+import { DataTableStore } from "../../../components/management/stores/data-table";
+import { columnsStore } from "../../../components/management/stores/columns";
 import { useQueryClient } from "@tanstack/react-query";
 import StoreForm from "@/components/management/stores/store-form";
 import { usePaginationParams } from "@/hooks/use-paginations-params";
