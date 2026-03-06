@@ -1,15 +1,29 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUsersDto } from 'users/dto/dto.users';
 import { UpdateStoreDto } from 'stores/dto/dto.store';
+import { Pagination } from 'common/paginate/pagination';
+import { Roles } from 'common/decorator/roles.decorator';
+import { UserRole } from '@repo/db';
+import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
+import { RolesGuard } from 'common/guards/guard.roles';
 
 @Controller('api/v1/users')
 export class UsersController {
   constructor(private services: UsersService) {}
 
-  @Get()
-  findAll() {
-    return this.services.findAll();
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Get('/employees')
+  findAllAdmin(@Query() pagination: Pagination) {
+    return this.services.findAllAdmin(pagination);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Get('/customers')
+  findAllCustomer(@Query() pagination: Pagination) {
+    return this.services.findAllCustomer(pagination);
   }
 
   @Get(':id')

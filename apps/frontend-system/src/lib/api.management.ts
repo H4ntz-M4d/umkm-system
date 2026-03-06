@@ -8,7 +8,7 @@ export const managementApi = ky.create({
     beforeRequest: [
       (request) => {
         const token = useAuth.getState().accessToken;
-        console.log(token);
+        console.log("ini token header",token);
 
         if (token) {
           request.headers.set("Authorization", `Bearer ${token}`)
@@ -34,6 +34,7 @@ export const managementApi = ky.create({
             return ky(_req);
           } catch (error) {
             useAuth.getState().logout()
+            localStorage.removeItem('is_admin_logged_in')
             window.location.href = "/auth/management"
           }
         }

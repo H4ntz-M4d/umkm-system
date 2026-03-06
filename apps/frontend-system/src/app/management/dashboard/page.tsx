@@ -1,8 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import {getProfile} from '@/lib/auth/auth.api';
-
 export default function DashboardPage() {
   return (
     <>
@@ -12,7 +9,7 @@ export default function DashboardPage() {
           <div className="bg-muted/50 aspect-video rounded-xl" />
           <div className="bg-muted/50 aspect-video rounded-xl" />
         </div>
-        <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+        <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min" />
       </div>
     </>
   )

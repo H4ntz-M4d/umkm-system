@@ -2,11 +2,12 @@ import {
   getCustomerProfile,
   loginAdmin,
   loginCustomer,
+  logoutAdmin,
   registerCustomer,
 } from "@/lib/auth/auth.api";
 import { useAuth } from "@/lib/auth/useAuth";
 import { useCustomerAuth } from "@/lib/auth/userCustomerAuth";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -18,7 +19,9 @@ export const useAuthOperations = () => {
   const setTokenUser = useCustomerAuth((s) => s.setToken)
   const token = useCustomerAuth((s) => s.accessToken)
 
-  const loginMutation = useMutation({
+  const qc = useQueryClient();
+
+  const loginAdminMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       loginAdmin(email, password),
     onSuccess: (token) => {
@@ -57,10 +60,22 @@ export const useAuthOperations = () => {
     enabled: false, // manual trigger
   });
 
+  const logOutMutationAdmin = useMutation({
+    mutationFn: async () => {
+        return await logoutAdmin()
+    },
+    onSuccess: () => {
+        qc.clear()
+        localStorage.removeItem('is_admin_logged_in')  
+        router.push('/auth/management')
+    }
+  })
+
   return {
-    loginAdminData: loginMutation.mutate,
+    loginAdminData: loginAdminMutation.mutate,
     loginCustomer: loginCustomerMutation.mutate,
     registerCustomerData: registerMutation.mutate,
     profileQuery,
+    signOutAdmin : logOutMutationAdmin.mutate
   };
 };
