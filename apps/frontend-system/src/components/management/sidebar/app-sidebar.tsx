@@ -54,11 +54,11 @@ const data = {
       items: [
         {
           title: "Karyawan",
-          url: "#",
+          url: "/management/employee",
         },
         {
           title: "Pelanggan",
-          url: "#",
+          url: "/management/customer",
         }
       ],
     },

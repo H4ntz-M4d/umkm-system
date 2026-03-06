@@ -1,4 +1,4 @@
-import { logout } from "@/lib/auth/auth.api";
+import { logoutCustomer } from "@/lib/auth/auth.api";
 
 interface navLink {
   label: string;
@@ -38,7 +38,7 @@ export const NavItemProfile = (): navLink[] => [
     label: "Logout",
     path: "#",
     fn: () => {
-      logout();
+      logoutCustomer();
     },
   },
 ];
