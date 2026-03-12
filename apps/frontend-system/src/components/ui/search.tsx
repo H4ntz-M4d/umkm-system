@@ -6,11 +6,13 @@ import {
 } from "@/components/ui/input-group"
 import { SearchIcon } from "lucide-react"
 
-export function InputGroupInlineStart() {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+
+export function InputGroupInlineStart({...props}: InputProps) {
   return (
     <Field className="max-w-sm">
       <InputGroup>
-        <InputGroupInput id="inline-start-input" placeholder="Search..." />
+        <InputGroupInput id="inline-start-input" placeholder="Search..." {...props} />
         <InputGroupAddon align="inline-start">
           <SearchIcon className="text-muted-foreground" />
         </InputGroupAddon>

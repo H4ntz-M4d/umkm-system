@@ -391,7 +391,8 @@ export const ModelName = {
   ProductVariantType: 'ProductVariantType',
   ProductVariantValue: 'ProductVariantValue',
   ProductVariantOption: 'ProductVariantOption',
-  Customer: 'Customer'
+  Customer: 'Customer',
+  Employee: 'Employee'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "store" | "users" | "productMaster" | "productVariant" | "productVariantType" | "productVariantValue" | "productVariantOption" | "customer"
+    modelProps: "store" | "users" | "productMaster" | "productVariant" | "productVariantType" | "productVariantValue" | "productVariantOption" | "customer" | "employee"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1003,6 +1004,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Employee: {
+      payload: Prisma.$EmployeePayload<ExtArgs>
+      fields: Prisma.EmployeeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        findMany: {
+          args: Prisma.EmployeeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>[]
+        }
+        create: {
+          args: Prisma.EmployeeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        createMany: {
+          args: Prisma.EmployeeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmployeeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>[]
+        }
+        delete: {
+          args: Prisma.EmployeeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        update: {
+          args: Prisma.EmployeeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmployeeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>[]
+        }
+        upsert: {
+          args: Prisma.EmployeeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployee>
+        }
+        groupBy: {
+          args: Prisma.EmployeeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1061,7 +1136,8 @@ export const UsersScalarFieldEnum = {
   role: 'role',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  refreshToken: 'refreshToken'
+  refreshToken: 'refreshToken',
+  slug: 'slug'
 } as const
 
 export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
@@ -1125,10 +1201,25 @@ export const CustomerScalarFieldEnum = {
   name: 'name',
   email: 'email',
   phone: 'phone',
+  image: 'image',
   createdAt: 'createdAt'
 } as const
 
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+export const EmployeeScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  address: 'address',
+  phone: 'phone',
+  createdAt: 'createdAt',
+  image: 'image',
+  usersId: 'usersId'
+} as const
+
+export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1382,6 +1473,7 @@ export type GlobalOmitConfig = {
   productVariantValue?: Prisma.ProductVariantValueOmit
   productVariantOption?: Prisma.ProductVariantOptionOmit
   customer?: Prisma.CustomerOmit
+  employee?: Prisma.EmployeeOmit
 }
 
 /* Types for Logging */

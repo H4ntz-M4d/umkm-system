@@ -21,6 +21,19 @@ export class StoresService {
         }
     }
 
+    async findAllStore(){
+        const data = await prisma.store.findMany({
+            select: {
+                id: true,
+                name: true
+            }
+        })
+        return {
+            success: true,
+            data
+        }
+    }
+
     async create(data: CreateStoreDto) {
         return await prisma.store.create({
             data: data

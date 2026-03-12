@@ -10,7 +10,7 @@ import { columnsCustomer } from "./column";
 
 export default function CustomerManagementView() {
   const { pagination, onPaginationChange } = usePaginationParams();
-  const { dataCustomer, isLoadingCustomer } = useUsersOperation(pagination);
+  const { dataCustomer, isLoadingCustomer } = useUsersOperation({ pagination });
   const pageCount = dataCustomer?.total
     ? Math.ceil(dataCustomer?.total / pagination.pageSize)
     : -1;

@@ -1,14 +1,21 @@
-import { HttpException, Injectable } from '@nestjs/common';
-import { prisma } from '@repo/db';
-import { CreateUsersDto, UpdateUsersDto } from 'users/dto/dto.users';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { prisma, UserRole } from '@repo/db';
+import { CreateEmployeeDto, CreateUsersDto, UpdateUsersDto } from 'users/dto/dto.users';
 import * as bcrypt from 'bcrypt';
 import { Pagination } from 'common/paginate/pagination';
+import { CloudinaryService } from 'cloudinary/cloudinary.service';
+import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    private cloudinaryService: CloudinaryService
+  ) {
+
+  }
 
   // ------------------------------- Admin ------------------------------------
-  async findAllAdmin(pagination: Pagination) {
+  async findAllAdmin(pagination: Pagination, search?: string) {
     const skip = pagination.skip ?? 0
     const limit = pagination.limit ?? 10
     const data = await prisma.users.findMany({
@@ -17,6 +24,10 @@ export class UsersService {
       where: {
         role: {
           in: ['ADMIN', 'GUDANG', 'KASIR', 'OWNER']
+        },
+        name: {
+          contains: search,
+          mode: 'insensitive'
         }
       },
       omit: {
@@ -45,12 +56,50 @@ export class UsersService {
   }
 
   async findById(id: bigint) {
-    return await prisma.users.findFirst({
+    const user = await prisma.users.findFirst({
       where: { id },
-    });
+      select: {
+        id: true,
+        isActive: true,
+        storeId: true,
+        role: true,
+        password: true,
+      }
+    })
+
+    const employee = await prisma.employee.findFirst({
+      where: { usersId: user?.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        address: true,
+        phone: true,
+        image: true,
+      }
+    })
+
+    return {
+      success: true,
+      data: {
+        id: user?.id,
+        name: employee?.name,
+        email: employee?.email,
+        address: employee?.address,
+        phone: employee?.phone,
+        image: employee?.image,
+        isActive: user?.isActive,
+        storeId: user?.storeId,
+        role: user?.role,
+
+      },
+      meta: {
+        timestamps: new Date().toISOString()
+      }
+    }
   }
 
-  async create(data: CreateUsersDto) {
+  async createAdmin(data: CreateEmployeeDto, file?: Express.Multer.File) {
     const userIsExist = await prisma.users.count({
       where: {
         email: data.email
@@ -61,10 +110,38 @@ export class UsersService {
       throw new HttpException("Users is already exist", 400)
     }
 
+    let image: string | undefined;
+
+    if (file) {
+      image = await this.cloudinaryService.uploadImage(file, CloudinaryFolder.PROFILES)
+    }
+
+    if (data.role === UserRole.CUSTOMER) {
+      throw new BadRequestException("Invalid request Role User")
+    }
+
     data.password = await bcrypt.hash(data.password, 10)
 
     const user = await prisma.users.create({
-      data: data
+      data: {
+        email: data.email,
+        name: data.name,
+        password: data.password,
+        role: data.role,
+        isActive: data.isActive,
+        storeId: data.storeId
+      }
+    })
+
+    const employee = await prisma.employee.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        address: data.address,
+        phone: data.phone,
+        image: image,
+        usersId: user.id
+      }
     })
 
     return {
@@ -75,14 +152,86 @@ export class UsersService {
     }
   }
 
-  async update(id: bigint, data: UpdateUsersDto) {
-    return await prisma.users.update({
+  async update(id: bigint, data: UpdateUsersDto, file?: Express.Multer.File) {
+    const employeeIsExist = await prisma.employee.findUnique({
+      where: {
+        usersId: id
+      }
+    })
+
+    // if (userIsExist != 0) {
+    //   throw new HttpException("Users is already exist", 400)
+    // }
+
+    let image = employeeIsExist?.image;
+
+    if (file) {
+      image = await this.cloudinaryService.uploadImage(file, CloudinaryFolder.PROFILES)
+
+      if (employeeIsExist?.image) {
+        await this.cloudinaryService.deleteImage(employeeIsExist.image)
+      }
+    }
+
+    if (data.image === "") {
+      if (employeeIsExist?.image) {
+        await this.cloudinaryService.deleteImage(employeeIsExist.image)
+      }
+
+      image = undefined
+    }
+
+    if (data.role === UserRole.CUSTOMER) {
+      throw new BadRequestException("Invalid request Role User")
+    }
+
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10)
+    }
+
+    const user = await prisma.users.update({
       where: { id },
-      data: data,
-    });
+      data: {
+        email: data.email,
+        name: data.name,
+        password: data.password,
+        role: data.role,
+        isActive: data.isActive,
+        storeId: data.storeId
+      }
+    })
+
+    const employee = await prisma.employee.update({
+      where: { usersId: user.id },
+      data: {
+        name: data.name,
+        email: data.email,
+        address: data.address,
+        phone: data.phone,
+        image: image,
+        usersId: user.id
+      }
+    })
+
+    return {
+      name: employee.name,
+      email: employee.email,
+      address: employee.address,
+      phone: employee.phone,
+      image: employee.image,
+      role: user.role
+    }
   }
 
   async remove(id: bigint) {
+    const employeeIsExist = await prisma.employee.findUnique({
+      where: { usersId: id }
+    })
+
+    if (employeeIsExist?.image) {
+      await this.cloudinaryService.deleteImage(employeeIsExist.image)
+    }
+
     return await prisma.users.delete({
       where: { id },
     });
