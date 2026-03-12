@@ -25,17 +25,19 @@ model Store {
 }
 
 model Users {
-  id        BigInt   @id @default(autoincrement())
-  storeId   BigInt?
-  name      String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  role      UserRole
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id           BigInt   @id @default(autoincrement())
+  storeId      BigInt?
+  name         String   @db.VarChar(255)
+  email        String   @unique @db.VarChar(255)
+  password     String   @db.VarChar(255)
+  role         UserRole
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
   refreshToken String?
+  slug         String?  @db.VarChar(255)
 
-  store Store? @relation(fields: [storeId], references: [id])
+  store     Store?     @relation(fields: [storeId], references: [id])
+  employees Employee[]
 
   @@map("users")
 }
@@ -50,9 +52,9 @@ enum UserRole {
 
 model ProductMaster {
   id          BigInt        @id @default(autoincrement())
-  name        String
+  name        String        @db.VarChar(255)
   description String?
-  slug        String        @unique
+  slug        String        @unique @db.VarChar(255)
   useVariant  Boolean       @default(false)
   status      ProductStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
@@ -66,7 +68,7 @@ model ProductMaster {
 model ProductVariant {
   id              BigInt   @id @default(autoincrement())
   productMasterId BigInt
-  sku             String   @unique
+  sku             String   @unique @db.VarChar(100)
   price           Decimal  @db.Decimal(18, 2)
   cost            Decimal? @db.Decimal(18, 2)
   isActive        Boolean  @default(true)
@@ -82,7 +84,7 @@ model ProductVariant {
 model ProductVariantType {
   id              BigInt @id @default(autoincrement())
   productMasterId BigInt
-  name            String
+  name            String @db.VarChar(255)
 
   productMaster ProductMaster         @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
   values        ProductVariantValue[]
@@ -95,7 +97,7 @@ model ProductVariantType {
 model ProductVariantValue {
   id            BigInt @id @default(autoincrement())
   variantTypeId BigInt
-  value         String
+  value         String @db.VarChar(100)
 
   variantType ProductVariantType     @relation(fields: [variantTypeId], references: [id], onDelete: Cascade)
   options     ProductVariantOption[]
@@ -127,10 +129,26 @@ enum ProductStatus {
 
 model Customer {
   id        BigInt   @id @default(autoincrement())
-  name      String
-  email     String?
-  phone     String?
+  name      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(255)
+  phone     String?  @db.VarChar(255)
+  image     String?  @db.VarChar(255)
   createdAt DateTime @default(now())
 
   @@map("customer")
+}
+
+model Employee {
+  id        BigInt   @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(255)
+  address   String?  @db.VarChar(255)
+  phone     String?  @db.VarChar(15)
+  createdAt DateTime @default(now())
+  image     String?  @db.VarChar(255)
+
+  userId  Users  @relation(fields: [usersId], references: [id], onDelete: Cascade)
+  usersId BigInt @unique
+
+  @@map("employee")
 }

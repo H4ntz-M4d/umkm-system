@@ -79,3 +79,8 @@ export type ProductVariantOption = Prisma.ProductVariantOptionModel
  * 
  */
 export type Customer = Prisma.CustomerModel
+/**
+ * Model Employee
+ * 
+ */
+export type Employee = Prisma.EmployeeModel

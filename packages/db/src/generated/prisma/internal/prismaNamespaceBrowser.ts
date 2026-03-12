@@ -58,7 +58,8 @@ export const ModelName = {
   ProductVariantType: 'ProductVariantType',
   ProductVariantValue: 'ProductVariantValue',
   ProductVariantOption: 'ProductVariantOption',
-  Customer: 'Customer'
+  Customer: 'Customer',
+  Employee: 'Employee'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -96,7 +97,8 @@ export const UsersScalarFieldEnum = {
   role: 'role',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  refreshToken: 'refreshToken'
+  refreshToken: 'refreshToken',
+  slug: 'slug'
 } as const
 
 export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
@@ -160,10 +162,25 @@ export const CustomerScalarFieldEnum = {
   name: 'name',
   email: 'email',
   phone: 'phone',
+  image: 'image',
   createdAt: 'createdAt'
 } as const
 
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+export const EmployeeScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  address: 'address',
+  phone: 'phone',
+  createdAt: 'createdAt',
+  image: 'image',
+  usersId: 'usersId'
+} as const
+
+export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
 
 
 export const SortOrder = {

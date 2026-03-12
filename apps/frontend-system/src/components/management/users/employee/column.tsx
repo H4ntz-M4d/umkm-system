@@ -3,10 +3,12 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { StoreResponse } from "@repo/schemas";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
-export const columnsEmployee = () //   setIdData: (id: string) => void,
-//   deleteById: (id: string) => void
-: ColumnDef<StoreResponse>[] => [
+export const columnsEmployee = (
+  // setIdData: (id: string) => void,
+  deleteStaffData: (id: string) => void,
+): ColumnDef<StoreResponse>[] => [
   {
     accessorKey: "id",
     header: "No",
@@ -36,19 +38,24 @@ export const columnsEmployee = () //   setIdData: (id: string) => void,
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
+      const router = useRouter()
       return (
         <div className="flex gap-2 justify-center">
           <Button
             variant={
               "outline"
-            } /*onClick={() => setIdData(row.original.id.toString())}*/
+            } 
+            onClick={() => {
+              router.push(`/management/employee/form-employee/${row.original.id.toString()}`)
+            }}
           >
             Edit
           </Button>
           <Button
             variant={
               "destructive"
-            } /*onClick={() => deleteById(row.original.id.toString())}*/
+            } 
+            onClick={() => deleteStaffData(row.original.id.toString())}
           >
             Delete
           </Button>

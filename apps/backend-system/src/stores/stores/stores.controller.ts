@@ -20,6 +20,13 @@ export class StoresController {
         return this.service.findAll(pagination)
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.OWNER, UserRole.ADMIN)
+    @Get('/list')
+    findAllStore(){
+        return this.service.findAllStore()
+    }
+
     @Post()
     create(@Body() dto: CreateStoreDto){
         return this.service.create(dto)
