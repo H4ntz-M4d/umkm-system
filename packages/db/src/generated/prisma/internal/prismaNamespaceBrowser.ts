@@ -55,11 +55,16 @@ export const ModelName = {
   Users: 'Users',
   ProductMaster: 'ProductMaster',
   ProductVariant: 'ProductVariant',
+  ProductVariantStock: 'ProductVariantStock',
   ProductVariantType: 'ProductVariantType',
   ProductVariantValue: 'ProductVariantValue',
   ProductVariantOption: 'ProductVariantOption',
   Customer: 'Customer',
-  Employee: 'Employee'
+  Employee: 'Employee',
+  RawMaterial: 'RawMaterial',
+  InventoryLedger: 'InventoryLedger',
+  Production: 'Production',
+  ProductionMaterial: 'ProductionMaterial'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -91,7 +96,6 @@ export type StoreScalarFieldEnum = (typeof StoreScalarFieldEnum)[keyof typeof St
 export const UsersScalarFieldEnum = {
   id: 'id',
   storeId: 'storeId',
-  name: 'name',
   email: 'email',
   password: 'password',
   role: 'role',
@@ -124,10 +128,23 @@ export const ProductVariantScalarFieldEnum = {
   price: 'price',
   cost: 'cost',
   isActive: 'isActive',
+  image: 'image',
   createdAt: 'createdAt'
 } as const
 
 export type ProductVariantScalarFieldEnum = (typeof ProductVariantScalarFieldEnum)[keyof typeof ProductVariantScalarFieldEnum]
+
+
+export const ProductVariantStockScalarFieldEnum = {
+  id: 'id',
+  productVariantId: 'productVariantId',
+  stock: 'stock',
+  reserved_stock: 'reserved_stock',
+  available_stock: 'available_stock',
+  updated_at: 'updated_at'
+} as const
+
+export type ProductVariantStockScalarFieldEnum = (typeof ProductVariantStockScalarFieldEnum)[keyof typeof ProductVariantStockScalarFieldEnum]
 
 
 export const ProductVariantTypeScalarFieldEnum = {
@@ -163,7 +180,8 @@ export const CustomerScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   image: 'image',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  userId: 'userId'
 } as const
 
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
@@ -172,15 +190,61 @@ export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typ
 export const EmployeeScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  email: 'email',
   address: 'address',
   phone: 'phone',
   createdAt: 'createdAt',
   image: 'image',
-  usersId: 'usersId'
+  userId: 'userId'
 } as const
 
 export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
+
+
+export const RawMaterialScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  unit: 'unit',
+  isActive: 'isActive'
+} as const
+
+export type RawMaterialScalarFieldEnum = (typeof RawMaterialScalarFieldEnum)[keyof typeof RawMaterialScalarFieldEnum]
+
+
+export const InventoryLedgerScalarFieldEnum = {
+  id: 'id',
+  storeId: 'storeId',
+  itemType: 'itemType',
+  itemId: 'itemId',
+  direction: 'direction',
+  source: 'source',
+  quantity: 'quantity',
+  referenceId: 'referenceId',
+  createdAt: 'createdAt'
+} as const
+
+export type InventoryLedgerScalarFieldEnum = (typeof InventoryLedgerScalarFieldEnum)[keyof typeof InventoryLedgerScalarFieldEnum]
+
+
+export const ProductionScalarFieldEnum = {
+  id: 'id',
+  storeId: 'storeId',
+  producedVariantId: 'producedVariantId',
+  quantityProduced: 'quantityProduced',
+  status: 'status',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductionScalarFieldEnum = (typeof ProductionScalarFieldEnum)[keyof typeof ProductionScalarFieldEnum]
+
+
+export const ProductionMaterialScalarFieldEnum = {
+  id: 'id',
+  productionId: 'productionId',
+  rawMaterialId: 'rawMaterialId',
+  quantityUsed: 'quantityUsed'
+} as const
+
+export type ProductionMaterialScalarFieldEnum = (typeof ProductionMaterialScalarFieldEnum)[keyof typeof ProductionMaterialScalarFieldEnum]
 
 
 export const SortOrder = {

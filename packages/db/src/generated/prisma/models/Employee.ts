@@ -28,90 +28,84 @@ export type AggregateEmployee = {
 
 export type EmployeeAvgAggregateOutputType = {
   id: number | null
-  usersId: number | null
+  userId: number | null
 }
 
 export type EmployeeSumAggregateOutputType = {
   id: bigint | null
-  usersId: bigint | null
+  userId: bigint | null
 }
 
 export type EmployeeMinAggregateOutputType = {
   id: bigint | null
   name: string | null
-  email: string | null
   address: string | null
   phone: string | null
   createdAt: Date | null
   image: string | null
-  usersId: bigint | null
+  userId: bigint | null
 }
 
 export type EmployeeMaxAggregateOutputType = {
   id: bigint | null
   name: string | null
-  email: string | null
   address: string | null
   phone: string | null
   createdAt: Date | null
   image: string | null
-  usersId: bigint | null
+  userId: bigint | null
 }
 
 export type EmployeeCountAggregateOutputType = {
   id: number
   name: number
-  email: number
   address: number
   phone: number
   createdAt: number
   image: number
-  usersId: number
+  userId: number
   _all: number
 }
 
 
 export type EmployeeAvgAggregateInputType = {
   id?: true
-  usersId?: true
+  userId?: true
 }
 
 export type EmployeeSumAggregateInputType = {
   id?: true
-  usersId?: true
+  userId?: true
 }
 
 export type EmployeeMinAggregateInputType = {
   id?: true
   name?: true
-  email?: true
   address?: true
   phone?: true
   createdAt?: true
   image?: true
-  usersId?: true
+  userId?: true
 }
 
 export type EmployeeMaxAggregateInputType = {
   id?: true
   name?: true
-  email?: true
   address?: true
   phone?: true
   createdAt?: true
   image?: true
-  usersId?: true
+  userId?: true
 }
 
 export type EmployeeCountAggregateInputType = {
   id?: true
   name?: true
-  email?: true
   address?: true
   phone?: true
   createdAt?: true
   image?: true
-  usersId?: true
+  userId?: true
   _all?: true
 }
 
@@ -204,12 +198,11 @@ export type EmployeeGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type EmployeeGroupByOutputType = {
   id: bigint
   name: string
-  email: string
   address: string | null
   phone: string | null
   createdAt: Date
   image: string | null
-  usersId: bigint
+  userId: bigint
   _count: EmployeeCountAggregateOutputType | null
   _avg: EmployeeAvgAggregateOutputType | null
   _sum: EmployeeSumAggregateOutputType | null
@@ -238,31 +231,28 @@ export type EmployeeWhereInput = {
   NOT?: Prisma.EmployeeWhereInput | Prisma.EmployeeWhereInput[]
   id?: Prisma.BigIntFilter<"Employee"> | bigint | number
   name?: Prisma.StringFilter<"Employee"> | string
-  email?: Prisma.StringFilter<"Employee"> | string
   address?: Prisma.StringNullableFilter<"Employee"> | string | null
   phone?: Prisma.StringNullableFilter<"Employee"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
   image?: Prisma.StringNullableFilter<"Employee"> | string | null
-  usersId?: Prisma.BigIntFilter<"Employee"> | bigint | number
-  userId?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
+  userId?: Prisma.BigIntFilter<"Employee"> | bigint | number
+  users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
 }
 
 export type EmployeeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
-  usersId?: Prisma.SortOrder
-  userId?: Prisma.UsersOrderByWithRelationInput
+  userId?: Prisma.SortOrder
+  users?: Prisma.UsersOrderByWithRelationInput
 }
 
 export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
   id?: bigint | number
-  email?: string
-  usersId?: bigint | number
+  userId?: bigint | number
   AND?: Prisma.EmployeeWhereInput | Prisma.EmployeeWhereInput[]
   OR?: Prisma.EmployeeWhereInput[]
   NOT?: Prisma.EmployeeWhereInput | Prisma.EmployeeWhereInput[]
@@ -271,18 +261,17 @@ export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
   phone?: Prisma.StringNullableFilter<"Employee"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
   image?: Prisma.StringNullableFilter<"Employee"> | string | null
-  userId?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
-}, "id" | "email" | "usersId">
+  users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
+}, "id" | "userId">
 
 export type EmployeeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   image?: Prisma.SortOrderInput | Prisma.SortOrder
-  usersId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   _count?: Prisma.EmployeeCountOrderByAggregateInput
   _avg?: Prisma.EmployeeAvgOrderByAggregateInput
   _max?: Prisma.EmployeeMaxOrderByAggregateInput
@@ -296,73 +285,66 @@ export type EmployeeScalarWhereWithAggregatesInput = {
   NOT?: Prisma.EmployeeScalarWhereWithAggregatesInput | Prisma.EmployeeScalarWhereWithAggregatesInput[]
   id?: Prisma.BigIntWithAggregatesFilter<"Employee"> | bigint | number
   name?: Prisma.StringWithAggregatesFilter<"Employee"> | string
-  email?: Prisma.StringWithAggregatesFilter<"Employee"> | string
   address?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Employee"> | Date | string
   image?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
-  usersId?: Prisma.BigIntWithAggregatesFilter<"Employee"> | bigint | number
+  userId?: Prisma.BigIntWithAggregatesFilter<"Employee"> | bigint | number
 }
 
 export type EmployeeCreateInput = {
   id?: bigint | number
   name: string
-  email: string
   address?: string | null
   phone?: string | null
   createdAt?: Date | string
   image?: string | null
-  userId: Prisma.UsersCreateNestedOneWithoutEmployeesInput
+  users: Prisma.UsersCreateNestedOneWithoutEmployeesInput
 }
 
 export type EmployeeUncheckedCreateInput = {
   id?: bigint | number
   name: string
-  email: string
   address?: string | null
   phone?: string | null
   createdAt?: Date | string
   image?: string | null
-  usersId: bigint | number
+  userId: bigint | number
 }
 
 export type EmployeeUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  userId?: Prisma.UsersUpdateOneRequiredWithoutEmployeesNestedInput
+  users?: Prisma.UsersUpdateOneRequiredWithoutEmployeesNestedInput
 }
 
 export type EmployeeUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  usersId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  userId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
 }
 
 export type EmployeeCreateManyInput = {
   id?: bigint | number
   name: string
-  email: string
   address?: string | null
   phone?: string | null
   createdAt?: Date | string
   image?: string | null
-  usersId: bigint | number
+  userId: bigint | number
 }
 
 export type EmployeeUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -372,203 +354,136 @@ export type EmployeeUpdateManyMutationInput = {
 export type EmployeeUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  usersId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  userId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
 }
 
-export type EmployeeListRelationFilter = {
-  every?: Prisma.EmployeeWhereInput
-  some?: Prisma.EmployeeWhereInput
-  none?: Prisma.EmployeeWhereInput
-}
-
-export type EmployeeOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type EmployeeNullableScalarRelationFilter = {
+  is?: Prisma.EmployeeWhereInput | null
+  isNot?: Prisma.EmployeeWhereInput | null
 }
 
 export type EmployeeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
   address?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   image?: Prisma.SortOrder
-  usersId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type EmployeeAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  usersId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type EmployeeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
   address?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   image?: Prisma.SortOrder
-  usersId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type EmployeeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  email?: Prisma.SortOrder
   address?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   image?: Prisma.SortOrder
-  usersId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
 export type EmployeeSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  usersId?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
 }
 
-export type EmployeeCreateNestedManyWithoutUserIdInput = {
-  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutUserIdInput, Prisma.EmployeeUncheckedCreateWithoutUserIdInput> | Prisma.EmployeeCreateWithoutUserIdInput[] | Prisma.EmployeeUncheckedCreateWithoutUserIdInput[]
-  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutUserIdInput | Prisma.EmployeeCreateOrConnectWithoutUserIdInput[]
-  createMany?: Prisma.EmployeeCreateManyUserIdInputEnvelope
-  connect?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
+export type EmployeeCreateNestedOneWithoutUsersInput = {
+  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutUsersInput, Prisma.EmployeeUncheckedCreateWithoutUsersInput>
+  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutUsersInput
+  connect?: Prisma.EmployeeWhereUniqueInput
 }
 
-export type EmployeeUncheckedCreateNestedManyWithoutUserIdInput = {
-  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutUserIdInput, Prisma.EmployeeUncheckedCreateWithoutUserIdInput> | Prisma.EmployeeCreateWithoutUserIdInput[] | Prisma.EmployeeUncheckedCreateWithoutUserIdInput[]
-  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutUserIdInput | Prisma.EmployeeCreateOrConnectWithoutUserIdInput[]
-  createMany?: Prisma.EmployeeCreateManyUserIdInputEnvelope
-  connect?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
+export type EmployeeUncheckedCreateNestedOneWithoutUsersInput = {
+  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutUsersInput, Prisma.EmployeeUncheckedCreateWithoutUsersInput>
+  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutUsersInput
+  connect?: Prisma.EmployeeWhereUniqueInput
 }
 
-export type EmployeeUpdateManyWithoutUserIdNestedInput = {
-  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutUserIdInput, Prisma.EmployeeUncheckedCreateWithoutUserIdInput> | Prisma.EmployeeCreateWithoutUserIdInput[] | Prisma.EmployeeUncheckedCreateWithoutUserIdInput[]
-  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutUserIdInput | Prisma.EmployeeCreateOrConnectWithoutUserIdInput[]
-  upsert?: Prisma.EmployeeUpsertWithWhereUniqueWithoutUserIdInput | Prisma.EmployeeUpsertWithWhereUniqueWithoutUserIdInput[]
-  createMany?: Prisma.EmployeeCreateManyUserIdInputEnvelope
-  set?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
-  disconnect?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
-  delete?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
-  connect?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
-  update?: Prisma.EmployeeUpdateWithWhereUniqueWithoutUserIdInput | Prisma.EmployeeUpdateWithWhereUniqueWithoutUserIdInput[]
-  updateMany?: Prisma.EmployeeUpdateManyWithWhereWithoutUserIdInput | Prisma.EmployeeUpdateManyWithWhereWithoutUserIdInput[]
-  deleteMany?: Prisma.EmployeeScalarWhereInput | Prisma.EmployeeScalarWhereInput[]
+export type EmployeeUpdateOneWithoutUsersNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutUsersInput, Prisma.EmployeeUncheckedCreateWithoutUsersInput>
+  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutUsersInput
+  upsert?: Prisma.EmployeeUpsertWithoutUsersInput
+  disconnect?: Prisma.EmployeeWhereInput | boolean
+  delete?: Prisma.EmployeeWhereInput | boolean
+  connect?: Prisma.EmployeeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeUpdateToOneWithWhereWithoutUsersInput, Prisma.EmployeeUpdateWithoutUsersInput>, Prisma.EmployeeUncheckedUpdateWithoutUsersInput>
 }
 
-export type EmployeeUncheckedUpdateManyWithoutUserIdNestedInput = {
-  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutUserIdInput, Prisma.EmployeeUncheckedCreateWithoutUserIdInput> | Prisma.EmployeeCreateWithoutUserIdInput[] | Prisma.EmployeeUncheckedCreateWithoutUserIdInput[]
-  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutUserIdInput | Prisma.EmployeeCreateOrConnectWithoutUserIdInput[]
-  upsert?: Prisma.EmployeeUpsertWithWhereUniqueWithoutUserIdInput | Prisma.EmployeeUpsertWithWhereUniqueWithoutUserIdInput[]
-  createMany?: Prisma.EmployeeCreateManyUserIdInputEnvelope
-  set?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
-  disconnect?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
-  delete?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
-  connect?: Prisma.EmployeeWhereUniqueInput | Prisma.EmployeeWhereUniqueInput[]
-  update?: Prisma.EmployeeUpdateWithWhereUniqueWithoutUserIdInput | Prisma.EmployeeUpdateWithWhereUniqueWithoutUserIdInput[]
-  updateMany?: Prisma.EmployeeUpdateManyWithWhereWithoutUserIdInput | Prisma.EmployeeUpdateManyWithWhereWithoutUserIdInput[]
-  deleteMany?: Prisma.EmployeeScalarWhereInput | Prisma.EmployeeScalarWhereInput[]
+export type EmployeeUncheckedUpdateOneWithoutUsersNestedInput = {
+  create?: Prisma.XOR<Prisma.EmployeeCreateWithoutUsersInput, Prisma.EmployeeUncheckedCreateWithoutUsersInput>
+  connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutUsersInput
+  upsert?: Prisma.EmployeeUpsertWithoutUsersInput
+  disconnect?: Prisma.EmployeeWhereInput | boolean
+  delete?: Prisma.EmployeeWhereInput | boolean
+  connect?: Prisma.EmployeeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeUpdateToOneWithWhereWithoutUsersInput, Prisma.EmployeeUpdateWithoutUsersInput>, Prisma.EmployeeUncheckedUpdateWithoutUsersInput>
 }
 
-export type EmployeeCreateWithoutUserIdInput = {
+export type EmployeeCreateWithoutUsersInput = {
   id?: bigint | number
   name: string
-  email: string
   address?: string | null
   phone?: string | null
   createdAt?: Date | string
   image?: string | null
 }
 
-export type EmployeeUncheckedCreateWithoutUserIdInput = {
+export type EmployeeUncheckedCreateWithoutUsersInput = {
   id?: bigint | number
   name: string
-  email: string
   address?: string | null
   phone?: string | null
   createdAt?: Date | string
   image?: string | null
 }
 
-export type EmployeeCreateOrConnectWithoutUserIdInput = {
+export type EmployeeCreateOrConnectWithoutUsersInput = {
   where: Prisma.EmployeeWhereUniqueInput
-  create: Prisma.XOR<Prisma.EmployeeCreateWithoutUserIdInput, Prisma.EmployeeUncheckedCreateWithoutUserIdInput>
+  create: Prisma.XOR<Prisma.EmployeeCreateWithoutUsersInput, Prisma.EmployeeUncheckedCreateWithoutUsersInput>
 }
 
-export type EmployeeCreateManyUserIdInputEnvelope = {
-  data: Prisma.EmployeeCreateManyUserIdInput | Prisma.EmployeeCreateManyUserIdInput[]
-  skipDuplicates?: boolean
+export type EmployeeUpsertWithoutUsersInput = {
+  update: Prisma.XOR<Prisma.EmployeeUpdateWithoutUsersInput, Prisma.EmployeeUncheckedUpdateWithoutUsersInput>
+  create: Prisma.XOR<Prisma.EmployeeCreateWithoutUsersInput, Prisma.EmployeeUncheckedCreateWithoutUsersInput>
+  where?: Prisma.EmployeeWhereInput
 }
 
-export type EmployeeUpsertWithWhereUniqueWithoutUserIdInput = {
-  where: Prisma.EmployeeWhereUniqueInput
-  update: Prisma.XOR<Prisma.EmployeeUpdateWithoutUserIdInput, Prisma.EmployeeUncheckedUpdateWithoutUserIdInput>
-  create: Prisma.XOR<Prisma.EmployeeCreateWithoutUserIdInput, Prisma.EmployeeUncheckedCreateWithoutUserIdInput>
+export type EmployeeUpdateToOneWithWhereWithoutUsersInput = {
+  where?: Prisma.EmployeeWhereInput
+  data: Prisma.XOR<Prisma.EmployeeUpdateWithoutUsersInput, Prisma.EmployeeUncheckedUpdateWithoutUsersInput>
 }
 
-export type EmployeeUpdateWithWhereUniqueWithoutUserIdInput = {
-  where: Prisma.EmployeeWhereUniqueInput
-  data: Prisma.XOR<Prisma.EmployeeUpdateWithoutUserIdInput, Prisma.EmployeeUncheckedUpdateWithoutUserIdInput>
-}
-
-export type EmployeeUpdateManyWithWhereWithoutUserIdInput = {
-  where: Prisma.EmployeeScalarWhereInput
-  data: Prisma.XOR<Prisma.EmployeeUpdateManyMutationInput, Prisma.EmployeeUncheckedUpdateManyWithoutUserIdInput>
-}
-
-export type EmployeeScalarWhereInput = {
-  AND?: Prisma.EmployeeScalarWhereInput | Prisma.EmployeeScalarWhereInput[]
-  OR?: Prisma.EmployeeScalarWhereInput[]
-  NOT?: Prisma.EmployeeScalarWhereInput | Prisma.EmployeeScalarWhereInput[]
-  id?: Prisma.BigIntFilter<"Employee"> | bigint | number
-  name?: Prisma.StringFilter<"Employee"> | string
-  email?: Prisma.StringFilter<"Employee"> | string
-  address?: Prisma.StringNullableFilter<"Employee"> | string | null
-  phone?: Prisma.StringNullableFilter<"Employee"> | string | null
-  createdAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
-  image?: Prisma.StringNullableFilter<"Employee"> | string | null
-  usersId?: Prisma.BigIntFilter<"Employee"> | bigint | number
-}
-
-export type EmployeeCreateManyUserIdInput = {
-  id?: bigint | number
-  name: string
-  email: string
-  address?: string | null
-  phone?: string | null
-  createdAt?: Date | string
-  image?: string | null
-}
-
-export type EmployeeUpdateWithoutUserIdInput = {
+export type EmployeeUpdateWithoutUsersInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
-export type EmployeeUncheckedUpdateWithoutUserIdInput = {
+export type EmployeeUncheckedUpdateWithoutUsersInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-}
-
-export type EmployeeUncheckedUpdateManyWithoutUserIdInput = {
-  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -580,75 +495,70 @@ export type EmployeeUncheckedUpdateManyWithoutUserIdInput = {
 export type EmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  email?: boolean
   address?: boolean
   phone?: boolean
   createdAt?: boolean
   image?: boolean
-  usersId?: boolean
-  userId?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  userId?: boolean
+  users?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["employee"]>
 
 export type EmployeeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  email?: boolean
   address?: boolean
   phone?: boolean
   createdAt?: boolean
   image?: boolean
-  usersId?: boolean
-  userId?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  userId?: boolean
+  users?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["employee"]>
 
 export type EmployeeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
-  email?: boolean
   address?: boolean
   phone?: boolean
   createdAt?: boolean
   image?: boolean
-  usersId?: boolean
-  userId?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  userId?: boolean
+  users?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["employee"]>
 
 export type EmployeeSelectScalar = {
   id?: boolean
   name?: boolean
-  email?: boolean
   address?: boolean
   phone?: boolean
   createdAt?: boolean
   image?: boolean
-  usersId?: boolean
+  userId?: boolean
 }
 
-export type EmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "address" | "phone" | "createdAt" | "image" | "usersId", ExtArgs["result"]["employee"]>
+export type EmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "address" | "phone" | "createdAt" | "image" | "userId", ExtArgs["result"]["employee"]>
 export type EmployeeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  userId?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  users?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 export type EmployeeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  userId?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  users?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 export type EmployeeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  userId?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
+  users?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
 }
 
 export type $EmployeePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Employee"
   objects: {
-    userId: Prisma.$UsersPayload<ExtArgs>
+    users: Prisma.$UsersPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
     name: string
-    email: string
     address: string | null
     phone: string | null
     createdAt: Date
     image: string | null
-    usersId: bigint
+    userId: bigint
   }, ExtArgs["result"]["employee"]>
   composites: {}
 }
@@ -1043,7 +953,7 @@ readonly fields: EmployeeFieldRefs;
  */
 export interface Prisma__EmployeeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  userId<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  users<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1075,12 +985,11 @@ export interface Prisma__EmployeeClient<T, Null = never, ExtArgs extends runtime
 export interface EmployeeFieldRefs {
   readonly id: Prisma.FieldRef<"Employee", 'BigInt'>
   readonly name: Prisma.FieldRef<"Employee", 'String'>
-  readonly email: Prisma.FieldRef<"Employee", 'String'>
   readonly address: Prisma.FieldRef<"Employee", 'String'>
   readonly phone: Prisma.FieldRef<"Employee", 'String'>
   readonly createdAt: Prisma.FieldRef<"Employee", 'DateTime'>
   readonly image: Prisma.FieldRef<"Employee", 'String'>
-  readonly usersId: Prisma.FieldRef<"Employee", 'BigInt'>
+  readonly userId: Prisma.FieldRef<"Employee", 'BigInt'>
 }
     
 

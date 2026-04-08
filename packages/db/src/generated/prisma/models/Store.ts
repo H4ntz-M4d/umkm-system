@@ -209,6 +209,8 @@ export type StoreWhereInput = {
   isActive?: Prisma.BoolFilter<"Store"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
   users?: Prisma.UsersListRelationFilter
+  inventoryLedgers?: Prisma.InventoryLedgerListRelationFilter
+  productions?: Prisma.ProductionListRelationFilter
 }
 
 export type StoreOrderByWithRelationInput = {
@@ -217,6 +219,8 @@ export type StoreOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   users?: Prisma.UsersOrderByRelationAggregateInput
+  inventoryLedgers?: Prisma.InventoryLedgerOrderByRelationAggregateInput
+  productions?: Prisma.ProductionOrderByRelationAggregateInput
 }
 
 export type StoreWhereUniqueInput = Prisma.AtLeast<{
@@ -228,6 +232,8 @@ export type StoreWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"Store"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
   users?: Prisma.UsersListRelationFilter
+  inventoryLedgers?: Prisma.InventoryLedgerListRelationFilter
+  productions?: Prisma.ProductionListRelationFilter
 }, "id">
 
 export type StoreOrderByWithAggregationInput = {
@@ -258,6 +264,8 @@ export type StoreCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
+  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateInput = {
@@ -266,6 +274,8 @@ export type StoreUncheckedCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
+  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUpdateInput = {
@@ -274,6 +284,8 @@ export type StoreUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
+  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateInput = {
@@ -282,6 +294,8 @@ export type StoreUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
+  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateManyInput = {
@@ -339,6 +353,11 @@ export type StoreNullableScalarRelationFilter = {
   isNot?: Prisma.StoreWhereInput | null
 }
 
+export type StoreScalarRelationFilter = {
+  is?: Prisma.StoreWhereInput
+  isNot?: Prisma.StoreWhereInput
+}
+
 export type BigIntFieldUpdateOperationsInput = {
   set?: bigint | number
   increment?: bigint | number
@@ -375,11 +394,41 @@ export type StoreUpdateOneWithoutUsersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutUsersInput, Prisma.StoreUpdateWithoutUsersInput>, Prisma.StoreUncheckedUpdateWithoutUsersInput>
 }
 
+export type StoreCreateNestedOneWithoutInventoryLedgersInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutInventoryLedgersInput, Prisma.StoreUncheckedCreateWithoutInventoryLedgersInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutInventoryLedgersInput
+  connect?: Prisma.StoreWhereUniqueInput
+}
+
+export type StoreUpdateOneRequiredWithoutInventoryLedgersNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutInventoryLedgersInput, Prisma.StoreUncheckedCreateWithoutInventoryLedgersInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutInventoryLedgersInput
+  upsert?: Prisma.StoreUpsertWithoutInventoryLedgersInput
+  connect?: Prisma.StoreWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutInventoryLedgersInput, Prisma.StoreUpdateWithoutInventoryLedgersInput>, Prisma.StoreUncheckedUpdateWithoutInventoryLedgersInput>
+}
+
+export type StoreCreateNestedOneWithoutProductionsInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutProductionsInput, Prisma.StoreUncheckedCreateWithoutProductionsInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutProductionsInput
+  connect?: Prisma.StoreWhereUniqueInput
+}
+
+export type StoreUpdateOneRequiredWithoutProductionsNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutProductionsInput, Prisma.StoreUncheckedCreateWithoutProductionsInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutProductionsInput
+  upsert?: Prisma.StoreUpsertWithoutProductionsInput
+  connect?: Prisma.StoreWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutProductionsInput, Prisma.StoreUpdateWithoutProductionsInput>, Prisma.StoreUncheckedUpdateWithoutProductionsInput>
+}
+
 export type StoreCreateWithoutUsersInput = {
   id?: bigint | number
   name: string
   isActive?: boolean
   createdAt?: Date | string
+  inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
+  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutUsersInput = {
@@ -387,6 +436,8 @@ export type StoreUncheckedCreateWithoutUsersInput = {
   name: string
   isActive?: boolean
   createdAt?: Date | string
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
+  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutUsersInput = {
@@ -410,6 +461,8 @@ export type StoreUpdateWithoutUsersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
+  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutUsersInput = {
@@ -417,6 +470,112 @@ export type StoreUncheckedUpdateWithoutUsersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
+  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreCreateWithoutInventoryLedgersInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersCreateNestedManyWithoutStoreInput
+  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
+}
+
+export type StoreUncheckedCreateWithoutInventoryLedgersInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
+  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
+}
+
+export type StoreCreateOrConnectWithoutInventoryLedgersInput = {
+  where: Prisma.StoreWhereUniqueInput
+  create: Prisma.XOR<Prisma.StoreCreateWithoutInventoryLedgersInput, Prisma.StoreUncheckedCreateWithoutInventoryLedgersInput>
+}
+
+export type StoreUpsertWithoutInventoryLedgersInput = {
+  update: Prisma.XOR<Prisma.StoreUpdateWithoutInventoryLedgersInput, Prisma.StoreUncheckedUpdateWithoutInventoryLedgersInput>
+  create: Prisma.XOR<Prisma.StoreCreateWithoutInventoryLedgersInput, Prisma.StoreUncheckedCreateWithoutInventoryLedgersInput>
+  where?: Prisma.StoreWhereInput
+}
+
+export type StoreUpdateToOneWithWhereWithoutInventoryLedgersInput = {
+  where?: Prisma.StoreWhereInput
+  data: Prisma.XOR<Prisma.StoreUpdateWithoutInventoryLedgersInput, Prisma.StoreUncheckedUpdateWithoutInventoryLedgersInput>
+}
+
+export type StoreUpdateWithoutInventoryLedgersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
+  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreUncheckedUpdateWithoutInventoryLedgersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
+  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreCreateWithoutProductionsInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
+}
+
+export type StoreUncheckedCreateWithoutProductionsInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
+}
+
+export type StoreCreateOrConnectWithoutProductionsInput = {
+  where: Prisma.StoreWhereUniqueInput
+  create: Prisma.XOR<Prisma.StoreCreateWithoutProductionsInput, Prisma.StoreUncheckedCreateWithoutProductionsInput>
+}
+
+export type StoreUpsertWithoutProductionsInput = {
+  update: Prisma.XOR<Prisma.StoreUpdateWithoutProductionsInput, Prisma.StoreUncheckedUpdateWithoutProductionsInput>
+  create: Prisma.XOR<Prisma.StoreCreateWithoutProductionsInput, Prisma.StoreUncheckedCreateWithoutProductionsInput>
+  where?: Prisma.StoreWhereInput
+}
+
+export type StoreUpdateToOneWithWhereWithoutProductionsInput = {
+  where?: Prisma.StoreWhereInput
+  data: Prisma.XOR<Prisma.StoreUpdateWithoutProductionsInput, Prisma.StoreUncheckedUpdateWithoutProductionsInput>
+}
+
+export type StoreUpdateWithoutProductionsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreUncheckedUpdateWithoutProductionsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 
@@ -426,10 +585,14 @@ export type StoreUncheckedUpdateWithoutUsersInput = {
 
 export type StoreCountOutputType = {
   users: number
+  inventoryLedgers: number
+  productions: number
 }
 
 export type StoreCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | StoreCountOutputTypeCountUsersArgs
+  inventoryLedgers?: boolean | StoreCountOutputTypeCountInventoryLedgersArgs
+  productions?: boolean | StoreCountOutputTypeCountProductionsArgs
 }
 
 /**
@@ -449,6 +612,20 @@ export type StoreCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.UsersWhereInput
 }
 
+/**
+ * StoreCountOutputType without action
+ */
+export type StoreCountOutputTypeCountInventoryLedgersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InventoryLedgerWhereInput
+}
+
+/**
+ * StoreCountOutputType without action
+ */
+export type StoreCountOutputTypeCountProductionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductionWhereInput
+}
+
 
 export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -456,6 +633,8 @@ export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   isActive?: boolean
   createdAt?: boolean
   users?: boolean | Prisma.Store$usersArgs<ExtArgs>
+  inventoryLedgers?: boolean | Prisma.Store$inventoryLedgersArgs<ExtArgs>
+  productions?: boolean | Prisma.Store$productionsArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
@@ -483,6 +662,8 @@ export type StoreSelectScalar = {
 export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "isActive" | "createdAt", ExtArgs["result"]["store"]>
 export type StoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Store$usersArgs<ExtArgs>
+  inventoryLedgers?: boolean | Prisma.Store$inventoryLedgersArgs<ExtArgs>
+  productions?: boolean | Prisma.Store$productionsArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StoreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -492,6 +673,8 @@ export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name: "Store"
   objects: {
     users: Prisma.$UsersPayload<ExtArgs>[]
+    inventoryLedgers: Prisma.$InventoryLedgerPayload<ExtArgs>[]
+    productions: Prisma.$ProductionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -893,6 +1076,8 @@ readonly fields: StoreFieldRefs;
 export interface Prisma__StoreClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   users<T extends Prisma.Store$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  inventoryLedgers<T extends Prisma.Store$inventoryLedgersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$inventoryLedgersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  productions<T extends Prisma.Store$productionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$productionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1335,6 +1520,54 @@ export type Store$usersArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.UsersScalarFieldEnum | Prisma.UsersScalarFieldEnum[]
+}
+
+/**
+ * Store.inventoryLedgers
+ */
+export type Store$inventoryLedgersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InventoryLedger
+   */
+  select?: Prisma.InventoryLedgerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InventoryLedger
+   */
+  omit?: Prisma.InventoryLedgerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InventoryLedgerInclude<ExtArgs> | null
+  where?: Prisma.InventoryLedgerWhereInput
+  orderBy?: Prisma.InventoryLedgerOrderByWithRelationInput | Prisma.InventoryLedgerOrderByWithRelationInput[]
+  cursor?: Prisma.InventoryLedgerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InventoryLedgerScalarFieldEnum | Prisma.InventoryLedgerScalarFieldEnum[]
+}
+
+/**
+ * Store.productions
+ */
+export type Store$productionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Production
+   */
+  select?: Prisma.ProductionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Production
+   */
+  omit?: Prisma.ProductionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductionInclude<ExtArgs> | null
+  where?: Prisma.ProductionWhereInput
+  orderBy?: Prisma.ProductionOrderByWithRelationInput | Prisma.ProductionOrderByWithRelationInput[]
+  cursor?: Prisma.ProductionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductionScalarFieldEnum | Prisma.ProductionScalarFieldEnum[]
 }
 
 /**

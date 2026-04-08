@@ -194,6 +194,17 @@ body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
   }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    /* Menunda perubahan warna background hingga 5000 detik (efektif membuatnya transparan) */
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-box-shadow: 0 0 0 1000px var(--accent) inset !important;
+
+    /* Memastikan warna teks tetap mengikuti tema Shadcn (termasuk saat dark mode) */
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);

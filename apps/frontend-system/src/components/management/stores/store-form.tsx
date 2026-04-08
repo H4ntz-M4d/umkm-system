@@ -22,36 +22,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { StoreSchema, z } from "@repo/schemas";
+import { StoreData, StoreSchema, z } from "@repo/schemas";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 type FormData = z.infer<typeof StoreSchema>;
 
-interface StoreFormProps{
-    onSubmit: (v: FormData) => void
-    initialData?: any
-    onOpenChange?: (open: boolean) => void
+interface StoreFormProps {
+  onSubmit: (v: FormData) => void;
+  initialData?: StoreData;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function StoreForm({
   onSubmit,
   initialData,
-  onOpenChange
+  onOpenChange,
 }: StoreFormProps) {
-
   const form = useForm<FormData>({
     resolver: zodResolver(StoreSchema),
   });
 
   const [open, setOpen] = useState(false);
+  const isOpen = open || !!initialData
   useEffect(() => {
     if (initialData) {
       form.reset({
         name: initialData.name,
         isActive: initialData.isActive,
       });
-      setOpen(true); // Buka dialog otomatis saat data tersedia
     } else {
       form.reset({ name: "", isActive: true });
     }
@@ -71,16 +70,16 @@ export default function StoreForm({
   const isEditing = !!initialData;
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="w-30">Add Store</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <DialogHeader className="py-4">
-            <DialogTitle>Add Store</DialogTitle>
+            <DialogTitle className={"text-lg"}>{isEditing ? "Edit Toko" : "Tambah Toko"}</DialogTitle>
             <DialogDescription>
-              Tambahkan nama toko lain disini. Kemudian klik save untuk
+              Tambahkan atau edit nama toko disini. Kemudian klik save untuk
               menyimpan datanya
             </DialogDescription>
           </DialogHeader>

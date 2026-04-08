@@ -8,16 +8,20 @@ import { prisma, UserRole, Users } from '@repo/db';
 import * as bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { CustomerRegisterDto, LoginDto } from './dto/dto.login';
+import {
+  toCustomerProfileResponse,
+  toEmployeeProfileResponse,
+} from 'auth/auth.response';
 
 @Injectable()
 export class AuthService {
   constructor(private jwtService: JwtService) {}
 
-  private async generateTokens(user: any) {
+  private async generateTokens(user: Users) {
     const payload = {
       sub: user.id,
       role: user.role,
-      branchId: user.branchId,
+      storeId: user.storeId,
     };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -35,13 +39,14 @@ export class AuthService {
     };
   }
 
-  private async validateRefreshToken(req: any, cookieName: string) {
-    const refreshToken = req.cookies[cookieName];
+  private async validateRefreshToken(req: Request, cookieName: string) {
+    const refreshToken = req.cookies[cookieName] as string;
 
     if (!refreshToken) throw new UnauthorizedException('No refresh token');
 
     try {
-      const payload = this.jwtService.verify(refreshToken);
+      const payload =
+        this.jwtService.verify<Record<string, bigint>>(refreshToken);
 
       const user = await prisma.users.findUnique({
         where: { id: payload.sub },
@@ -54,6 +59,7 @@ export class AuthService {
         refreshToken,
         user,
       };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -93,6 +99,12 @@ export class AuthService {
       },
     });
 
+    res.cookie('access_token_admin', token.accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
+
     res.cookie('refresh_token_admin', token.refreshToken, {
       httpOnly: true,
       secure: false, // jika production berikan true
@@ -101,7 +113,7 @@ export class AuthService {
     });
 
     return {
-      accessToken: token.accessToken,
+      message: 'Login Success, selamat datang',
     };
   }
 
@@ -110,19 +122,26 @@ export class AuthService {
       where: { id: userId },
       select: {
         id: true,
-        name: true,
         email: true,
         role: true,
         storeId: true,
         isActive: true,
+        employees: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
-    return user;
+    return toEmployeeProfileResponse(user!);
   }
 
   async refreshAdminToken(req: Request, res: Response) {
-    const { refreshToken, user } = await this.validateRefreshToken(req, 'refresh_token_admin');
+    const { refreshToken, user } = await this.validateRefreshToken(
+      req,
+      'refresh_token_admin',
+    );
 
     const isMatch = await bcrypt.compare(refreshToken, user.refreshToken!);
 
@@ -137,6 +156,12 @@ export class AuthService {
       data: { refreshToken: hashedRefresh },
     });
 
+    res.cookie('access_token_admin', tokens.accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
+
     res.cookie('refresh_token_admin', tokens.refreshToken, {
       httpOnly: true,
       secure: false, // jika production berikan true
@@ -145,6 +170,7 @@ export class AuthService {
     });
 
     return {
+      message: 'Success',
       accessToken: tokens.accessToken,
     };
   }
@@ -187,7 +213,6 @@ export class AuthService {
 
     const user = await prisma.users.create({
       data: {
-        name: data.name,
         email: data.email,
         password: hashed,
         role: UserRole.CUSTOMER,
@@ -200,13 +225,11 @@ export class AuthService {
         name: data.name,
         email: data.email,
         phone: data.phone,
+        userId: user.id,
       },
     });
 
-    return {
-      data: customer,
-      message: 'Customer registered',
-    };
+    return customer;
   }
 
   async loginCustomerService(data: LoginDto, res: Response) {
@@ -237,6 +260,12 @@ export class AuthService {
       },
     });
 
+    res.cookie('access_token_customer', token.accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
+
     res.cookie('refresh_token_customer', token.refreshToken, {
       httpOnly: true,
       secure: false,
@@ -244,12 +273,15 @@ export class AuthService {
     });
 
     return {
-      accessToken: token.accessToken,
+      message: 'Login Success, selamat datang',
     };
   }
 
   async refreshCustomerToken(req: Request, res: Response) {
-    const { refreshToken, user } = await this.validateRefreshToken(req, 'refresh_token_customer');
+    const { refreshToken, user } = await this.validateRefreshToken(
+      req,
+      'refresh_token_customer',
+    );
 
     if (user.role !== UserRole.CUSTOMER) {
       throw new UnauthorizedException('Invalid credentials');
@@ -268,6 +300,12 @@ export class AuthService {
       data: { refreshToken: hashedRefresh },
     });
 
+    res.cookie('access_token_customer', tokens.accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
+
     res.cookie('refresh_token_customer', tokens.refreshToken, {
       httpOnly: true,
       secure: false, // jika production berikan true
@@ -276,7 +314,7 @@ export class AuthService {
     });
 
     return {
-      accessToken: tokens.accessToken,
+      message: 'Success',
     };
   }
 
@@ -285,13 +323,17 @@ export class AuthService {
       where: { id: userId },
       select: {
         id: true,
-        name: true,
         email: true,
         role: true,
         isActive: true,
+        customer: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
-    return user;
+    return toCustomerProfileResponse(user!);
   }
 }

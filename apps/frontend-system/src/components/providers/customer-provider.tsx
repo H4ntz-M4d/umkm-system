@@ -1,37 +1,21 @@
 "use client";
 
-import { getCustomerProfile } from "@/lib/auth/auth.api";
-import { useCustomerAuth } from "@/lib/auth/userCustomerAuth";
+import { getCustomerProfile } from "@/lib/queries/auth/auth.api";
+import { useCustomerAuth } from "@/lib/queries/auth/userCustomerAuth";
 import { useEffect, useState } from "react";
+import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
+import { UserProfileResponse, z } from "@repo/schemas";
+
+type UserProfile = z.infer<typeof UserProfileResponse>
 
 interface CustomerProviderProps {
   children: React.ReactNode;
+  user?: UserProfile;
 }
 
-export const CustomerProvider = ({ children }: CustomerProviderProps) => {
+export const CustomerProvider = ({ children, user }: CustomerProviderProps) => {
   const setUser = useCustomerAuth((s) => s.setUser);
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      const isLoggedIn = localStorage.getItem('is_customer_logged_in')
-
-      if (!isLoggedIn) {
-        setUser(null)
-        return
-      }
-
-      try {
-        const profile = await getCustomerProfile();
-        setUser(profile);
-
-        console.log('profile:', profile)
-      } catch {
-        setUser(null)
-      }
-    };
-
-    loadProfile();
-  }, [setUser]);
 
   return children;
 };

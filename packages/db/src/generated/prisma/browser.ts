@@ -38,6 +38,11 @@ export type ProductMaster = Prisma.ProductMasterModel
  */
 export type ProductVariant = Prisma.ProductVariantModel
 /**
+ * Model ProductVariantStock
+ * 
+ */
+export type ProductVariantStock = Prisma.ProductVariantStockModel
+/**
  * Model ProductVariantType
  * 
  */
@@ -62,3 +67,23 @@ export type Customer = Prisma.CustomerModel
  * 
  */
 export type Employee = Prisma.EmployeeModel
+/**
+ * Model RawMaterial
+ * 
+ */
+export type RawMaterial = Prisma.RawMaterialModel
+/**
+ * Model InventoryLedger
+ * 
+ */
+export type InventoryLedger = Prisma.InventoryLedgerModel
+/**
+ * Model Production
+ * 
+ */
+export type Production = Prisma.ProductionModel
+/**
+ * Model ProductionMaterial
+ * 
+ */
+export type ProductionMaterial = Prisma.ProductionMaterialModel

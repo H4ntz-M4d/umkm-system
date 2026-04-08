@@ -33,14 +33,10 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useAuth } from "@/lib/queries/auth/useAuth";
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   masterItems: [
     {
       title: "Toko",
@@ -69,7 +65,7 @@ const data = {
     },
     {
       title: "Produk Rajutan",
-      url: "#",
+      url: "/management/products",
       icon: ShoppingBasketIcon
     },
   ],
@@ -110,10 +106,15 @@ const data = {
 
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  user?: any;
+}
+
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const pathname = usePathname()
+
   return (
-    <Sidebar collapsible="icon" {...props} variant="floating">
+    <Sidebar collapsible="icon" {...props} variant="sidebar">
       <SidebarHeader>
         <Logo />
       </SidebarHeader>
@@ -140,7 +141,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain masterItems={data.masterItems} inventoryAndProductionItems={data.inventoryAndProductionItems} reportAndFinanceItems={data.reportAndFinanceItems} pathname={pathname}/>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

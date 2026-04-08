@@ -27,3 +27,40 @@ export const ProductStatus = {
 } as const
 
 export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
+
+
+export const InventoryItemType = {
+  RAW_MATERIAL: 'RAW_MATERIAL',
+  PRODUCT_VARIANT: 'PRODUCT_VARIANT'
+} as const
+
+export type InventoryItemType = (typeof InventoryItemType)[keyof typeof InventoryItemType]
+
+
+export const LedgerDirection = {
+  IN: 'IN',
+  OUT: 'OUT'
+} as const
+
+export type LedgerDirection = (typeof LedgerDirection)[keyof typeof LedgerDirection]
+
+
+export const LedgerSource = {
+  PURCHASE: 'PURCHASE',
+  PRODUCTION: 'PRODUCTION',
+  POS: 'POS',
+  ONLINE_ORDER: 'ONLINE_ORDER',
+  ADJUSTMENT: 'ADJUSTMENT'
+} as const
+
+export type LedgerSource = (typeof LedgerSource)[keyof typeof LedgerSource]
+
+
+export const ProductionStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ProductionStatus = (typeof ProductionStatus)[keyof typeof ProductionStatus]

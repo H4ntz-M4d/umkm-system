@@ -1,0 +1,27 @@
+{
+  "name": "@repo/utils",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.29.2",
+  "exports": {
+    "types": "./src/index.ts",
+    "default": "./dist/index.js"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.20",
+    "decimal.js": "^10.6.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "25.2.1",
+    "typescript": "5.9.3"
+  }
+}

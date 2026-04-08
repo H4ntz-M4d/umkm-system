@@ -13,46 +13,68 @@ import {
 import customerHero from "@/assets/customer-hero.jpg";
 import { useState } from "react";
 import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { CustomerRegisterSchema, LoginSchema } from "@repo/schemas";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Button } from "@/components/ui/button";
+import { LoginForm } from "@/components/auth/LoginForm";
+import { Toaster } from "@/components/ui/sonner";
 
 type FormDataLogin = z.infer<typeof LoginSchema>;
-type FormDataRegister = z.infer<typeof CustomerRegisterSchema>
+type FormDataRegister = z.infer<typeof CustomerRegisterSchema>;
 
 export default function CustomerAuth() {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { loginCustomer, registerCustomerData, } = useAuthOperations();
-  const [registerConfirm, setRegisterConfirm] = useState("");
+  const { loginCustomer, registerCustomerData, isLoadingLoginCustomer } =
+    useAuthOperations({});
 
   // Login state
   const {
-    register: loginData,
+    control: loginControl,
     handleSubmit: loginSubmit,
     formState: { errors: loginErrors },
   } = useForm<FormDataLogin>({
     resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    }
   });
 
   const loginMutate = (data: FormDataLogin) => {
-    loginCustomer(data)
-  }
+    loginCustomer(data);
+  };
 
   // Register state
   const {
+    control: registerControl,
     register: registerData,
     handleSubmit: registerSubmit,
-    formState: {errors: registerErrors }
+    formState: { errors: registerErrors },
   } = useForm<FormDataRegister>({
-    resolver: zodResolver(CustomerRegisterSchema)
-  })
+    resolver: zodResolver(CustomerRegisterSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
   const registerMutate = (data: FormDataRegister) => {
-    registerCustomerData(data)
-  }
+    registerCustomerData(data);
+    setActiveTab("login");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -123,7 +145,7 @@ export default function CustomerAuth() {
           <div className="p-6 sm:p-8">
             {activeTab === "login" ? (
               /* Login Form */
-              <form onSubmit={loginSubmit(loginMutate)} className="space-y-5">
+              <>
                 <div className="text-center mb-6">
                   <h2 className="font-display text-xl font-semibold text-foreground">
                     Selamat Datang Kembali
@@ -132,76 +154,13 @@ export default function CustomerAuth() {
                     Masuk untuk melihat pesanan & koleksi favorit Anda
                   </p>
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground font-body">
-                    Email
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="email"
-                      {...loginData("email")}
-                      placeholder="email@contoh.com"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-foreground font-body">
-                      Password
-                    </label>
-                    <button
-                      type="button"
-                      className="text-xs text-primary hover:text-primary/80 transition-colors font-body font-medium"
-                    >
-                      Lupa password?
-                    </button>
-                  </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      {...loginData("password")}
-                      placeholder="Masukkan password"
-                      className="w-full pl-10 pr-11 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3 px-4 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring/30 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isLoading ? (
-                    <>
-                      <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                      Memproses...
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingBag className="h-4 w-4" />
-                      Masuk
-                    </>
-                  )}
-                </button>
-
+                <LoginForm
+                  control={loginControl}
+                  handleSubmit={loginSubmit}
+                  errors={loginErrors}
+                  loginMutate={loginMutate}
+                  isLoading={isLoadingLoginCustomer}
+                />
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-border" />
@@ -237,10 +196,13 @@ export default function CustomerAuth() {
                   </svg>
                   Masuk dengan Google
                 </button>
-              </form>
+              </>
             ) : (
               /* Register Form */
-              <form onSubmit={registerSubmit(registerMutate)} className="space-y-4">
+              <form
+                onSubmit={registerSubmit(registerMutate)}
+                className="space-y-4"
+              >
                 <div className="text-center mb-5">
                   <h2 className="font-display text-xl font-semibold text-foreground">
                     Buat Akun Baru
@@ -251,95 +213,148 @@ export default function CustomerAuth() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground font-body">
-                    Nama Lengkap
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      {...registerData("name")}
-                      placeholder="Masukkan nama lengkap"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground font-body">
-                    Email
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="email"
-                      {...registerData("email")}
-                      placeholder="email@contoh.com"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground font-body">
-                    No. Telepon
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="tel"
-                      {...registerData("phone")}
-                      placeholder="+62 812 3456 7890"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground font-body">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      {...registerData("password")}
-                      placeholder="Minimal 8 karakter"
-                      className="w-full pl-10 pr-11 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
+                  <FieldGroup>
+                    <Controller
+                      name={"name"}
+                      control={registerControl}
+                      render={({ field }) => (
+                        <Field>
+                          <FieldLabel>Nama Lengkap</FieldLabel>
+                          <InputGroup className={"h-12"}>
+                            <InputGroupInput
+                              {...field}
+                              type={"text"}
+                              placeholder={"Masukkan nama lengkap"}
+                              className={"rounded-e-md h-10"}
+                            />
+                            <InputGroupAddon>
+                              <User className="h-4 w-4" />
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </Field>
                       )}
-                    </button>
-                  </div>
+                    />
+                  </FieldGroup>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground font-body">
-                    Konfirmasi Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="password"
-                      value={registerConfirm}
-                      onChange={(e) => setRegisterConfirm(e.target.value)}
-                      placeholder="Ulangi password"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30 focus:border-primary transition-all font-body text-sm"
-                      required
+                  <FieldGroup>
+                    <Controller
+                      name={"email"}
+                      control={registerControl}
+                      render={({ field }) => (
+                        <Field>
+                          <FieldLabel>Email</FieldLabel>
+                          <InputGroup className={"h-12"}>
+                            <InputGroupInput
+                              {...field}
+                              type={"text"}
+                              placeholder={"email@contoh.com"}
+                              className={"rounded-e-md h-10"}
+                            />
+                            <InputGroupAddon>
+                              <Mail className="h-4 w-4" />
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </Field>
+                      )}
                     />
-                  </div>
+                  </FieldGroup>
+                </div>
+
+                <div className="space-y-1.5">
+                  <FieldGroup>
+                    <Controller
+                      name={"phone"}
+                      control={registerControl}
+                      render={({ field }) => (
+                        <Field>
+                          <FieldLabel>No. Handphone</FieldLabel>
+                          <InputGroup className={"h-12"}>
+                            <InputGroupInput
+                              {...field}
+                              type={"text"}
+                              placeholder={"+62 812 3456 7890"}
+                              className={"rounded-e-md h-10"}
+                            />
+                            <InputGroupAddon>
+                              <Phone className="h-4 w-4" />
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </Field>
+                      )}
+                    />
+                  </FieldGroup>
+                </div>
+
+                <div className="space-y-1.5">
+                  <FieldGroup>
+                    <Controller
+                      name={"password"}
+                      control={registerControl}
+                      render={({ field }) => (
+                        <Field>
+                          <FieldLabel>Password</FieldLabel>
+                          <InputGroup className={"h-12"}>
+                            <InputGroupInput
+                              {...field}
+                              type={showPassword ? "text" : "password"}
+                              placeholder={"Masukkan password"}
+                              className={"rounded-e-md h-10"}
+                            />
+                            <InputGroupAddon align={"inline-end"}>
+                              <Button
+                                type={"button"}
+                                variant={"link"}
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? (
+                                  <EyeOff />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </Field>
+                      )}
+                    />
+                  </FieldGroup>
+                </div>
+
+                <div className="space-y-1.5">
+                  <FieldGroup>
+                    <Controller
+                      name={"confirmPassword"}
+                      control={registerControl}
+                      render={({ field }) => (
+                        <Field>
+                          <FieldLabel>Konfirmasi Password</FieldLabel>
+                          <InputGroup className={"h-12"}>
+                            <InputGroupInput
+                              {...field}
+                              type={showPassword ? "text" : "password"}
+                              placeholder={"Masukkan kembali password"}
+                              className={"rounded-e-md h-10"}
+                            />
+                            <InputGroupAddon align={"inline-end"}>
+                              <Button
+                                type={"button"}
+                                variant={"link"}
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? (
+                                  <EyeOff />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </Field>
+                      )}
+                    />
+                  </FieldGroup>
                 </div>
 
                 <div className="flex items-start gap-2 pt-1">
@@ -401,6 +416,7 @@ export default function CustomerAuth() {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }
