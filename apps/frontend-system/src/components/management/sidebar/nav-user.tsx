@@ -25,8 +25,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { logoutAdmin } from "@/lib/auth/auth.api";
+import { logoutAdmin } from "@/lib/queries/auth/auth.api";
 import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function NavUser({
   user,
@@ -35,10 +36,26 @@ export function NavUser({
     name: string;
     email: string;
     avatar: string;
-  };
+  } | null;
 }) {
   const { isMobile } = useSidebar();
   const { signOutAdmin } = useAuthOperations();
+
+  if (!user) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <div className="flex items-center gap-3 p-2">
+            <Skeleton className="h-8 w-8 rounded-lg bg-muted" />
+            <div className="grid flex-1 gap-1">
+              <Skeleton className="h-4 w-20 bg-muted" />
+              <Skeleton className="h-3 w-32 bg-muted" />
+            </div>
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
     <SidebarMenu>

@@ -1,4 +1,4 @@
-import { logoutCustomer } from "@/lib/auth/auth.api";
+import { logoutCustomer } from "@/lib/queries/auth/auth.api";
 
 interface navLink {
   label: string;

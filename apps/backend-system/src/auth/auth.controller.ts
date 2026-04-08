@@ -20,7 +20,7 @@ import { AuthUser } from 'common/decorator/auth.decorator';
 export class AuthController {
   constructor(private service: AuthService) {}
 
-  @Post('management/refresh')
+  @Post('management/ref')
   async refreshAdmin(@Req() req, @Res({ passthrough: true }) res: Response) {
     return this.service.refreshAdminToken(req, res);
   }
@@ -30,7 +30,11 @@ export class AuthController {
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.service.loginAdminService(dto.email, dto.password, res);
+    const result = await this.service.loginAdminService(
+      dto.email,
+      dto.password,
+      res,
+    );
     return result;
   }
 
@@ -41,9 +45,8 @@ export class AuthController {
     return this.service.getAdminProfile(req.user.sub);
   }
 
-  
   // =============================== Customer ====================================
-  
+
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(
@@ -63,10 +66,8 @@ export class AuthController {
   }
 
   @Post('customer/register')
-  async registerCustomer (
-    @Body() dto: CustomerRegisterDto
-  ) {
-    return this.service.registerCustomerService(dto)
+  async registerCustomer(@Body() dto: CustomerRegisterDto) {
+    return this.service.registerCustomerService(dto);
   }
 
   @Post('customer/login')
@@ -82,5 +83,4 @@ export class AuthController {
   async refreshCustomer(@Req() req, @Res({ passthrough: true }) res: Response) {
     return this.service.refreshCustomerToken(req, res);
   }
-
 }

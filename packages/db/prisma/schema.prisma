@@ -19,7 +19,9 @@ model Store {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
-  users Users[]
+  users            Users[]
+  inventoryLedgers InventoryLedger[]
+  productions      Production[]
 
   @@map("store")
 }
@@ -27,7 +29,6 @@ model Store {
 model Users {
   id           BigInt   @id @default(autoincrement())
   storeId      BigInt?
-  name         String   @db.VarChar(255)
   email        String   @unique @db.VarChar(255)
   password     String   @db.VarChar(255)
   role         UserRole
@@ -36,8 +37,9 @@ model Users {
   refreshToken String?
   slug         String?  @db.VarChar(255)
 
-  store     Store?     @relation(fields: [storeId], references: [id])
-  employees Employee[]
+  store     Store?    @relation(fields: [storeId], references: [id])
+  employees Employee?
+  customer  Customer?
 
   @@map("users")
 }
@@ -72,13 +74,29 @@ model ProductVariant {
   price           Decimal  @db.Decimal(18, 2)
   cost            Decimal? @db.Decimal(18, 2)
   isActive        Boolean  @default(true)
+  image           String?  @db.VarChar(255)
   createdAt       DateTime @default(now())
 
-  productMaster ProductMaster          @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
-  options       ProductVariantOption[]
+  productMaster        ProductMaster          @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
+  options              ProductVariantOption[]
+  productVariantStocks ProductVariantStock?
+  productions          Production[]
 
   @@index([productMasterId])
   @@map("product_variant")
+}
+
+model ProductVariantStock {
+  id               BigInt   @id @default(autoincrement())
+  productVariantId BigInt   @unique
+  stock            Int
+  reserved_stock   Int
+  available_stock  Int
+  updated_at       DateTime @default(now())
+
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+  @@map("product_variant_stock")
 }
 
 model ProductVariantType {
@@ -135,20 +153,102 @@ model Customer {
   image     String?  @db.VarChar(255)
   createdAt DateTime @default(now())
 
+  userId BigInt? @unique
+  users  Users?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("customer")
 }
 
 model Employee {
   id        BigInt   @id @default(autoincrement())
   name      String   @db.VarChar(100)
-  email     String   @unique @db.VarChar(255)
   address   String?  @db.VarChar(255)
   phone     String?  @db.VarChar(15)
   createdAt DateTime @default(now())
   image     String?  @db.VarChar(255)
 
-  userId  Users  @relation(fields: [usersId], references: [id], onDelete: Cascade)
-  usersId BigInt @unique
+  users  Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId BigInt @unique
 
   @@map("employee")
+}
+
+model RawMaterial {
+  id                  BigInt               @id @default(autoincrement())
+  name                String
+  unit                String
+  isActive            Boolean              @default(true)
+  productionMaterials ProductionMaterial[]
+}
+
+// ==================
+// Inventory Ledger
+// ==================
+
+model InventoryLedger {
+  id          BigInt            @id @default(autoincrement())
+  storeId     BigInt
+  itemType    InventoryItemType
+  itemId      BigInt
+  direction   LedgerDirection
+  source      LedgerSource
+  quantity    Int
+  referenceId BigInt?
+  createdAt   DateTime          @default(now())
+
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@index([storeId, itemType, itemId])
+}
+
+enum InventoryItemType {
+  RAW_MATERIAL
+  PRODUCT_VARIANT
+}
+
+enum LedgerDirection {
+  IN
+  OUT
+}
+
+enum LedgerSource {
+  PURCHASE
+  PRODUCTION
+  POS
+  ONLINE_ORDER
+  ADJUSTMENT
+}
+
+// ==================
+// PRODUKSI INTERNAL
+// ==================
+
+model Production {
+  id                BigInt           @id @default(autoincrement())
+  storeId           BigInt
+  producedVariantId BigInt
+  quantityProduced  Int
+  status            ProductionStatus
+  createdAt         DateTime         @default(now())
+
+  store     Store                @relation(fields: [storeId], references: [id])
+  variant   ProductVariant       @relation(fields: [producedVariantId], references: [id])
+  materials ProductionMaterial[]
+}
+
+enum ProductionStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model ProductionMaterial {
+  id            BigInt @id @default(autoincrement())
+  productionId  BigInt
+  rawMaterialId BigInt
+  quantityUsed  Int
+
+  production  Production  @relation(fields: [productionId], references: [id])
+  rawMaterial RawMaterial @relation(fields: [rawMaterialId], references: [id])
 }

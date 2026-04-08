@@ -34,10 +34,15 @@ import { useEffect, useState } from "react";
 import {
   Controller,
   FieldValues,
+  Path,
   SubmitHandler,
   useForm,
   UseFormReturn,
+  useWatch,
 } from "react-hook-form";
+import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
+import { Spinner } from "@/components/ui/spinner";
+import { ArrowLeftIcon } from "lucide-react";
 
 const role = [
   {
@@ -67,7 +72,7 @@ const role = [
 
 const FormCreate = () => {
   const formData = EmployeeSchema;
-  const { createAdminData } = useUsersOperation({});
+  const { createAdminData, isCreatingData } = useUsersOperation({});
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
   const form = useForm<EmployeeSchemaInput>({
@@ -114,13 +119,14 @@ const FormCreate = () => {
       form={form}
       onSubmit={onSubmit}
       setPhotoFile={setPhotoFile}
+      isSubmitting={isCreatingData}
     />
   );
 };
 
 const FormUpdate = ({ id }: { id: string }) => {
   const formData = EmployeeUpdateSchema;
-  const { updateStaffData } = useUsersOperation({});
+  const { updateStaffData, isUpdatingData } = useUsersOperation({});
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
   const form = useForm<EmployeeUpdateSchemaInput>({
@@ -169,36 +175,45 @@ const FormUpdate = ({ id }: { id: string }) => {
       form={form}
       onSubmit={onSubmit}
       setPhotoFile={setPhotoFile}
+      isSubmitting={isUpdatingData}
     />
   );
 };
 
-const FormEmployeeUI = ({
+interface FormEmployeeUIProps<T extends FieldValues> {
+  id?: string;
+  form: UseFormReturn<T>;
+  onSubmit: SubmitHandler<T>;
+  setPhotoFile: (file: File | null) => void;
+  isSubmitting: boolean;
+}
+
+const FormEmployeeUI = <T extends FieldValues>({
   id,
   form,
   onSubmit,
   setPhotoFile,
-}: {
-  id?: string;
-  form: UseFormReturn<any>;
-  onSubmit: SubmitHandler<any>;
-  setPhotoFile: (file: File | null) => void;
-}) => {
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  isSubmitting,
+}: FormEmployeeUIProps<T>) => {
   const router = useRouter();
 
-  const { dataStore, getUserDataById } = useUsersOperation({
+  const { getUserDataById } = useUsersOperation({
     userId: id,
+  });
+
+  const { storeList } = useStoreOperations({ enableStoreList: true });
+  const photoPreview = useWatch({
+    control: form.control,
+    name: "image" as Path<T>,
   });
 
   useEffect(() => {
     if (getUserDataById) {
-      form.reset(getUserDataById?.data);
-      setPhotoPreview(getUserDataById?.data?.image);
+      form.reset(getUserDataById?.data as unknown as T);
     } else {
       form.reset();
     }
-  }, [getUserDataById]);
+  }, [getUserDataById, form]);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -222,9 +237,8 @@ const FormEmployeeUI = ({
                     <button
                       className="w-8 h-8 bg-amber-400 rounded-full cursor-pointer border-2 border-white shadow-sm hover:bg-amber-500 transition-colors "
                       onClick={() => {
-                        setPhotoPreview(null);
                         setPhotoFile(null);
-                        form.setValue("image" as any, "");
+                        form.setValue("image" as Path<T>, "" as never);
                       }}
                     >
                       x
@@ -232,7 +246,7 @@ const FormEmployeeUI = ({
                   </div>
                 ) : (
                   <Controller
-                    name="image"
+                    name={"image" as Path<T>}
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <div className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4">
@@ -246,8 +260,8 @@ const FormEmployeeUI = ({
                               if (!file) return;
 
                               const url = URL.createObjectURL(file);
-                              setPhotoPreview(url);
                               setPhotoFile(file);
+                              form.setValue("image" as Path<T>, url as never);
                             }}
                           />
                           {/* Kamu bisa menambahkan icon di sini, contoh (+) */}
@@ -268,7 +282,7 @@ const FormEmployeeUI = ({
             <CardContent>
               <FieldGroup>
                 <Controller
-                  name="isActive"
+                  name={"isActive" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -289,7 +303,7 @@ const FormEmployeeUI = ({
                   )}
                 />
                 <Controller
-                  name="storeId"
+                  name={"storeId" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -302,7 +316,7 @@ const FormEmployeeUI = ({
                           <SelectValue placeholder="Pilih Toko" />
                         </SelectTrigger>
                         <SelectContent>
-                          {dataStore?.data?.map((store: any) => (
+                          {storeList?.data?.map((store) => (
                             <SelectItem
                               key={store.id}
                               value={store.id.toString()}
@@ -327,7 +341,7 @@ const FormEmployeeUI = ({
             <CardContent>
               <FieldGroup>
                 <Controller
-                  name="name"
+                  name={"name" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -340,7 +354,7 @@ const FormEmployeeUI = ({
                   )}
                 />
                 <Controller
-                  name="email"
+                  name={"email" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -357,7 +371,7 @@ const FormEmployeeUI = ({
                   )}
                 />
                 <Controller
-                  name="address"
+                  name={"address" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -372,7 +386,7 @@ const FormEmployeeUI = ({
                   )}
                 />
                 <Controller
-                  name="phone"
+                  name={"phone" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -385,7 +399,7 @@ const FormEmployeeUI = ({
                   )}
                 />
                 <Controller
-                  name="role"
+                  name={"role" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -420,7 +434,7 @@ const FormEmployeeUI = ({
                   )}
                 />
                 <Controller
-                  name="password"
+                  name={"password" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -437,7 +451,7 @@ const FormEmployeeUI = ({
                   )}
                 />
                 <Controller
-                  name="confirmPassword"
+                  name={"confirmPassword" as Path<T>}
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field>
@@ -461,10 +475,20 @@ const FormEmployeeUI = ({
               type="button"
               variant={"outline"}
               onClick={() => router.back()}
+              disabled={isSubmitting}
             >
               Kembali
             </Button>
-            <Button type={"submit"}>Simpan</Button>
+            <Button type={"submit"} disabled={isSubmitting}>
+              {isSubmitting ? (
+                <div className={"flex gap-3"}>
+                  <Spinner />
+                  <p>Menyimpan...</p>
+                </div>
+              ) : (
+                "Simpan"
+              )}
+            </Button>
           </div>
         </div>
       </div>
@@ -473,18 +497,25 @@ const FormEmployeeUI = ({
 };
 
 export default function FormEmployee({ id }: { id?: string }) {
-
+  const router = useRouter();
   return (
     <>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0 mb-20">
-        <h1 className="font-bold text-xl font-body mt-5 text-foreground">
-          Form Data Karyawan
-        </h1>
-        <p className="text-secondary">
-          Formulir untuk mengisi data dari karyawan baru. Silahkan isi formulir
-          berikut dengan data yang benar <br />
-          dan klik simpan untuk menyimpan data
-        </p>
+      <div className={"flex gap-3 items-center py-4 px-8"}>
+        <Button type={"button"} variant={"ghost"} size={"lg"} onClick={() => router.back()}>
+          <ArrowLeftIcon size={30} />
+        </Button>
+        <div className={"flex flex-col gap-1"}>
+          <h1 className="font-light text-2xl font-display mt-5 text-foreground">
+            Form Data Karyawan
+          </h1>
+          <p className="text-secondary text-base font-display">
+            Formulir untuk mengisi data dari karyawan baru. Silahkan isi
+            formulir berikut dengan data yang benar <br />
+            dan klik simpan untuk menyimpan data
+          </p>
+        </div>
+      </div>
+      <div className="py-4 px-8 mb-20">
         {id ? <FormUpdate id={id} /> : <FormCreate />}
       </div>
     </>

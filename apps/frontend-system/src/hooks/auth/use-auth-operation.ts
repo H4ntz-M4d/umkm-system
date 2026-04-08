@@ -1,33 +1,37 @@
 import {
+  getAdminProfile,
   getCustomerProfile,
   loginAdmin,
   loginCustomer,
   logoutAdmin,
   registerCustomer,
-} from "@/lib/auth/auth.api";
-import { useAuth } from "@/lib/auth/useAuth";
-import { useCustomerAuth } from "@/lib/auth/userCustomerAuth";
+} from "@/lib/queries/auth/auth.api";
+import { useAuth } from "@/lib/queries/auth/useAuth";
+import { useCustomerAuth } from "@/lib/queries/auth/userCustomerAuth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const useAuthOperations = () => {
-  const setToken = useAuth((s) => s.setToken);
+  const setTokenEmployee = useAuth((s) => s.setToken);
   const router = useRouter();
 
-  const setUser = useCustomerAuth((s) => s.setUser);
-  const setTokenUser = useCustomerAuth((s) => s.setToken)
-  const token = useCustomerAuth((s) => s.accessToken)
+  const setTokenUser = useCustomerAuth((s) => s.setToken);
 
   const qc = useQueryClient();
 
   const loginAdminMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       loginAdmin(email, password),
-    onSuccess: (token) => {
+    onSuccess: async (token) => {
+      setTokenEmployee(token);
+      localStorage.setItem("is_admin_logged_in", "true");
+      qc.invalidateQueries({ queryKey: ["employee-profile"] });
 
-      setToken(token);
       router.push("/management/dashboard");
+    },
+    onError: (error) => {
+      console.log(error);
     },
   });
 
@@ -35,47 +39,43 @@ export const useAuthOperations = () => {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       loginCustomer(email, password),
     onSuccess: async (token) => {
-
       setTokenUser(token);
-      localStorage.setItem('is_customer_logged_in', 'true');
+      localStorage.setItem("is_customer_logged_in", "true");
+      qc.invalidateQueries({ queryKey: ["customer-profile"] });
 
-      const profile = await getCustomerProfile();
-      setUser(profile);
-      router.push("/")
+      router.push("/");
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: registerCustomer,
     onSuccess: () => {
-      toast.success("Register Customer Berhasil")
-      router.push("/login")
-    }
-  })
-
-  const profileQuery = useQuery({
-    queryKey: ["customer-profile"],
-    queryFn: getCustomerProfile,
-    retry: false,
-    enabled: false, // manual trigger
+      toast.success(
+        "Register Customer Berhasil, Silahkan login untuk melanjutkan",
+        { position: "top-center" },
+      );
+      router.push("/login");
+    },
   });
 
   const logOutMutationAdmin = useMutation({
     mutationFn: async () => {
-        return await logoutAdmin()
+      return await logoutAdmin();
     },
     onSuccess: () => {
-        qc.clear()
-        localStorage.removeItem('is_admin_logged_in')  
-        router.push('/auth/management')
-    }
-  })
+      qc.clear();
+      localStorage.removeItem("is_admin_logged_in");
+      router.push("/auth/management");
+    },
+  });
 
   return {
     loginAdminData: loginAdminMutation.mutate,
+    isLoadingLoginAdmin: loginAdminMutation.isPending,
     loginCustomer: loginCustomerMutation.mutate,
+    isLoadingLoginCustomer: loginCustomerMutation.isPending,
+
     registerCustomerData: registerMutation.mutate,
-    profileQuery,
-    signOutAdmin : logOutMutationAdmin.mutate
+    signOutAdmin: logOutMutationAdmin.mutate,
   };
 };

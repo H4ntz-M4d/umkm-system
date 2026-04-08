@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-select": "^2.2.6",
     "@repo/schemas": "workspace:*",
+    "@repo/utils": "workspace:*",
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",

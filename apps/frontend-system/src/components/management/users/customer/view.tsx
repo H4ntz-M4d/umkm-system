@@ -1,6 +1,5 @@
 "use client";
 
-import { columnsEmployee } from "@/components/management/users/employee/column";
 import { InputGroupInlineStart } from "@/components/ui/search";
 import { Toaster } from "@/components/ui/sonner";
 import { useUsersOperation } from "@/hooks/management/users/use-users-operation";

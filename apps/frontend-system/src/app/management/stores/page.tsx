@@ -1,6 +1,6 @@
-import { fetchStore } from "@/lib/stores/stores.query";
+import { fetchStore } from "@/lib/queries/stores/stores.query";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import StoreView from "./store-view";
+import View from "../../../components/management/stores/view";
 
 // interface PageProps {
 //   searchParams: Promise<{
@@ -25,7 +25,7 @@ export default async function Page(/*{searchParams}: PageProps*/) {
 
   return (
     // <HydrationBoundary state={dehydrate(queryClient)}>
-      <StoreView />
+      <View />
     // </HydrationBoundary>
   )
 }

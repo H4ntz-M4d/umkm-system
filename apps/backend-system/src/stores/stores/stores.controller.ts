@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { CreateStoreDto, UpdateStoreDto } from 'stores/dto/dto.store';
 import { Pagination } from 'common/paginate/pagination';
@@ -9,39 +19,34 @@ import { UserRole } from '@repo/db';
 
 @Controller('/api/v1/stores')
 export class StoresController {
-    constructor(
-        private service: StoresService
-    ) {}
+  constructor(private service: StoresService) {}
 
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.OWNER, UserRole.ADMIN)
-    @Get()
-    findAll(@Query() pagination: Pagination){
-        return this.service.findAll(pagination)
-    }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Get()
+  findAll(@Query() pagination: Pagination) {
+    return this.service.findAll(pagination);
+  }
 
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(UserRole.OWNER, UserRole.ADMIN)
-    @Get('/list')
-    findAllStore(){
-        return this.service.findAllStore()
-    }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Get('/list')
+  findAllStore() {
+    return this.service.findAllStore();
+  }
 
-    @Post()
-    create(@Body() dto: CreateStoreDto){
-        return this.service.create(dto)
-    }
+  @Post()
+  create(@Body() dto: CreateStoreDto) {
+    return this.service.create(dto);
+  }
 
-    @Patch(':id')
-    update(
-        @Param('id') id: string,
-        @Body() dto: UpdateStoreDto
-    ){
-        return this.service.update(BigInt(id), dto)
-    }
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateStoreDto) {
+    return this.service.update(BigInt(id), dto);
+  }
 
-    @Delete(':id')
-    remove(@Param('id') id: number){
-        return this.service.remove(id)
-    }
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    return this.service.remove(id);
+  }
 }

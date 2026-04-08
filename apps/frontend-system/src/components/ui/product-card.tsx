@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Heart, Eye, ShoppingBag, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import { Product, formatPrice } from "@/lib/data/products";
+import { Product, formatPrice } from "@/lib/queries/data/products";
 
 interface ProductCardProps {
   product: Product;

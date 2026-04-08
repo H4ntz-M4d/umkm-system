@@ -1,5 +1,5 @@
 import ProductCard from "@/components/ui/product-card";
-import { products } from "@/lib/data/products";
+import { products } from "@/lib/queries/data/products";
 import { motion } from "framer-motion";
 
 export default function FeaturedCollection() {

@@ -7,18 +7,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MobileHeader from "./mobile-header";
 import { NavItem, NavItemProfile } from "./nav-item";
-import { useCustomerAuth } from "@/lib/auth/userCustomerAuth";
+import { useCustomerAuth } from "@/lib/queries/auth/userCustomerAuth";
 import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
+import { Separator } from "@/components/ui/separator";
 
-const Header = () => {
+const Header = ({user}: {user?: any}) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const navLinks = NavItem();
   const navLinksProfile = NavItemProfile()
   const location = usePathname();
-
-  const user = useCustomerAuth((s) => s.user);
-  console.log('user: ', user )
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -87,6 +85,11 @@ const Header = () => {
                   exit={{ opacity: 0, y: 8 }}
                   className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-xl shadow-warm-lg overflow-hidden"
                 >
+                  <div className={"flex flex-col justify-center px-4 pt-4 pb-3"}>
+                    <p className={"text-sm"}>{user?.name}</p>
+                    <p className={"text-xs"}>{user?.email}</p>
+                  </div>
+                  <Separator />
                   {navLinksProfile.map((item) => (
                     <button
                       key={item.label}
