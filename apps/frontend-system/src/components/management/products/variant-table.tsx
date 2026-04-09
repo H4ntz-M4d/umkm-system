@@ -5,29 +5,17 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  PaginationState,
-  OnChangeFn,
 } from "@tanstack/react-table";
 
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataTablePagination } from "@/components/ui/pagination";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ProductVariant } from "@/common/types";
+import { VariantData, z } from "@repo/schemas";
+
+type ProductVariant = z.infer<typeof VariantData>
 
 interface DataTableProps<TData extends ProductVariant, TValue> {
   columns: ColumnDef<TData, TValue>[];

@@ -8,5 +8,7 @@ export * from "./schema/auth/auth.response"
 export * from "./schema/users/schema.employee"
 export * from "./schema/products/products.schema"
 export * from "./schema/products/products.response"
+export * from "./schema/materials/materials.schema"
+export * from "./schema/materials/materials.response"
 import z from "zod";
 export { z };
