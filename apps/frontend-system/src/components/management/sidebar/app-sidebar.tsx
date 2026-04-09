@@ -55,18 +55,18 @@ const data = {
         {
           title: "Pelanggan",
           url: "/management/customer",
-        }
+        },
       ],
     },
     {
       title: "Bahan Baku",
-      url: "#",
+      url: "/management/raw-materials",
       icon: CirclePileIcon,
     },
     {
       title: "Produk Rajutan",
       url: "/management/products",
-      icon: ShoppingBasketIcon
+      icon: ShoppingBasketIcon,
     },
   ],
   inventoryAndProductionItems: [
@@ -78,33 +78,32 @@ const data = {
     {
       title: "Produksi",
       url: "#",
-      icon: PackageOpen
+      icon: PackageOpen,
     },
   ],
   reportAndFinanceItems: [
     {
       title: "Pesanan",
       url: "#",
-      icon: BaggageClaim
+      icon: BaggageClaim,
     },
     {
       title: "Transakasi",
       url: "#",
-      icon: BanknoteArrowDown
+      icon: BanknoteArrowDown,
     },
     {
       title: "Pengeluaran",
       url: "#",
-      icon: Handbag
+      icon: Handbag,
     },
     {
       title: "Omzet",
       url: "#",
-      icon: ChartLine
+      icon: ChartLine,
     },
   ],
-
-}
+};
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user?: any;

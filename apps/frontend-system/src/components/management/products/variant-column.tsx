@@ -2,8 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import NoImage from "@/assets/no-picture.jpg";
-import { ProductVariant } from "@/common/types";
 import Image from "next/image";
+import { VariantData, z } from "@repo/schemas";
+
+type ProductVariant = z.infer<typeof VariantData>;
 
 export const columnsVariantProducts = () // setIdData: (id: string) => void,
 // deleteStaffData: (id: string) => void,

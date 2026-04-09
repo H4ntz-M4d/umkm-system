@@ -4,14 +4,16 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { ProductMaster } from "@/common/types";
 import { dayjs } from "@repo/utils";
 import { Badge } from "@/components/ui/badge";
+import { ProductsData, z } from "@repo/schemas";
+
+type ProductResponse = z.infer<typeof ProductsData>;
 
 export const columnsProducts = (
   // setIdData: (id: string) => void,
   deleteStaffData: (id: string) => void,
-): ColumnDef<ProductMaster>[] => [
+): ColumnDef<ProductResponse>[] => [
   {
     accessorKey: "expanded",
     header: () => null,
@@ -42,38 +44,28 @@ export const columnsProducts = (
     accessorKey: "description",
     header: "Deskripsi",
     cell: ({ row }) => (
-      <p className={"max-w-75 truncate"}>
-        {row.original.description}
-      </p>
+      <p className={"max-w-75 truncate"}>{row.original.description}</p>
     ),
     size: 300,
   },
   {
     accessorKey: "useVariant",
     header: "Variant",
-    cell: ({ row }) => (
-        <div>
-          {row.original.useVariant ? "Ya" : "Tidak"}
-        </div>
-    )
+    cell: ({ row }) => <div>{row.original.useVariant ? "Ya" : "Tidak"}</div>,
   },
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({row}) => (
-      <Badge>
-        {row.original.status}
-      </Badge>
-    )
+    cell: ({ row }) => <Badge>{row.original.status}</Badge>,
   },
   {
     accessorKey: "createdAt",
     header: "Tanggal dibuat",
-    cell: ({row}) => (
+    cell: ({ row }) => (
       <p>
         {dayjs(row.original.createdAt).locale("id").format("MMMM DD, YYYY")}
       </p>
-    )
+    ),
   },
   {
     id: "actions",

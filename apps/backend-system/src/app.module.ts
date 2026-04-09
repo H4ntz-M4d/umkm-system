@@ -4,8 +4,16 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ProductsModule } from './products/products.module';
+import { MaterialModule } from './material/material.module';
 
 @Module({
-  imports: [StoresModule, UsersModule, AuthModule, CloudinaryModule, ProductsModule]
+  imports: [
+    StoresModule,
+    UsersModule,
+    AuthModule,
+    CloudinaryModule,
+    ProductsModule,
+    MaterialModule,
+  ],
 })
 export class AppModule {}

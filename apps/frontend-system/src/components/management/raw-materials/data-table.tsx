@@ -7,8 +7,6 @@ import {
   useReactTable,
   PaginationState,
   OnChangeFn,
-  getExpandedRowModel,
-  ExpandedState,
 } from "@tanstack/react-table";
 
 import {
@@ -29,14 +27,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Fragment, useState } from "react";
-import { VariantTableProducts } from "@/components/management/products/variant-table";
-import { columnsVariantProducts } from "@/components/management/products/variant-column";
-import { ProductsData, z } from "@repo/schemas";
 
-type ProductResponse = z.infer<typeof ProductsData>
-
-interface DataTableProps<TData extends ProductResponse, TValue> {
+interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageCount: number;
@@ -44,14 +36,13 @@ interface DataTableProps<TData extends ProductResponse, TValue> {
   onPaginationChange: OnChangeFn<PaginationState>;
 }
 
-export function DataTableProducts<TData extends ProductResponse, TValue>({
+export function DataTableRawMaterials<TData, TValue>({
   columns,
   data,
   pageCount,
   pagination,
   onPaginationChange,
 }: DataTableProps<TData, TValue>) {
-  const [expanded, setExpanded] = useState<ExpandedState>({})
   const table = useReactTable({
     data,
     columns,
@@ -61,10 +52,7 @@ export function DataTableProducts<TData extends ProductResponse, TValue>({
     onPaginationChange,
     state: {
       pagination,
-      expanded
     },
-    onExpandedChange: setExpanded,
-    getExpandedRowModel: getExpandedRowModel(),
   });
 
   return (
@@ -95,31 +83,20 @@ export function DataTableProducts<TData extends ProductResponse, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <Fragment key={row.id}>
-                  <TableRow
-                    className="bg-primary-foreground"
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="text-center">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                  {row.getIsExpanded() && (
-                    <TableRow className={"bg-primary-foreground"}>
-                      <TableCell colSpan={row.getVisibleCells().length}>
-                        <VariantTableProducts
-                          columns={columnsVariantProducts()}
-                          data={row.original.variants}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </Fragment>
+                <TableRow
+                  className="bg-primary-foreground"
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="text-center">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))
             ) : (
               <TableRow>
