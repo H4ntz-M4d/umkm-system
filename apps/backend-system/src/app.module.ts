@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ProductsModule } from './products/products.module';
 import { MaterialModule } from './material/material.module';
+import { ProductionModule } from './production/production.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MaterialModule } from './material/material.module';
     CloudinaryModule,
     ProductsModule,
     MaterialModule,
+    ProductionModule,
   ],
 })
 export class AppModule {}
