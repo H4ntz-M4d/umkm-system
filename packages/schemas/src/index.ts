@@ -10,5 +10,7 @@ export * from "./schema/products/products.schema"
 export * from "./schema/products/products.response"
 export * from "./schema/materials/materials.schema"
 export * from "./schema/materials/materials.response"
+export * from "./schema/production/production.schema"
+export * from "./schema/production/production.response"
 import z from "zod";
 export { z };
