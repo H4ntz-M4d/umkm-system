@@ -64,8 +64,24 @@ export const CreateUpdateProductData = ProductsData.pick({
   ),
 });
 
+export const ProductVariantListData = ProductsData.pick({
+  id: true,
+  name: true,
+}).extend({
+  variants: z.array(
+    VariantData.pick({
+      id: true,
+      sku: true,
+    }),
+  ),
+});
+
 export const AllProductResponse = ApiSuccessResponse(z.array(ProductsData));
 
 export const ProductResponseById = ApiSuccessResponse(ProductDataById);
 
 export const ProductsResponse = ApiSuccessResponse(CreateUpdateProductData);
+
+export const ProductVariantResponse = ApiSuccessResponse(
+  z.array(ProductVariantListData),
+);

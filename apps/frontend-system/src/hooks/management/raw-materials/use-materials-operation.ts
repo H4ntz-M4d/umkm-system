@@ -7,7 +7,7 @@ import {
 import {
   createRawMaterial, deleteRawMaterial,
   fetchAllMaterials,
-  fetchMaterialsById,
+  fetchMaterialsById, fetchRawMaterialList,
   updateRawMaterial,
 } from "@/lib/queries/raw-materials/raw-materials.query";
 import { toast } from "sonner";
@@ -17,11 +17,13 @@ interface MaterialsOperationProps {
   pagination?: { pageIndex?: number; pageSize?: number };
   search?: string | undefined;
   idMaterial?: string | undefined | null;
+  enabledRawMaterialList?: boolean;
 }
 export const useMaterialsOperations = ({
   pagination,
   search,
   idMaterial,
+  enabledRawMaterialList = false,
 }: MaterialsOperationProps) => {
   const qc = useQueryClient();
   const isTableMode = !!pagination;
@@ -41,6 +43,12 @@ export const useMaterialsOperations = ({
     placeholderData: keepPreviousData,
     enabled: isTableMode,
   });
+
+  const getMaterialsList = useQuery({
+    queryKey: ["raw-materials", "list"],
+    queryFn: () => fetchRawMaterialList(),
+    enabled: enabledRawMaterialList
+  })
 
   const getMaterialsDataById = useQuery({
     queryKey: ["raw-materials", idMaterial],
@@ -82,6 +90,7 @@ export const useMaterialsOperations = ({
   return {
     dataRawMaterials: getMaterialsData.data,
     isLoadingDataTable: getMaterialsData.isLoading,
+    dataRawMaterialList: getMaterialsList.data,
     dataRawMaterialById: getMaterialsDataById.data,
 
     createMaterialsData: createMaterialsMutation.mutate,

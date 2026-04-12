@@ -17,3 +17,10 @@ export function toMaterialsResponse(entity: MaterialsEntity) {
     isActive: entity.isActive,
   };
 }
+
+export function toRawMaterialListResponse(entity: MaterialsEntity) {
+  return {
+    id: entity.id,
+    name: entity.name,
+  };
+}

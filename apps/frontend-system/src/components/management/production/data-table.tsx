@@ -30,13 +30,15 @@ import {
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment, useState } from "react";
-import { columnsVariantProducts } from "@/components/management/products/variant-column";
-import { ProductsData, z } from "@repo/schemas";
-import { VariantTableProducts } from "@/components/management/products/variant-table";
+import {
+  DataTableProductionMaterials,
+} from "@/components/management/production/production-material-data-table";
+import { ProductionData, z } from "@repo/schemas";
+import { columnsProductionMaterials } from "@/components/management/production/variant-column";
 
-type ProductResponse = z.infer<typeof ProductsData>
+type ProductionResponse = z.infer<typeof ProductionData>
 
-interface DataTableProps<TData extends ProductResponse, TValue> {
+interface DataTableProps<TData extends ProductionResponse, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageCount: number;
@@ -44,7 +46,7 @@ interface DataTableProps<TData extends ProductResponse, TValue> {
   onPaginationChange: OnChangeFn<PaginationState>;
 }
 
-export function DataTableProducts<TData extends ProductResponse, TValue>({
+export function DataTableProduction<TData extends ProductionResponse, TValue>({
   columns,
   data,
   pageCount,
@@ -112,9 +114,9 @@ export function DataTableProducts<TData extends ProductResponse, TValue>({
                   {row.getIsExpanded() && (
                     <TableRow className={"bg-primary-foreground"}>
                       <TableCell colSpan={row.getVisibleCells().length}>
-                        <VariantTableProducts
-                          columns={columnsVariantProducts()}
-                          data={row.original.variants}
+                        <DataTableProductionMaterials
+                          columns={columnsProductionMaterials()}
+                          data={row.original.materials}
                         />
                       </TableCell>
                     </TableRow>

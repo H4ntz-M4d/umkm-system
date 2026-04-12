@@ -204,6 +204,7 @@ export const RawMaterialScalarFieldEnum = {
   id: 'id',
   name: 'name',
   unit: 'unit',
+  cost: 'cost',
   isActive: 'isActive'
 } as const
 

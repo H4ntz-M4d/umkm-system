@@ -5,6 +5,7 @@ import {
   AllProductResponse,
   ProductResponseById,
   ProductsResponse,
+  ProductVariantResponse,
 } from "@repo/schemas";
 import { apiFetcher } from "@/lib/api/api.fetcher";
 
@@ -22,6 +23,15 @@ export const fetchProduct = async (
   );
   return res;
 };
+
+export const fetchProductVariantList = async () => {
+  const res = await apiFetcher(
+    managementApi.get('api/v1/products/list'),
+    ProductVariantResponse
+  )
+
+  return res;
+}
 
 export const fetchProductById = async (id: string) => {
   const res = await apiFetcher(

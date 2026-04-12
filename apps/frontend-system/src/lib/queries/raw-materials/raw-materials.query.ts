@@ -3,6 +3,7 @@ import managementApi from "@/lib/api/api.management";
 import {
   CreateMaterialsSchemaInput,
   MaterialsDataResponse,
+  RawMaterialListResponse,
   SingleMaterialsDataResponse,
   UpdateMaterialsSchemaInput,
 } from "@repo/schemas";
@@ -21,6 +22,14 @@ export const fetchAllMaterials = async (
   );
   return { data: res.data, total: res.meta.total };
 };
+
+export const fetchRawMaterialList = async () => {
+  const res = await apiFetcher(
+    managementApi.get("api/v1/materials/list"),
+    RawMaterialListResponse
+  );
+  return res;
+}
 
 export const fetchMaterialsById = async (id: string) => {
   const res = await apiFetcher(

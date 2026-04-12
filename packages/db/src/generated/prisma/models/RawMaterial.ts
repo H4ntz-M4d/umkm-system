@@ -28,16 +28,19 @@ export type AggregateRawMaterial = {
 
 export type RawMaterialAvgAggregateOutputType = {
   id: number | null
+  cost: runtime.Decimal | null
 }
 
 export type RawMaterialSumAggregateOutputType = {
   id: bigint | null
+  cost: runtime.Decimal | null
 }
 
 export type RawMaterialMinAggregateOutputType = {
   id: bigint | null
   name: string | null
   unit: string | null
+  cost: runtime.Decimal | null
   isActive: boolean | null
 }
 
@@ -45,6 +48,7 @@ export type RawMaterialMaxAggregateOutputType = {
   id: bigint | null
   name: string | null
   unit: string | null
+  cost: runtime.Decimal | null
   isActive: boolean | null
 }
 
@@ -52,6 +56,7 @@ export type RawMaterialCountAggregateOutputType = {
   id: number
   name: number
   unit: number
+  cost: number
   isActive: number
   _all: number
 }
@@ -59,16 +64,19 @@ export type RawMaterialCountAggregateOutputType = {
 
 export type RawMaterialAvgAggregateInputType = {
   id?: true
+  cost?: true
 }
 
 export type RawMaterialSumAggregateInputType = {
   id?: true
+  cost?: true
 }
 
 export type RawMaterialMinAggregateInputType = {
   id?: true
   name?: true
   unit?: true
+  cost?: true
   isActive?: true
 }
 
@@ -76,6 +84,7 @@ export type RawMaterialMaxAggregateInputType = {
   id?: true
   name?: true
   unit?: true
+  cost?: true
   isActive?: true
 }
 
@@ -83,6 +92,7 @@ export type RawMaterialCountAggregateInputType = {
   id?: true
   name?: true
   unit?: true
+  cost?: true
   isActive?: true
   _all?: true
 }
@@ -177,6 +187,7 @@ export type RawMaterialGroupByOutputType = {
   id: bigint
   name: string
   unit: string
+  cost: runtime.Decimal | null
   isActive: boolean
   _count: RawMaterialCountAggregateOutputType | null
   _avg: RawMaterialAvgAggregateOutputType | null
@@ -207,6 +218,7 @@ export type RawMaterialWhereInput = {
   id?: Prisma.BigIntFilter<"RawMaterial"> | bigint | number
   name?: Prisma.StringFilter<"RawMaterial"> | string
   unit?: Prisma.StringFilter<"RawMaterial"> | string
+  cost?: Prisma.DecimalNullableFilter<"RawMaterial"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFilter<"RawMaterial"> | boolean
   productionMaterials?: Prisma.ProductionMaterialListRelationFilter
 }
@@ -215,6 +227,7 @@ export type RawMaterialOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  cost?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   productionMaterials?: Prisma.ProductionMaterialOrderByRelationAggregateInput
 }
@@ -226,6 +239,7 @@ export type RawMaterialWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.RawMaterialWhereInput | Prisma.RawMaterialWhereInput[]
   name?: Prisma.StringFilter<"RawMaterial"> | string
   unit?: Prisma.StringFilter<"RawMaterial"> | string
+  cost?: Prisma.DecimalNullableFilter<"RawMaterial"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFilter<"RawMaterial"> | boolean
   productionMaterials?: Prisma.ProductionMaterialListRelationFilter
 }, "id">
@@ -234,6 +248,7 @@ export type RawMaterialOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  cost?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.RawMaterialCountOrderByAggregateInput
   _avg?: Prisma.RawMaterialAvgOrderByAggregateInput
@@ -249,6 +264,7 @@ export type RawMaterialScalarWhereWithAggregatesInput = {
   id?: Prisma.BigIntWithAggregatesFilter<"RawMaterial"> | bigint | number
   name?: Prisma.StringWithAggregatesFilter<"RawMaterial"> | string
   unit?: Prisma.StringWithAggregatesFilter<"RawMaterial"> | string
+  cost?: Prisma.DecimalNullableWithAggregatesFilter<"RawMaterial"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"RawMaterial"> | boolean
 }
 
@@ -256,6 +272,7 @@ export type RawMaterialCreateInput = {
   id?: bigint | number
   name: string
   unit: string
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
   productionMaterials?: Prisma.ProductionMaterialCreateNestedManyWithoutRawMaterialInput
 }
@@ -264,6 +281,7 @@ export type RawMaterialUncheckedCreateInput = {
   id?: bigint | number
   name: string
   unit: string
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
   productionMaterials?: Prisma.ProductionMaterialUncheckedCreateNestedManyWithoutRawMaterialInput
 }
@@ -272,6 +290,7 @@ export type RawMaterialUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unit?: Prisma.StringFieldUpdateOperationsInput | string
+  cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   productionMaterials?: Prisma.ProductionMaterialUpdateManyWithoutRawMaterialNestedInput
 }
@@ -280,6 +299,7 @@ export type RawMaterialUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unit?: Prisma.StringFieldUpdateOperationsInput | string
+  cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   productionMaterials?: Prisma.ProductionMaterialUncheckedUpdateManyWithoutRawMaterialNestedInput
 }
@@ -288,6 +308,7 @@ export type RawMaterialCreateManyInput = {
   id?: bigint | number
   name: string
   unit: string
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
 }
 
@@ -295,6 +316,7 @@ export type RawMaterialUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unit?: Prisma.StringFieldUpdateOperationsInput | string
+  cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -302,6 +324,7 @@ export type RawMaterialUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unit?: Prisma.StringFieldUpdateOperationsInput | string
+  cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -309,17 +332,20 @@ export type RawMaterialCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  cost?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type RawMaterialAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  cost?: Prisma.SortOrder
 }
 
 export type RawMaterialMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  cost?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -327,11 +353,13 @@ export type RawMaterialMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   unit?: Prisma.SortOrder
+  cost?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type RawMaterialSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  cost?: Prisma.SortOrder
 }
 
 export type RawMaterialScalarRelationFilter = {
@@ -357,6 +385,7 @@ export type RawMaterialCreateWithoutProductionMaterialsInput = {
   id?: bigint | number
   name: string
   unit: string
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
 }
 
@@ -364,6 +393,7 @@ export type RawMaterialUncheckedCreateWithoutProductionMaterialsInput = {
   id?: bigint | number
   name: string
   unit: string
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
 }
 
@@ -387,6 +417,7 @@ export type RawMaterialUpdateWithoutProductionMaterialsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unit?: Prisma.StringFieldUpdateOperationsInput | string
+  cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -394,6 +425,7 @@ export type RawMaterialUncheckedUpdateWithoutProductionMaterialsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unit?: Prisma.StringFieldUpdateOperationsInput | string
+  cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -432,6 +464,7 @@ export type RawMaterialSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   id?: boolean
   name?: boolean
   unit?: boolean
+  cost?: boolean
   isActive?: boolean
   productionMaterials?: boolean | Prisma.RawMaterial$productionMaterialsArgs<ExtArgs>
   _count?: boolean | Prisma.RawMaterialCountOutputTypeDefaultArgs<ExtArgs>
@@ -441,6 +474,7 @@ export type RawMaterialSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   name?: boolean
   unit?: boolean
+  cost?: boolean
   isActive?: boolean
 }, ExtArgs["result"]["rawMaterial"]>
 
@@ -448,6 +482,7 @@ export type RawMaterialSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   name?: boolean
   unit?: boolean
+  cost?: boolean
   isActive?: boolean
 }, ExtArgs["result"]["rawMaterial"]>
 
@@ -455,10 +490,11 @@ export type RawMaterialSelectScalar = {
   id?: boolean
   name?: boolean
   unit?: boolean
+  cost?: boolean
   isActive?: boolean
 }
 
-export type RawMaterialOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "unit" | "isActive", ExtArgs["result"]["rawMaterial"]>
+export type RawMaterialOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "unit" | "cost" | "isActive", ExtArgs["result"]["rawMaterial"]>
 export type RawMaterialInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productionMaterials?: boolean | Prisma.RawMaterial$productionMaterialsArgs<ExtArgs>
   _count?: boolean | Prisma.RawMaterialCountOutputTypeDefaultArgs<ExtArgs>
@@ -475,6 +511,7 @@ export type $RawMaterialPayload<ExtArgs extends runtime.Types.Extensions.Interna
     id: bigint
     name: string
     unit: string
+    cost: runtime.Decimal | null
     isActive: boolean
   }, ExtArgs["result"]["rawMaterial"]>
   composites: {}
@@ -903,6 +940,7 @@ export interface RawMaterialFieldRefs {
   readonly id: Prisma.FieldRef<"RawMaterial", 'BigInt'>
   readonly name: Prisma.FieldRef<"RawMaterial", 'String'>
   readonly unit: Prisma.FieldRef<"RawMaterial", 'String'>
+  readonly cost: Prisma.FieldRef<"RawMaterial", 'Decimal'>
   readonly isActive: Prisma.FieldRef<"RawMaterial", 'Boolean'>
 }
     

@@ -175,8 +175,9 @@ model Employee {
 
 model RawMaterial {
   id                  BigInt               @id @default(autoincrement())
-  name                String
-  unit                String
+  name                String               @db.VarChar(100)
+  unit                String               @db.VarChar(100)
+  cost                Decimal?             @db.Decimal(18, 2)
   isActive            Boolean              @default(true)
   productionMaterials ProductionMaterial[]
 }
@@ -249,6 +250,6 @@ model ProductionMaterial {
   rawMaterialId BigInt
   quantityUsed  Int
 
-  production  Production  @relation(fields: [productionId], references: [id])
+  production  Production  @relation(fields: [productionId], references: [id], onDelete: Cascade)
   rawMaterial RawMaterial @relation(fields: [rawMaterialId], references: [id])
 }
