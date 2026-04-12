@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import NoImage from "@/assets/no-picture.jpg";
 import Image from "next/image";
 import { VariantData, z } from "@repo/schemas";
+import { toIDR } from "../../../../utils/format-money";
 
 type ProductVariant = z.infer<typeof VariantData>;
 
@@ -46,7 +47,7 @@ export const columnsVariantProducts = () // setIdData: (id: string) => void,
       return (
         <div className="flex flex-col gap-1 text-end">
           <p className="font-body font-bold">Harga</p>
-          <p className="font-body text-secondary">{row.original.price}</p>
+          <p className="font-body text-secondary">{toIDR(row.original.price)}</p>
         </div>
       );
     },
@@ -58,7 +59,7 @@ export const columnsVariantProducts = () // setIdData: (id: string) => void,
       return (
         <div className="flex flex-col gap-1 text-end">
           <p className="font-body font-bold">Biaya</p>
-          <p className="font-body text-secondary">{row.original.cost}</p>
+          <p className="font-body text-secondary">{toIDR(row.original.cost)}</p>
         </div>
       );
     },

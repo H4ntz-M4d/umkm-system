@@ -1,6 +1,7 @@
 import z from "zod";
 import { ApiSuccessResponse } from "../../api.schema.response";
 import { ProductStatusEnum } from "./products.schema";
+import { Decimal } from "@repo/utils";
 
 export const VariantValuesData = z.object({
   id: z.string(),
@@ -16,8 +17,8 @@ export const VariantTypesData = z.object({
 export const VariantData = z.object({
   id: z.string(),
   sku: z.string(),
-  price: z.string(),
-  cost: z.string(),
+  price: z.string().transform((val) => new Decimal(val)),
+  cost: z.string().transform((val) => new Decimal(val)),
   image: z.string().optional().nullable(),
   productVariantStocks: z.number().optional(),
 });

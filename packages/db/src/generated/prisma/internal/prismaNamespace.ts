@@ -395,6 +395,7 @@ export const ModelName = {
   Customer: 'Customer',
   Employee: 'Employee',
   RawMaterial: 'RawMaterial',
+  RawMaterialStock: 'RawMaterialStock',
   InventoryLedger: 'InventoryLedger',
   Production: 'Production',
   ProductionMaterial: 'ProductionMaterial'
@@ -413,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "store" | "users" | "productMaster" | "productVariant" | "productVariantStock" | "productVariantType" | "productVariantValue" | "productVariantOption" | "customer" | "employee" | "rawMaterial" | "inventoryLedger" | "production" | "productionMaterial"
+    modelProps: "store" | "users" | "productMaster" | "productVariant" | "productVariantStock" | "productVariantType" | "productVariantValue" | "productVariantOption" | "customer" | "employee" | "rawMaterial" | "rawMaterialStock" | "inventoryLedger" | "production" | "productionMaterial"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1231,6 +1232,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RawMaterialStock: {
+      payload: Prisma.$RawMaterialStockPayload<ExtArgs>
+      fields: Prisma.RawMaterialStockFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RawMaterialStockFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RawMaterialStockFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>
+        }
+        findFirst: {
+          args: Prisma.RawMaterialStockFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RawMaterialStockFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>
+        }
+        findMany: {
+          args: Prisma.RawMaterialStockFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>[]
+        }
+        create: {
+          args: Prisma.RawMaterialStockCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>
+        }
+        createMany: {
+          args: Prisma.RawMaterialStockCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RawMaterialStockCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>[]
+        }
+        delete: {
+          args: Prisma.RawMaterialStockDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>
+        }
+        update: {
+          args: Prisma.RawMaterialStockUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>
+        }
+        deleteMany: {
+          args: Prisma.RawMaterialStockDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RawMaterialStockUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RawMaterialStockUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>[]
+        }
+        upsert: {
+          args: Prisma.RawMaterialStockUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RawMaterialStockPayload>
+        }
+        aggregate: {
+          args: Prisma.RawMaterialStockAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRawMaterialStock>
+        }
+        groupBy: {
+          args: Prisma.RawMaterialStockGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RawMaterialStockGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RawMaterialStockCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RawMaterialStockCountAggregateOutputType> | number
+        }
+      }
+    }
     InventoryLedger: {
       payload: Prisma.$InventoryLedgerPayload<ExtArgs>
       fields: Prisma.InventoryLedgerFieldRefs
@@ -1620,6 +1695,18 @@ export const RawMaterialScalarFieldEnum = {
 export type RawMaterialScalarFieldEnum = (typeof RawMaterialScalarFieldEnum)[keyof typeof RawMaterialScalarFieldEnum]
 
 
+export const RawMaterialStockScalarFieldEnum = {
+  id: 'id',
+  rawMaterialId: 'rawMaterialId',
+  stock: 'stock',
+  reservedStock: 'reservedStock',
+  availableStock: 'availableStock',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RawMaterialStockScalarFieldEnum = (typeof RawMaterialStockScalarFieldEnum)[keyof typeof RawMaterialStockScalarFieldEnum]
+
+
 export const InventoryLedgerScalarFieldEnum = {
   id: 'id',
   storeId: 'storeId',
@@ -1967,6 +2054,7 @@ export type GlobalOmitConfig = {
   customer?: Prisma.CustomerOmit
   employee?: Prisma.EmployeeOmit
   rawMaterial?: Prisma.RawMaterialOmit
+  rawMaterialStock?: Prisma.RawMaterialStockOmit
   inventoryLedger?: Prisma.InventoryLedgerOmit
   production?: Prisma.ProductionOmit
   productionMaterial?: Prisma.ProductionMaterialOmit

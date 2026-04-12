@@ -5,6 +5,7 @@ type MaterialsEntity = Prisma.RawMaterialGetPayload<{
     id: true;
     name: true;
     unit: true;
+    cost: true;
     isActive: true;
   };
 }>;
@@ -14,6 +15,7 @@ export function toMaterialsResponse(entity: MaterialsEntity) {
     id: entity.id,
     name: entity.name,
     unit: entity.unit,
+    cost: entity.cost ?? 0,
     isActive: entity.isActive,
   };
 }

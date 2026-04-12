@@ -13,9 +13,9 @@ export const VariantTypeSchema = z.object({
 
 export const VariantSchema = z.object({
   id: z.string().optional(),
-  sku: z.string().min(3),
-  price: z.number().positive(),
-  cost: z.number().positive(),
+  sku: z.string().min(3, "SKU wajib diisi dan tidak boleh ada yang sama"),
+  price: z.number(),
+  cost: z.number(),
   image: z.string().optional(),
   options: z.record(z.string(), z.string()),
 });
@@ -24,7 +24,7 @@ export const ProductSchema = z.object({
   name: z.string().min(3, "Nama produk minimal memiliki panjang 3 karakter"),
   description: z
     .string()
-    .min(5, "Deskripsi minimal   memiliki panjang 5 karakter"),
+    .min(5, "Deskripsi minimal memiliki panjang 5 karakter"),
   useVariant: z.boolean(),
   status: ProductStatusEnum,
   variants: z.array(VariantSchema).optional(),

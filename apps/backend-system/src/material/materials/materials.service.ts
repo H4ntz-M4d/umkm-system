@@ -64,7 +64,13 @@ export class MaterialsService {
   }
 
   async create(data: CreateMaterialsDto) {
-    const material = await prisma.rawMaterial.create({ data });
+    const material = await prisma.rawMaterial.create({
+      data: {
+        name: data.name,
+        unit: data.unit,
+        cost: data.cost,
+      },
+    });
     return toMaterialsResponse(material);
   }
 

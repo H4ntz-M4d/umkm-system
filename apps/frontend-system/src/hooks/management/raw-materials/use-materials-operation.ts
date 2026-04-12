@@ -75,7 +75,7 @@ export const useMaterialsOperations = ({
     }) => updateRawMaterial(idMaterial!, data),
     onSuccess: () => {
       invalidate();
-      toast.success("berhasil mengupdate material.");
+      toast.success("Berhasil mengubah data material.");
     },
   });
 
