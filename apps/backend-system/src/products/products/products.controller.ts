@@ -40,6 +40,13 @@ export class ProductsController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Get('/list')
+  async findProductVariant() {
+    return this.productsService.findProductVariantsList();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Get(':id/details')
   async findById(@Param('id') id: string) {
     return await this.productsService.productById(BigInt(id));

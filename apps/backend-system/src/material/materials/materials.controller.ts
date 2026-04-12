@@ -32,6 +32,11 @@ export class MaterialsController {
     return this.materialService.findAll(pagination, search);
   }
 
+  @Get('/list')
+  findRawMaterials() {
+    return this.materialService.findRawMaterialList();
+  }
+
   @Get(':id')
   findById(@Param('id', ParseIntPipe) id: bigint) {
     return this.materialService.findById(id);

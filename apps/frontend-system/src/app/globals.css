@@ -206,6 +206,19 @@ body {
     -webkit-text-fill-color: hsl(var(--foreground)) !important;
   }
 
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: initial;
+    margin: 0;
+  }
+
+  /* Menghilangkan panah di Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+      -webkit-appearance: initial;
+      margin: 0;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
   }

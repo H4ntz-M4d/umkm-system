@@ -8,6 +8,7 @@ import {
   toAllProductsResponse,
   toProductResponse,
   toProductResponseById,
+  toProductVariantListResponse,
 } from 'products/products/products.response';
 
 @Injectable()
@@ -120,6 +121,24 @@ export class ProductsService {
     });
 
     return toProductResponseById(data!);
+  }
+
+  async findProductVariantsList() {
+    const data = await prisma.productMaster.findMany({
+      select: {
+        id: true,
+        name: true,
+        variants: {
+          select: {
+            id: true,
+            sku: true,
+          },
+        },
+      },
+    });
+
+    const result = data.map(toProductVariantListResponse);
+    return result;
   }
 
   async create(data: CreateProductDto) {

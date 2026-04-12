@@ -37,20 +37,12 @@ export class ProductionController {
     return this.productionService.create(data);
   }
 
-  @Patch(':id/production/edit')
+  @Patch(':id/edit')
   updateProduction(
     @Param('id', ParseIntPipe) id: bigint,
     @Body() data: UpdateProductionDto,
   ) {
     return this.productionService.updateProduction(id, data);
-  }
-
-  @Patch(':id/product-material/edit')
-  updateProductionMaterial(
-    @Param('id', ParseIntPipe) id: bigint,
-    @Body() data: UpdateProductionMaterialDto,
-  ) {
-    return this.productionService.updateProductionMaterial(id, data);
   }
 
   @Delete(':id')

@@ -2,14 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { prisma, ProductionStatus } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
 import {
-  toProductionMaterialOnlyResponse,
   toProductionOnlyResponse,
   toProductionResponse,
 } from 'production/production/productions.response';
 import {
   CreateProductionDto,
   UpdateProductionDto,
-  UpdateProductionMaterialDto,
 } from 'production/dto/production.dto';
 
 @Injectable()
@@ -146,33 +144,20 @@ export class ProductionService {
         producedVariantId: data.producedVariantId,
         quantityProduced: data.quantityProduced,
         status: status,
+        materials:
+          data.materials !== undefined
+            ? {
+                deleteMany: {},
+                create: data.materials.map((material) => ({
+                  rawMaterialId: material.rawMaterialId,
+                  quantityUsed: material.quantityUsed,
+                })),
+              }
+            : undefined,
       },
     });
 
     return toProductionOnlyResponse(production);
-  }
-
-  async updateProductionMaterial(
-    id: bigint,
-    data: UpdateProductionMaterialDto,
-  ) {
-    const isExisting = await prisma.productionMaterial.findUnique({
-      where: { id: id },
-    });
-
-    if (!isExisting) {
-      throw new BadRequestException('Maaf data tidak ditemukan');
-    }
-
-    const productionMaterial = await prisma.productionMaterial.update({
-      where: { id: id },
-      data: {
-        rawMaterialId: data.rawMaterialId,
-        quantityUsed: data.quantityUsed,
-      },
-    });
-
-    return toProductionMaterialOnlyResponse(productionMaterial);
   }
 
   async remove(id: bigint) {

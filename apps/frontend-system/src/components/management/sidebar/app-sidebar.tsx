@@ -77,7 +77,7 @@ const data = {
     },
     {
       title: "Produksi",
-      url: "#",
+      url: "/management/production",
       icon: PackageOpen,
     },
   ],

@@ -583,6 +583,9 @@ export default function FormProduct({ id }: { id?: string }) {
                                       <Input
                                         type={"number"}
                                         value={field.value}
+                                        onWheel={(e) =>
+                                          (e.target as HTMLInputElement).blur()
+                                        }
                                         onChange={(e) => {
                                           field.onChange(
                                             e.target.value === ""
@@ -603,6 +606,9 @@ export default function FormProduct({ id }: { id?: string }) {
                                       <Input
                                         type={"number"}
                                         value={field.value}
+                                        onWheel={(e) =>
+                                          (e.target as HTMLInputElement).blur()
+                                        }
                                         onChange={(e) => {
                                           field.onChange(
                                             e.target.value === ""
@@ -726,6 +732,9 @@ export default function FormProduct({ id }: { id?: string }) {
                                       <FieldLabel>Harga</FieldLabel>
                                       <Input
                                         type={"number"}
+                                        onWheel={(e) =>
+                                          (e.target as HTMLInputElement).blur()
+                                        }
                                         {...field}
                                         onChange={(e) => {
                                           field.onChange(
@@ -747,6 +756,9 @@ export default function FormProduct({ id }: { id?: string }) {
                                       <Input
                                         type={"number"}
                                         {...field}
+                                        onWheel={(e) =>
+                                          (e.target as HTMLInputElement).blur()
+                                        }
                                         onChange={(e) => {
                                           field.onChange(
                                             e.target.value === ""

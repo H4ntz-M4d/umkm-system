@@ -1,13 +1,13 @@
 import z from "zod";
 
 export const ProductionMaterialSchema = z.object({
-  rawMaterialId: z.coerce.number(),
+  rawMaterialId: z.number(),
   quantityUsed: z.number().positive(),
 });
 
 export const ProductionSchema = z.object({
-  storeId: z.coerce.number(),
-  producedVariantId: z.coerce.number(),
+  storeId: z.number(),
+  producedVariantId: z.number(),
   quantityProduced: z.number(),
   status: z.enum(["PLANNED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]),
   materials: z.array(ProductionMaterialSchema),

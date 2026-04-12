@@ -1,7 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { prisma } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
-import { toMaterialsResponse } from 'material/materials/materials.response';
+import {
+  toMaterialsResponse,
+  toRawMaterialListResponse,
+} from 'material/materials/materials.response';
 import {
   CreateMaterialsDto,
   UpdateMaterialsDto,
@@ -35,6 +38,17 @@ export class MaterialsService {
         timeStamp: new Date().toISOString(),
       },
     };
+  }
+
+  async findRawMaterialList() {
+    const data = await prisma.rawMaterial.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    return data.map(toRawMaterialListResponse);
   }
 
   async findById(id: bigint) {

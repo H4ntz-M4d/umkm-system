@@ -154,3 +154,27 @@ export function toProductResponse(entity: ProductEntity) {
     })),
   };
 }
+
+type ProductVariantListEntity = Prisma.ProductMasterGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    variants: {
+      select: {
+        id: true;
+        sku: true;
+      };
+    };
+  };
+}>;
+
+export function toProductVariantListResponse(entity: ProductVariantListEntity) {
+  return {
+    id: entity.id,
+    name: entity.name,
+    variants: entity.variants.map((variant) => ({
+      id: variant.id,
+      sku: variant.sku,
+    })),
+  };
+}
