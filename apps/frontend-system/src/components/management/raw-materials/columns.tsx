@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { MaterialsData, z } from "@repo/schemas";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge";
+import {toIDR} from "../../../../utils/format-money";
 
 type RawMaterialsData = z.infer<typeof MaterialsData>
 export const columnsRawMaterials = (
@@ -22,6 +23,11 @@ export const columnsRawMaterials = (
   {
     accessorKey: "unit",
     header: "Unit",
+  },
+  {
+    accessorKey: "cost",
+    header: "Biaya Bahan Baku",
+    cell: ({row}) => toIDR(row.original.cost)
   },
   {
     accessorKey: "isActive",

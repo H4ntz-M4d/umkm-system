@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
+  FieldDescription, FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -86,7 +86,7 @@ export default function ProductionMaterialsForm({
                     <Controller
                       name={`materials.${index}.rawMaterialId`}
                       control={control}
-                      render={({ field }) => (
+                      render={({ field, formState: {errors} }) => (
                         <Field>
                           <FieldLabel>Bahan Baku</FieldLabel>
                           <Select
@@ -110,6 +110,7 @@ export default function ProductionMaterialsForm({
                               </SelectGroup>
                             </SelectContent>
                           </Select>
+                          <FieldError>{errors.materials?.[0]?.rawMaterialId?.message}</FieldError>
                         </Field>
                       )}
                     />

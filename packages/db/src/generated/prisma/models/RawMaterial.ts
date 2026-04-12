@@ -221,6 +221,7 @@ export type RawMaterialWhereInput = {
   cost?: Prisma.DecimalNullableFilter<"RawMaterial"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFilter<"RawMaterial"> | boolean
   productionMaterials?: Prisma.ProductionMaterialListRelationFilter
+  rawMaterialStocks?: Prisma.XOR<Prisma.RawMaterialStockNullableScalarRelationFilter, Prisma.RawMaterialStockWhereInput> | null
 }
 
 export type RawMaterialOrderByWithRelationInput = {
@@ -230,6 +231,7 @@ export type RawMaterialOrderByWithRelationInput = {
   cost?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   productionMaterials?: Prisma.ProductionMaterialOrderByRelationAggregateInput
+  rawMaterialStocks?: Prisma.RawMaterialStockOrderByWithRelationInput
 }
 
 export type RawMaterialWhereUniqueInput = Prisma.AtLeast<{
@@ -242,6 +244,7 @@ export type RawMaterialWhereUniqueInput = Prisma.AtLeast<{
   cost?: Prisma.DecimalNullableFilter<"RawMaterial"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFilter<"RawMaterial"> | boolean
   productionMaterials?: Prisma.ProductionMaterialListRelationFilter
+  rawMaterialStocks?: Prisma.XOR<Prisma.RawMaterialStockNullableScalarRelationFilter, Prisma.RawMaterialStockWhereInput> | null
 }, "id">
 
 export type RawMaterialOrderByWithAggregationInput = {
@@ -275,6 +278,7 @@ export type RawMaterialCreateInput = {
   cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
   productionMaterials?: Prisma.ProductionMaterialCreateNestedManyWithoutRawMaterialInput
+  rawMaterialStocks?: Prisma.RawMaterialStockCreateNestedOneWithoutRawMaterialInput
 }
 
 export type RawMaterialUncheckedCreateInput = {
@@ -284,6 +288,7 @@ export type RawMaterialUncheckedCreateInput = {
   cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
   productionMaterials?: Prisma.ProductionMaterialUncheckedCreateNestedManyWithoutRawMaterialInput
+  rawMaterialStocks?: Prisma.RawMaterialStockUncheckedCreateNestedOneWithoutRawMaterialInput
 }
 
 export type RawMaterialUpdateInput = {
@@ -293,6 +298,7 @@ export type RawMaterialUpdateInput = {
   cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   productionMaterials?: Prisma.ProductionMaterialUpdateManyWithoutRawMaterialNestedInput
+  rawMaterialStocks?: Prisma.RawMaterialStockUpdateOneWithoutRawMaterialNestedInput
 }
 
 export type RawMaterialUncheckedUpdateInput = {
@@ -302,6 +308,7 @@ export type RawMaterialUncheckedUpdateInput = {
   cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   productionMaterials?: Prisma.ProductionMaterialUncheckedUpdateManyWithoutRawMaterialNestedInput
+  rawMaterialStocks?: Prisma.RawMaterialStockUncheckedUpdateOneWithoutRawMaterialNestedInput
 }
 
 export type RawMaterialCreateManyInput = {
@@ -367,6 +374,20 @@ export type RawMaterialScalarRelationFilter = {
   isNot?: Prisma.RawMaterialWhereInput
 }
 
+export type RawMaterialCreateNestedOneWithoutRawMaterialStocksInput = {
+  create?: Prisma.XOR<Prisma.RawMaterialCreateWithoutRawMaterialStocksInput, Prisma.RawMaterialUncheckedCreateWithoutRawMaterialStocksInput>
+  connectOrCreate?: Prisma.RawMaterialCreateOrConnectWithoutRawMaterialStocksInput
+  connect?: Prisma.RawMaterialWhereUniqueInput
+}
+
+export type RawMaterialUpdateOneRequiredWithoutRawMaterialStocksNestedInput = {
+  create?: Prisma.XOR<Prisma.RawMaterialCreateWithoutRawMaterialStocksInput, Prisma.RawMaterialUncheckedCreateWithoutRawMaterialStocksInput>
+  connectOrCreate?: Prisma.RawMaterialCreateOrConnectWithoutRawMaterialStocksInput
+  upsert?: Prisma.RawMaterialUpsertWithoutRawMaterialStocksInput
+  connect?: Prisma.RawMaterialWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RawMaterialUpdateToOneWithWhereWithoutRawMaterialStocksInput, Prisma.RawMaterialUpdateWithoutRawMaterialStocksInput>, Prisma.RawMaterialUncheckedUpdateWithoutRawMaterialStocksInput>
+}
+
 export type RawMaterialCreateNestedOneWithoutProductionMaterialsInput = {
   create?: Prisma.XOR<Prisma.RawMaterialCreateWithoutProductionMaterialsInput, Prisma.RawMaterialUncheckedCreateWithoutProductionMaterialsInput>
   connectOrCreate?: Prisma.RawMaterialCreateOrConnectWithoutProductionMaterialsInput
@@ -381,12 +402,65 @@ export type RawMaterialUpdateOneRequiredWithoutProductionMaterialsNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.RawMaterialUpdateToOneWithWhereWithoutProductionMaterialsInput, Prisma.RawMaterialUpdateWithoutProductionMaterialsInput>, Prisma.RawMaterialUncheckedUpdateWithoutProductionMaterialsInput>
 }
 
+export type RawMaterialCreateWithoutRawMaterialStocksInput = {
+  id?: bigint | number
+  name: string
+  unit: string
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isActive?: boolean
+  productionMaterials?: Prisma.ProductionMaterialCreateNestedManyWithoutRawMaterialInput
+}
+
+export type RawMaterialUncheckedCreateWithoutRawMaterialStocksInput = {
+  id?: bigint | number
+  name: string
+  unit: string
+  cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isActive?: boolean
+  productionMaterials?: Prisma.ProductionMaterialUncheckedCreateNestedManyWithoutRawMaterialInput
+}
+
+export type RawMaterialCreateOrConnectWithoutRawMaterialStocksInput = {
+  where: Prisma.RawMaterialWhereUniqueInput
+  create: Prisma.XOR<Prisma.RawMaterialCreateWithoutRawMaterialStocksInput, Prisma.RawMaterialUncheckedCreateWithoutRawMaterialStocksInput>
+}
+
+export type RawMaterialUpsertWithoutRawMaterialStocksInput = {
+  update: Prisma.XOR<Prisma.RawMaterialUpdateWithoutRawMaterialStocksInput, Prisma.RawMaterialUncheckedUpdateWithoutRawMaterialStocksInput>
+  create: Prisma.XOR<Prisma.RawMaterialCreateWithoutRawMaterialStocksInput, Prisma.RawMaterialUncheckedCreateWithoutRawMaterialStocksInput>
+  where?: Prisma.RawMaterialWhereInput
+}
+
+export type RawMaterialUpdateToOneWithWhereWithoutRawMaterialStocksInput = {
+  where?: Prisma.RawMaterialWhereInput
+  data: Prisma.XOR<Prisma.RawMaterialUpdateWithoutRawMaterialStocksInput, Prisma.RawMaterialUncheckedUpdateWithoutRawMaterialStocksInput>
+}
+
+export type RawMaterialUpdateWithoutRawMaterialStocksInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.StringFieldUpdateOperationsInput | string
+  cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  productionMaterials?: Prisma.ProductionMaterialUpdateManyWithoutRawMaterialNestedInput
+}
+
+export type RawMaterialUncheckedUpdateWithoutRawMaterialStocksInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.StringFieldUpdateOperationsInput | string
+  cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  productionMaterials?: Prisma.ProductionMaterialUncheckedUpdateManyWithoutRawMaterialNestedInput
+}
+
 export type RawMaterialCreateWithoutProductionMaterialsInput = {
   id?: bigint | number
   name: string
   unit: string
   cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
+  rawMaterialStocks?: Prisma.RawMaterialStockCreateNestedOneWithoutRawMaterialInput
 }
 
 export type RawMaterialUncheckedCreateWithoutProductionMaterialsInput = {
@@ -395,6 +469,7 @@ export type RawMaterialUncheckedCreateWithoutProductionMaterialsInput = {
   unit: string
   cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: boolean
+  rawMaterialStocks?: Prisma.RawMaterialStockUncheckedCreateNestedOneWithoutRawMaterialInput
 }
 
 export type RawMaterialCreateOrConnectWithoutProductionMaterialsInput = {
@@ -419,6 +494,7 @@ export type RawMaterialUpdateWithoutProductionMaterialsInput = {
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rawMaterialStocks?: Prisma.RawMaterialStockUpdateOneWithoutRawMaterialNestedInput
 }
 
 export type RawMaterialUncheckedUpdateWithoutProductionMaterialsInput = {
@@ -427,6 +503,7 @@ export type RawMaterialUncheckedUpdateWithoutProductionMaterialsInput = {
   unit?: Prisma.StringFieldUpdateOperationsInput | string
   cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rawMaterialStocks?: Prisma.RawMaterialStockUncheckedUpdateOneWithoutRawMaterialNestedInput
 }
 
 
@@ -467,6 +544,7 @@ export type RawMaterialSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   cost?: boolean
   isActive?: boolean
   productionMaterials?: boolean | Prisma.RawMaterial$productionMaterialsArgs<ExtArgs>
+  rawMaterialStocks?: boolean | Prisma.RawMaterial$rawMaterialStocksArgs<ExtArgs>
   _count?: boolean | Prisma.RawMaterialCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rawMaterial"]>
 
@@ -497,6 +575,7 @@ export type RawMaterialSelectScalar = {
 export type RawMaterialOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "unit" | "cost" | "isActive", ExtArgs["result"]["rawMaterial"]>
 export type RawMaterialInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productionMaterials?: boolean | Prisma.RawMaterial$productionMaterialsArgs<ExtArgs>
+  rawMaterialStocks?: boolean | Prisma.RawMaterial$rawMaterialStocksArgs<ExtArgs>
   _count?: boolean | Prisma.RawMaterialCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RawMaterialIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -506,6 +585,7 @@ export type $RawMaterialPayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "RawMaterial"
   objects: {
     productionMaterials: Prisma.$ProductionMaterialPayload<ExtArgs>[]
+    rawMaterialStocks: Prisma.$RawMaterialStockPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -908,6 +988,7 @@ readonly fields: RawMaterialFieldRefs;
 export interface Prisma__RawMaterialClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   productionMaterials<T extends Prisma.RawMaterial$productionMaterialsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RawMaterial$productionMaterialsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionMaterialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rawMaterialStocks<T extends Prisma.RawMaterial$rawMaterialStocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RawMaterial$rawMaterialStocksArgs<ExtArgs>>): Prisma.Prisma__RawMaterialStockClient<runtime.Types.Result.GetResult<Prisma.$RawMaterialStockPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1351,6 +1432,25 @@ export type RawMaterial$productionMaterialsArgs<ExtArgs extends runtime.Types.Ex
   take?: number
   skip?: number
   distinct?: Prisma.ProductionMaterialScalarFieldEnum | Prisma.ProductionMaterialScalarFieldEnum[]
+}
+
+/**
+ * RawMaterial.rawMaterialStocks
+ */
+export type RawMaterial$rawMaterialStocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RawMaterialStock
+   */
+  select?: Prisma.RawMaterialStockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RawMaterialStock
+   */
+  omit?: Prisma.RawMaterialStockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RawMaterialStockInclude<ExtArgs> | null
+  where?: Prisma.RawMaterialStockWhereInput
 }
 
 /**

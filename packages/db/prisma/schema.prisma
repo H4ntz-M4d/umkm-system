@@ -180,6 +180,22 @@ model RawMaterial {
   cost                Decimal?             @db.Decimal(18, 2)
   isActive            Boolean              @default(true)
   productionMaterials ProductionMaterial[]
+  rawMaterialStocks   RawMaterialStock?
+
+  @@map("raw_material")
+}
+
+model RawMaterialStock {
+  id             BigInt   @id @default(autoincrement())
+  rawMaterialId  BigInt   @unique
+  stock          Int
+  reservedStock  Int
+  availableStock Int
+  updatedAt      DateTime @default(now())
+
+  rawMaterial RawMaterial @relation(fields: [rawMaterialId], references: [id], onDelete: Cascade)
+
+  @@map("raw_material_stock")
 }
 
 // ==================
@@ -200,6 +216,7 @@ model InventoryLedger {
   store Store @relation(fields: [storeId], references: [id])
 
   @@index([storeId, itemType, itemId])
+  @@map("inventory_ledger")
 }
 
 enum InventoryItemType {
@@ -235,6 +252,8 @@ model Production {
   store     Store                @relation(fields: [storeId], references: [id])
   variant   ProductVariant       @relation(fields: [producedVariantId], references: [id])
   materials ProductionMaterial[]
+
+  @@map("production")
 }
 
 enum ProductionStatus {
@@ -252,4 +271,6 @@ model ProductionMaterial {
 
   production  Production  @relation(fields: [productionId], references: [id], onDelete: Cascade)
   rawMaterial RawMaterial @relation(fields: [rawMaterialId], references: [id])
+
+  @@map("production_material")
 }

@@ -62,6 +62,7 @@ export const ModelName = {
   Customer: 'Customer',
   Employee: 'Employee',
   RawMaterial: 'RawMaterial',
+  RawMaterialStock: 'RawMaterialStock',
   InventoryLedger: 'InventoryLedger',
   Production: 'Production',
   ProductionMaterial: 'ProductionMaterial'
@@ -209,6 +210,18 @@ export const RawMaterialScalarFieldEnum = {
 } as const
 
 export type RawMaterialScalarFieldEnum = (typeof RawMaterialScalarFieldEnum)[keyof typeof RawMaterialScalarFieldEnum]
+
+
+export const RawMaterialStockScalarFieldEnum = {
+  id: 'id',
+  rawMaterialId: 'rawMaterialId',
+  stock: 'stock',
+  reservedStock: 'reservedStock',
+  availableStock: 'availableStock',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RawMaterialStockScalarFieldEnum = (typeof RawMaterialStockScalarFieldEnum)[keyof typeof RawMaterialStockScalarFieldEnum]
 
 
 export const InventoryLedgerScalarFieldEnum = {

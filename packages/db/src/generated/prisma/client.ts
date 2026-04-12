@@ -95,6 +95,11 @@ export type Employee = Prisma.EmployeeModel
  */
 export type RawMaterial = Prisma.RawMaterialModel
 /**
+ * Model RawMaterialStock
+ * 
+ */
+export type RawMaterialStock = Prisma.RawMaterialStockModel
+/**
  * Model InventoryLedger
  * 
  */

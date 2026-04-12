@@ -14,6 +14,7 @@ import {
 import {
   Field,
   FieldContent,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
@@ -27,15 +28,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MaterialsData, MaterialsSchema, z } from "@repo/schemas";
+import {
+  CreateMaterialsSchemaInput,
+  MaterialsData,
+  MaterialsSchema,
+  z,
+} from "@repo/schemas";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-type FormData = z.infer<typeof MaterialsSchema>;
 type MaterialsInitialsData = z.infer<typeof MaterialsData>;
 
 interface MaterialFormProps {
-  onSubmit: (v: FormData) => void;
+  onSubmit: (v: CreateMaterialsSchemaInput) => void;
   initialData?: MaterialsInitialsData;
   onOpenChange?: (open: boolean) => void;
   isSubmitting?: boolean;
@@ -47,11 +52,12 @@ export default function RawMaterialForm({
   onOpenChange,
   isSubmitting,
 }: MaterialFormProps) {
-  const form = useForm<FormData>({
+  const form = useForm<CreateMaterialsSchemaInput>({
     resolver: zodResolver(MaterialsSchema),
     defaultValues: {
       name: "",
       unit: "",
+      cost: 0,
       isActive: true,
     },
   });
@@ -63,20 +69,21 @@ export default function RawMaterialForm({
       form.reset({
         name: initialData.name,
         unit: initialData.unit,
+        cost: Number(initialData.cost),
         isActive: initialData.isActive,
       });
     } else {
-      form.reset({ name: "", unit: "", isActive: true });
+      form.reset({ name: "", unit: "", cost: 0, isActive: true });
     }
   }, [initialData, form]);
 
   const handleOpenChange = (val: boolean) => {
     setOpen(val);
     onOpenChange?.(val);
-    if (!val) form.reset({ name: "", isActive: true }); // Reset form saat tutup
+    if (!val) form.reset({ name: "", unit: "", cost: 0, isActive: true }); // Reset form saat tutup
   };
 
-  const handleSubmit = (data: FormData) => {
+  const handleSubmit = (data: CreateMaterialsSchemaInput) => {
     onSubmit(data);
     handleOpenChange(false);
   };
@@ -111,6 +118,7 @@ export default function RawMaterialForm({
                     <Field>
                       <FieldLabel>Nama Material</FieldLabel>
                       <Input {...field} />
+                      <FieldError>{fieldState.error?.message}</FieldError>
                     </Field>
                   )}
                 />
@@ -121,6 +129,24 @@ export default function RawMaterialForm({
                     <Field>
                       <FieldLabel>Unit</FieldLabel>
                       <Input {...field} />
+                      <FieldError>{fieldState.error?.message}</FieldError>
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name={"cost"}
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel>Biaya bahan baku</FieldLabel>
+                      <Input
+                        {...field}
+                        type={"number"}
+                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                        value={field.value?.toString()}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                      <FieldError>{fieldState.error?.message}</FieldError>
                     </Field>
                   )}
                 />

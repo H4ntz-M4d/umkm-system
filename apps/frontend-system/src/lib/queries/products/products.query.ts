@@ -1,5 +1,4 @@
 import managementApi from "../../api/api.management";
-import { ProductMaster } from "@/common/types";
 import {
   CreateProductSchemaInput,
   AllProductResponse,

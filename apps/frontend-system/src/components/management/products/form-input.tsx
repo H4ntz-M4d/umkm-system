@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
+  FieldDescription, FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -297,6 +297,7 @@ export default function FormProduct({ id }: { id?: string }) {
                               placeholder={"e.g. Syal Katun Lembut"}
                               {...field}
                             />
+                            <FieldError>{errors.name?.message}</FieldError>
                           </Field>
                         )}
                       />
@@ -315,6 +316,7 @@ export default function FormProduct({ id }: { id?: string }) {
                               }
                               {...field}
                             />
+                            <FieldError>{errors.description?.message}</FieldError>
                           </Field>
                         )}
                       />
@@ -571,6 +573,7 @@ export default function FormProduct({ id }: { id?: string }) {
                                     <Field>
                                       <FieldLabel>SKU</FieldLabel>
                                       <Input {...field} />
+                                      <FieldError>{errors.variants?.[iv]?.sku?.message}</FieldError>
                                     </Field>
                                   )}
                                 />

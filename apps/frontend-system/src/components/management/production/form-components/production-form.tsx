@@ -148,6 +148,7 @@ export default function ProductionForm({
               type={"number"}
               onWheel={(e) => (e.target as HTMLInputElement).blur()}
               {...field}
+              value={field.value?.toString()}
               onChange={(e) => field.onChange(Number(e.target.value))}
             />
             <FieldError>{errors.quantityProduced?.message}</FieldError>
