@@ -17,3 +17,17 @@ export function toStoresResponse(entity: StoresEntity) {
     createdAt: entity.createdAt,
   };
 }
+
+type SimpleStoresEntity = Prisma.StoreGetPayload<{
+  select: {
+    id: true;
+    name: true;
+  };
+}>;
+
+export function toSimpleStoresResponse(entity: SimpleStoresEntity) {
+  return {
+    id: entity.id,
+    name: entity.name,
+  };
+}

@@ -20,7 +20,14 @@ export function toMaterialsResponse(entity: MaterialsEntity) {
   };
 }
 
-export function toRawMaterialListResponse(entity: MaterialsEntity) {
+type SimpleMaterialsEntity = Prisma.RawMaterialGetPayload<{
+  select: {
+    id: true;
+    name: true;
+  };
+}>;
+
+export function toRawMaterialListResponse(entity: SimpleMaterialsEntity) {
   return {
     id: entity.id,
     name: entity.name,

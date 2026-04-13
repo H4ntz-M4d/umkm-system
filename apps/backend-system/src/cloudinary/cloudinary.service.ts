@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import {
+  v2 as cloudinary,
+  UploadApiErrorResponse,
+  UploadApiResponse,
+} from 'cloudinary';
 import * as streamifier from 'streamifier';
 import { CloudinaryFolder } from './dto/dto.cloudinary';
 
@@ -21,10 +25,19 @@ export class CloudinaryService {
           folder: folders,
           allowed_formats: ['png', 'jpg', 'webp'],
         },
-        (error, result: UploadApiResponse) => {
+        (
+          error: UploadApiErrorResponse | undefined,
+          result?: UploadApiResponse,
+        ) => {
           if (error) {
             console.error('Cloudinary error:', error); // <-- tambah ini
-            return reject(error);
+            return reject(
+              new Error(error.message || 'Cloudinary upload failed'),
+            );
+          }
+
+          if (!result) {
+            return reject(new Error('Cloudinary upload result is undefined'));
           }
           resolve(result.secure_url);
         },

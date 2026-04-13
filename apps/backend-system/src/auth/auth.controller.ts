@@ -12,16 +12,19 @@ import { CustomerRegisterDto, LoginDto } from './dto/dto.login';
 import { Roles } from '../common/decorator/roles.decorator';
 import { JwtAuthGuard } from '../common/guards/guard.jwt-auth';
 import { RolesGuard } from '../common/guards/guard.roles';
-import { UserRole, type Users } from '@repo/db';
-import type { Response } from 'express';
-import { AuthUser } from 'common/decorator/auth.decorator';
+import { UserRole } from '@repo/db';
+import type { Request, Response } from 'express';
+import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
 
 @Controller('auth/')
 export class AuthController {
   constructor(private service: AuthService) {}
 
   @Post('management/ref')
-  async refreshAdmin(@Req() req, @Res({ passthrough: true }) res: Response) {
+  async refreshAdmin(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     return this.service.refreshAdminToken(req, res);
   }
 
@@ -41,8 +44,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR, UserRole.GUDANG)
   @Get('management/me')
-  async me(@Req() req) {
-    return this.service.getAdminProfile(req.user.sub);
+  async me(@AuthUser() user: JwtPayload) {
+    return this.service.getAdminProfile(user.sub);
   }
 
   // =============================== Customer ====================================
@@ -50,7 +53,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(
-    @AuthUser() user: any,
+    @AuthUser() user: JwtPayload,
     @Res({ passthrough: true }) res: Response,
   ) {
     return this.service.logoutService(user.sub, user.role, res);
@@ -61,8 +64,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.CUSTOMER)
   @Get('me/c')
-  getCustomerProfile(@Req() req) {
-    return this.service.getCustomerProfile(req.user.sub);
+  getCustomerProfile(@AuthUser() user: JwtPayload) {
+    return this.service.getCustomerProfile(user.sub);
   }
 
   @Post('customer/register')
@@ -80,7 +83,10 @@ export class AuthController {
   }
 
   @Post('c/ref')
-  async refreshCustomer(@Req() req, @Res({ passthrough: true }) res: Response) {
+  async refreshCustomer(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     return this.service.refreshCustomerToken(req, res);
   }
 }

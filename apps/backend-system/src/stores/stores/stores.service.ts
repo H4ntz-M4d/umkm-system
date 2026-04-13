@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { prisma } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
 import { CreateStoreDto, UpdateStoreDto } from 'stores/dto/dto.store';
-import { toStoresResponse } from 'stores/stores/stores.response';
+import {
+  toSimpleStoresResponse,
+  toStoresResponse,
+} from 'stores/stores/stores.response';
 
 @Injectable()
 export class StoresService {
@@ -30,7 +33,7 @@ export class StoresService {
         name: true,
       },
     });
-    return data.map(toStoresResponse);
+    return data.map(toSimpleStoresResponse);
   }
 
   async create(data: CreateStoreDto) {
