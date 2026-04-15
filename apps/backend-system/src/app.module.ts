@@ -6,6 +6,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ProductsModule } from './products/products.module';
 import { MaterialModule } from './material/material.module';
 import { ProductionModule } from './production/production.module';
+import { InventoryLedgerModule } from './inventory-ledger/inventory-ledger.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProductionModule } from './production/production.module';
     ProductsModule,
     MaterialModule,
     ProductionModule,
+    InventoryLedgerModule,
   ],
 })
 export class AppModule {}

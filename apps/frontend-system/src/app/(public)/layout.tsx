@@ -17,8 +17,6 @@ export default async function PublicLayout({ children }: PublicLayoutProps) {
     headerStore.get("x-access-token-customer") ||
     cookieStore.get("access_token_customer")?.value;
 
-  if (!token) return null
-
   let user = null
 
   if (token) {
