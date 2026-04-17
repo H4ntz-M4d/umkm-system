@@ -72,7 +72,7 @@ const data = {
   inventoryAndProductionItems: [
     {
       title: "Inventori",
-      url: "#",
+      url: "inventory-ledger",
       icon: Boxes,
     },
     {

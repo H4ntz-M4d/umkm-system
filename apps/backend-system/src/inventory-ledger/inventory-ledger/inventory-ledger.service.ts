@@ -93,6 +93,7 @@ export class InventoryLedgerService {
         skip: pagination.skip ?? 0,
         limit: pagination.limit ?? 10,
         total,
+        timeStamp: new Date().toISOString(),
       },
     };
   }

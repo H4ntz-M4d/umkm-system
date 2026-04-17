@@ -14,7 +14,7 @@ export function usePaginationParams(options: UsePaginationParamsOptions = {}) {
   // 1. DERIVE STATE: Hitung nilai langsung dari URL saat render. 
   // Tidak perlu useState atau useEffect.
   const pageIndex = (Number(searchParams.get("page")) || 1) - 1;
-  const pageSize = Number(searchParams.get("pageSize")) || defaultPageSize;
+  const pageSize = Number(searchParams.get("limit")) || defaultPageSize;
 
   const pagination = useMemo(
     () => ({
@@ -37,7 +37,7 @@ export function usePaginationParams(options: UsePaginationParamsOptions = {}) {
       
       // Update URL parameters
       params.set("page", String(nextPagination.pageIndex + 1));
-      params.set("pageSize", String(nextPagination.pageSize));
+      params.set("limit", String(nextPagination.pageSize));
 
       // Gunakan replace agar history browser tidak penuh sampah (opsional, bisa juga push)
       router.push(`?${params.toString()}`, { scroll: false });
