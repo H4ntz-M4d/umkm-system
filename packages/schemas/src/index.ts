@@ -12,5 +12,7 @@ export * from "./schema/materials/materials.schema"
 export * from "./schema/materials/materials.response"
 export * from "./schema/production/production.schema"
 export * from "./schema/production/production.response"
+export * from "./schema/inventory-ledgers/inventory-ledger.schema"
+export * from "./schema/inventory-ledgers/inventory-ledger.response"
 import z from "zod";
 export { z };
