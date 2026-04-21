@@ -15,7 +15,6 @@ import { Pagination } from 'common/paginate/pagination';
 import {
   CreateProductionDto,
   UpdateProductionDto,
-  UpdateProductionMaterialDto,
 } from 'production/dto/production.dto';
 
 @Controller('api/v1/production')
@@ -37,12 +36,28 @@ export class ProductionController {
     return this.productionService.create(data);
   }
 
-  @Patch(':id/edit')
+  @Put(':id/edit')
   updateProduction(
+    @Param('id', ParseIntPipe) id: bigint,
+    @Body() data: CreateProductionDto,
+  ) {
+    return this.productionService.updateProduction(id, data);
+  }
+
+  @Patch(':id/status-update')
+  updateProductionStatus(
     @Param('id', ParseIntPipe) id: bigint,
     @Body() data: UpdateProductionDto,
   ) {
-    return this.productionService.updateProduction(id, data);
+    return this.productionService.updateStatusNotCompleted(id, data);
+  }
+
+  @Post(':id/status-completed')
+  updateProductionStatusCompleted(
+    @Param('id', ParseIntPipe) id: bigint,
+    @Body() data: UpdateProductionDto,
+  ) {
+    return this.productionService.updateStatusCompleted(id, data);
   }
 
   @Delete(':id')

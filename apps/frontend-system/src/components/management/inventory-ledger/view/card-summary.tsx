@@ -1,37 +1,56 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { CirclePile, ShoppingBasket, TrendingDown, TrendingUp } from "lucide-react";
+import {
+  CirclePile,
+  ShoppingBasket,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
 
-const dataCard = [
+import { SummaryData, z } from "@repo/schemas";
+
+type SummaryDataResponse = z.infer<typeof SummaryData>;
+
+const getDataCard = (dataSummary: SummaryDataResponse) => [
   {
+    id: "STOCK-IN",
     title: "total stok masuk",
     icon: <TrendingUp color="green" />,
-    value: 10,
+    value: dataSummary?.stockFlow?.totalIn ?? 0,
     description: "All stores",
   },
   {
+    id: "STOCK-OUT",
     title: "total stok keluar",
     icon: <TrendingDown color="red" />,
-    value: 10,
+    value: dataSummary?.stockFlow?.totalOut ?? 0,
     description: "All stores",
   },
   {
+    id: "PRODUCT-VARIANT",
     title: "variant produk",
     icon: <ShoppingBasket className="text-secondary" />,
-    value: 10,
+    value: dataSummary?.historyByType?.productVariant ?? 0,
     description: "All stores",
   },
   {
+    id: "RAW-MATERIAL",
     title: "raw material",
     icon: <CirclePile />,
-    value: 10,
+    value: dataSummary?.historyByType?.rawMaterial ?? 0,
     description: "All stores",
   },
 ];
 
-export default function CardSummary() {
+export default function CardSummary({
+  dataSummary,
+}: {
+  dataSummary: SummaryDataResponse;
+}) {
+  const data = getDataCard(dataSummary);
+  
   return (
     <>
-      {dataCard.map((item, index) => (
+      {data.map((item, index) => (
         <Card key={index} className="bg-primary-foreground shadow">
           <CardContent className="space-y-2">
             <div className="flex justify-between">

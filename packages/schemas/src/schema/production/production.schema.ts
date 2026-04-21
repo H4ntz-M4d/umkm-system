@@ -13,7 +13,7 @@ export const ProductionSchema = z.object({
   materials: z.array(ProductionMaterialSchema),
 });
 
-export const UpdateProductionSchema = ProductionSchema;
+export const UpdateProductionSchema = ProductionSchema.partial();
 export const UpdateProductionMaterialSchema =
   ProductionMaterialSchema.partial();
 

@@ -7,21 +7,26 @@ import { useProductionOperation } from "@/hooks/management/production/use-produc
 import { columnsProduction } from "@/components/management/production/column";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { use, useState } from "react";
 import ProductionModalForm from "@/components/management/production/form-input";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function Page() {
   const router = useRouter();
   const { pagination, onPaginationChange } = usePaginationParams();
-  const { dataProduction, isLoadingDataProduction, deleteProductionData } = useProductionOperation({
-    pagination,
-  });
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+  const { dataProduction, isLoadingDataProduction, deleteProductionData } =
+    useProductionOperation({
+      pagination,
+      search: debouncedSearch,
+    });
   const pageCount = dataProduction?.total
     ? Math.ceil(dataProduction.total / pagination.pageSize)
     : 1;
 
   const [idData, setIdData] = useState<string | undefined>("");
-  const [open, setOpen] = useState<boolean>(false);
   const deleteData = (id: string) => {
     deleteProductionData(id);
   };
@@ -34,26 +39,22 @@ export default function Page() {
     <>
       <div className={"flex flex-1 flex-col gap-4 p-4 pt-0"}>
         <div className={"flex sm:flex-row flex-col gap-2 justify-between mt-5"}>
-          <InputGroupInlineStart />
-          <Button
-            type={"button"}
-            onClick={() => router.push("/management/production/new")}
-          >
-            Add Production
-          </Button>
+          <InputGroupInlineStart
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <ProductionModalForm
+            initalData={selectProductionData}
+            id={idData}
+            onOpenChange={(open) => !open && setIdData(undefined)}
+          />
         </div>
-        <ProductionModalForm
-          initalData={selectProductionData}
-          open={open}
-          setOpen={setOpen}
-          id={idData}
-        />
         <div className={"bg-muted/50 rounded-xl md:min-h-min"}>
           {isLoadingDataProduction ? (
             <div className={"p-8 text-center"}>Loading data ...</div>
           ) : (
             <DataTableProduction
-              columns={columnsProduction(setIdData, deleteData, setOpen)}
+              columns={columnsProduction(setIdData, deleteData)}
               data={dataProduction?.data ?? []}
               pageCount={pageCount}
               pagination={pagination}
@@ -62,6 +63,7 @@ export default function Page() {
           )}
         </div>
       </div>
+      <Toaster />
     </>
   );
 }

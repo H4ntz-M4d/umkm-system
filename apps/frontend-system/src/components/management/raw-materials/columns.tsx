@@ -30,6 +30,13 @@ export const columnsRawMaterials = (
     cell: ({row}) => toIDR(row.original.cost)
   },
   {
+    accessorKey: "stocks",
+    header: "Stok Bahan",
+    cell: ({row}) => (
+      <p>{row.original.stock !== null ? row.original.stock : 0}</p>
+    )
+  },
+  {
     accessorKey: "isActive",
     header: "Status Pemakaian",
     cell: ({ row }) =>

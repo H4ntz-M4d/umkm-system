@@ -4,17 +4,18 @@ import CardSummary from "./card-summary";
 import TableView from "./table-view";
 import { useLedgerOperation } from "@/hooks/management/inventory-ledgers/use-ledgers-operation";
 import { LedgerFilters } from "@/lib/queries/inventory-ledgers/inventory-ledgers.query";
-import { InventoryLedgerResponse, z } from "@repo/schemas";
+import { InventoryLedgerResponse, SummaryData, z } from "@repo/schemas";
 import { useSearchParams } from "next/navigation";
 
 type InventoryLedgerData = z.infer<typeof InventoryLedgerResponse>;
+type SummaryDataResponse = z.infer<typeof SummaryData>;
 
 export default function LedgerView() {
   const searchParams = useSearchParams();
 
-  const page = Number(searchParams.get("page")) || 1
-  const limit = Number(searchParams.get("limit")) || 10
-  
+  const page = Number(searchParams.get("page")) || 1;
+  const limit = Number(searchParams.get("limit")) || 10;
+
   const filters: LedgerFilters = {
     skip: (page - 1) * limit,
     limit: limit,
@@ -22,15 +23,22 @@ export default function LedgerView() {
     itemType: searchParams.get("itemType") || "",
     direction: searchParams.get("direction") || "",
     source: searchParams.get("source") || "",
-  }
-  const { dataLedger, isLoadingLedger } = useLedgerOperation(filters);
+  };
+  const { dataLedger, isLoadingLedger, dataSummary } =
+    useLedgerOperation(filters);
   return (
     <>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-5">
-          <CardSummary />
+          <CardSummary
+            dataSummary={(dataSummary?.data as SummaryDataResponse) ?? []}
+          />
         </div>
-        <TableView data={dataLedger as InventoryLedgerData} isLoading={isLoadingLedger} currentFilters={filters}/>
+        <TableView
+          data={dataLedger as InventoryLedgerData}
+          isLoading={isLoadingLedger}
+          currentFilters={filters}
+        />
       </div>
     </>
   );

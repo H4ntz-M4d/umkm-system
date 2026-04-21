@@ -9,12 +9,11 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
-import { Resolver, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateProductionSchemaInput,
   ProductionSchema,
-  UpdateProductionSchemaInput,
 } from "@repo/schemas";
 import { Toaster } from "@/components/ui/sonner";
 import { useProductionOperation } from "@/hooks/management/production/use-production-operation";
@@ -24,11 +23,9 @@ import ProductionMaterialsForm from "@/components/management/production/form-com
 export default function Page() {
   const { createProductionData, isCreating } = useProductionOperation({});
   const { control, handleSubmit, formState } = useForm<
-    CreateProductionSchemaInput | UpdateProductionSchemaInput
+    CreateProductionSchemaInput
   >({
-    resolver: zodResolver(ProductionSchema) as Resolver<
-      CreateProductionSchemaInput | UpdateProductionSchemaInput
-    >,
+    resolver: zodResolver(ProductionSchema),
     defaultValues: {
       storeId: 0,
       producedVariantId: 0,
@@ -53,7 +50,7 @@ export default function Page() {
   });
 
   const onSubmit = (
-    data: CreateProductionSchemaInput | UpdateProductionSchemaInput,
+    data: CreateProductionSchemaInput,
   ) => {
     createProductionData(data as CreateProductionSchemaInput);
   };

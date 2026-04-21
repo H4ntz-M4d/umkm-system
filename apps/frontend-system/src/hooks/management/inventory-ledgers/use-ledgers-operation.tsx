@@ -15,7 +15,6 @@ export const useLedgerOperation = (filters: LedgerFilters) => {
     queryKey: ["inventory-ledgers", filters],
     queryFn: () => fetchInventoryLedger(filters),
     placeholderData: keepPreviousData,
-    throwOnError: true,
   });
 
   return {
