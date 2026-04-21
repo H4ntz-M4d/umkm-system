@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { prisma } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
 import {
+  toMaterialsOnlyResponse,
   toMaterialsResponse,
   toRawMaterialListResponse,
 } from 'material/materials/materials.response';
@@ -22,6 +23,13 @@ export class MaterialsService {
         name: {
           contains: search,
           mode: 'insensitive',
+        },
+      },
+      include: {
+        rawMaterialStocks: {
+          select: {
+            stock: true,
+          },
         },
       },
     });
@@ -60,7 +68,7 @@ export class MaterialsService {
       throw new BadRequestException('Maaf data tidak di temukan');
     }
 
-    return toMaterialsResponse(data);
+    return toMaterialsOnlyResponse(data);
   }
 
   async create(data: CreateMaterialsDto) {
@@ -71,7 +79,7 @@ export class MaterialsService {
         cost: data.cost,
       },
     });
-    return toMaterialsResponse(material);
+    return toMaterialsOnlyResponse(material);
   }
 
   async update(id: bigint, data: UpdateMaterialsDto) {
@@ -80,13 +88,13 @@ export class MaterialsService {
       data,
     });
 
-    return toMaterialsResponse(material);
+    return toMaterialsOnlyResponse(material);
   }
 
   async remove(id: bigint) {
     const material = await prisma.rawMaterial.delete({
       where: { id: id },
     });
-    return toMaterialsResponse(material);
+    return toMaterialsOnlyResponse(material);
   }
 }

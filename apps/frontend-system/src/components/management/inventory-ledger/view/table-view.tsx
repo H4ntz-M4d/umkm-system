@@ -14,7 +14,7 @@ import { Search } from "lucide-react";
 import { DataTableLedgers } from "../data-table";
 import { columnsLedgers } from "../columns";
 import { LedgerFilters } from "@/lib/queries/inventory-ledgers/inventory-ledgers.query";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePaginationParams } from "@/hooks/use-paginations-params";
 import { useDebounce } from "@/hooks/use-debounce";
 import { InventoryLedgerResponse, z } from "@repo/schemas";
@@ -63,21 +63,22 @@ export default function TableView({
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const updateUrl = (
-    newParams: Record<string, string | number | undefined>,
-  ) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const updateUrl = useCallback(
+    (newParams: Record<string, string | number | undefined>) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    Object.entries(newParams).forEach(([key, value]) => {
-      if (value !== undefined) {
-        params.set(key, value.toString());
-      } else {
-        params.delete(key);
-      }
-    });
+      Object.entries(newParams).forEach(([key, value]) => {
+        if (value !== undefined) {
+          params.set(key, value.toString());
+        } else {
+          params.delete(key);
+        }
+      });
 
-    router.push(`${pathName}?${params.toString()}`, { scroll: false });
-  };
+      router.push(`${pathName}?${params.toString()}`, { scroll: false });
+    },
+    [pathName, router, searchParams],
+  );
 
   useEffect(() => {
     if (debouncedSearch !== currentFilters.search) {
@@ -86,7 +87,7 @@ export default function TableView({
         skip: 0,
       });
     }
-  }, [debouncedSearch, currentFilters.search]);
+  }, [debouncedSearch, currentFilters.search, updateUrl]);
 
   const pageCount = data?.meta?.total
     ? Math.ceil(data?.meta?.total / pagination.pageSize)
@@ -94,8 +95,8 @@ export default function TableView({
 
   return (
     <>
-      <div className="flex sm:flex-row flex-col items-center justify-between mt-5 bg-primary-foreground py-3 px-4 rounded-md shadow">
-        <InputGroup className="max-w-sm bg-background">
+      <div className="flex lg:flex-row flex-col-reverse items-center justify-between gap-3 mt-5 bg-primary-foreground py-3 px-4 rounded-md shadow">
+        <InputGroup className="lg:max-w-sm w-full bg-background">
           <InputGroupInput
             placeholder="Cari data"
             value={searchData}
@@ -105,7 +106,7 @@ export default function TableView({
             <Search />
           </InputGroupAddon>
         </InputGroup>
-        <div className="flex gap-3">
+        <div className="flex md:flex-row flex-col lg:justify-end justify-center items-center gap-3 w-full">
           <Select
             value={currentFilters.itemType}
             onValueChange={(value) => {
@@ -116,7 +117,7 @@ export default function TableView({
               }
             }}
           >
-            <SelectTrigger className="w-40 bg-background" size="lg">
+            <SelectTrigger className="lg:w-40 w-full bg-background" size="lg">
               <SelectValue placeholder="Tipe Item" />
             </SelectTrigger>
             <SelectContent>
@@ -135,11 +136,11 @@ export default function TableView({
               }
             }}
           >
-            <SelectTrigger className="w-40 bg-background" size="lg">
+            <SelectTrigger className="lg:w-40 w-full bg-background" size="lg">
               <SelectValue placeholder="Perubahan Data" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="IN">Semua Perubahan</SelectItem>
+              <SelectItem value="none">Semua Perubahan</SelectItem>
               <SelectItem value="IN">Masuk</SelectItem>
               <SelectItem value="OUT">Keluar</SelectItem>
             </SelectContent>
@@ -154,7 +155,7 @@ export default function TableView({
               }
             }}
           >
-            <SelectTrigger className="w-40 bg-background" size="lg">
+            <SelectTrigger className="lg:w-40 w-full bg-background" size="lg">
               <SelectValue placeholder="Sumber Data" />
             </SelectTrigger>
             <SelectContent>

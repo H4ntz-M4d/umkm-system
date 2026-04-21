@@ -1,6 +1,6 @@
 import { apiFetcher } from "@/lib/api/api.fetcher";
 import managementApi from "@/lib/api/api.management";
-import { InventoryLedgerResponse } from "@repo/schemas";
+import { InventoryLedgerResponse, SummaryResponse } from "@repo/schemas";
 
 export interface LedgerFilters {
   skip?: number;
@@ -12,9 +12,10 @@ export interface LedgerFilters {
 }
 
 export const getSummary = async () => {
-  const res = await managementApi
-    .get("api/v1/inventory-ledger/summary")
-    .json<any>();
+  const res = await apiFetcher(
+    managementApi.get(`api/v1/inventory-ledger/summary`),
+    SummaryResponse,
+  );
 
   return { data: res.data, total: res.meta.total };
 };

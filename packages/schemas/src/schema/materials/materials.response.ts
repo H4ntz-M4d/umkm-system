@@ -8,8 +8,9 @@ export const MaterialsData = z.object({
   name: z.string(),
   unit: z.string(),
   cost: z.string().transform((val) => new Decimal(val)),
+  stock: z.number().optional(),
   isActive: z.boolean(),
-})
+});
 
 export const MaterialsDataResponse = ApiSuccessResponse(z.array(MaterialsData));
 

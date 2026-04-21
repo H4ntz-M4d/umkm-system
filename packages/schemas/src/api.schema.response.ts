@@ -12,3 +12,14 @@ export function ApiSuccessResponse<T extends z.ZodTypeAny>(dataSchema: T) {
     }),
   });
 }
+
+export const ApiErrorResponse = z.object({
+  success: z.literal(false),
+  error: z.object({
+    code: z.string(),
+    message: z.string(),
+  }),
+  meta: z.object({
+    timeStamp: z.string(),
+  }),
+});

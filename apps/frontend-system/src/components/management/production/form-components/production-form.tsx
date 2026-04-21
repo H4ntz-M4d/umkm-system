@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldContent,
@@ -8,11 +7,9 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
   FieldTitle,
 } from "@/components/ui/field";
-import { Control, Controller, FormState, SubmitHandler } from "react-hook-form";
+import { Control, Controller, FormState } from "react-hook-form";
 import {
   Select,
   SelectContent,
@@ -27,37 +24,24 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
-import {
-  CreateProductionSchemaInput,
-  UpdateProductionSchemaInput,
-} from "@repo/schemas";
+import { CreateProductionSchemaInput } from "@repo/schemas";
 
 const status = [
   {
     id: "PLANNED",
-    label: "PLANNED",
+    label: "Direncanakan",
     description: "Dalam tahap perencanaan untuk diproduksi",
   },
   {
     id: "IN_PROGRESS",
-    label: "IN PROGRESS",
+    label: "Berjalan",
     description: "Sedang dalam progress untuk diproduksi",
-  },
-  {
-    id: "COMPLETED",
-    label: "COMPLETED",
-    description: "Telah selesai di produksi dan siap ditambahkan pada stok",
-  },
-  {
-    id: "CANCELLED",
-    label: "CANCELLED",
-    description: "Batal untuk diproduksi",
   },
 ];
 
 interface ProductionFormProps {
-  control: Control<CreateProductionSchemaInput | UpdateProductionSchemaInput>;
-  formState: FormState<CreateProductionSchemaInput | UpdateProductionSchemaInput>;
+  control: Control<CreateProductionSchemaInput>;
+  formState: FormState<CreateProductionSchemaInput>;
 }
 
 export default function ProductionForm({
@@ -83,7 +67,7 @@ export default function ProductionForm({
               value={field.value === 0 ? undefined : field.value?.toString()}
               onValueChange={(val) => field.onChange(Number(val))}
             >
-              <SelectTrigger size={"lg"}>
+              <SelectTrigger className="bg-card rounded-md">
                 <SelectValue placeholder={"Pilih Toko"} />
               </SelectTrigger>
               <SelectContent>
@@ -110,7 +94,7 @@ export default function ProductionForm({
               value={field.value === 0 ? undefined : field.value?.toString()}
               onValueChange={(val) => field.onChange(Number(val))}
             >
-              <SelectTrigger size={"lg"}>
+              <SelectTrigger className="bg-card rounded-md">
                 <SelectValue
                   placeholder={"Pilih produk yang ingin di produksi"}
                 />
@@ -138,56 +122,55 @@ export default function ProductionForm({
           </Field>
         )}
       />
-      <Controller
-        name={"quantityProduced"}
-        control={control}
-        render={({ field }) => (
-          <Field>
-            <FieldLabel>Jumlah diproduksi</FieldLabel>
-            <Input
-              type={"number"}
-              onWheel={(e) => (e.target as HTMLInputElement).blur()}
-              {...field}
-              value={field.value?.toString()}
-              onChange={(e) => field.onChange(Number(e.target.value))}
-            />
-            <FieldError>{errors.quantityProduced?.message}</FieldError>
-          </Field>
-        )}
-      />
-      <Controller
-        name={"status"}
-        control={control}
-        render={({ field }) => (
-          <Field>
-            <FieldLabel>Status Produksi</FieldLabel>
-            <RadioGroup
-              name={field.name}
-              value={field.value}
-              onValueChange={field.onChange}
-            >
-              {status.map((value) => (
-                <FieldLabel
-                  key={value.id}
-                  htmlFor={`form-rhf-radiogroup-${value.id}`}
-                >
-                  <Field orientation={"horizontal"}>
-                    <RadioGroupItem
-                      value={value.id}
-                      id={`form-rhf-radiogroup-${value.id}`}
-                    />
-                    <FieldContent>
-                      <FieldTitle>{value.label}</FieldTitle>
-                      <FieldDescription>{value.description}</FieldDescription>
-                    </FieldContent>
-                  </Field>
-                </FieldLabel>
-              ))}
-            </RadioGroup>
-            <FieldError>{errors.status?.message}</FieldError>
-          </Field>
-        )}
-      />
+      <Field orientation={"horizontal"}>
+        <Controller
+          name={"quantityProduced"}
+          control={control}
+          render={({ field }) => (
+            <Field>
+              <FieldLabel>Jumlah diproduksi</FieldLabel>
+              <Input
+                type={"number"}
+                className="bg-card"
+                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                {...field}
+                value={field.value?.toString()}
+                onChange={(e) => field.onChange(Number(e.target.value))}
+              />
+              <FieldError>{errors.quantityProduced?.message}</FieldError>
+            </Field>
+          )}
+        />
+        <Controller
+          name={"status"}
+          control={control}
+          render={({ field }) => (
+            <Field>
+              <FieldLabel>Status Produksi</FieldLabel>
+              <Select
+                value={field.value?.toString()}
+                onValueChange={(val) => field.onChange(val)}
+              >
+                <SelectTrigger className="bg-card rounded-md">
+                  <SelectValue
+                    placeholder={"Pilih produk yang ingin di produksi"}
+                  />
+                </SelectTrigger>
+                <SelectContent className={"py-2"}>
+                  {status.map((item, index) => {
+                    return (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.label}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <FieldError>{errors.status?.message}</FieldError>
+            </Field>
+          )}
+        />
+      </Field>
     </FieldGroup>
   );
 }

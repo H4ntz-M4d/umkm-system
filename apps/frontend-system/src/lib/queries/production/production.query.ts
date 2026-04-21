@@ -9,7 +9,7 @@ import {
 
 export const fetchProductionData = async (
   pageIndex = 0,
-  pageSize = 0,
+  pageSize = 10,
   search?: string,
 ) => {
   const res = await apiFetcher(
@@ -33,10 +33,32 @@ export const createProduction = async (data: CreateProductionSchemaInput) => {
 
 export const updateProduction = async (
   id: string,
+  data: CreateProductionSchemaInput,
+) => {
+  const res = await apiFetcher(
+    managementApi.put(`api/v1/production/${id}/edit`, { json: data }),
+    ProductionDataResponse,
+  );
+  return res;
+};
+
+export const updateProductionStatus = async (
+  id: string,
   data: UpdateProductionSchemaInput,
 ) => {
   const res = await apiFetcher(
-    managementApi.patch(`api/v1/production/${id}/edit`, { json: data }),
+    managementApi.patch(`api/v1/production/${id}/status-update`, { json: data }),
+    ProductionDataResponse,
+  );
+  return res;
+};
+
+export const updateProductionStatusCompleted = async (
+  id: string,
+  data: UpdateProductionSchemaInput,
+) => {
+  const res = await apiFetcher(
+    managementApi.post(`api/v1/production/${id}/status-completed`, { json: data }),
     ProductionDataResponse,
   );
   return res;
