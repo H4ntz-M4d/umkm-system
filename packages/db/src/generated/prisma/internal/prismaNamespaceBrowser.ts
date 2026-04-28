@@ -65,7 +65,10 @@ export const ModelName = {
   RawMaterialStock: 'RawMaterialStock',
   InventoryLedger: 'InventoryLedger',
   Production: 'Production',
-  ProductionMaterial: 'ProductionMaterial'
+  ProductionMaterial: 'ProductionMaterial',
+  ExpenseCategory: 'ExpenseCategory',
+  Expense: 'Expense',
+  ExpenseItem: 'ExpenseItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -259,6 +262,46 @@ export const ProductionMaterialScalarFieldEnum = {
 } as const
 
 export type ProductionMaterialScalarFieldEnum = (typeof ProductionMaterialScalarFieldEnum)[keyof typeof ProductionMaterialScalarFieldEnum]
+
+
+export const ExpenseCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  color: 'color',
+  isActive: 'isActive',
+  isMaterialsCategory: 'isMaterialsCategory',
+  createdAt: 'createdAt'
+} as const
+
+export type ExpenseCategoryScalarFieldEnum = (typeof ExpenseCategoryScalarFieldEnum)[keyof typeof ExpenseCategoryScalarFieldEnum]
+
+
+export const ExpenseScalarFieldEnum = {
+  id: 'id',
+  storeId: 'storeId',
+  date: 'date',
+  categoryId: 'categoryId',
+  description: 'description',
+  totalAmount: 'totalAmount',
+  createdAt: 'createdAt'
+} as const
+
+export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
+
+
+export const ExpenseItemScalarFieldEnum = {
+  id: 'id',
+  expenseId: 'expenseId',
+  rawMaterialId: 'rawMaterialId',
+  itemName: 'itemName',
+  quantity: 'quantity',
+  unit: 'unit',
+  price: 'price',
+  subtotal: 'subtotal'
+} as const
+
+export type ExpenseItemScalarFieldEnum = (typeof ExpenseItemScalarFieldEnum)[keyof typeof ExpenseItemScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -7,6 +7,8 @@ import { ProductsModule } from './products/products.module';
 import { MaterialModule } from './material/material.module';
 import { ProductionModule } from './production/production.module';
 import { InventoryLedgerModule } from './inventory-ledger/inventory-ledger.module';
+import { ExpenseCategoryModule } from './expense-category/expense-category.module';
+import { ExpenseModule } from './expense/expense.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { InventoryLedgerModule } from './inventory-ledger/inventory-ledger.modul
     MaterialModule,
     ProductionModule,
     InventoryLedgerModule,
+    ExpenseCategoryModule,
+    ExpenseModule,
   ],
 })
 export class AppModule {}
