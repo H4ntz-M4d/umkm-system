@@ -214,6 +214,9 @@ export class ProductionService {
   async updateStatusCompleted(id: bigint, data: UpdateProductionDto) {
     const isExisting = await prisma.production.findUnique({
       where: { id: id },
+      include: {
+        materials: true,
+      },
     });
 
     if (!isExisting) throw new HttpException('Maaf data tidak ditemukan', 404);
@@ -239,23 +242,7 @@ export class ProductionService {
     }
 
     const transaksi = await prisma.$transaction(async (tx) => {
-      const result = await tx.production.update({
-        where: { id: id },
-        data: {
-          status: status,
-        },
-        select: {
-          id: true,
-          status: true,
-          materials: true,
-          quantityProduced: true,
-          producedVariantId: true,
-          storeId: true,
-          createdAt: true,
-        },
-      });
-
-      const materialIds = result.materials.map((m) => m.rawMaterialId);
+      const materialIds = isExisting.materials.map((m) => m.rawMaterialId);
       const materialStocks = await tx.rawMaterialStock.findMany({
         where: {
           rawMaterialId: {
@@ -268,7 +255,7 @@ export class ProductionService {
         materialStocks.map((m) => [m.rawMaterialId, m]),
       );
 
-      for (const materialStock of result.materials) {
+      for (const materialStock of isExisting.materials) {
         const stocks = stockMaterials.get(materialStock.rawMaterialId);
         if (!stocks || stocks.stock < materialStock.quantityUsed) {
           throw new BadRequestException(
@@ -277,58 +264,53 @@ export class ProductionService {
         }
       }
 
+      for (const material of isExisting.materials) {
+        const updated = await tx.rawMaterialStock.updateMany({
+          where: {
+            rawMaterialId: material.rawMaterialId,
+            stock: {
+              gte: material.quantityUsed,
+            },
+          },
+          data: {
+            stock: {
+              decrement: material.quantityUsed,
+            },
+          },
+        });
+
+        if (updated.count === 0) {
+          throw new BadRequestException(
+            'Konflik stok (race condition), silahkan ulangi',
+          );
+        }
+      }
+
       await tx.inventoryLedger.createMany({
-        data: result.materials.map((material) => ({
-          storeId: result.storeId,
+        data: isExisting.materials.map((material) => ({
+          storeId: isExisting.storeId,
           itemType: 'RAW_MATERIAL',
           itemId: material.rawMaterialId,
           direction: 'OUT',
           quantity: material.quantityUsed,
           source: 'PRODUCTION',
-          referenceId: result.id,
+          referenceId: isExisting.id,
         })),
       });
 
-      await Promise.all(
-        result.materials.map((material) =>
-          tx.rawMaterialStock.update({
-            where: {
-              rawMaterialId: material.rawMaterialId,
-            },
-            data: {
-              stock: {
-                decrement: material.quantityUsed,
-              },
-            },
-          }),
-        ),
-      );
-
-      await tx.inventoryLedger.create({
-        data: {
-          storeId: result.storeId,
-          itemType: 'PRODUCT_VARIANT',
-          itemId: result.producedVariantId,
-          direction: 'IN',
-          quantity: result.quantityProduced,
-          source: 'PRODUCTION',
-          referenceId: result.id,
-        },
-      });
-
-      const productStock = await tx.productVariantStock.upsert({
+      await tx.productVariantStock.upsert({
         where: {
-          productVariantId: result.producedVariantId,
+          productVariantId: isExisting.producedVariantId,
         },
         update: {
           stock: {
-            increment: result.quantityProduced,
+            increment: isExisting.quantityProduced,
           },
         },
         create: {
-          productVariantId: result.producedVariantId,
-          stock: result.quantityProduced,
-          available_stock: result.quantityProduced,
+          productVariantId: isExisting.producedVariantId,
+          stock: isExisting.quantityProduced,
+          available_stock: isExisting.quantityProduced,
           reserved_stock: 0,
         },
         select: {
@@ -338,12 +320,22 @@ export class ProductionService {
         },
       });
 
-      await tx.productVariantStock.update({
-        where: {
-          productVariantId: result.producedVariantId,
-        },
+      await tx.inventoryLedger.create({
         data: {
-          available_stock: productStock.stock - productStock.reserved_stock,
+          storeId: isExisting.storeId,
+          itemType: 'PRODUCT_VARIANT',
+          itemId: isExisting.producedVariantId,
+          direction: 'IN',
+          quantity: isExisting.quantityProduced,
+          source: 'PRODUCTION',
+          referenceId: isExisting.id,
+        },
+      });
+
+      const result = await tx.production.update({
+        where: { id: id },
+        data: {
+          status: status,
         },
       });
 
