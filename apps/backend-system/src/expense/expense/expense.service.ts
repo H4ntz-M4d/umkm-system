@@ -7,10 +7,15 @@ import { toExponseResponse } from './expense.response';
 @Injectable()
 export class ExpenseService {
   async findAll(pagination: Pagination, search?: string) {
+    const skip = pagination.skip ?? 0;
+    const limit = pagination.limit ?? 10;
+
     const data = await prisma.expense.findMany({
+      skip: skip,
+      take: limit,
       where: {
         expenseCategory: {
-          name: {
+          description: {
             contains: search,
             mode: 'insensitive',
           },
@@ -32,7 +37,19 @@ export class ExpenseService {
       },
     });
 
-    return data.map(toExponseResponse);
+    const total = await prisma.expense.count();
+    const result = data.map(toExponseResponse);
+
+    return {
+      success: true,
+      data: result,
+      meta: {
+        skip: skip,
+        limit: limit,
+        total,
+        timeStamp: new Date().toISOString(),
+      },
+    };
   }
 
   async create(data: ExpenseDto) {

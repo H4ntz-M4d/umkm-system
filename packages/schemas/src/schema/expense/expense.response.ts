@@ -16,6 +16,7 @@ export const ExpenseData = z.object({
   id: z.string(),
   storeId: z.string(),
   categoryId: z.string(),
+  categoryName: z.string(),
   description: z.string().nullable(),
   totalAmount: z.string(),
   date: z.string(),

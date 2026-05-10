@@ -219,6 +219,18 @@ body {
       margin: 0;
   }
 
+    /* Add to global.css or a module */
+  .qty-input-wrapper input::-webkit-outer-spin-button,
+  .qty-input-wrapper input::-webkit-inner-spin-button {
+    -webkit-appearance: auto !important;
+    margin: initial !important;
+  }
+
+  .qty-input-wrapper input[type=number] {
+    -moz-appearance: auto;
+    appearance: auto;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
   }
