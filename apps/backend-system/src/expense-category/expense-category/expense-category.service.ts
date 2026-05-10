@@ -16,6 +16,7 @@ export class ExpenseCategoryService {
         description: true,
         color: true,
         isActive: true,
+        isMaterialsCategory: true,
         createdAt: true,
         _count: {
           select: {
@@ -25,8 +26,28 @@ export class ExpenseCategoryService {
       },
     });
 
-    const res = data.map(toExpenseCategoryResponse);
-    return res;
+    const totalExpense = await prisma.expense.groupBy({
+      by: ['categoryId'],
+      _sum: {
+        totalAmount: true,
+      },
+    });
+
+    const res = data.map((cat) => {
+      const sumData = totalExpense.find((item) => item.categoryId === cat.id);
+      return toExpenseCategoryResponse({
+        ...cat,
+        totalExpense: sumData?._sum.totalAmount ?? 0,
+      });
+    });
+
+    return {
+      success: true,
+      data: res,
+      meta: {
+        timeStamp: new Date().toISOString(),
+      },
+    };
   }
 
   async create(data: ExpenseCategoryDto) {

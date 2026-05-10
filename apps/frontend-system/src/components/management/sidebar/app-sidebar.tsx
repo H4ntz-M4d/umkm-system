@@ -94,7 +94,7 @@ const data = {
     },
     {
       title: "Pengeluaran",
-      url: "#",
+      url: "/management/expense",
       icon: Handbag,
     },
     {

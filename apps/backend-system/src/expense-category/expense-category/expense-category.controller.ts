@@ -27,7 +27,7 @@ export class ExpenseCategoryController {
     return this.expenseCategoryService.create(data);
   }
 
-  @Put()
+  @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: bigint,
     @Body() data: ExpenseCategoryDto,
@@ -35,12 +35,12 @@ export class ExpenseCategoryController {
     return this.expenseCategoryService.update(id, data);
   }
 
-  @Delete()
+  @Delete('/status/:id')
   removeByStatus(@Param('id', ParseIntPipe) id: bigint) {
     return this.expenseCategoryService.removeByStatus(id);
   }
 
-  @Delete()
+  @Delete(':id')
   removePermanent(@Param('id', ParseIntPipe) id: bigint) {
     return this.expenseCategoryService.removePermanent(id);
   }
