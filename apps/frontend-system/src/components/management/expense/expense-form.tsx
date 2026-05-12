@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,12 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   FieldGroup,
   Field,
@@ -34,9 +27,7 @@ import {
   FieldLegend,
 } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import {
-  CalendarIcon,
   Plus,
   Trash2,
   Upload,
@@ -44,12 +35,27 @@ import {
   Banknote,
   CreditCard,
   QrCode,
+  Boxes,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
+import { useExpenseCategoriesOperation } from "@/hooks/management/expense/use-expense-categories-operations";
+import { useMaterialsOperations } from "@/hooks/management/raw-materials/use-materials-operation";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { ExpenseSchema, ExpenseSchemaInput } from "@repo/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DatePickerSimple } from "@/components/ui/date-picker-simple";
+import { CreatableCombobox } from "@/components/ui/creatable-combobox";
+import { useImmer } from "use-immer";
+import { toIDR } from "../../../../utils/format-money";
+import { Label } from "@/components/ui/label";
+import { useExpenseOperation } from "@/hooks/management/expense/use-expense-operations";
+import { ExpenseFilters } from "@/lib/queries/expense/expense.query";
 
 interface AddExpenseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  filters: ExpenseFilters;
 }
 
 interface ExpenseItem {
@@ -60,29 +66,6 @@ interface ExpenseItem {
   price: string;
 }
 
-const categories = [
-  { value: "raw-material", label: "Raw Material", isMaterial: true },
-  { value: "utility", label: "Utility", isMaterial: false },
-  { value: "salary", label: "Salary", isMaterial: false },
-  { value: "marketing", label: "Marketing", isMaterial: false },
-  { value: "equipment", label: "Equipment", isMaterial: true },
-  { value: "logistics", label: "Logistics", isMaterial: false },
-];
-
-const stores = [
-  { value: "store1", label: "Store 1" },
-  { value: "store2", label: "Store 2" },
-  { value: "production", label: "Production House" },
-];
-
-const materials = [
-  { value: "wool-merino", label: "Wool Yarn - Premium Merino" },
-  { value: "cotton-organic", label: "Cotton Thread - Organic" },
-  { value: "bamboo-fiber", label: "Bamboo Fiber" },
-  { value: "alpaca-blend", label: "Alpaca Blend" },
-  { value: "silk-thread", label: "Silk Thread" },
-];
-
 const units = [
   { value: "kg", label: "Kilogram (kg)" },
   { value: "gram", label: "Gram (g)" },
@@ -92,343 +75,626 @@ const units = [
   { value: "bal", label: "Bal" },
 ];
 
+const initialData: ExpenseSchemaInput = {
+  storeId: "",
+  categoryId: "",
+  description: "",
+  totalAmount: 0,
+  date: new Date(),
+  expenseItem: [
+    {
+      rawMaterialId: "",
+      itemName: "",
+      quantity: 0,
+      unit: units[0].value,
+      price: 0,
+      subtotal: 0,
+    },
+  ],
+};
+
 export function AddExpenseDialog({
   open,
   onOpenChange,
+  filters,
 }: AddExpenseDialogProps) {
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [category, setCategory] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
-  const [items, setItems] = useState<ExpenseItem[]>([
-    { id: "1", name: "", quantity: "", unit: "kg", price: "" },
-  ]);
+  const [unitOptions, setUnitOptions] = useImmer(units);
 
-  const selectedCategory = categories.find((c) => c.value === category);
-  const isMaterialCategory = selectedCategory?.isMaterial || false;
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    getValues,
+  } = useForm<ExpenseSchemaInput>({
+    resolver: zodResolver(ExpenseSchema),
+    defaultValues: initialData,
+  });
+
+  const { fields, remove, append } = useFieldArray({
+    control,
+    name: "expenseItem",
+  });
+
+  const { storeList } = useStoreOperations({ enableStoreList: true });
+  const { dataExpenseCategories } = useExpenseCategoriesOperation({});
+  const { dataRawMaterialList } = useMaterialsOperations({
+    enabledRawMaterialList: true,
+  });
+  const { createExpenseData } = useExpenseOperation({ filters });
+
+  const selectedCategory = watch("categoryId");
+  const items = watch("expenseItem");
+
+  const isMaterialCategory = dataExpenseCategories?.data?.some(
+    (cat) => selectedCategory === cat.id && cat.isMaterialsCategory,
+  );
 
   const addItem = () => {
-    setItems([
-      ...items,
-      { id: String(Date.now()), name: "", quantity: "", unit: "kg", price: "" },
-    ]);
-  };
-
-  const removeItem = (id: string) => {
-    if (items.length > 1) {
-      setItems(items.filter((item) => item.id !== id));
-    }
-  };
-
-  const updateItem = (id: string, field: keyof ExpenseItem, value: string) => {
-    setItems(
-      items.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item,
-      ),
-    );
+    append({
+      rawMaterialId: "",
+      itemName: "",
+      quantity: 0,
+      unit: "",
+      price: 0,
+      subtotal: 0,
+    });
   };
 
   const calculateTotal = () => {
-    return items.reduce((total, item) => {
-      const qty = parseFloat(item.quantity) || 0;
-      const price = parseFloat(item.price) || 0;
+    return items?.reduce((total, item) => {
+      const qty = item.quantity || 0;
+      const price = item.price || 0;
       return total + qty * price;
     }, 0);
   };
 
+  const submitData = (data: ExpenseSchemaInput) => {
+    createExpenseData(data);
+  };
+
+  useEffect(() => {
+    setValue("totalAmount", calculateTotal());
+  }, [items, setValue, calculateTotal]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] sm:max-w-2xl bg-card overflow-hidden flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="text-xl">Tambah Pengeluaran Baru</DialogTitle>
-          <DialogDescription>
-            Catat pengeluaran baru dengan semua detail yang relevan.
-          </DialogDescription>
-        </DialogHeader>
-        <ScrollArea className="overflow-y-auto no-scrollbar">
-          <div className="space-y-6 py-4">
-            {/* Basic Info */}
-            <FieldGroup>
-              <Field>
-                <FieldLabel>Store</FieldLabel>
-                <Select>
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Select store" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {stores.map((store) => (
-                      <SelectItem key={store.value} value={store.value}>
-                        {store.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-
-              <FieldGroup className="grid gap-4 sm:grid-cols-2">
-                <Field>
-                  <FieldLabel>Date</FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal bg-background",
-                          !date && "text-muted-foreground",
-                        )}
+      <DialogContent className="max-h-[90vh] sm:max-w-2xl bg-card overflow-hidden flex flex-col p-0">
+        <form
+          onSubmit={handleSubmit(submitData, (error) => console.log(error))}
+          className="flex flex-1 flex-col overflow-hidden p-4"
+        >
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              Tambah Pengeluaran Baru
+            </DialogTitle>
+            <DialogDescription>
+              Catat pengeluaran baru dengan semua detail yang relevan.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="overflow-y-auto no-scrollbar">
+            <div className="space-y-6 py-4">
+              {/* Basic Info */}
+              <FieldGroup>
+                <Controller
+                  name="storeId"
+                  control={control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel>Store</FieldLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={(val) => field.onChange(val)}
                       >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </Field>
-
-                <Field>
-                  <FieldLabel>Category</FieldLabel>
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          <div className="flex items-center gap-2">
-                            {cat.label}
-                            {cat.isMaterial && (
-                              <Package className="h-3 w-3 text-secondary" />
-                            )}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </FieldGroup>
-            </FieldGroup>
-
-            {/* Materials Section - Only shows for material categories */}
-            {isMaterialCategory && (
-              <div className="rounded-lg border-2 border-secondary/30 bg-accent/50 p-4">
-                <div className="mb-4 flex items-center gap-2">
-                  <Package className="h-5 w-5 text-secondary" />
-                  <h3 className="font-semibold text-secondary">
-                    Raw Material Details
-                  </h3>
-                </div>
-                <p className="mb-4 text-sm text-muted-foreground">
-                  This expense will be linked to your inventory. Add the
-                  materials purchased below.
-                </p>
-
-                <div className="space-y-3">
-                  {items.map((item, index) => (
-                    <FieldGroup key={item.id} className="grid md:grid-cols-12 gap-2 items-end">
-                      <Field className="md:col-span-4">
-                        <FieldLabel className="text-xs">Material</FieldLabel>
-                        <Select
-                          value={item.name}
-                          onValueChange={(v) => updateItem(item.id, "name", v)}
-                        >
-                          <SelectTrigger className="bg-background">
-                            <SelectValue placeholder="Select material" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {materials.map((mat) => (
-                              <SelectItem key={mat.value} value={mat.value}>
-                                {mat.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </Field>
-
-                      <Field className="md:col-span-1">
-                        <FieldLabel className="text-xs">Quantity</FieldLabel>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          value={item.quantity}
-                          onChange={(e) =>
-                            updateItem(item.id, "quantity", e.target.value)
-                          }
-                          className="bg-background"
-                        />
-                      </Field>
-
-                      <Field className="md:col-span-2">
-                        <FieldLabel className="text-xs">Unit</FieldLabel>
-                        <Select
-                          value={item.unit}
-                          onValueChange={(v) => updateItem(item.id, "unit", v)}
-                        >
-                          <SelectTrigger className="bg-background">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {units.map((unit) => (
-                              <SelectItem key={unit.value} value={unit.value}>
-                                {unit.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </Field>
-
-                      <Field className="md:col-span-2">
-                        <FieldLabel className="text-xs">
-                          Harga per Unit
-                        </FieldLabel>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          value={item.price}
-                          onChange={(e) =>
-                            updateItem(item.id, "price", e.target.value)
-                          }
-                          className="bg-background"
-                        />
-                      </Field>
-
-                      <Field className="md:col-span-2">
-                        <FieldLabel className="text-xs">
-                          Sub Total
-                        </FieldLabel>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          value={item.price}
-                          onChange={(e) =>
-                            updateItem(item.id, "price", e.target.value)
-                          }
-                          className="bg-background"
-                        />
-                      </Field>
-
-                      <Field className="col-span-1">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => removeItem(item.id)}
-                          disabled={items.length === 1}
-                          className="text-muted-foreground hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </Field>
-                    </FieldGroup>
-                  ))}
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addItem}
-                    className="gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Item
-                  </Button>
-                </div>
-
-                {/* Subtotal */}
-                <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Total Amount
-                  </span>
-                  <span className="font-mono text-lg font-semibold text-card-foreground">
-                    {new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      minimumFractionDigits: 0,
-                    }).format(calculateTotal())}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Non-material amount field */}
-            {!isMaterialCategory && category && (
-              <Field>
-                <FieldLabel>Amount (IDR)</FieldLabel>
-                <Input
-                  type="number"
-                  placeholder="Enter amount"
-                  className="bg-background font-mono"
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select store" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {storeList?.data?.map((store) => (
+                            <SelectItem key={store.id} value={store.id}>
+                              {store.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  )}
                 />
-              </Field>
-            )}
 
-            {/* Payment Method */}
-            <FieldSet>
-              <FieldLegend>Payment Method</FieldLegend>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { value: "cash", label: "Cash", icon: Banknote },
-                  { value: "bank", label: "Bank Transfer", icon: CreditCard },
-                  { value: "qris", label: "QRIS", icon: QrCode },
-                ].map((method) => (
-                  <Button
-                    key={method.value}
-                    type="button"
-                    variant={
-                      paymentMethod === method.value ? "default" : "outline"
-                    }
-                    onClick={() => setPaymentMethod(method.value)}
-                    className={cn(
-                      "gap-2",
-                      paymentMethod === method.value
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-background",
+                <FieldGroup className="grid gap-4 sm:grid-cols-2">
+                  <Controller
+                    name="date"
+                    control={control}
+                    render={({ field }) => (
+                      <Field>
+                        <FieldLabel>Date</FieldLabel>
+                        <DatePickerSimple
+                          value={field.value}
+                          onValueChange={(val) => field.onChange(val)}
+                        />
+                      </Field>
                     )}
-                  >
-                    <method.icon className="h-4 w-4" />
-                    {method.label}
-                  </Button>
-                ))}
-              </div>
-            </FieldSet>
+                  />
 
-            {/* Notes */}
-            <Field>
-              <FieldLabel>Notes (Optional)</FieldLabel>
-              <Textarea
-                placeholder="Add any additional notes..."
-                className="min-h-[80px] bg-background"
-              />
-            </Field>
+                  <Controller
+                    name="categoryId"
+                    control={control}
+                    render={({ field }) => (
+                      <Field>
+                        <FieldLabel>Category</FieldLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={(val) => {
+                            field.onChange(val);
+                          }}
+                        >
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {dataExpenseCategories?.data?.map((cat) => (
+                              <SelectItem key={cat.id} value={cat.id}>
+                                <div className="flex items-center gap-2">
+                                  {cat.name}
+                                  {cat.isMaterialsCategory && (
+                                    <Package className="h-3 w-3 text-secondary" />
+                                  )}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                    )}
+                  />
+                </FieldGroup>
+              </FieldGroup>
 
-            {/* Receipt Upload */}
-            <Field>
-              <FieldLabel>Attach Receipt</FieldLabel>
-              <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-border bg-background p-8 transition-colors hover:border-primary/50 hover:bg-accent/50">
-                <div className="text-center">
-                  <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
-                  <p className="mt-2 text-sm font-medium text-card-foreground">
-                    Drop files here or click to upload
+              {/* Materials Section - Only shows for material categories */}
+              {isMaterialCategory && (
+                <div className="rounded-lg border-2 border-secondary/30 bg-accent/50 p-4">
+                  <div className="mb-4 flex items-center gap-2">
+                    <Package className="h-5 w-5 text-secondary" />
+                    <h3 className="font-semibold text-secondary">
+                      Raw Material Details
+                    </h3>
+                  </div>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    This expense will be linked to your inventory. Add the
+                    materials purchased below.
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    PNG, JPG, PDF up to 10MB
-                  </p>
+
+                  <div className="space-y-3">
+                    {fields.map((item, index) => (
+                      <FieldGroup
+                        key={item.id}
+                        className="grid md:grid-cols-12 gap-2 items-end"
+                      >
+                        <Controller
+                          name={`expenseItem.${index}.rawMaterialId`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-4">
+                              <FieldLabel className="text-xs">
+                                Material
+                              </FieldLabel>
+                              <Select
+                                value={field.value}
+                                onValueChange={(val) => field.onChange(val)}
+                              >
+                                <SelectTrigger className="bg-background">
+                                  <SelectValue placeholder="Select material" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {dataRawMaterialList?.data?.map((mat) => (
+                                    <SelectItem key={mat.id} value={mat.id}>
+                                      {mat.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name={`expenseItem.${index}.quantity`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-1">
+                              <FieldLabel className="text-xs">
+                                Quantity
+                              </FieldLabel>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                value={field.value}
+                                onChange={(e) => {
+                                  const qty = Number(e.target.value);
+                                  field.onChange(qty);
+
+                                  const price = getValues(
+                                    `expenseItem.${index}.price`,
+                                  );
+                                  setValue(
+                                    `expenseItem.${index}.subtotal`,
+                                    qty * price,
+                                  );
+                                }}
+                                className="bg-background"
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name={`expenseItem.${index}.unit`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-2">
+                              <FieldLabel className="text-xs">Unit</FieldLabel>
+                              <CreatableCombobox
+                                options={unitOptions}
+                                value={field.value}
+                                onChange={(val) => field.onChange(val)}
+                                onCreate={async (input) => {
+                                  const newUnit = {
+                                    value: input.toLowerCase(),
+                                    label: input,
+                                  };
+                                  setUnitOptions((draft) => {
+                                    draft.push(newUnit);
+                                  });
+                                  return newUnit;
+                                }}
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name={`expenseItem.${index}.price`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-2">
+                              <FieldLabel className="text-xs">
+                                Harga per Unit
+                              </FieldLabel>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                value={field.value}
+                                onChange={(e) => {
+                                  const price = Number(e.target.value);
+                                  field.onChange(price);
+
+                                  const qty = getValues(
+                                    `expenseItem.${index}.quantity`,
+                                  );
+                                  setValue(
+                                    `expenseItem.${index}.subtotal`,
+                                    qty * price,
+                                  );
+                                }}
+                                className="bg-background"
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name={`expenseItem.${index}.subtotal`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-2">
+                              <FieldLabel className="text-xs">
+                                Sub Total
+                              </FieldLabel>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                value={Number(field.value)}
+                                readOnly
+                                className="bg-background"
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Field className="col-span-1">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            type="button"
+                            onClick={() => remove(index)}
+                            disabled={fields.length === 1}
+                            className="text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </Field>
+                      </FieldGroup>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addItem}
+                      className="gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Item
+                    </Button>
+                  </div>
+
+                  {/* Subtotal */}
+                  <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Total Amount
+                    </span>
+                    <span className="font-mono text-lg font-semibold text-card-foreground">
+                      {toIDR(calculateTotal())}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Field>
-          </div>
-        </ScrollArea>
+              )}
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={() => onOpenChange(false)}>Save Expense</Button>
-        </DialogFooter>
+              {!isMaterialCategory && selectedCategory && (
+                <div className="rounded-lg border-2 border-secondary/30 bg-accent/50 p-4">
+                  <div className="mb-4 flex items-center gap-2">
+                    <Boxes className="h-5 w-5 text-secondary" />
+                    <h3 className="font-semibold text-secondary">
+                      Detail Item
+                    </h3>
+                  </div>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    Catat item dari pengeluaran anda di sini. Item di sini tidak
+                    terhubung dengan bahan baku
+                  </p>
+
+                  <div className="space-y-3">
+                    {fields.map((item, index) => (
+                      <FieldGroup
+                        key={item.id}
+                        className="grid grid-cols-6 md:grid-cols-12 gap-2 items-end"
+                      >
+                        <Controller
+                          name={`expenseItem.${index}.itemName`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-4">
+                              <FieldLabel className="text-xs">Item</FieldLabel>
+                              <Input
+                                className="bg-background"
+                                placeholder="Nama Item"
+                                {...field}
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name={`expenseItem.${index}.quantity`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-1">
+                              <FieldLabel className="text-xs">
+                                Quantity
+                              </FieldLabel>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                value={field.value}
+                                onChange={(e) => {
+                                  const qty = Number(e.target.value);
+                                  field.onChange(qty);
+
+                                  const price = getValues(
+                                    `expenseItem.${index}.price`,
+                                  );
+                                  setValue(
+                                    `expenseItem.${index}.subtotal`,
+                                    qty * price,
+                                  );
+                                }}
+                                className="bg-background"
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name={`expenseItem.${index}.unit`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-2">
+                              <FieldLabel className="text-xs">Unit</FieldLabel>
+                              <CreatableCombobox
+                                options={unitOptions}
+                                value={field.value}
+                                onChange={(val) => field.onChange(val)}
+                                onCreate={async (input) => {
+                                  const newUnit = {
+                                    value: input.toLowerCase(),
+                                    label: input,
+                                  };
+                                  setUnitOptions((draft) => {
+                                    draft.push(newUnit);
+                                  });
+                                  return newUnit;
+                                }}
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name={`expenseItem.${index}.price`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-2">
+                              <FieldLabel className="text-xs">
+                                Harga per Unit
+                              </FieldLabel>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                value={field.value}
+                                onChange={(e) => {
+                                  const price = Number(e.target.value);
+                                  field.onChange(price);
+
+                                  const qty = getValues(
+                                    `expenseItem.${index}.quantity`,
+                                  );
+                                  setValue(
+                                    `expenseItem.${index}.subtotal`,
+                                    qty * price,
+                                  );
+                                }}
+                                className="bg-background"
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name={`expenseItem.${index}.subtotal`}
+                          control={control}
+                          render={({ field }) => (
+                            <Field className="md:col-span-2">
+                              <FieldLabel className="text-xs">
+                                Sub Total
+                              </FieldLabel>
+                              <Input
+                                type="number"
+                                placeholder="0"
+                                value={Number(field.value)}
+                                readOnly
+                                className="bg-background"
+                              />
+                            </Field>
+                          )}
+                        />
+
+                        <Field className="col-span-1">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            type="button"
+                            onClick={() => remove(index)}
+                            disabled={fields.length === 1}
+                            className="text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </Field>
+                      </FieldGroup>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={addItem}
+                      className="gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Item
+                    </Button>
+                  </div>
+
+                  {/* Subtotal */}
+                  <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Total Amount
+                    </span>
+                    <span className="font-mono text-lg font-semibold text-card-foreground">
+                      {toIDR(calculateTotal())}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Payment Method */}
+              <FieldSet>
+                <FieldLegend>Payment Method</FieldLegend>
+                <div className="flex flex-wrap gap-3">
+                  {[
+                    { value: "cash", label: "Cash", icon: Banknote },
+                    { value: "bank", label: "Bank Transfer", icon: CreditCard },
+                    { value: "qris", label: "QRIS", icon: QrCode },
+                  ].map((method) => (
+                    <Button
+                      key={method.value}
+                      type="button"
+                      variant={
+                        paymentMethod === method.value ? "default" : "outline"
+                      }
+                      onClick={() => setPaymentMethod(method.value)}
+                      className={cn(
+                        "gap-2",
+                        paymentMethod === method.value
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background",
+                      )}
+                    >
+                      <method.icon className="h-4 w-4" />
+                      {method.label}
+                    </Button>
+                  ))}
+                </div>
+              </FieldSet>
+
+              {/* Notes */}
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>Notes (Optional)</FieldLabel>
+                    <Textarea
+                      placeholder="Add any additional notes..."
+                      className="min-h-20 bg-background"
+                      {...field}
+                    />
+                  </Field>
+                )}
+              />
+
+              {/* Receipt Upload */}
+              <Field>
+                <FieldLabel>Attach Receipt</FieldLabel>
+                <Label className="flex items-center justify-center rounded-lg border-2 border-dashed border-border bg-background p-8 transition-colors hover:border-primary/50 hover:bg-accent/50">
+                  <div className="text-center">
+                    <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
+                    <p className="mt-2 text-sm font-medium text-card-foreground">
+                      Drop files here or click to upload
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      PNG, JPG, PDF up to 10MB
+                    </p>
+                  </div>
+                  <Input type="file" className="hidden" />
+                </Label>
+              </Field>
+            </div>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">Save Expense</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

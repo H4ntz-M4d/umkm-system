@@ -23,7 +23,9 @@ export const ExpenseData = z.object({
   createdAt: z.string(),
 });
 
-export const ExpenseDetailData = ExpenseData.extend({
+export const ExpenseDetailData = ExpenseData.omit({
+  categoryName: true,
+}).extend({
   expenseItem: z.array(ExpenseItemData),
 });
 

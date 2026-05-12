@@ -1,8 +1,8 @@
-import z, { string } from "zod";
+import z from "zod";
 
 export const ExpenseItemSchema = z.object({
   rawMaterialId: z.string().optional(),
-  itemName: z.string().min(3).optional(),
+  itemName: z.string().optional(),
   quantity: z.number(),
   unit: z.string(),
   price: z.number(),
@@ -18,5 +18,5 @@ export const ExpenseSchema = z.object({
   expenseItem: z.array(ExpenseItemSchema),
 });
 
-export type ExpenseSchemaInput = z.infer<typeof ExpenseSchema>;
+export type ExpenseSchemaInput = z.input<typeof ExpenseSchema>;
 export type ExpenseItemSchemaInput = z.infer<typeof ExpenseItemSchema>;

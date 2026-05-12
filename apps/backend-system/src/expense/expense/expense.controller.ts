@@ -17,8 +17,20 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Get()
-  findAll(@Query() pagination: Pagination, @Query('search') search?: string) {
-    return this.expenseService.findAll(pagination, search);
+  findAll(
+    @Query() pagination: Pagination,
+    @Query('search') search?: string,
+    @Query('category') category?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+  ) {
+    return this.expenseService.findAll(
+      pagination,
+      search,
+      category,
+      dateFrom,
+      dateTo,
+    );
   }
 
   @Post()

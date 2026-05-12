@@ -16,7 +16,7 @@ export const columnsExpense = (
     accessorKey: "date",
     header: "Tanggal",
     cell: ({ row }) => (
-      <p>{dayjs(row.original.createdAt).locale("id").format("DD MMMM YYYY")}</p>
+      <p>{dayjs(row.original.date).locale("id").format("DD MMMM YYYY")}</p>
     ),
   },
   {
@@ -25,7 +25,12 @@ export const columnsExpense = (
   },
   {
     accessorKey: "description",
-    header: "Deskripsi",
+    header: () => <p className="text-start">Deskripsi</p>,
+    cell: ({ row }) => (
+      <div className="text-start max-w-70">
+        <p className="w-full truncate">{row.original.description}</p>
+      </div>
+    )
   },
   {
     accessorKey: "totalAmount",

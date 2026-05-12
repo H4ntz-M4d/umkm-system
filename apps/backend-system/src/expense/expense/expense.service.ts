@@ -1,51 +1,68 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { prisma } from '@repo/db';
+import { Prisma, prisma } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
 import { ExpenseDto } from 'expense/dto/expense.dto';
 import { toExponseResponse } from './expense.response';
+import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
 
 @Injectable()
 export class ExpenseService {
-  async findAll(pagination: Pagination, search?: string) {
+  async findAll(
+    pagination: Pagination,
+    search?: string,
+    category?: string,
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
     const skip = pagination.skip ?? 0;
     const limit = pagination.limit ?? 10;
 
-    const data = await prisma.expense.findMany({
-      skip: skip,
-      take: limit,
-      where: {
-        expenseCategory: {
-          description: {
+    const whereClause: Prisma.ExpenseWhereInput = {
+      expenseCategory: category
+        ? {
+            name: { contains: category, mode: 'insensitive' },
+          }
+        : undefined,
+      description: search
+        ? {
             contains: search,
             mode: 'insensitive',
-          },
-        },
+          }
+        : undefined,
+      date: {
+        gte: dateFrom ? toStartOfDay(dateFrom) : undefined,
+        lte: dateTo ? toEndOfDay(dateTo) : undefined,
       },
-      select: {
-        id: true,
-        storeId: true,
-        categoryId: true,
-        description: true,
-        totalAmount: true,
-        date: true,
-        createdAt: true,
-        expenseCategory: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
+    };
 
-    const total = await prisma.expense.count();
+    const [data, total] = await Promise.all([
+      prisma.expense.findMany({
+        skip,
+        take: limit,
+        where: whereClause,
+        orderBy: { date: 'desc' },
+        select: {
+          id: true,
+          storeId: true,
+          categoryId: true,
+          description: true,
+          totalAmount: true,
+          date: true,
+          createdAt: true,
+          expenseCategory: { select: { name: true } },
+        },
+      }),
+      prisma.expense.count({ where: whereClause }),
+    ]);
+
     const result = data.map(toExponseResponse);
 
     return {
       success: true,
       data: result,
       meta: {
-        skip: skip,
-        limit: limit,
+        skip,
+        limit,
         total,
         timeStamp: new Date().toISOString(),
       },

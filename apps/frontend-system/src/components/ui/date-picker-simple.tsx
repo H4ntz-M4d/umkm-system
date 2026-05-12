@@ -1,20 +1,24 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { format } from "date-fns"
+import * as React from "react";
+import { format } from "date-fns";
 
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Field } from "@/components/ui/field"
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Field } from "@/components/ui/field";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
-export function DatePickerSimple() {
-  const [date, setDate] = React.useState<Date>()
-
+export function DatePickerSimple({
+  value,
+  onValueChange,
+}: {
+  value?: Date | undefined;
+  onValueChange?: (date: Date | undefined) => void;
+}) {
   return (
     <Field className="mx-auto w-44">
       <Popover>
@@ -24,18 +28,18 @@ export function DatePickerSimple() {
             id="date-picker-simple"
             className="justify-start font-normal"
           >
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
+            {value ? format(value, "PPP") : <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
-            selected={date}
-            onSelect={setDate}
-            defaultMonth={date}
+            selected={value}
+            onSelect={onValueChange}
+            defaultMonth={value}
           />
         </PopoverContent>
       </Popover>
     </Field>
-  )
+  );
 }
