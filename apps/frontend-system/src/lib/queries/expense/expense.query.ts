@@ -32,3 +32,12 @@ export const createExpense = async (data: ExpenseSchemaInput) => {
 
   return res;
 };
+
+export const removeExpense = async (id: string) => {
+  const res = await apiFetcher(
+    managementApi.delete(`api/v1/expense/${id}`),
+    SingleExpenseResponse,
+  );
+
+  return res;
+}

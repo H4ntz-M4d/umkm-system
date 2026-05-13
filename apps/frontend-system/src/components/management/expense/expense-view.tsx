@@ -27,7 +27,7 @@ export default function ExpenseView({ filters }: { filters: ExpenseFilters }) {
   const startDate = searchParams.get("startDate") || "";
   const endDate = searchParams.get("endDate") || "";
 
-  const { fetchExpenseData } = useExpenseOperation({ filters });
+  const { fetchExpenseData, removeExpenseData } = useExpenseOperation({ filters });
   const { dataExpenseCategories } = useExpenseCategoriesOperation({});
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
@@ -120,7 +120,7 @@ export default function ExpenseView({ filters }: { filters: ExpenseFilters }) {
       </div>
       <div className="bg-muted/50 rounded-xl md:min-h-min">
         <DataTableExpense
-          columns={columnsExpense()}
+          columns={columnsExpense(removeExpenseData)}
           data={fetchExpenseData?.data ?? []}
           pageCount={pageCount}
           pagination={pagination}

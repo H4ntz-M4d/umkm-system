@@ -77,30 +77,30 @@ export class ExpenseService {
         },
       });
 
-      if (category?.isMaterialsCategory === true) {
-        const expense = await tx.expense.create({
-          data: {
-            storeId: BigInt(data.storeId),
-            categoryId: BigInt(data.categoryId),
-            description: data.description,
-            totalAmount: data.totalAmount,
-            date: data.date,
-            expenseItem: {
-              create: data.expenseItem.map((item) => ({
-                rawMaterialId: item.rawMaterialId
-                  ? BigInt(item.rawMaterialId)
-                  : null,
-                itemName: item.itemName,
-                quantity: item.quantity,
-                unit: item.unit,
-                price: item.price,
-                subtotal: item.subtotal,
-              })),
-            },
+      const expense = await tx.expense.create({
+        data: {
+          storeId: BigInt(data.storeId),
+          categoryId: BigInt(data.categoryId),
+          description: data.description,
+          totalAmount: data.totalAmount,
+          date: data.date,
+          expenseItem: {
+            create: data.expenseItem.map((item) => ({
+              rawMaterialId: item.rawMaterialId
+                ? BigInt(item.rawMaterialId)
+                : null,
+              itemName: item.itemName,
+              quantity: item.quantity,
+              unit: item.unit,
+              price: item.price,
+              subtotal: item.subtotal,
+            })),
           },
-          include: { expenseItem: true },
-        });
+        },
+        include: { expenseItem: true },
+      });
 
+      if (category?.isMaterialsCategory === true) {
         for (const item of data.expenseItem) {
           if (item.rawMaterialId) {
             await tx.rawMaterialStock.upsert({
@@ -172,33 +172,8 @@ export class ExpenseService {
             });
           }
         }
-
-        return expense;
-      } else {
-        const expense = await tx.expense.create({
-          data: {
-            storeId: BigInt(data.storeId),
-            categoryId: BigInt(data.categoryId),
-            description: data.description,
-            totalAmount: data.totalAmount,
-            date: data.date,
-            expenseItem: {
-              create: data.expenseItem.map((item) => ({
-                rawMaterialId: item.rawMaterialId
-                  ? BigInt(item.rawMaterialId)
-                  : null,
-                itemName: item.itemName,
-                quantity: item.quantity,
-                unit: item.unit,
-                price: item.price,
-                subtotal: item.subtotal,
-              })),
-            },
-          },
-          include: { expenseItem: true },
-        });
-        return expense;
       }
+      return expense;
     });
 
     return transaction;
@@ -252,6 +227,7 @@ export class ExpenseService {
 
         const result = await tx.expense.delete({
           where: { id },
+          include: { expenseItem: true },
         });
 
         return result;
@@ -261,6 +237,7 @@ export class ExpenseService {
     } else {
       const result = await prisma.expense.delete({
         where: { id },
+        include: { expenseItem: true },
       });
 
       return result;

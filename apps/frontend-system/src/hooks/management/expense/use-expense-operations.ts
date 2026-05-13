@@ -2,6 +2,7 @@ import {
   createExpense,
   ExpenseFilters,
   fetchExpense,
+  removeExpense,
 } from "@/lib/queries/expense/expense.query";
 import {
   keepPreviousData,
@@ -34,7 +35,18 @@ export const useExpenseOperation = ({
     },
     onError: (err) => {
       console.log(err);
-    }
+    },
+  });
+
+  const removeExpenseMutation = useMutation({
+    mutationFn: (id: string) => removeExpense(id),
+    onSuccess: () => {
+      invalidate();
+      toast.success("Catatan pengeluaran berhasil dihapus");
+    },
+    onError: (err) => {
+      console.log(err);
+    },
   });
 
   return {
@@ -43,5 +55,8 @@ export const useExpenseOperation = ({
 
     createExpenseData: createExpenseMutation.mutate,
     isLoadingCreateExpense: createExpenseMutation.isPending,
+
+    removeExpenseData: removeExpenseMutation.mutate,
+    isLoadingRemoveExpense: removeExpenseMutation.isPending,
   };
 };
