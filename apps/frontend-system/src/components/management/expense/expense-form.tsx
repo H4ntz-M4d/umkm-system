@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +51,7 @@ import { toIDR } from "../../../../utils/format-money";
 import { Label } from "@/components/ui/label";
 import { useExpenseOperation } from "@/hooks/management/expense/use-expense-operations";
 import { ExpenseFilters } from "@/lib/queries/expense/expense.query";
+import { Switch } from "@/components/ui/switch";
 
 interface AddExpenseDialogProps {
   open: boolean;
@@ -108,6 +109,7 @@ export function AddExpenseDialog({
     watch,
     setValue,
     getValues,
+    resetField,
   } = useForm<ExpenseSchemaInput>({
     resolver: zodResolver(ExpenseSchema),
     defaultValues: initialData,
@@ -127,6 +129,7 @@ export function AddExpenseDialog({
 
   const selectedCategory = watch("categoryId");
   const items = watch("expenseItem");
+  const [showMaterials, setShowMaterials] = useState(true);
 
   const isMaterialCategory = dataExpenseCategories?.data?.some(
     (cat) => selectedCategory === cat.id && cat.isMaterialsCategory,
@@ -152,12 +155,13 @@ export function AddExpenseDialog({
   };
 
   const submitData = (data: ExpenseSchemaInput) => {
-    createExpenseData(data);
-  };
+    const finalData = {
+      ...data,
+      totalAmount: calculateTotal(),
+    };
 
-  useEffect(() => {
-    setValue("totalAmount", calculateTotal());
-  }, [items, setValue, calculateTotal]);
+    createExpenseData(finalData);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -211,7 +215,7 @@ export function AddExpenseDialog({
                       <Field>
                         <FieldLabel>Date</FieldLabel>
                         <DatePickerSimple
-                          value={field.value}
+                          value={field.value as Date}
                           onValueChange={(val) => field.onChange(val)}
                         />
                       </Field>
@@ -272,32 +276,47 @@ export function AddExpenseDialog({
                         key={item.id}
                         className="grid md:grid-cols-12 gap-2 items-end"
                       >
-                        <Controller
-                          name={`expenseItem.${index}.rawMaterialId`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-4">
-                              <FieldLabel className="text-xs">
-                                Material
-                              </FieldLabel>
-                              <Select
-                                value={field.value}
-                                onValueChange={(val) => field.onChange(val)}
-                              >
-                                <SelectTrigger className="bg-background">
-                                  <SelectValue placeholder="Select material" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {dataRawMaterialList?.data?.map((mat) => (
-                                    <SelectItem key={mat.id} value={mat.id}>
-                                      {mat.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </Field>
-                          )}
-                        />
+                        {showMaterials ? (
+                          <Controller
+                            name={`expenseItem.${index}.rawMaterialId`}
+                            control={control}
+                            render={({ field }) => (
+                              <Field className="md:col-span-4">
+                                <FieldLabel className="text-xs">
+                                  Material
+                                </FieldLabel>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={(val) => field.onChange(val)}
+                                >
+                                  <SelectTrigger className="bg-background">
+                                    <SelectValue placeholder="Select material" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {dataRawMaterialList?.data?.map((mat) => (
+                                      <SelectItem key={mat.id} value={mat.id}>
+                                        {mat.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </Field>
+                            )}
+                          />
+                        ) : (
+                          <Controller
+                            name={`expenseItem.${index}.itemName`}
+                            control={control}
+                            render={({ field }) => (
+                              <Field className="md:col-span-4">
+                                <FieldLabel className="text-xs">
+                                  Material
+                                </FieldLabel>
+                                <Input {...field} placeholder="Nama Item" />
+                              </Field>
+                            )}
+                          />
+                        )}
 
                         <Controller
                           name={`expenseItem.${index}.quantity`}
@@ -404,6 +423,14 @@ export function AddExpenseDialog({
                         />
 
                         <Field className="col-span-1">
+                          <Switch
+                            checked={showMaterials}
+                            onCheckedChange={() => {
+                              resetField(`expenseItem.${index}.rawMaterialId`);
+                              resetField(`expenseItem.${index}.itemName`);
+                              setShowMaterials(!showMaterials);
+                            }}
+                          />
                           <Button
                             variant="outline"
                             size="icon"
@@ -430,7 +457,7 @@ export function AddExpenseDialog({
                     </Button>
                   </div>
 
-                  {/* Subtotal */}
+                  {/* Total */}
                   <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
                     <span className="text-sm font-medium text-muted-foreground">
                       Total Amount
@@ -607,7 +634,7 @@ export function AddExpenseDialog({
                     </Button>
                   </div>
 
-                  {/* Subtotal */}
+                  {/* Total */}
                   <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
                     <span className="text-sm font-medium text-muted-foreground">
                       Total Amount
