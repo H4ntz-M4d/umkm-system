@@ -11,7 +11,7 @@ export const fetchUsersEmployee = async (pageIndex = 0, pageSize = 10, search?: 
     const skip = pageIndex * pageSize
     const res = await apiFetcher(
       managementApi.get(
-        `api/v1/users/employees?skip=${skip}&limit=${pageSize}&search=${search}`,
+        `v1/users/employees?skip=${skip}&limit=${pageSize}&search=${search}`,
       ),
       AllUsersDataResponse
     );
@@ -22,7 +22,7 @@ export const fetchUsersCustomer = async (pageIndex = 0, pageSize = 10, search?: 
     const skip = pageIndex * pageSize
     const res = await apiFetcher(
       managementApi.get(
-        `api/v1/users/customers?skip=${skip}&limit=${pageSize}&search=${search}`,
+        `v1/users/customers?skip=${skip}&limit=${pageSize}&search=${search}`,
       ),
       AllUsersDataResponse,
     );
@@ -31,7 +31,7 @@ export const fetchUsersCustomer = async (pageIndex = 0, pageSize = 10, search?: 
 
 export const fetchUserById = async (userId: string) => {
     const res = await apiFetcher(
-      managementApi.get(`api/v1/users/${userId}`),
+      managementApi.get(`v1/users/${userId}`),
       SingleUsersWithEmployeeDataResponse,
     );
     return res
@@ -39,7 +39,7 @@ export const fetchUserById = async (userId: string) => {
 
 export const createStaff = async (formData: FormData) => {
     const res = await apiFetcher(
-      managementApi.post(`api/v1/users/`, { body: formData }),
+      managementApi.post(`v1/users/`, { body: formData }),
       SingleEmployeeDataResponse
     );
     return res
@@ -47,7 +47,7 @@ export const createStaff = async (formData: FormData) => {
 
 export const updateStaff = async (formData: FormData, id: string) => {
     const res = await apiFetcher(
-      managementApi.patch(`api/v1/users/${id}`, { body: formData }),
+      managementApi.patch(`v1/users/${id}`, { body: formData }),
       SingleEmployeeDataResponse
     )
     return res
@@ -55,7 +55,7 @@ export const updateStaff = async (formData: FormData, id: string) => {
 
 export const removeStaff = async (userId: string) => {
     const res = await apiFetcher(
-        managementApi.delete(`api/v1/users/${userId}`),
+        managementApi.delete(`v1/users/${userId}`),
         SingleUsersDataResponse
     )
     return res

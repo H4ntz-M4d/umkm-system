@@ -22,7 +22,7 @@ export async function proxy(request: NextRequest) {
     if ((!accessToken || isTokenExpired(accessToken)) && refreshToken) {
       try {
         const refreshRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}auth/management/ref`,
+          `${process.env.SERVER_API_URL}auth/management/ref`,
           {
             method: "POST",
             headers: {
@@ -67,7 +67,7 @@ export async function proxy(request: NextRequest) {
     if ((!accessToken || isTokenExpired(accessToken)) && refreshToken) {
       try {
         const refreshRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}auth/c/ref`,
+          `${process.env.SERVER_API_URL}auth/c/ref`,
           {
             method: "POST",
             headers: {

@@ -16,7 +16,7 @@ import { UserRole } from '@repo/db';
 import type { Request, Response } from 'express';
 import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
 
-@Controller('auth/')
+@Controller('api/auth/')
 export class AuthController {
   constructor(private service: AuthService) {}
 

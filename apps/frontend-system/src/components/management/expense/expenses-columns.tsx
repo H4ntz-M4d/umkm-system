@@ -62,12 +62,6 @@ export const columnsExpense = (
       return (
         <div className="flex gap-2 justify-center">
           <Button
-            variant={"outline"}
-            // onClick={() => setIdData(row.original.id.toString())}
-          >
-            Edit
-          </Button>
-          <Button
             variant={"destructive"}
             onClick={() => deleteById(row.original.id.toString())}
           >

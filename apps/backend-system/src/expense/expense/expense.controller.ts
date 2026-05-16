@@ -33,6 +33,11 @@ export class ExpenseController {
     );
   }
 
+  @Get('/summary')
+  summary() {
+    return this.expenseService.summary();
+  }
+
   @Post()
   create(@Body() data: ExpenseDto) {
     return this.expenseService.create(data);

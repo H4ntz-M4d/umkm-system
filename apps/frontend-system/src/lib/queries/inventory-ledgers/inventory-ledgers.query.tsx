@@ -13,7 +13,7 @@ export interface LedgerFilters {
 
 export const getSummary = async () => {
   const res = await apiFetcher(
-    managementApi.get(`api/v1/inventory-ledger/summary`),
+    managementApi.get(`v1/inventory-ledger/summary`),
     SummaryResponse,
   );
 
@@ -26,7 +26,7 @@ export const fetchInventoryLedger = async (filters: LedgerFilters) => {
   );
   const queryFilters = new URLSearchParams(cleanFilters).toString();
   const res = await apiFetcher(
-    managementApi.get(`api/v1/inventory-ledger?${queryFilters}`),
+    managementApi.get(`v1/inventory-ledger?${queryFilters}`),
     InventoryLedgerResponse,
   );
 

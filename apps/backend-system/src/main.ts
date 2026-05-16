@@ -8,16 +8,16 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ZodValidationPipe())
-  app.useGlobalInterceptors(new ResponseInterceptor())
-  app.useGlobalFilters(new GlobalExceptionFilter())
-  app.use(cookieParser())
+  app.useGlobalPipes(new ZodValidationPipe());
+  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalFilters(new GlobalExceptionFilter());
+  app.use(cookieParser());
   app.enableCors({
-    origin: "http://localhost:3000",
-    credentials: true
-  })
+    origin: ['http://localhost:3000', 'http://192.168.100.31:3000'],
+    credentials: true,
+  });
 
-  await app.listen(process.env.PORT ?? 3001);
+  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
 }
 
 (BigInt.prototype as any).toJSON = function () {

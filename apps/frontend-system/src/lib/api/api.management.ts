@@ -1,8 +1,12 @@
 import ky from "ky";
 import { useAuth } from "@/lib/queries/auth/useAuth";
 
+const baseURL = typeof window === "undefined"
+  ? process.env.SERVER_API_URL              // server → http://localhost:5000/api
+  : `${process.env.NEXT_PUBLIC_API_URL}/`;
+
 export const managementApi = ky.create({
-  prefixUrl: process.env.NEXT_PUBLIC_API_URL,
+  prefixUrl: baseURL,
   credentials: "include",
   hooks: {
     afterResponse: [
@@ -13,7 +17,7 @@ export const managementApi = ky.create({
         ) {
           try {
             await ky.post(
-              `${process.env.NEXT_PUBLIC_API_URL}auth/management/ref`,
+              `${baseURL}auth/management/ref`,
               {
                 credentials: "include",
               },
