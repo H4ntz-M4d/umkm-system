@@ -16,7 +16,7 @@ export const fetchProduct = async (
   const skip = pageIndex * pageSize;
   const res = await apiFetcher(
     managementApi.get(
-      `api/v1/products?skip=${skip}&limit=${pageSize}&search=${search}`,
+      `v1/products?skip=${skip}&limit=${pageSize}&search=${search}`,
     ),
     AllProductResponse,
   );
@@ -25,7 +25,7 @@ export const fetchProduct = async (
 
 export const fetchProductVariantList = async () => {
   const res = await apiFetcher(
-    managementApi.get('api/v1/products/list'),
+    managementApi.get('v1/products/list'),
     ProductVariantResponse
   )
 
@@ -34,7 +34,7 @@ export const fetchProductVariantList = async () => {
 
 export const fetchProductById = async (id: string) => {
   const res = await apiFetcher(
-    managementApi.get(`api/v1/products/${id}/details`),
+    managementApi.get(`v1/products/${id}/details`),
     ProductResponseById,
   );
   return res;
@@ -42,7 +42,7 @@ export const fetchProductById = async (id: string) => {
 
 export const createProduct = async (data: CreateProductSchemaInput) => {
   const res = await apiFetcher(
-    managementApi.post("api/v1/products", { json: data }),
+    managementApi.post("v1/products", { json: data }),
     ProductsResponse,
   );
   return res;
@@ -53,7 +53,7 @@ export const updateProduct = async (
   data: CreateProductSchemaInput,
 ) => {
   const res = await apiFetcher(
-    managementApi.put(`api/v1/products/${id}`, { json: data }),
+    managementApi.put(`v1/products/${id}`, { json: data }),
     ProductsResponse,
   );
   return res;
@@ -72,14 +72,14 @@ export const uploadImage = async ({
   data.append("variantIds", JSON.stringify(variantIds));
   files.forEach((file) => data.append("images", file));
   const res = await managementApi
-    .patch(`api/v1/products/${productId}/upload`, { body: data })
+    .patch(`v1/products/${productId}/upload`, { body: data })
     .json<any>();
   return res;
 };
 
 export const deleteProduct = async (id: string) => {
   const res = await apiFetcher(
-    managementApi.delete(`api/v1/products/${id}`),
+    managementApi.delete(`v1/products/${id}`),
     ProductsResponse,
   );
   return res;

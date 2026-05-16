@@ -16,7 +16,7 @@ export const fetchAllMaterials = async (
   const skip = pageIndex * pageSize;
   const res = await apiFetcher(
     managementApi.get(
-      `api/v1/materials?skip=${skip}&limit=${pageSize}&search=${search}`,
+      `v1/materials?skip=${skip}&limit=${pageSize}&search=${search}`,
     ),
     MaterialsDataResponse,
   );
@@ -25,7 +25,7 @@ export const fetchAllMaterials = async (
 
 export const fetchRawMaterialList = async () => {
   const res = await apiFetcher(
-    managementApi.get("api/v1/materials/list"),
+    managementApi.get("v1/materials/list"),
     RawMaterialListResponse
   );
   return res;
@@ -33,7 +33,7 @@ export const fetchRawMaterialList = async () => {
 
 export const fetchMaterialsById = async (id: string) => {
   const res = await apiFetcher(
-    managementApi.get(`api/v1/materials/${id}`),
+    managementApi.get(`v1/materials/${id}`),
     SingleMaterialsDataResponse,
   );
   return res
@@ -41,7 +41,7 @@ export const fetchMaterialsById = async (id: string) => {
 
 export const createRawMaterial = async (data: CreateMaterialsSchemaInput) => {
   const res = await apiFetcher(
-    managementApi.post("api/v1/materials", { json: data }),
+    managementApi.post("v1/materials", { json: data }),
     SingleMaterialsDataResponse,
   );
 
@@ -53,7 +53,7 @@ export const updateRawMaterial = async (
   data: UpdateMaterialsSchemaInput,
 ) => {
   const res = await apiFetcher(
-    managementApi.patch(`api/v1/materials/${id}`, { json: data }),
+    managementApi.patch(`v1/materials/${id}`, { json: data }),
     SingleMaterialsDataResponse,
   );
 
@@ -62,7 +62,7 @@ export const updateRawMaterial = async (
 
 export const deleteRawMaterial = async (id: string) => {
   const res = await apiFetcher(
-    managementApi.delete(`api/v1/materials/${id}`),
+    managementApi.delete(`v1/materials/${id}`),
     SingleMaterialsDataResponse,
   );
   return res;

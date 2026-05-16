@@ -3,6 +3,7 @@
 import ExpenseCategoriesView from "@/components/management/expense/category-expenses-grid";
 import ExpenseCategoriesForm from "@/components/management/expense/expense-categories-form";
 import { AddExpenseDialog } from "@/components/management/expense/expense-form";
+import ExpenseSummary from "@/components/management/expense/expense-summary";
 import ExpenseView from "@/components/management/expense/expense-view";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,6 +18,7 @@ export default function Page() {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [isExpenseCategoriesOpen, setIsExpenseCategoriesOpen] = useState(false);
   const searchParams = useSearchParams();
+  
   const page = Number(searchParams.get("page")) || 1;
   const limit = Number(searchParams.get("limit")) || 10;
   const startDate = searchParams.get("startDate") || "";
@@ -29,6 +31,7 @@ export default function Page() {
     dateFrom: startDate,
     dateTo: endDate,
   };
+
   return (
     <main className="flex flex-1 flex-col gap-4 py-4 px-6 pt-0">
       <div className="my-5 flex flex-row justify-between items-center">
@@ -50,10 +53,7 @@ export default function Page() {
         )}
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
-        <Skeleton className="h-45 w-70" />
-        <Skeleton className="h-45 w-70" />
-        <Skeleton className="h-45 w-70" />
-        <Skeleton className="h-45 w-70" />
+        <ExpenseSummary />
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full max-w-md">
@@ -82,7 +82,6 @@ export default function Page() {
         <AddExpenseDialog
           open={isAddExpenseOpen}
           onOpenChange={setIsAddExpenseOpen}
-          filters={filters}
         />
         <ExpenseCategoriesForm
           open={isExpenseCategoriesOpen}

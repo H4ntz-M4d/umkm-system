@@ -29,6 +29,14 @@ export const ExpenseDetailData = ExpenseData.omit({
   expenseItem: z.array(ExpenseItemData),
 });
 
+export const ExpenseSummary = z.object({
+  totalExpense: z.string(),
+  totalExpenseThisMonth: z.string(),
+  totalExpenseRawMaterial: z.string(),
+  totalExpenseOther: z.string(),
+});
+
+export const ExpenseSummaryResponse = ApiSuccessResponse(ExpenseSummary);
 export const CreateExpenseResponse = ApiSuccessResponse(ExpenseDetailData);
 export const ExpenseListResponse = ApiSuccessResponse(z.array(ExpenseData));
 export const SingleExpenseResponse = ApiSuccessResponse(ExpenseDetailData);

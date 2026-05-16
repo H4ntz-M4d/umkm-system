@@ -14,7 +14,7 @@ export const fetchProductionData = async (
 ) => {
   const res = await apiFetcher(
     managementApi.get(
-      `api/v1/production?page=${pageIndex}&pageSize=${pageSize}&search=${search}`,
+      `v1/production?page=${pageIndex}&pageSize=${pageSize}&search=${search}`,
     ),
     ProductionResponse,
   );
@@ -24,7 +24,7 @@ export const fetchProductionData = async (
 
 export const createProduction = async (data: CreateProductionSchemaInput) => {
   const res = await apiFetcher(
-    managementApi.post("api/v1/production", { json: data }),
+    managementApi.post("v1/production", { json: data }),
     ProductionDataResponse,
   );
 
@@ -36,7 +36,7 @@ export const updateProduction = async (
   data: CreateProductionSchemaInput,
 ) => {
   const res = await apiFetcher(
-    managementApi.put(`api/v1/production/${id}/edit`, { json: data }),
+    managementApi.put(`v1/production/${id}/edit`, { json: data }),
     ProductionDataResponse,
   );
   return res;
@@ -47,7 +47,7 @@ export const updateProductionStatus = async (
   data: UpdateProductionSchemaInput,
 ) => {
   const res = await apiFetcher(
-    managementApi.patch(`api/v1/production/${id}/status-update`, { json: data }),
+    managementApi.patch(`v1/production/${id}/status-update`, { json: data }),
     ProductionDataResponse,
   );
   return res;
@@ -58,7 +58,7 @@ export const updateProductionStatusCompleted = async (
   data: UpdateProductionSchemaInput,
 ) => {
   const res = await apiFetcher(
-    managementApi.post(`api/v1/production/${id}/status-completed`, { json: data }),
+    managementApi.post(`v1/production/${id}/status-completed`, { json: data }),
     ProductionDataResponse,
   );
   return res;
@@ -66,7 +66,7 @@ export const updateProductionStatusCompleted = async (
 
 export const deleteProduction = async (id: string) => {
   return await apiFetcher(
-    managementApi.delete(`api/v1/production/${id}`),
+    managementApi.delete(`v1/production/${id}`),
     ProductionDataResponse,
   );
 };

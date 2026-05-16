@@ -69,6 +69,85 @@ export class ExpenseService {
     };
   }
 
+  async summary() {
+    const thisYear = new Date();
+    const earlyYear = new Date(thisYear.getFullYear(), 0, 1);
+    const earlyNextYear = new Date(thisYear.getFullYear() + 1, 0, 1);
+
+    const totalExpense = await prisma.expense.aggregate({
+      _sum: {
+        totalAmount: true,
+      },
+      where: {
+        date: {
+          gte: earlyYear,
+          lt: earlyNextYear,
+        },
+      },
+    });
+
+    const thisMonth = new Date();
+    const earlyMonth = new Date(
+      thisMonth.getFullYear(),
+      thisMonth.getMonth(),
+      1,
+    );
+    const earlyNextMonth = new Date(
+      thisMonth.getFullYear(),
+      thisMonth.getMonth() + 1,
+      1,
+    );
+
+    const totalExpenseThisMonth = await prisma.expense.aggregate({
+      _sum: {
+        totalAmount: true,
+      },
+      where: {
+        date: {
+          gte: earlyMonth,
+          lt: earlyNextMonth,
+        },
+      },
+    });
+
+    const totalExpenseRawMaterial = await prisma.expense.aggregate({
+      _sum: {
+        totalAmount: true,
+      },
+      where: {
+        expenseCategory: {
+          isMaterialsCategory: true,
+        },
+      },
+    });
+
+    const totalExpenseOther = await prisma.expense.aggregate({
+      _sum: {
+        totalAmount: true,
+      },
+      where: {
+        expenseCategory: {
+          isMaterialsCategory: false,
+        },
+      },
+    });
+
+    const dataSummary = {
+      totalExpense: totalExpense._sum.totalAmount ?? 0,
+      totalExpenseThisMonth: totalExpenseThisMonth._sum.totalAmount ?? 0,
+      totalExpenseRawMaterial: totalExpenseRawMaterial._sum.totalAmount ?? 0,
+      totalExpenseOther: totalExpenseOther._sum.totalAmount ?? 0,
+    };
+
+    return {
+      success: true,
+      data: dataSummary,
+      meta: {
+        timeStamp: new Date().toISOString(),
+      },
+    };
+  }
+
   async create(data: ExpenseDto) {
     const transaction = await prisma.$transaction(async (tx) => {
       const category = await tx.expenseCategory.findUnique({

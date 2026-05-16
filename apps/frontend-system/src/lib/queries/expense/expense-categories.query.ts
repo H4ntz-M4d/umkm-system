@@ -8,7 +8,7 @@ import {
 
 export const fetchExpenseCategories = async () => {
   const res = await apiFetcher(
-    managementApi.get("api/v1/expense-category"),
+    managementApi.get("v1/expense-category"),
     ExpenseCategoryListResponse,
   );
 
@@ -19,7 +19,7 @@ export const createExpenseCategories = async (
   data: ExpenseCategorySchemaInput,
 ) => {
   const res = await apiFetcher(
-    managementApi.post("api/v1/expense-category", { json: data }),
+    managementApi.post("v1/expense-category", { json: data }),
     SingleExpenseCategoryResponse,
   );
 
@@ -31,7 +31,7 @@ export const updateExpenseCategories = async (
   data: ExpenseCategorySchemaInput,
 ) => {
   const res = await apiFetcher(
-    managementApi.put(`api/v1/expense-category/${id}`, { json: data }),
+    managementApi.put(`v1/expense-category/${id}`, { json: data }),
     SingleExpenseCategoryResponse,
   );
 
@@ -40,7 +40,7 @@ export const updateExpenseCategories = async (
 
 export const removeByStatus = async (id: string) => {
   const res = await apiFetcher(
-    managementApi.delete(`api/v1/expense-category/status/${id}`),
+    managementApi.delete(`v1/expense-category/status/${id}`),
     SingleExpenseCategoryResponse,
   );
 
@@ -49,7 +49,7 @@ export const removeByStatus = async (id: string) => {
 
 export const removePermanent = async (id: string) => {
   const res = await apiFetcher(
-    managementApi.delete(`api/v1/expense-category/${id}`),
+    managementApi.delete(`v1/expense-category/${id}`),
     SingleExpenseCategoryResponse,
   );
 

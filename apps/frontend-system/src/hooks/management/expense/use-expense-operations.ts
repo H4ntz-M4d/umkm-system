@@ -2,6 +2,7 @@ import {
   createExpense,
   ExpenseFilters,
   fetchExpense,
+  fetchExpenseSummary,
   removeExpense,
 } from "@/lib/queries/expense/expense.query";
 import {
@@ -15,16 +16,21 @@ import { toast } from "sonner";
 export const useExpenseOperation = ({
   filters,
 }: {
-  filters: ExpenseFilters;
+  filters?: ExpenseFilters;
 }) => {
   const qc = useQueryClient();
   const invalidate = () => qc.invalidateQueries({ queryKey: ["expense"] });
 
   const fetchExpenseQuery = useQuery({
-    queryKey: ["expense", filters],
-    queryFn: () => fetchExpense(filters),
+    queryKey: ["expense", filters ?? {}],
+    queryFn: () => fetchExpense(filters ?? {}),
     placeholderData: keepPreviousData,
     throwOnError: true,
+  });
+
+  const fetchExpenseSummaryQuery = useQuery({
+    queryKey: ["expense-summary"],
+    queryFn: () => fetchExpenseSummary(),
   });
 
   const createExpenseMutation = useMutation({
@@ -52,6 +58,9 @@ export const useExpenseOperation = ({
   return {
     fetchExpenseData: fetchExpenseQuery.data,
     isLoadingFetchExpense: fetchExpenseQuery.isLoading,
+
+    fetchExpenseSummaryData: fetchExpenseSummaryQuery.data,
+    isLoadingFetchExpenseSummary: fetchExpenseSummaryQuery.isLoading,
 
     createExpenseData: createExpenseMutation.mutate,
     isLoadingCreateExpense: createExpenseMutation.isPending,

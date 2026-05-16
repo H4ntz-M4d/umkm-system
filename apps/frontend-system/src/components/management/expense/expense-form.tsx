@@ -56,7 +56,6 @@ import { Switch } from "@/components/ui/switch";
 interface AddExpenseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  filters: ExpenseFilters;
 }
 
 interface ExpenseItem {
@@ -97,7 +96,6 @@ const initialData: ExpenseSchemaInput = {
 export function AddExpenseDialog({
   open,
   onOpenChange,
-  filters,
 }: AddExpenseDialogProps) {
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [unitOptions, setUnitOptions] = useImmer(units);
@@ -125,7 +123,7 @@ export function AddExpenseDialog({
   const { dataRawMaterialList } = useMaterialsOperations({
     enabledRawMaterialList: true,
   });
-  const { createExpenseData } = useExpenseOperation({ filters });
+  const { createExpenseData } = useExpenseOperation({});
 
   const selectedCategory = watch("categoryId");
   const items = watch("expenseItem");

@@ -1,6 +1,12 @@
 import { apiFetcher } from "@/lib/api/api.fetcher";
 import managementApi from "@/lib/api/api.management";
-import { CreateExpenseResponse, ExpenseListResponse, ExpenseSchemaInput, SingleExpenseResponse } from "@repo/schemas";
+import {
+  CreateExpenseResponse,
+  ExpenseListResponse,
+  ExpenseSchemaInput,
+  ExpenseSummaryResponse,
+  SingleExpenseResponse,
+} from "@repo/schemas";
 
 export interface ExpenseFilters {
   skip?: number;
@@ -17,16 +23,25 @@ export const fetchExpense = async (filter: ExpenseFilters) => {
 
   const queryFilter = new URLSearchParams(filters).toString();
   const res = await apiFetcher(
-    managementApi.get(`api/v1/expense?${queryFilter}`),
+    managementApi.get(`v1/expense?${queryFilter}`),
     ExpenseListResponse,
   );
 
   return { data: res.data, total: res.meta.total };
 };
 
+export const fetchExpenseSummary = async () => {
+  const res = await apiFetcher(
+    managementApi.get("v1/expense/summary"),
+    ExpenseSummaryResponse,
+  );
+
+  return res;
+};
+
 export const createExpense = async (data: ExpenseSchemaInput) => {
   const res = await apiFetcher(
-    managementApi.post("api/v1/expense", { json: data }),
+    managementApi.post("v1/expense", { json: data }),
     CreateExpenseResponse,
   );
 
@@ -35,9 +50,9 @@ export const createExpense = async (data: ExpenseSchemaInput) => {
 
 export const removeExpense = async (id: string) => {
   const res = await apiFetcher(
-    managementApi.delete(`api/v1/expense/${id}`),
+    managementApi.delete(`v1/expense/${id}`),
     SingleExpenseResponse,
   );
 
   return res;
-}
+};
