@@ -1,8 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useExpenseOperation } from "@/hooks/management/expense/use-expense-operations";
-import { ExpenseFilters } from "@/lib/queries/expense/expense.query";
 import { toIDR } from "../../../../utils/format-money";
-import { BanknoteArrowDown, CirclePile, HandCoins, Package, TrendingDown } from "lucide-react";
+import { BanknoteArrowDown, CirclePile, HandCoins, Package } from "lucide-react";
 
 export default function ExpenseSummary() {
   const { fetchExpenseSummaryData } = useExpenseOperation({});
