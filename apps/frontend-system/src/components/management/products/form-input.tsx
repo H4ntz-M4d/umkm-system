@@ -618,7 +618,7 @@ export default function FormProduct({ id }: { id?: string }) {
                                       <FieldLabel>Harga</FieldLabel>
                                       <Input
                                         type={"number"}
-                                        value={field.value}
+                                        value={field.value?.toString()}
                                         onWheel={(e) =>
                                           (e.target as HTMLInputElement).blur()
                                         }
@@ -641,7 +641,7 @@ export default function FormProduct({ id }: { id?: string }) {
                                       <FieldLabel>Biaya Modal</FieldLabel>
                                       <Input
                                         type={"number"}
-                                        value={field.value}
+                                        value={field.value?.toString()}
                                         onWheel={(e) =>
                                           (e.target as HTMLInputElement).blur()
                                         }

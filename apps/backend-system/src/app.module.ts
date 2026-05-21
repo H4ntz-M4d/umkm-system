@@ -9,6 +9,7 @@ import { ProductionModule } from './production/production.module';
 import { InventoryLedgerModule } from './inventory-ledger/inventory-ledger.module';
 import { ExpenseCategoryModule } from './expense-category/expense-category.module';
 import { ExpenseModule } from './expense/expense.module';
+import { PosTransactionModule } from './pos-transaction/pos-transaction.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ExpenseModule } from './expense/expense.module';
     InventoryLedgerModule,
     ExpenseCategoryModule,
     ExpenseModule,
+    PosTransactionModule,
   ],
 })
 export class AppModule {}

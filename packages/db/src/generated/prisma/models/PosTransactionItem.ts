@@ -261,6 +261,7 @@ export type PosTransactionItemOrderByWithRelationInput = {
 
 export type PosTransactionItemWhereUniqueInput = Prisma.AtLeast<{
   id?: bigint | number
+  posTransactionId_productVariantId?: Prisma.PosTransactionItemPosTransactionIdProductVariantIdCompoundUniqueInput
   AND?: Prisma.PosTransactionItemWhereInput | Prisma.PosTransactionItemWhereInput[]
   OR?: Prisma.PosTransactionItemWhereInput[]
   NOT?: Prisma.PosTransactionItemWhereInput | Prisma.PosTransactionItemWhereInput[]
@@ -271,7 +272,7 @@ export type PosTransactionItemWhereUniqueInput = Prisma.AtLeast<{
   subtotal?: Prisma.DecimalFilter<"PosTransactionItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   posTransaction?: Prisma.XOR<Prisma.PosTransactionScalarRelationFilter, Prisma.PosTransactionWhereInput>
   variant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
-}, "id">
+}, "id" | "posTransactionId_productVariantId">
 
 export type PosTransactionItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -368,6 +369,11 @@ export type PosTransactionItemListRelationFilter = {
 
 export type PosTransactionItemOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type PosTransactionItemPosTransactionIdProductVariantIdCompoundUniqueInput = {
+  posTransactionId: bigint | number
+  productVariantId: bigint | number
 }
 
 export type PosTransactionItemCountOrderByAggregateInput = {
