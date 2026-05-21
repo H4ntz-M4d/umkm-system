@@ -310,19 +310,49 @@ export class ProductsService {
   }
 
   async update(id: bigint, data: CreateProductDto) {
-    const transaction = await prisma.$transaction(async (tx) => {
-      const existingProduct = await prisma.productMaster.findUnique({
-        where: { id: id },
-        include: {
-          variants: true,
-          variantTypes: true,
+    const existingProduct = await prisma.productMaster.findUnique({
+      where: { id: id },
+      include: {
+        variants: true,
+        variantTypes: true,
+      },
+    });
+
+    if (!existingProduct) {
+      throw new BadRequestException('Product tidak di temukan');
+    }
+
+    const existingTypesNames = existingProduct.variantTypes
+      .map((vt) => vt.name)
+      .sort();
+
+    const incomingTypesNames = (data.variantsTypes ?? [])
+      .map((vt) => vt.name)
+      .sort();
+
+    const isStructuralChange =
+      JSON.stringify(existingTypesNames) !== JSON.stringify(incomingTypesNames);
+
+    if (isStructuralChange && data.useVariant) {
+      const variantInUse = await prisma.productVariant.findFirst({
+        where: {
+          productMasterId: id,
+          OR: [
+            { productions: { some: {} } },
+            { posTransactionItems: { some: {} } },
+          ],
         },
       });
 
-      if (!existingProduct) {
-        throw new BadRequestException('Product tidak di temukan');
+      if (variantInUse) {
+        throw new BadRequestException(
+          'Tidak dapat mengubah tipe variant karena produk ini sudah digunakan ' +
+            'dalam produksi atau transaksi. Hanya dapat mengubah harga, biaya, dan sku',
+        );
       }
+    }
 
+    const transaction = await prisma.$transaction(async (tx) => {
       const slugData = this.generateSlug(data.name);
 
       const statusMap: Record<string, ProductStatus> = {
@@ -395,23 +425,16 @@ export class ProductsService {
           typeValueMap.set(type.name, valueMap);
         }
 
+        if (isStructuralChange) {
+          await tx.productVariant.deleteMany({
+            where: { productMasterId: id },
+          });
+        }
+
         for (const variant of data.variants ?? []) {
           let variantRecord: ProductVariant;
 
-          if (variant.id) {
-            variantRecord = await tx.productVariant.update({
-              where: { id: BigInt(variant.id) },
-              data: {
-                sku: variant.sku,
-                price: variant.price,
-                cost: variant.cost,
-              },
-            });
-
-            await tx.productVariantOption.deleteMany({
-              where: { productVariantId: variantRecord.id },
-            });
-          } else {
+          if (isStructuralChange) {
             variantRecord = await tx.productVariant.create({
               data: {
                 productMasterId: id,
@@ -421,6 +444,35 @@ export class ProductsService {
                 isActive: true,
               },
             });
+
+            await tx.productVariantOption.deleteMany({
+              where: { productVariantId: variantRecord.id },
+            });
+          } else {
+            if (variant.id) {
+              variantRecord = await tx.productVariant.update({
+                where: { id: BigInt(variant.id) },
+                data: {
+                  sku: variant.sku,
+                  price: variant.price,
+                  cost: variant.cost,
+                },
+              });
+
+              await tx.productVariantOption.deleteMany({
+                where: { productVariantId: variantRecord.id },
+              });
+            } else {
+              variantRecord = await tx.productVariant.create({
+                data: {
+                  productMasterId: id,
+                  sku: variant.sku,
+                  price: variant.price,
+                  cost: variant.cost,
+                  isActive: true,
+                },
+              });
+            }
           }
 
           const optionsToCreate: Prisma.ProductVariantOptionCreateManyInput[] =

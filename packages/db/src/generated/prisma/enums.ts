@@ -64,3 +64,49 @@ export const ProductionStatus = {
 } as const
 
 export type ProductionStatus = (typeof ProductionStatus)[keyof typeof ProductionStatus]
+
+
+export const OrderStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
+export const PaymentChannel = {
+  CASH: 'CASH',
+  MIDTRANS: 'MIDTRANS',
+  MANUAL: 'MANUAL',
+  BANK_TRANSFER: 'BANK_TRANSFER'
+} as const
+
+export type PaymentChannel = (typeof PaymentChannel)[keyof typeof PaymentChannel]
+
+
+export const CashType = {
+  IN: 'IN',
+  OUT: 'OUT'
+} as const
+
+export type CashType = (typeof CashType)[keyof typeof CashType]
+
+
+export const CashSource = {
+  POS: 'POS',
+  ORDER: 'ORDER',
+  EXPENSE: 'EXPENSE'
+} as const
+
+export type CashSource = (typeof CashSource)[keyof typeof CashSource]
+
+
+export const PosStatus = {
+  DRAFT: 'DRAFT',
+  PARKED: 'PARKED',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PosStatus = (typeof PosStatus)[keyof typeof PosStatus]

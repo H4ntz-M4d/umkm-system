@@ -96,7 +96,6 @@ model ProductVariantStock {
   productVariantId BigInt   @unique
   stock            Int
   reserved_stock   Int
-  available_stock  Int
   updated_at       DateTime @default(now())
 
   productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
@@ -340,6 +339,7 @@ model Order {
   id                BigInt      @id @default(autoincrement())
   branchId          BigInt
   customerId        BigInt?
+  orderId           String      @unique @db.VarChar(100)
   paymentMethodId   BigInt
   paymentGatewayRef String?     @db.VarChar(255)
   status            OrderStatus
@@ -396,12 +396,13 @@ model OrderShipment {
 // ==================
 
 model PaymentMethod {
-  id       BigInt         @id @default(autoincrement())
-  code     String         @unique @db.VarChar(100)
-  name     String         @db.VarChar(100)
-  channel  PaymentChannel
-  isActive Boolean        @default(true)
-  orders   Order[]
+  id              BigInt           @id @default(autoincrement())
+  code            String           @unique @db.VarChar(100)
+  name            String           @db.VarChar(100)
+  channel         PaymentChannel
+  isActive        Boolean          @default(true)
+  orders          Order[]
+  posTransactions PosTransaction[]
 
   @@map("payment_method")
 }
@@ -445,13 +446,15 @@ model PosTransaction {
   id              BigInt    @id @default(autoincrement())
   storeId         BigInt
   cashierId       BigInt
-  paymentMethodId BigInt
+  transId         String    @unique @db.VarChar(100)
+  paymentMethodId BigInt?
   status          PosStatus
   totalAmount     Decimal
   createdAt       DateTime  @default(now())
 
-  store Store @relation(fields: [storeId], references: [id])
-  users Users @relation(fields: [cashierId], references: [id], onDelete: Cascade)
+  store         Store          @relation(fields: [storeId], references: [id])
+  users         Users          @relation(fields: [cashierId], references: [id])
+  paymentMethod PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
 
   items PosTransactionItem[]
 
@@ -459,7 +462,7 @@ model PosTransaction {
 }
 
 enum PosStatus {
-  ACTIVE
+  DRAFT
   PARKED
   PAID
   CANCELLED

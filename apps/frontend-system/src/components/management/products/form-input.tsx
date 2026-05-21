@@ -3,7 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription, FieldError,
+  FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -213,36 +214,64 @@ export default function FormProduct({ id }: { id?: string }) {
   const handleGenereteCombinations = () => {
     const varTypes = getValues("variantsTypes") ?? [];
     const combinations = generateCombinationSku(varTypes);
-    const currentVariants = getValues('variants') ?? []
+    const currentVariants = getValues("variants") ?? [];
 
     const isPartialMatch = (
       existingOptions: Record<string, string>,
       newOpts: Record<string, string>,
-    ) => Object.keys(existingOptions).every((key) => newOpts[key] === existingOptions[key]);
+    ) =>
+      Object.keys(existingOptions).every(
+        (key) => newOpts[key] === existingOptions[key],
+      );
 
+    const claimIds = new Set<string>();
     const newVariant = combinations.map((opts) => {
       const matchData = currentVariants.find(
-        (v) => JSON.stringify(v.options) === JSON.stringify(opts.options)
-      )
-      if (matchData) return matchData
+        (v) => JSON.stringify(v.options) === JSON.stringify(opts.options),
+      );
+
+      if (matchData && !claimIds.has(String(matchData.id))) {
+        claimIds.add(String(matchData.id));
+        return matchData;
+      }
 
       const partialMatching = currentVariants.find(
-        (v) => isPartialMatch(v.options ?? {}, opts)
-      )
-      if (partialMatching) return {...partialMatching, options: opts}
+        (v) =>
+          !claimIds.has(String(v.id)) && isPartialMatch(v.options ?? {}, opts),
+      );
 
       const skuParts = Object.values(opts)
         .map((v) => v.slice(0, 3).toUpperCase())
         .join("-");
-      return { sku: skuParts, price: 0, cost: 0, options: opts };
+
+      const nameProductPart = getValues("name")
+        .split(" ")
+        .map((v) => v[0])
+        .join("");
+
+      if (partialMatching) {
+        claimIds.add(String(partialMatching.id));
+        return {
+          ...partialMatching,
+          sku: `${nameProductPart}-${skuParts}`,
+          options: opts,
+        };
+      }
+
+      return {
+        sku: `${nameProductPart}-${skuParts}`,
+        price: 0,
+        cost: 0,
+        options: opts,
+      };
     });
 
     const newVariantsFiles = newVariant.map((v) => {
       const oldIndex = currentVariants.findIndex(
-        (cv) => JSON.stringify(cv.options) === JSON.stringify(v.options)
-      )
+        (cv) => JSON.stringify(cv.options) === JSON.stringify(v.options),
+      );
       return oldIndex !== -1 ? (variantFiles[oldIndex] ?? null) : null;
-    })
+    });
     setVariantFiles(newVariantsFiles);
     return replaceVariants(newVariant);
   };
@@ -316,7 +345,9 @@ export default function FormProduct({ id }: { id?: string }) {
                               }
                               {...field}
                             />
-                            <FieldError>{errors.description?.message}</FieldError>
+                            <FieldError>
+                              {errors.description?.message}
+                            </FieldError>
                           </Field>
                         )}
                       />
@@ -573,7 +604,9 @@ export default function FormProduct({ id }: { id?: string }) {
                                     <Field>
                                       <FieldLabel>SKU</FieldLabel>
                                       <Input {...field} />
-                                      <FieldError>{errors.variants?.[iv]?.sku?.message}</FieldError>
+                                      <FieldError>
+                                        {errors.variants?.[iv]?.sku?.message}
+                                      </FieldError>
                                     </Field>
                                   )}
                                 />

@@ -68,7 +68,14 @@ export const ModelName = {
   ProductionMaterial: 'ProductionMaterial',
   ExpenseCategory: 'ExpenseCategory',
   Expense: 'Expense',
-  ExpenseItem: 'ExpenseItem'
+  ExpenseItem: 'ExpenseItem',
+  Order: 'Order',
+  OrderItem: 'OrderItem',
+  OrderShipment: 'OrderShipment',
+  PaymentMethod: 'PaymentMethod',
+  CashTransaction: 'CashTransaction',
+  PosTransaction: 'PosTransaction',
+  PosTransactionItem: 'PosTransactionItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -144,7 +151,6 @@ export const ProductVariantStockScalarFieldEnum = {
   productVariantId: 'productVariantId',
   stock: 'stock',
   reserved_stock: 'reserved_stock',
-  available_stock: 'available_stock',
   updated_at: 'updated_at'
 } as const
 
@@ -302,6 +308,100 @@ export const ExpenseItemScalarFieldEnum = {
 } as const
 
 export type ExpenseItemScalarFieldEnum = (typeof ExpenseItemScalarFieldEnum)[keyof typeof ExpenseItemScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  customerId: 'customerId',
+  orderId: 'orderId',
+  paymentMethodId: 'paymentMethodId',
+  paymentGatewayRef: 'paymentGatewayRef',
+  status: 'status',
+  totalAmount: 'totalAmount',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const OrderItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  productVariantId: 'productVariantId',
+  quantity: 'quantity',
+  price: 'price',
+  subtotal: 'subtotal'
+} as const
+
+export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
+
+
+export const OrderShipmentScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  recipientName: 'recipientName',
+  phone: 'phone',
+  addressLine: 'addressLine',
+  city: 'city',
+  province: 'province',
+  courier: 'courier',
+  shippingCost: 'shippingCost',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderShipmentScalarFieldEnum = (typeof OrderShipmentScalarFieldEnum)[keyof typeof OrderShipmentScalarFieldEnum]
+
+
+export const PaymentMethodScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  channel: 'channel',
+  isActive: 'isActive'
+} as const
+
+export type PaymentMethodScalarFieldEnum = (typeof PaymentMethodScalarFieldEnum)[keyof typeof PaymentMethodScalarFieldEnum]
+
+
+export const CashTransactionScalarFieldEnum = {
+  id: 'id',
+  branchId: 'branchId',
+  type: 'type',
+  amount: 'amount',
+  source: 'source',
+  referenceId: 'referenceId',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type CashTransactionScalarFieldEnum = (typeof CashTransactionScalarFieldEnum)[keyof typeof CashTransactionScalarFieldEnum]
+
+
+export const PosTransactionScalarFieldEnum = {
+  id: 'id',
+  storeId: 'storeId',
+  cashierId: 'cashierId',
+  transId: 'transId',
+  paymentMethodId: 'paymentMethodId',
+  status: 'status',
+  totalAmount: 'totalAmount',
+  createdAt: 'createdAt'
+} as const
+
+export type PosTransactionScalarFieldEnum = (typeof PosTransactionScalarFieldEnum)[keyof typeof PosTransactionScalarFieldEnum]
+
+
+export const PosTransactionItemScalarFieldEnum = {
+  id: 'id',
+  posTransactionId: 'posTransactionId',
+  productVariantId: 'productVariantId',
+  quantity: 'quantity',
+  price: 'price',
+  subtotal: 'subtotal'
+} as const
+
+export type PosTransactionItemScalarFieldEnum = (typeof PosTransactionItemScalarFieldEnum)[keyof typeof PosTransactionItemScalarFieldEnum]
 
 
 export const SortOrder = {

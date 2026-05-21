@@ -255,6 +255,7 @@ export type UsersWhereInput = {
   store?: Prisma.XOR<Prisma.StoreNullableScalarRelationFilter, Prisma.StoreWhereInput> | null
   employees?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
+  posTransactions?: Prisma.PosTransactionListRelationFilter
 }
 
 export type UsersOrderByWithRelationInput = {
@@ -270,6 +271,7 @@ export type UsersOrderByWithRelationInput = {
   store?: Prisma.StoreOrderByWithRelationInput
   employees?: Prisma.EmployeeOrderByWithRelationInput
   customer?: Prisma.CustomerOrderByWithRelationInput
+  posTransactions?: Prisma.PosTransactionOrderByRelationAggregateInput
 }
 
 export type UsersWhereUniqueInput = Prisma.AtLeast<{
@@ -288,6 +290,7 @@ export type UsersWhereUniqueInput = Prisma.AtLeast<{
   store?: Prisma.XOR<Prisma.StoreNullableScalarRelationFilter, Prisma.StoreWhereInput> | null
   employees?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
+  posTransactions?: Prisma.PosTransactionListRelationFilter
 }, "id" | "email">
 
 export type UsersOrderByWithAggregationInput = {
@@ -334,6 +337,7 @@ export type UsersCreateInput = {
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
 }
 
 export type UsersUncheckedCreateInput = {
@@ -348,6 +352,7 @@ export type UsersUncheckedCreateInput = {
   slug?: string | null
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UsersUpdateInput = {
@@ -362,6 +367,7 @@ export type UsersUpdateInput = {
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
 }
 
 export type UsersUncheckedUpdateInput = {
@@ -376,6 +382,7 @@ export type UsersUncheckedUpdateInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type UsersCreateManyInput = {
@@ -567,6 +574,20 @@ export type UsersUpdateOneRequiredWithoutEmployeesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutEmployeesInput, Prisma.UsersUpdateWithoutEmployeesInput>, Prisma.UsersUncheckedUpdateWithoutEmployeesInput>
 }
 
+export type UsersCreateNestedOneWithoutPosTransactionsInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutPosTransactionsInput, Prisma.UsersUncheckedCreateWithoutPosTransactionsInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutPosTransactionsInput
+  connect?: Prisma.UsersWhereUniqueInput
+}
+
+export type UsersUpdateOneRequiredWithoutPosTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutPosTransactionsInput, Prisma.UsersUncheckedCreateWithoutPosTransactionsInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutPosTransactionsInput
+  upsert?: Prisma.UsersUpsertWithoutPosTransactionsInput
+  connect?: Prisma.UsersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutPosTransactionsInput, Prisma.UsersUpdateWithoutPosTransactionsInput>, Prisma.UsersUncheckedUpdateWithoutPosTransactionsInput>
+}
+
 export type UsersCreateWithoutStoreInput = {
   id?: bigint | number
   email: string
@@ -578,6 +599,7 @@ export type UsersCreateWithoutStoreInput = {
   slug?: string | null
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
 }
 
 export type UsersUncheckedCreateWithoutStoreInput = {
@@ -591,6 +613,7 @@ export type UsersUncheckedCreateWithoutStoreInput = {
   slug?: string | null
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UsersCreateOrConnectWithoutStoreInput = {
@@ -645,6 +668,7 @@ export type UsersCreateWithoutCustomerInput = {
   slug?: string | null
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
 }
 
 export type UsersUncheckedCreateWithoutCustomerInput = {
@@ -658,6 +682,7 @@ export type UsersUncheckedCreateWithoutCustomerInput = {
   refreshToken?: string | null
   slug?: string | null
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UsersCreateOrConnectWithoutCustomerInput = {
@@ -687,6 +712,7 @@ export type UsersUpdateWithoutCustomerInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutCustomerInput = {
@@ -700,6 +726,7 @@ export type UsersUncheckedUpdateWithoutCustomerInput = {
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type UsersCreateWithoutEmployeesInput = {
@@ -713,6 +740,7 @@ export type UsersCreateWithoutEmployeesInput = {
   slug?: string | null
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
 }
 
 export type UsersUncheckedCreateWithoutEmployeesInput = {
@@ -726,6 +754,7 @@ export type UsersUncheckedCreateWithoutEmployeesInput = {
   refreshToken?: string | null
   slug?: string | null
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UsersCreateOrConnectWithoutEmployeesInput = {
@@ -755,6 +784,7 @@ export type UsersUpdateWithoutEmployeesInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutEmployeesInput = {
@@ -767,6 +797,79 @@ export type UsersUncheckedUpdateWithoutEmployeesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+}
+
+export type UsersCreateWithoutPosTransactionsInput = {
+  id?: bigint | number
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
+  employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+}
+
+export type UsersUncheckedCreateWithoutPosTransactionsInput = {
+  id?: bigint | number
+  storeId?: bigint | number | null
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+}
+
+export type UsersCreateOrConnectWithoutPosTransactionsInput = {
+  where: Prisma.UsersWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsersCreateWithoutPosTransactionsInput, Prisma.UsersUncheckedCreateWithoutPosTransactionsInput>
+}
+
+export type UsersUpsertWithoutPosTransactionsInput = {
+  update: Prisma.XOR<Prisma.UsersUpdateWithoutPosTransactionsInput, Prisma.UsersUncheckedUpdateWithoutPosTransactionsInput>
+  create: Prisma.XOR<Prisma.UsersCreateWithoutPosTransactionsInput, Prisma.UsersUncheckedCreateWithoutPosTransactionsInput>
+  where?: Prisma.UsersWhereInput
+}
+
+export type UsersUpdateToOneWithWhereWithoutPosTransactionsInput = {
+  where?: Prisma.UsersWhereInput
+  data: Prisma.XOR<Prisma.UsersUpdateWithoutPosTransactionsInput, Prisma.UsersUncheckedUpdateWithoutPosTransactionsInput>
+}
+
+export type UsersUpdateWithoutPosTransactionsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
+  employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+}
+
+export type UsersUncheckedUpdateWithoutPosTransactionsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
 }
 
@@ -792,6 +895,7 @@ export type UsersUpdateWithoutStoreInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutStoreInput = {
@@ -805,6 +909,7 @@ export type UsersUncheckedUpdateWithoutStoreInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type UsersUncheckedUpdateManyWithoutStoreInput = {
@@ -818,6 +923,35 @@ export type UsersUncheckedUpdateManyWithoutStoreInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
+
+/**
+ * Count Type UsersCountOutputType
+ */
+
+export type UsersCountOutputType = {
+  posTransactions: number
+}
+
+export type UsersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  posTransactions?: boolean | UsersCountOutputTypeCountPosTransactionsArgs
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UsersCountOutputType
+   */
+  select?: Prisma.UsersCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountPosTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PosTransactionWhereInput
+}
 
 
 export type UsersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -833,6 +967,8 @@ export type UsersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   store?: boolean | Prisma.Users$storeArgs<ExtArgs>
   employees?: boolean | Prisma.Users$employeesArgs<ExtArgs>
   customer?: boolean | Prisma.Users$customerArgs<ExtArgs>
+  posTransactions?: boolean | Prisma.Users$posTransactionsArgs<ExtArgs>
+  _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
 export type UsersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -878,6 +1014,8 @@ export type UsersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   store?: boolean | Prisma.Users$storeArgs<ExtArgs>
   employees?: boolean | Prisma.Users$employeesArgs<ExtArgs>
   customer?: boolean | Prisma.Users$customerArgs<ExtArgs>
+  posTransactions?: boolean | Prisma.Users$posTransactionsArgs<ExtArgs>
+  _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UsersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   store?: boolean | Prisma.Users$storeArgs<ExtArgs>
@@ -892,6 +1030,7 @@ export type $UsersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     store: Prisma.$StorePayload<ExtArgs> | null
     employees: Prisma.$EmployeePayload<ExtArgs> | null
     customer: Prisma.$CustomerPayload<ExtArgs> | null
+    posTransactions: Prisma.$PosTransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -1300,6 +1439,7 @@ export interface Prisma__UsersClient<T, Null = never, ExtArgs extends runtime.Ty
   store<T extends Prisma.Users$storeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$storeArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   employees<T extends Prisma.Users$employeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$employeesArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.Users$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  posTransactions<T extends Prisma.Users$posTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$posTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1788,6 +1928,30 @@ export type Users$customerArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.CustomerInclude<ExtArgs> | null
   where?: Prisma.CustomerWhereInput
+}
+
+/**
+ * Users.posTransactions
+ */
+export type Users$posTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PosTransaction
+   */
+  select?: Prisma.PosTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PosTransaction
+   */
+  omit?: Prisma.PosTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PosTransactionInclude<ExtArgs> | null
+  where?: Prisma.PosTransactionWhereInput
+  orderBy?: Prisma.PosTransactionOrderByWithRelationInput | Prisma.PosTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.PosTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PosTransactionScalarFieldEnum | Prisma.PosTransactionScalarFieldEnum[]
 }
 
 /**
