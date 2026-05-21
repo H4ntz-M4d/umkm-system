@@ -256,6 +256,14 @@ export class ProductsService {
           await tx.productVariantOption.createMany({
             data: optionToCreate,
           });
+
+          await tx.productVariantStock.create({
+            data: {
+              productVariantId: createdVariant.id,
+              stock: 0,
+              reserved_stock: 0,
+            },
+          });
         }
       } else {
         if (!data.variants || data.variants.length === 0) {
@@ -280,6 +288,14 @@ export class ProductsService {
               price: variant.price,
               cost: variant.cost,
               isActive: true,
+            },
+          });
+
+          await tx.productVariantStock.create({
+            data: {
+              productVariantId: product.id,
+              stock: 0,
+              reserved_stock: 0,
             },
           });
         }
