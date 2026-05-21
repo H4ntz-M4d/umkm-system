@@ -310,7 +310,6 @@ export class ProductionService {
         create: {
           productVariantId: isExisting.producedVariantId,
           stock: isExisting.quantityProduced,
-          available_stock: isExisting.quantityProduced,
           reserved_stock: 0,
         },
         select: {

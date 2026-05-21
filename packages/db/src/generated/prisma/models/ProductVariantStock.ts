@@ -31,7 +31,6 @@ export type ProductVariantStockAvgAggregateOutputType = {
   productVariantId: number | null
   stock: number | null
   reserved_stock: number | null
-  available_stock: number | null
 }
 
 export type ProductVariantStockSumAggregateOutputType = {
@@ -39,7 +38,6 @@ export type ProductVariantStockSumAggregateOutputType = {
   productVariantId: bigint | null
   stock: number | null
   reserved_stock: number | null
-  available_stock: number | null
 }
 
 export type ProductVariantStockMinAggregateOutputType = {
@@ -47,7 +45,6 @@ export type ProductVariantStockMinAggregateOutputType = {
   productVariantId: bigint | null
   stock: number | null
   reserved_stock: number | null
-  available_stock: number | null
   updated_at: Date | null
 }
 
@@ -56,7 +53,6 @@ export type ProductVariantStockMaxAggregateOutputType = {
   productVariantId: bigint | null
   stock: number | null
   reserved_stock: number | null
-  available_stock: number | null
   updated_at: Date | null
 }
 
@@ -65,7 +61,6 @@ export type ProductVariantStockCountAggregateOutputType = {
   productVariantId: number
   stock: number
   reserved_stock: number
-  available_stock: number
   updated_at: number
   _all: number
 }
@@ -76,7 +71,6 @@ export type ProductVariantStockAvgAggregateInputType = {
   productVariantId?: true
   stock?: true
   reserved_stock?: true
-  available_stock?: true
 }
 
 export type ProductVariantStockSumAggregateInputType = {
@@ -84,7 +78,6 @@ export type ProductVariantStockSumAggregateInputType = {
   productVariantId?: true
   stock?: true
   reserved_stock?: true
-  available_stock?: true
 }
 
 export type ProductVariantStockMinAggregateInputType = {
@@ -92,7 +85,6 @@ export type ProductVariantStockMinAggregateInputType = {
   productVariantId?: true
   stock?: true
   reserved_stock?: true
-  available_stock?: true
   updated_at?: true
 }
 
@@ -101,7 +93,6 @@ export type ProductVariantStockMaxAggregateInputType = {
   productVariantId?: true
   stock?: true
   reserved_stock?: true
-  available_stock?: true
   updated_at?: true
 }
 
@@ -110,7 +101,6 @@ export type ProductVariantStockCountAggregateInputType = {
   productVariantId?: true
   stock?: true
   reserved_stock?: true
-  available_stock?: true
   updated_at?: true
   _all?: true
 }
@@ -206,7 +196,6 @@ export type ProductVariantStockGroupByOutputType = {
   productVariantId: bigint
   stock: number
   reserved_stock: number
-  available_stock: number
   updated_at: Date
   _count: ProductVariantStockCountAggregateOutputType | null
   _avg: ProductVariantStockAvgAggregateOutputType | null
@@ -238,7 +227,6 @@ export type ProductVariantStockWhereInput = {
   productVariantId?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
   stock?: Prisma.IntFilter<"ProductVariantStock"> | number
   reserved_stock?: Prisma.IntFilter<"ProductVariantStock"> | number
-  available_stock?: Prisma.IntFilter<"ProductVariantStock"> | number
   updated_at?: Prisma.DateTimeFilter<"ProductVariantStock"> | Date | string
   productVariant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
 }
@@ -248,7 +236,6 @@ export type ProductVariantStockOrderByWithRelationInput = {
   productVariantId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
-  available_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   productVariant?: Prisma.ProductVariantOrderByWithRelationInput
 }
@@ -261,7 +248,6 @@ export type ProductVariantStockWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProductVariantStockWhereInput | Prisma.ProductVariantStockWhereInput[]
   stock?: Prisma.IntFilter<"ProductVariantStock"> | number
   reserved_stock?: Prisma.IntFilter<"ProductVariantStock"> | number
-  available_stock?: Prisma.IntFilter<"ProductVariantStock"> | number
   updated_at?: Prisma.DateTimeFilter<"ProductVariantStock"> | Date | string
   productVariant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
 }, "id" | "productVariantId">
@@ -271,7 +257,6 @@ export type ProductVariantStockOrderByWithAggregationInput = {
   productVariantId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
-  available_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   _count?: Prisma.ProductVariantStockCountOrderByAggregateInput
   _avg?: Prisma.ProductVariantStockAvgOrderByAggregateInput
@@ -288,7 +273,6 @@ export type ProductVariantStockScalarWhereWithAggregatesInput = {
   productVariantId?: Prisma.BigIntWithAggregatesFilter<"ProductVariantStock"> | bigint | number
   stock?: Prisma.IntWithAggregatesFilter<"ProductVariantStock"> | number
   reserved_stock?: Prisma.IntWithAggregatesFilter<"ProductVariantStock"> | number
-  available_stock?: Prisma.IntWithAggregatesFilter<"ProductVariantStock"> | number
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"ProductVariantStock"> | Date | string
 }
 
@@ -296,7 +280,6 @@ export type ProductVariantStockCreateInput = {
   id?: bigint | number
   stock: number
   reserved_stock: number
-  available_stock: number
   updated_at?: Date | string
   productVariant: Prisma.ProductVariantCreateNestedOneWithoutProductVariantStocksInput
 }
@@ -306,7 +289,6 @@ export type ProductVariantStockUncheckedCreateInput = {
   productVariantId: bigint | number
   stock: number
   reserved_stock: number
-  available_stock: number
   updated_at?: Date | string
 }
 
@@ -314,7 +296,6 @@ export type ProductVariantStockUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
-  available_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productVariant?: Prisma.ProductVariantUpdateOneRequiredWithoutProductVariantStocksNestedInput
 }
@@ -324,7 +305,6 @@ export type ProductVariantStockUncheckedUpdateInput = {
   productVariantId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
-  available_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -333,7 +313,6 @@ export type ProductVariantStockCreateManyInput = {
   productVariantId: bigint | number
   stock: number
   reserved_stock: number
-  available_stock: number
   updated_at?: Date | string
 }
 
@@ -341,7 +320,6 @@ export type ProductVariantStockUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
-  available_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -350,7 +328,6 @@ export type ProductVariantStockUncheckedUpdateManyInput = {
   productVariantId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
-  available_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -364,7 +341,6 @@ export type ProductVariantStockCountOrderByAggregateInput = {
   productVariantId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
-  available_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
 
@@ -373,7 +349,6 @@ export type ProductVariantStockAvgOrderByAggregateInput = {
   productVariantId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
-  available_stock?: Prisma.SortOrder
 }
 
 export type ProductVariantStockMaxOrderByAggregateInput = {
@@ -381,7 +356,6 @@ export type ProductVariantStockMaxOrderByAggregateInput = {
   productVariantId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
-  available_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
 
@@ -390,7 +364,6 @@ export type ProductVariantStockMinOrderByAggregateInput = {
   productVariantId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
-  available_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
 
@@ -399,7 +372,6 @@ export type ProductVariantStockSumOrderByAggregateInput = {
   productVariantId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
-  available_stock?: Prisma.SortOrder
 }
 
 export type ProductVariantStockCreateNestedOneWithoutProductVariantInput = {
@@ -446,7 +418,6 @@ export type ProductVariantStockCreateWithoutProductVariantInput = {
   id?: bigint | number
   stock: number
   reserved_stock: number
-  available_stock: number
   updated_at?: Date | string
 }
 
@@ -454,7 +425,6 @@ export type ProductVariantStockUncheckedCreateWithoutProductVariantInput = {
   id?: bigint | number
   stock: number
   reserved_stock: number
-  available_stock: number
   updated_at?: Date | string
 }
 
@@ -478,7 +448,6 @@ export type ProductVariantStockUpdateWithoutProductVariantInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
-  available_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -486,7 +455,6 @@ export type ProductVariantStockUncheckedUpdateWithoutProductVariantInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
-  available_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -497,7 +465,6 @@ export type ProductVariantStockSelect<ExtArgs extends runtime.Types.Extensions.I
   productVariantId?: boolean
   stock?: boolean
   reserved_stock?: boolean
-  available_stock?: boolean
   updated_at?: boolean
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantStock"]>
@@ -507,7 +474,6 @@ export type ProductVariantStockSelectCreateManyAndReturn<ExtArgs extends runtime
   productVariantId?: boolean
   stock?: boolean
   reserved_stock?: boolean
-  available_stock?: boolean
   updated_at?: boolean
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantStock"]>
@@ -517,7 +483,6 @@ export type ProductVariantStockSelectUpdateManyAndReturn<ExtArgs extends runtime
   productVariantId?: boolean
   stock?: boolean
   reserved_stock?: boolean
-  available_stock?: boolean
   updated_at?: boolean
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantStock"]>
@@ -527,11 +492,10 @@ export type ProductVariantStockSelectScalar = {
   productVariantId?: boolean
   stock?: boolean
   reserved_stock?: boolean
-  available_stock?: boolean
   updated_at?: boolean
 }
 
-export type ProductVariantStockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productVariantId" | "stock" | "reserved_stock" | "available_stock" | "updated_at", ExtArgs["result"]["productVariantStock"]>
+export type ProductVariantStockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productVariantId" | "stock" | "reserved_stock" | "updated_at", ExtArgs["result"]["productVariantStock"]>
 export type ProductVariantStockInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
 }
@@ -552,7 +516,6 @@ export type $ProductVariantStockPayload<ExtArgs extends runtime.Types.Extensions
     productVariantId: bigint
     stock: number
     reserved_stock: number
-    available_stock: number
     updated_at: Date
   }, ExtArgs["result"]["productVariantStock"]>
   composites: {}
@@ -982,7 +945,6 @@ export interface ProductVariantStockFieldRefs {
   readonly productVariantId: Prisma.FieldRef<"ProductVariantStock", 'BigInt'>
   readonly stock: Prisma.FieldRef<"ProductVariantStock", 'Int'>
   readonly reserved_stock: Prisma.FieldRef<"ProductVariantStock", 'Int'>
-  readonly available_stock: Prisma.FieldRef<"ProductVariantStock", 'Int'>
   readonly updated_at: Prisma.FieldRef<"ProductVariantStock", 'DateTime'>
 }
     

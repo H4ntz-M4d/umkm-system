@@ -129,3 +129,38 @@ export type Expense = Prisma.ExpenseModel
  * 
  */
 export type ExpenseItem = Prisma.ExpenseItemModel
+/**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
+ * Model OrderItem
+ * 
+ */
+export type OrderItem = Prisma.OrderItemModel
+/**
+ * Model OrderShipment
+ * 
+ */
+export type OrderShipment = Prisma.OrderShipmentModel
+/**
+ * Model PaymentMethod
+ * 
+ */
+export type PaymentMethod = Prisma.PaymentMethodModel
+/**
+ * Model CashTransaction
+ * 
+ */
+export type CashTransaction = Prisma.CashTransactionModel
+/**
+ * Model PosTransaction
+ * 
+ */
+export type PosTransaction = Prisma.PosTransactionModel
+/**
+ * Model PosTransactionItem
+ * 
+ */
+export type PosTransactionItem = Prisma.PosTransactionItemModel
