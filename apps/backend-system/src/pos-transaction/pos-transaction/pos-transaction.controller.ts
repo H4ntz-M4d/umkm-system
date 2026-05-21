@@ -1,17 +1,30 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { PosTransactionService } from './pos-transaction.service';
 import { CreatePosTransactionDto } from 'pos-transaction/dto/pos-transaction.dto';
+import { Pagination } from 'common/paginate/pagination';
 
 @Controller('api/v1/pos-transaction')
 export class PosTransactionController {
   constructor(private posTransactionService: PosTransactionService) {}
 
   @Get()
-  async findAll() {
-    return await this.posTransactionService.findMany();
+  async findAll(
+    @Query() pagination: Pagination,
+    @Query('search') search?: string,
+    @Query('paymentChannel') paymentChannel?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+  ) {
+    return await this.posTransactionService.findMany(
+      pagination,
+      search,
+      paymentChannel,
+      dateFrom,
+      dateTo,
+    );
   }
 
-  @Get()
+  @Get('/parked')
   async findAllByParked() {
     return await this.posTransactionService.findManyByParked();
   }

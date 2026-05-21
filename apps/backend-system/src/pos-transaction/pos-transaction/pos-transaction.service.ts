@@ -1,13 +1,119 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PosStatus, prisma } from '@repo/db';
+import { PosStatus, Prisma, prisma } from '@repo/db';
 import { idFormat } from 'common/helpers/id-format';
 import { CreatePosTransactionDto } from 'pos-transaction/dto/pos-transaction.dto';
+import { toPosTransactionResponse } from './pos-transaction.response';
+import { Pagination } from 'common/paginate/pagination';
+import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
 
 @Injectable()
 export class PosTransactionService {
-  async findMany() {
-    const res = await prisma.posTransaction.findMany();
-    return res;
+  async findMany(
+    pagination: Pagination,
+    search?: string,
+    paymentChannel?: string,
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
+    const skip = pagination.skip ?? 0;
+    const limit = pagination.limit ?? 10;
+
+    const whereClause: Prisma.PosTransactionWhereInput = {
+      paymentMethod: {
+        channel: paymentChannel
+          ? (paymentChannel as Prisma.EnumPaymentChannelFilter)
+          : undefined,
+        name: search
+          ? {
+              contains: search,
+              mode: 'insensitive',
+            }
+          : undefined,
+      },
+      users: {
+        employees: {
+          name: search
+            ? {
+                contains: search,
+                mode: 'insensitive',
+              }
+            : undefined,
+        },
+      },
+      transId: search
+        ? {
+            contains: search,
+            mode: 'insensitive',
+          }
+        : undefined,
+      createdAt: {
+        gte: dateFrom ? toStartOfDay(dateFrom) : undefined,
+        lte: dateTo ? toEndOfDay(dateTo) : undefined,
+      },
+    };
+
+    const data = await prisma.posTransaction.findMany({
+      where: whereClause,
+      skip: skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        items: {
+          include: {
+            variant: {
+              select: {
+                productMaster: {
+                  select: {
+                    name: true,
+                  },
+                },
+                options: {
+                  select: {
+                    variantValue: {
+                      select: {
+                        value: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        paymentMethod: {
+          select: {
+            name: true,
+            channel: true,
+          },
+        },
+        users: {
+          select: {
+            employees: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const total = await prisma.posTransaction.count({
+      where: whereClause,
+    });
+
+    const result = data.map(toPosTransactionResponse);
+
+    return {
+      success: true,
+      data: result,
+      meta: {
+        skip: pagination.skip ?? 0,
+        limit: pagination.limit ?? 10,
+        total: total,
+        timeStamp: new Date().toISOString(),
+      },
+    };
   }
 
   async findManyByParked() {
@@ -55,8 +161,10 @@ export class PosTransactionService {
     for (const dataStock of data.itemTransaction) {
       const itemStock = stocks.find(
         (stock) =>
-          stock.productVariantId.toString() === dataStock.productVariantId,
+          stock.productVariantId === BigInt(dataStock.productVariantId),
       );
+
+      console.log(itemStock);
 
       if (itemStock && itemStock.stock < dataStock.quantity) {
         const variantNames = itemStock.productVariant.options
@@ -86,7 +194,9 @@ export class PosTransactionService {
             transId: transId,
             storeId: BigInt(data.storeId),
             cashierId: BigInt(data.cashierId),
-            paymentMethodId: BigInt(data.paymentMethodId),
+            paymentMethodId: data.paymentMethodId
+              ? BigInt(data.paymentMethodId)
+              : null,
             totalAmount: data.totalAmount,
             status: status,
             items: {
@@ -109,7 +219,9 @@ export class PosTransactionService {
           data: {
             storeId: BigInt(data.storeId),
             cashierId: BigInt(data.cashierId),
-            paymentMethodId: BigInt(data.paymentMethodId),
+            paymentMethodId: data.paymentMethodId
+              ? BigInt(data.paymentMethodId)
+              : null,
             totalAmount: data.totalAmount,
             status: status,
           },
@@ -174,6 +286,8 @@ export class PosTransactionService {
             });
           }
         }
+
+        return posTx;
       }
     });
 

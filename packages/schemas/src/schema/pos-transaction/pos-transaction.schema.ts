@@ -19,7 +19,7 @@ export const PosTransactionSchema = z.object({
   transId: z.string().optional(),
   storeId: z.string(),
   cashierId: z.string(),
-  paymentMethodId: z.string(),
+  paymentMethodId: z.string().optional(),
   status: PostTransactionStatus,
   totalAmount: z.number(),
   itemTransaction: z.array(PosTransactionItemSchema),
