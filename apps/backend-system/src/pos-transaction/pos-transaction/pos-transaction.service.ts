@@ -10,6 +10,16 @@ export class PosTransactionService {
     return res;
   }
 
+  async findManyByParked() {
+    const res = await prisma.posTransaction.findMany({
+      where: {
+        status: PosStatus.PARKED,
+      },
+    });
+
+    return res;
+  }
+
   async upsert(data: CreatePosTransactionDto) {
     const stocks = await prisma.productVariantStock.findMany({
       where: {
