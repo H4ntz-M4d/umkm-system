@@ -479,5 +479,6 @@ model PosTransactionItem {
   posTransaction PosTransaction @relation(fields: [posTransactionId], references: [id])
   variant        ProductVariant @relation(fields: [productVariantId], references: [id])
 
+  @@unique([posTransactionId, productVariantId])
   @@map("pos_transaction_item")
 }
