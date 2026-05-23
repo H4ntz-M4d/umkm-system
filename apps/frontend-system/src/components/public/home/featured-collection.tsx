@@ -1,6 +1,8 @@
-import ProductCard from "@/components/ui/product-card";
+"use client"
+
 import { products } from "@/lib/queries/data/products";
 import { motion } from "framer-motion";
+import ProductCard from "../products/products-card";
 
 export default function FeaturedCollection() {
   const featured = products.slice(0, 4);

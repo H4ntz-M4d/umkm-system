@@ -1,7 +1,11 @@
+"use client";
+
 import { useState } from "react";
 import { Heart, Eye, ShoppingBag, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product, formatPrice } from "@/lib/queries/data/products";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
 
 interface ProductCardProps {
   product: Product;
@@ -20,8 +24,10 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       className="group relative bg-card rounded-2xl overflow-hidden shadow-warm hover:shadow-warm-lg transition-all duration-300"
     >
       {/* Image */}
-      <div className="relative aspect-[3/4] overflow-hidden">
-        <img
+      <div className="relative overflow-hidden">
+        <Image
+          width={100}
+          height={100}
           src={product.image}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -66,7 +72,11 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
             onClick={() => setLiked(!liked)}
             className="p-2.5 bg-background/90 rounded-xl text-foreground hover:bg-background transition-colors shadow-warm"
           >
-            <Heart size={18} fill={liked ? "hsl(var(--primary))" : "none"} stroke={liked ? "hsl(var(--primary))" : "currentColor"} />
+            <Heart
+              size={18}
+              fill={liked ? "hsl(var(--primary))" : "none"}
+              stroke={liked ? "hsl(var(--primary))" : "currentColor"}
+            />
           </button>
         </div>
       </div>
@@ -75,19 +85,29 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       <div className="p-4">
         <div className="flex items-center gap-1 mb-1.5">
           <Star size={12} className="fill-primary text-primary" />
-          <span className="text-xs font-medium text-foreground">{product.rating}</span>
-          <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
+          <span className="text-xs font-medium text-foreground">
+            {product.rating}
+          </span>
+          <span className="text-xs text-muted-foreground">
+            ({product.reviewCount})
+          </span>
         </div>
         <h3 className="font-display font-semibold text-sm text-card-foreground mb-1 line-clamp-1">
           {product.name}
         </h3>
-        <p className="text-sm font-semibold text-primary">{formatPrice(product.price)}</p>
+        <p className="text-sm font-semibold text-primary">
+          {formatPrice(product.price)}
+        </p>
         {product.variants.colors.length > 1 && (
-          <div className="flex items-center gap-1 mt-2">
+          <div className="flex flex-wrap items-center gap-1 mt-2">
             {product.variants.colors.slice(0, 3).map((color) => (
-              <span key={color} className="text-[10px] text-muted-foreground bg-secondary-foreground px-1.5 py-0.5 rounded">
+              <Badge
+                key={color}
+                className="text-[10px]"
+                variant={"secondary"}
+              >
                 {color}
-              </span>
+              </Badge>
             ))}
           </div>
         )}
