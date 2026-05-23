@@ -128,8 +128,8 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem className="flex justify-center items-center">
-                <SidebarMenuButton asChild isActive={pathname === '/management/pos'} tooltip={'Point of Sale'}>
-                  <Link href={'/management/point-of-sale'}>
+                <SidebarMenuButton asChild isActive={pathname === '/point-of-sale/system'} tooltip={'Point of Sale'}>
+                  <Link href={'/point-of-sale/system'}>
                     <ScrollText /> <span>POS</span></Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
