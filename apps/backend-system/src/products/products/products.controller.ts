@@ -52,6 +52,11 @@ export class ProductsController {
     return await this.productsService.productById(BigInt(id));
   }
 
+  @Get('/point-of-sales/list')
+  async getProductList() {
+    return await this.productsService.getProductList();
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Post()
