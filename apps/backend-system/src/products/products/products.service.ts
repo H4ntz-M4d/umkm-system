@@ -6,6 +6,7 @@ import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
 import {
   toAllProductsResponse,
+  toListProductResponse,
   toProductResponse,
   toProductResponseById,
   toProductVariantListResponse,
@@ -21,6 +22,8 @@ export class ProductsService {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '');
   }
+
+  // =============================== Function Get Data =======================================
 
   async findAll(pagination: Pagination, search?: string) {
     const skip = pagination.skip ?? 0;
@@ -120,7 +123,11 @@ export class ProductsService {
       },
     });
 
-    return toProductResponseById(data!);
+    if (!data) {
+      throw new BadRequestException('Product tidak ditemukan');
+    }
+
+    return toProductResponseById(data);
   }
 
   async findProductVariantsList() {
@@ -140,6 +147,50 @@ export class ProductsService {
     const result = data.map(toProductVariantListResponse);
     return result;
   }
+
+  async getProductList() {
+    const data = await prisma.productMaster.findMany({
+      where: {
+        status: ProductStatus.ACTIVE,
+      },
+      select: {
+        name: true,
+        description: true,
+        useVariant: true,
+        variants: {
+          select: {
+            id: true,
+            sku: true,
+            price: true,
+            options: true,
+          },
+        },
+        variantTypes: {
+          select: {
+            id: true,
+            name: true,
+            values: {
+              select: {
+                variantTypeId: true,
+                value: true,
+                options: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      data: data,
+      meta: {
+        timeStamp: new Date().toISOString(),
+      },
+    };
+  }
+
+  // =============================== Function Mutation Data =======================================
 
   async create(data: CreateProductDto) {
     const transaction = await prisma.$transaction(async (tx) => {
@@ -617,10 +668,6 @@ export class ProductsService {
 
     return { success: true, data: result };
   }
-
-  // async update(id: bigint, dto: UpdateProductDto) {
-  //   return '';
-  // }
 
   async remove(id: bigint) {
     const productIsExist = await prisma.productMaster.findUnique({
