@@ -6,14 +6,28 @@ import { motion } from "framer-motion";
 import { Product, formatPrice } from "@/lib/queries/data/products";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
+import { toIDR } from "../../../utils/format-money";
 
 interface ProductCardProps {
-  product: Product;
+  product: any;
   index?: number;
+  handleProductClick: () => void;
+  setIdPm: (idPm: string) => void;
 }
 
-const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
+const ProductCard = ({
+  product,
+  index = 0,
+  handleProductClick,
+  setIdPm,
+}: ProductCardProps) => {
   const [liked, setLiked] = useState(false);
+  const image = product?.variants.find((v) => v.image !== null);
+  const totalVariant = product?.variants.length;
+  const totalStock = product?.variants
+    ?.map((v) => v.stock)
+    .reduce((a, b) => a + b, 0);
 
   return (
     <motion.div
@@ -21,77 +35,61 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className="group relative bg-card rounded-2xl overflow-hidden shadow-warm hover:shadow-warm-lg transition-all duration-300"
+      className="group cursor-pointer hover:border-primary border hover:shadow-xl relative bg-card rounded-2xl overflow-hidden shadow-warm hover:shadow-warm-lg transition-all duration-300"
+      onClick={() => {
+        handleProductClick();
+        setIdPm(product.id);
+      }}
     >
       {/* Image */}
       <div className="relative overflow-hidden">
         <Image
           width={100}
           height={100}
-          src={product.image}
+          src={image.image}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
 
-        {/* Stock indicator */}
-        {product.stock > 0 && product.stock <= 5 && (
-          <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary/90 text-primary-foreground text-[10px] font-bold rounded-md">
-            Sisa {product.stock}
+        {product?.variants?.length > 1 && (
+          <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary/70 text-primary-foreground text-[10px] font-bold rounded-md">
+            {totalVariant} Varian
           </span>
         )}
 
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors duration-300 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-          <button className="p-2.5 bg-background/90 rounded-xl text-foreground hover:bg-background transition-colors shadow-warm">
-            <Eye size={18} />
-          </button>
-          <button className="p-2.5 bg-primary rounded-xl text-primary-foreground hover:bg-terracotta-dark transition-colors shadow-warm">
-            <ShoppingBag size={18} />
-          </button>
-          <button
-            onClick={() => setLiked(!liked)}
-            className="p-2.5 bg-background/90 rounded-xl text-foreground hover:bg-background transition-colors shadow-warm"
-          >
-            <Heart
-              size={18}
-              fill={liked ? "hsl(var(--primary))" : "none"}
-              stroke={liked ? "hsl(var(--primary))" : "currentColor"}
-            />
-          </button>
-        </div>
+        {/* Purchased indicator */}
+        {/* {product.stock > 0 && product.stock <= 5 && (
+          <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary/90 text-primary-foreground text-[10px] font-bold rounded-md">
+            Sisa {product.stock}
+          </span>
+        )} */}
       </div>
 
       {/* Info */}
       <div className="p-4">
-        <div className="flex items-center gap-1 mb-1.5">
-          <Star size={12} className="fill-primary text-primary" />
-          <span className="text-xs font-medium text-foreground">
-            {product.rating}
-          </span>
+        <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center gap-1">
+            <Star size={12} className="fill-primary text-primary" />
+            <span className="text-xs font-medium text-foreground">
+              4.5{/* {product.rating} */}
+            </span>
+          </div>
+
           <span className="text-xs text-muted-foreground">
-            ({product.reviewCount})
+            {totalStock} pcs
           </span>
         </div>
         <h3 className="font-display font-semibold text-sm text-card-foreground mb-1 line-clamp-1">
           {product.name}
         </h3>
         <p className="text-sm font-semibold text-primary">
-          {formatPrice(product.price)}
+          {product.variants.length > 1 ? (
+            <>Mulai dari {toIDR(product.variants[0].price)} </>
+          ) : (
+            <>{toIDR(product.variants[0].price)}</>
+          )}
         </p>
-        {product.variants.colors.length > 1 && (
-          <div className="flex flex-wrap items-center gap-1 mt-2">
-            {product.variants.colors.slice(0, 3).map((color) => (
-              <Badge
-                key={color}
-                className="text-[10px]"
-                variant={"secondary"}
-              >
-                {color}
-              </Badge>
-            ))}
-          </div>
-        )}
       </div>
     </motion.div>
   );

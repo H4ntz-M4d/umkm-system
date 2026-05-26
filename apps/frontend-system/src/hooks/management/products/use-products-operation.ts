@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createProduct,
   deleteProduct,
+  fetchPosProductList,
   fetchProduct,
   fetchProductById,
   fetchProductVariantList,
@@ -45,6 +46,11 @@ export function useProductsOperation({
     queryFn: () => fetchProductById(idProduct!),
     enabled: !!idProduct,
   });
+
+  const getPosProductList = useQuery({
+    queryKey: ["pos-products", "list"],
+    queryFn: () => fetchPosProductList(),
+  })
 
   const createProductMutation = useMutation({
     mutationFn: createProduct,
@@ -97,6 +103,8 @@ export function useProductsOperation({
     fetchProductData: getProducts.data,
     getProductsDataById: getProductsById.data,
     fetchProductVariantList: getProductVariantList.data,
+    fetchPosProductListData: getPosProductList.data,
+    isPosProductLoading: getPosProductList.isLoading,
     isLoadingProduct: getProducts.isLoading,
     createProductData: createProductMutation.mutateAsync,
     updateProductData: updateProductMutation.mutateAsync,

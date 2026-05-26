@@ -1,3 +1,6 @@
+"use client";
+
+import DialogProductCard from "@/components/pos/dialog-product-card";
 import ProductCard from "@/components/pos/products-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +12,9 @@ import {
 } from "@/components/ui/input-group";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { Product, products } from "@/lib/queries/data/products";
+import { fetchPosProductList } from "@/lib/queries/products/products.query";
 import {
   CreditCard,
   ListStart,
@@ -18,9 +23,17 @@ import {
   SearchIcon,
   Trash2,
 } from "lucide-react";
+import { useState } from "react";
 
 export default function PosPage() {
   const productsData: Product = [...products];
+  const { fetchPosProductListData } = useProductsOperation({});
+  const dataProduct = fetchPosProductListData?.data;
+  const [idPm, setIdPm] = useState<string | null>(null); // pm => product master
+
+  const handleProductClick = () => {};
+  const detailProduct = dataProduct?.find((product) => product.id === idPm);
+
   return (
     <>
       <div className="bg-sidebar min-h-screen">
@@ -64,11 +77,17 @@ export default function PosPage() {
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              
+
               {/* List Produk */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                {productsData.map((product, i) => (
-                  <ProductCard key={product.id} product={product} index={i} />
+                {dataProduct?.map((product, i) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    index={i}
+                    handleProductClick={handleProductClick}
+                    setIdPm={setIdPm}
+                  />
                 ))}
               </div>
             </div>
@@ -198,7 +217,7 @@ export default function PosPage() {
                             </div>
                           </div>
                           <Button
-                          variant={"outline"}
+                            variant={"outline"}
                             size={"sm"}
                             className="text-xs border border-primary not-dark:text-primary dark:border dark:border-input bg-sidebar dark:bg-input/30 font-semibold font-stretch-50 hover:bg-accent"
                           >
@@ -213,6 +232,13 @@ export default function PosPage() {
               </Card>
             </div>
           </div>
+          {detailProduct?.variants?.length > 1 && (
+            <DialogProductCard
+              product={detailProduct}
+              open={!!idPm}
+              setIdPm={setIdPm}
+            />
+          )}
         </div>
       </div>
     </>

@@ -25,18 +25,23 @@ export const fetchProduct = async (
 
 export const fetchProductVariantList = async () => {
   const res = await apiFetcher(
-    managementApi.get('v1/products/list'),
-    ProductVariantResponse
-  )
+    managementApi.get("v1/products/list"),
+    ProductVariantResponse,
+  );
 
   return res;
-}
+};
 
 export const fetchProductById = async (id: string) => {
   const res = await apiFetcher(
     managementApi.get(`v1/products/${id}/details`),
     ProductResponseById,
   );
+  return res;
+};
+
+export const fetchPosProductList = async () => {
+  const res = await managementApi.get("v1/products/point-of-sales/list").json<any>();
   return res;
 };
 
