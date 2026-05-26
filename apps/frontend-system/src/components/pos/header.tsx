@@ -25,7 +25,7 @@ export default function HeaderPos({ user }: { user: UserData }) {
           <div className="flex flex-col text-left leading-tight">
             <h3 className="truncate font-bold text-lg">NurfaCraft POS</h3>
             <span className="truncate text-xs text-black/40 dark:text-white/60">
-              UMKM Dashboard
+              UMKM Point of Sales
             </span>
           </div>
         </div>

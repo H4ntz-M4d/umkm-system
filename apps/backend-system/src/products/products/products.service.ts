@@ -154,6 +154,7 @@ export class ProductsService {
         status: ProductStatus.ACTIVE,
       },
       select: {
+        id: true,
         name: true,
         description: true,
         useVariant: true,
@@ -162,7 +163,26 @@ export class ProductsService {
             id: true,
             sku: true,
             price: true,
-            options: true,
+            image: true,
+            productVariantStocks: {
+              select: {
+                stock: true,
+              },
+            },
+            options: {
+              select: {
+                productVariantId: true,
+                variantValueId: true,
+                variantValue: {
+                  select: {
+                    value: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            price: 'asc',
           },
         },
         variantTypes: {
@@ -171,6 +191,7 @@ export class ProductsService {
             name: true,
             values: {
               select: {
+                id: true,
                 variantTypeId: true,
                 value: true,
                 options: true,
@@ -181,9 +202,24 @@ export class ProductsService {
       },
     });
 
+    const formattedData = data.map((product) => ({
+      ...product,
+      variants: product.variants.map((variant) => {
+        return {
+          id: variant.id,
+          sku: variant.sku,
+          price: variant.price,
+          image: variant.image,
+          // Kamu bisa meratakan (flatten) properti stock-nya agar lebih rapi saat di-return
+          stock: variant.productVariantStocks?.stock ?? 0,
+          options: variant.options,
+        };
+      }),
+    }));
+
     return {
       success: true,
-      data: data,
+      data: formattedData,
       meta: {
         timeStamp: new Date().toISOString(),
       },
