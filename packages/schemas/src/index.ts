@@ -7,6 +7,8 @@ export * from "./schema/users/users.response";
 export * from "./schema/auth/auth.schema";
 export * from "./schema/auth/auth.response";
 export * from "./schema/users/schema.employee";
+export * from "./schema/categories/categories.schema";
+export * from "./schema/categories/categories.response";
 export * from "./schema/products/products.schema";
 export * from "./schema/products/products.response";
 export * from "./schema/materials/materials.schema";

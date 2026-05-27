@@ -10,7 +10,9 @@
  */
 export type * from './models/Store.js'
 export type * from './models/Users.js'
+export type * from './models/Categories.js'
 export type * from './models/ProductMaster.js'
+export type * from './models/ProductImage.js'
 export type * from './models/ProductVariant.js'
 export type * from './models/ProductVariantStock.js'
 export type * from './models/ProductVariantType.js'

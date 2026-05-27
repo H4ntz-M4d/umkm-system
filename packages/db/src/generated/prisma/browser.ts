@@ -28,10 +28,20 @@ export type Store = Prisma.StoreModel
  */
 export type Users = Prisma.UsersModel
 /**
+ * Model Categories
+ * 
+ */
+export type Categories = Prisma.CategoriesModel
+/**
  * Model ProductMaster
  * 
  */
 export type ProductMaster = Prisma.ProductMasterModel
+/**
+ * Model ProductImage
+ * 
+ */
+export type ProductImage = Prisma.ProductImageModel
 /**
  * Model ProductVariant
  * 

@@ -28,16 +28,19 @@ export type AggregateProductMaster = {
 
 export type ProductMasterAvgAggregateOutputType = {
   id: number | null
+  categoryId: number | null
 }
 
 export type ProductMasterSumAggregateOutputType = {
   id: bigint | null
+  categoryId: bigint | null
 }
 
 export type ProductMasterMinAggregateOutputType = {
   id: bigint | null
   name: string | null
   description: string | null
+  categoryId: bigint | null
   slug: string | null
   useVariant: boolean | null
   status: $Enums.ProductStatus | null
@@ -48,6 +51,7 @@ export type ProductMasterMaxAggregateOutputType = {
   id: bigint | null
   name: string | null
   description: string | null
+  categoryId: bigint | null
   slug: string | null
   useVariant: boolean | null
   status: $Enums.ProductStatus | null
@@ -58,6 +62,7 @@ export type ProductMasterCountAggregateOutputType = {
   id: number
   name: number
   description: number
+  categoryId: number
   slug: number
   useVariant: number
   status: number
@@ -68,16 +73,19 @@ export type ProductMasterCountAggregateOutputType = {
 
 export type ProductMasterAvgAggregateInputType = {
   id?: true
+  categoryId?: true
 }
 
 export type ProductMasterSumAggregateInputType = {
   id?: true
+  categoryId?: true
 }
 
 export type ProductMasterMinAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  categoryId?: true
   slug?: true
   useVariant?: true
   status?: true
@@ -88,6 +96,7 @@ export type ProductMasterMaxAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  categoryId?: true
   slug?: true
   useVariant?: true
   status?: true
@@ -98,6 +107,7 @@ export type ProductMasterCountAggregateInputType = {
   id?: true
   name?: true
   description?: true
+  categoryId?: true
   slug?: true
   useVariant?: true
   status?: true
@@ -195,6 +205,7 @@ export type ProductMasterGroupByOutputType = {
   id: bigint
   name: string
   description: string | null
+  categoryId: bigint | null
   slug: string
   useVariant: boolean
   status: $Enums.ProductStatus
@@ -228,24 +239,30 @@ export type ProductMasterWhereInput = {
   id?: Prisma.BigIntFilter<"ProductMaster"> | bigint | number
   name?: Prisma.StringFilter<"ProductMaster"> | string
   description?: Prisma.StringNullableFilter<"ProductMaster"> | string | null
+  categoryId?: Prisma.BigIntNullableFilter<"ProductMaster"> | bigint | number | null
   slug?: Prisma.StringFilter<"ProductMaster"> | string
   useVariant?: Prisma.BoolFilter<"ProductMaster"> | boolean
   status?: Prisma.EnumProductStatusFilter<"ProductMaster"> | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFilter<"ProductMaster"> | Date | string
   variants?: Prisma.ProductVariantListRelationFilter
   variantTypes?: Prisma.ProductVariantTypeListRelationFilter
+  categories?: Prisma.XOR<Prisma.CategoriesNullableScalarRelationFilter, Prisma.CategoriesWhereInput> | null
+  productImages?: Prisma.ProductImageListRelationFilter
 }
 
 export type ProductMasterOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
   useVariant?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   variants?: Prisma.ProductVariantOrderByRelationAggregateInput
   variantTypes?: Prisma.ProductVariantTypeOrderByRelationAggregateInput
+  categories?: Prisma.CategoriesOrderByWithRelationInput
+  productImages?: Prisma.ProductImageOrderByRelationAggregateInput
 }
 
 export type ProductMasterWhereUniqueInput = Prisma.AtLeast<{
@@ -256,17 +273,21 @@ export type ProductMasterWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProductMasterWhereInput | Prisma.ProductMasterWhereInput[]
   name?: Prisma.StringFilter<"ProductMaster"> | string
   description?: Prisma.StringNullableFilter<"ProductMaster"> | string | null
+  categoryId?: Prisma.BigIntNullableFilter<"ProductMaster"> | bigint | number | null
   useVariant?: Prisma.BoolFilter<"ProductMaster"> | boolean
   status?: Prisma.EnumProductStatusFilter<"ProductMaster"> | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFilter<"ProductMaster"> | Date | string
   variants?: Prisma.ProductVariantListRelationFilter
   variantTypes?: Prisma.ProductVariantTypeListRelationFilter
+  categories?: Prisma.XOR<Prisma.CategoriesNullableScalarRelationFilter, Prisma.CategoriesWhereInput> | null
+  productImages?: Prisma.ProductImageListRelationFilter
 }, "id" | "slug">
 
 export type ProductMasterOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   slug?: Prisma.SortOrder
   useVariant?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -285,6 +306,7 @@ export type ProductMasterScalarWhereWithAggregatesInput = {
   id?: Prisma.BigIntWithAggregatesFilter<"ProductMaster"> | bigint | number
   name?: Prisma.StringWithAggregatesFilter<"ProductMaster"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"ProductMaster"> | string | null
+  categoryId?: Prisma.BigIntNullableWithAggregatesFilter<"ProductMaster"> | bigint | number | null
   slug?: Prisma.StringWithAggregatesFilter<"ProductMaster"> | string
   useVariant?: Prisma.BoolWithAggregatesFilter<"ProductMaster"> | boolean
   status?: Prisma.EnumProductStatusWithAggregatesFilter<"ProductMaster"> | $Enums.ProductStatus
@@ -301,18 +323,22 @@ export type ProductMasterCreateInput = {
   createdAt?: Date | string
   variants?: Prisma.ProductVariantCreateNestedManyWithoutProductMasterInput
   variantTypes?: Prisma.ProductVariantTypeCreateNestedManyWithoutProductMasterInput
+  categories?: Prisma.CategoriesCreateNestedOneWithoutProductMastersInput
+  productImages?: Prisma.ProductImageCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  categoryId?: bigint | number | null
   slug: string
   useVariant?: boolean
   status?: $Enums.ProductStatus
   createdAt?: Date | string
   variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductMasterInput
   variantTypes?: Prisma.ProductVariantTypeUncheckedCreateNestedManyWithoutProductMasterInput
+  productImages?: Prisma.ProductImageUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUpdateInput = {
@@ -325,24 +351,29 @@ export type ProductMasterUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variants?: Prisma.ProductVariantUpdateManyWithoutProductMasterNestedInput
   variantTypes?: Prisma.ProductVariantTypeUpdateManyWithoutProductMasterNestedInput
+  categories?: Prisma.CategoriesUpdateOneWithoutProductMastersNestedInput
+  productImages?: Prisma.ProductImageUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductMasterNestedInput
   variantTypes?: Prisma.ProductVariantTypeUncheckedUpdateManyWithoutProductMasterNestedInput
+  productImages?: Prisma.ProductImageUncheckedUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterCreateManyInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  categoryId?: bigint | number | null
   slug: string
   useVariant?: boolean
   status?: $Enums.ProductStatus
@@ -363,16 +394,28 @@ export type ProductMasterUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type ProductMasterListRelationFilter = {
+  every?: Prisma.ProductMasterWhereInput
+  some?: Prisma.ProductMasterWhereInput
+  none?: Prisma.ProductMasterWhereInput
+}
+
+export type ProductMasterOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type ProductMasterCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   useVariant?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -381,12 +424,14 @@ export type ProductMasterCountOrderByAggregateInput = {
 
 export type ProductMasterAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
 }
 
 export type ProductMasterMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   useVariant?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -397,6 +442,7 @@ export type ProductMasterMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
   useVariant?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -405,6 +451,7 @@ export type ProductMasterMinOrderByAggregateInput = {
 
 export type ProductMasterSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  categoryId?: Prisma.SortOrder
 }
 
 export type ProductMasterScalarRelationFilter = {
@@ -412,8 +459,64 @@ export type ProductMasterScalarRelationFilter = {
   isNot?: Prisma.ProductMasterWhereInput
 }
 
+export type ProductMasterCreateNestedManyWithoutCategoriesInput = {
+  create?: Prisma.XOR<Prisma.ProductMasterCreateWithoutCategoriesInput, Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput> | Prisma.ProductMasterCreateWithoutCategoriesInput[] | Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput[]
+  connectOrCreate?: Prisma.ProductMasterCreateOrConnectWithoutCategoriesInput | Prisma.ProductMasterCreateOrConnectWithoutCategoriesInput[]
+  createMany?: Prisma.ProductMasterCreateManyCategoriesInputEnvelope
+  connect?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+}
+
+export type ProductMasterUncheckedCreateNestedManyWithoutCategoriesInput = {
+  create?: Prisma.XOR<Prisma.ProductMasterCreateWithoutCategoriesInput, Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput> | Prisma.ProductMasterCreateWithoutCategoriesInput[] | Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput[]
+  connectOrCreate?: Prisma.ProductMasterCreateOrConnectWithoutCategoriesInput | Prisma.ProductMasterCreateOrConnectWithoutCategoriesInput[]
+  createMany?: Prisma.ProductMasterCreateManyCategoriesInputEnvelope
+  connect?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+}
+
+export type ProductMasterUpdateManyWithoutCategoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductMasterCreateWithoutCategoriesInput, Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput> | Prisma.ProductMasterCreateWithoutCategoriesInput[] | Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput[]
+  connectOrCreate?: Prisma.ProductMasterCreateOrConnectWithoutCategoriesInput | Prisma.ProductMasterCreateOrConnectWithoutCategoriesInput[]
+  upsert?: Prisma.ProductMasterUpsertWithWhereUniqueWithoutCategoriesInput | Prisma.ProductMasterUpsertWithWhereUniqueWithoutCategoriesInput[]
+  createMany?: Prisma.ProductMasterCreateManyCategoriesInputEnvelope
+  set?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+  disconnect?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+  delete?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+  connect?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+  update?: Prisma.ProductMasterUpdateWithWhereUniqueWithoutCategoriesInput | Prisma.ProductMasterUpdateWithWhereUniqueWithoutCategoriesInput[]
+  updateMany?: Prisma.ProductMasterUpdateManyWithWhereWithoutCategoriesInput | Prisma.ProductMasterUpdateManyWithWhereWithoutCategoriesInput[]
+  deleteMany?: Prisma.ProductMasterScalarWhereInput | Prisma.ProductMasterScalarWhereInput[]
+}
+
+export type ProductMasterUncheckedUpdateManyWithoutCategoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductMasterCreateWithoutCategoriesInput, Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput> | Prisma.ProductMasterCreateWithoutCategoriesInput[] | Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput[]
+  connectOrCreate?: Prisma.ProductMasterCreateOrConnectWithoutCategoriesInput | Prisma.ProductMasterCreateOrConnectWithoutCategoriesInput[]
+  upsert?: Prisma.ProductMasterUpsertWithWhereUniqueWithoutCategoriesInput | Prisma.ProductMasterUpsertWithWhereUniqueWithoutCategoriesInput[]
+  createMany?: Prisma.ProductMasterCreateManyCategoriesInputEnvelope
+  set?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+  disconnect?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+  delete?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+  connect?: Prisma.ProductMasterWhereUniqueInput | Prisma.ProductMasterWhereUniqueInput[]
+  update?: Prisma.ProductMasterUpdateWithWhereUniqueWithoutCategoriesInput | Prisma.ProductMasterUpdateWithWhereUniqueWithoutCategoriesInput[]
+  updateMany?: Prisma.ProductMasterUpdateManyWithWhereWithoutCategoriesInput | Prisma.ProductMasterUpdateManyWithWhereWithoutCategoriesInput[]
+  deleteMany?: Prisma.ProductMasterScalarWhereInput | Prisma.ProductMasterScalarWhereInput[]
+}
+
 export type EnumProductStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProductStatus
+}
+
+export type ProductMasterCreateNestedOneWithoutProductImagesInput = {
+  create?: Prisma.XOR<Prisma.ProductMasterCreateWithoutProductImagesInput, Prisma.ProductMasterUncheckedCreateWithoutProductImagesInput>
+  connectOrCreate?: Prisma.ProductMasterCreateOrConnectWithoutProductImagesInput
+  connect?: Prisma.ProductMasterWhereUniqueInput
+}
+
+export type ProductMasterUpdateOneRequiredWithoutProductImagesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductMasterCreateWithoutProductImagesInput, Prisma.ProductMasterUncheckedCreateWithoutProductImagesInput>
+  connectOrCreate?: Prisma.ProductMasterCreateOrConnectWithoutProductImagesInput
+  upsert?: Prisma.ProductMasterUpsertWithoutProductImagesInput
+  connect?: Prisma.ProductMasterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductMasterUpdateToOneWithWhereWithoutProductImagesInput, Prisma.ProductMasterUpdateWithoutProductImagesInput>, Prisma.ProductMasterUncheckedUpdateWithoutProductImagesInput>
 }
 
 export type ProductMasterCreateNestedOneWithoutVariantsInput = {
@@ -444,6 +547,140 @@ export type ProductMasterUpdateOneRequiredWithoutVariantTypesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductMasterUpdateToOneWithWhereWithoutVariantTypesInput, Prisma.ProductMasterUpdateWithoutVariantTypesInput>, Prisma.ProductMasterUncheckedUpdateWithoutVariantTypesInput>
 }
 
+export type ProductMasterCreateWithoutCategoriesInput = {
+  id?: bigint | number
+  name: string
+  description?: string | null
+  slug: string
+  useVariant?: boolean
+  status?: $Enums.ProductStatus
+  createdAt?: Date | string
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductMasterInput
+  variantTypes?: Prisma.ProductVariantTypeCreateNestedManyWithoutProductMasterInput
+  productImages?: Prisma.ProductImageCreateNestedManyWithoutProductMasterInput
+}
+
+export type ProductMasterUncheckedCreateWithoutCategoriesInput = {
+  id?: bigint | number
+  name: string
+  description?: string | null
+  slug: string
+  useVariant?: boolean
+  status?: $Enums.ProductStatus
+  createdAt?: Date | string
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductMasterInput
+  variantTypes?: Prisma.ProductVariantTypeUncheckedCreateNestedManyWithoutProductMasterInput
+  productImages?: Prisma.ProductImageUncheckedCreateNestedManyWithoutProductMasterInput
+}
+
+export type ProductMasterCreateOrConnectWithoutCategoriesInput = {
+  where: Prisma.ProductMasterWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductMasterCreateWithoutCategoriesInput, Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput>
+}
+
+export type ProductMasterCreateManyCategoriesInputEnvelope = {
+  data: Prisma.ProductMasterCreateManyCategoriesInput | Prisma.ProductMasterCreateManyCategoriesInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductMasterUpsertWithWhereUniqueWithoutCategoriesInput = {
+  where: Prisma.ProductMasterWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductMasterUpdateWithoutCategoriesInput, Prisma.ProductMasterUncheckedUpdateWithoutCategoriesInput>
+  create: Prisma.XOR<Prisma.ProductMasterCreateWithoutCategoriesInput, Prisma.ProductMasterUncheckedCreateWithoutCategoriesInput>
+}
+
+export type ProductMasterUpdateWithWhereUniqueWithoutCategoriesInput = {
+  where: Prisma.ProductMasterWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductMasterUpdateWithoutCategoriesInput, Prisma.ProductMasterUncheckedUpdateWithoutCategoriesInput>
+}
+
+export type ProductMasterUpdateManyWithWhereWithoutCategoriesInput = {
+  where: Prisma.ProductMasterScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductMasterUpdateManyMutationInput, Prisma.ProductMasterUncheckedUpdateManyWithoutCategoriesInput>
+}
+
+export type ProductMasterScalarWhereInput = {
+  AND?: Prisma.ProductMasterScalarWhereInput | Prisma.ProductMasterScalarWhereInput[]
+  OR?: Prisma.ProductMasterScalarWhereInput[]
+  NOT?: Prisma.ProductMasterScalarWhereInput | Prisma.ProductMasterScalarWhereInput[]
+  id?: Prisma.BigIntFilter<"ProductMaster"> | bigint | number
+  name?: Prisma.StringFilter<"ProductMaster"> | string
+  description?: Prisma.StringNullableFilter<"ProductMaster"> | string | null
+  categoryId?: Prisma.BigIntNullableFilter<"ProductMaster"> | bigint | number | null
+  slug?: Prisma.StringFilter<"ProductMaster"> | string
+  useVariant?: Prisma.BoolFilter<"ProductMaster"> | boolean
+  status?: Prisma.EnumProductStatusFilter<"ProductMaster"> | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFilter<"ProductMaster"> | Date | string
+}
+
+export type ProductMasterCreateWithoutProductImagesInput = {
+  id?: bigint | number
+  name: string
+  description?: string | null
+  slug: string
+  useVariant?: boolean
+  status?: $Enums.ProductStatus
+  createdAt?: Date | string
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductMasterInput
+  variantTypes?: Prisma.ProductVariantTypeCreateNestedManyWithoutProductMasterInput
+  categories?: Prisma.CategoriesCreateNestedOneWithoutProductMastersInput
+}
+
+export type ProductMasterUncheckedCreateWithoutProductImagesInput = {
+  id?: bigint | number
+  name: string
+  description?: string | null
+  categoryId?: bigint | number | null
+  slug: string
+  useVariant?: boolean
+  status?: $Enums.ProductStatus
+  createdAt?: Date | string
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductMasterInput
+  variantTypes?: Prisma.ProductVariantTypeUncheckedCreateNestedManyWithoutProductMasterInput
+}
+
+export type ProductMasterCreateOrConnectWithoutProductImagesInput = {
+  where: Prisma.ProductMasterWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductMasterCreateWithoutProductImagesInput, Prisma.ProductMasterUncheckedCreateWithoutProductImagesInput>
+}
+
+export type ProductMasterUpsertWithoutProductImagesInput = {
+  update: Prisma.XOR<Prisma.ProductMasterUpdateWithoutProductImagesInput, Prisma.ProductMasterUncheckedUpdateWithoutProductImagesInput>
+  create: Prisma.XOR<Prisma.ProductMasterCreateWithoutProductImagesInput, Prisma.ProductMasterUncheckedCreateWithoutProductImagesInput>
+  where?: Prisma.ProductMasterWhereInput
+}
+
+export type ProductMasterUpdateToOneWithWhereWithoutProductImagesInput = {
+  where?: Prisma.ProductMasterWhereInput
+  data: Prisma.XOR<Prisma.ProductMasterUpdateWithoutProductImagesInput, Prisma.ProductMasterUncheckedUpdateWithoutProductImagesInput>
+}
+
+export type ProductMasterUpdateWithoutProductImagesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductMasterNestedInput
+  variantTypes?: Prisma.ProductVariantTypeUpdateManyWithoutProductMasterNestedInput
+  categories?: Prisma.CategoriesUpdateOneWithoutProductMastersNestedInput
+}
+
+export type ProductMasterUncheckedUpdateWithoutProductImagesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductMasterNestedInput
+  variantTypes?: Prisma.ProductVariantTypeUncheckedUpdateManyWithoutProductMasterNestedInput
+}
+
 export type ProductMasterCreateWithoutVariantsInput = {
   id?: bigint | number
   name: string
@@ -453,17 +690,21 @@ export type ProductMasterCreateWithoutVariantsInput = {
   status?: $Enums.ProductStatus
   createdAt?: Date | string
   variantTypes?: Prisma.ProductVariantTypeCreateNestedManyWithoutProductMasterInput
+  categories?: Prisma.CategoriesCreateNestedOneWithoutProductMastersInput
+  productImages?: Prisma.ProductImageCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateWithoutVariantsInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  categoryId?: bigint | number | null
   slug: string
   useVariant?: boolean
   status?: $Enums.ProductStatus
   createdAt?: Date | string
   variantTypes?: Prisma.ProductVariantTypeUncheckedCreateNestedManyWithoutProductMasterInput
+  productImages?: Prisma.ProductImageUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterCreateOrConnectWithoutVariantsInput = {
@@ -491,17 +732,21 @@ export type ProductMasterUpdateWithoutVariantsInput = {
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variantTypes?: Prisma.ProductVariantTypeUpdateManyWithoutProductMasterNestedInput
+  categories?: Prisma.CategoriesUpdateOneWithoutProductMastersNestedInput
+  productImages?: Prisma.ProductImageUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateWithoutVariantsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variantTypes?: Prisma.ProductVariantTypeUncheckedUpdateManyWithoutProductMasterNestedInput
+  productImages?: Prisma.ProductImageUncheckedUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterCreateWithoutVariantTypesInput = {
@@ -513,17 +758,21 @@ export type ProductMasterCreateWithoutVariantTypesInput = {
   status?: $Enums.ProductStatus
   createdAt?: Date | string
   variants?: Prisma.ProductVariantCreateNestedManyWithoutProductMasterInput
+  categories?: Prisma.CategoriesCreateNestedOneWithoutProductMastersInput
+  productImages?: Prisma.ProductImageCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateWithoutVariantTypesInput = {
   id?: bigint | number
   name: string
   description?: string | null
+  categoryId?: bigint | number | null
   slug: string
   useVariant?: boolean
   status?: $Enums.ProductStatus
   createdAt?: Date | string
   variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductMasterInput
+  productImages?: Prisma.ProductImageUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterCreateOrConnectWithoutVariantTypesInput = {
@@ -551,9 +800,47 @@ export type ProductMasterUpdateWithoutVariantTypesInput = {
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variants?: Prisma.ProductVariantUpdateManyWithoutProductMasterNestedInput
+  categories?: Prisma.CategoriesUpdateOneWithoutProductMastersNestedInput
+  productImages?: Prisma.ProductImageUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateWithoutVariantTypesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductMasterNestedInput
+  productImages?: Prisma.ProductImageUncheckedUpdateManyWithoutProductMasterNestedInput
+}
+
+export type ProductMasterCreateManyCategoriesInput = {
+  id?: bigint | number
+  name: string
+  description?: string | null
+  slug: string
+  useVariant?: boolean
+  status?: $Enums.ProductStatus
+  createdAt?: Date | string
+}
+
+export type ProductMasterUpdateWithoutCategoriesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductMasterNestedInput
+  variantTypes?: Prisma.ProductVariantTypeUpdateManyWithoutProductMasterNestedInput
+  productImages?: Prisma.ProductImageUpdateManyWithoutProductMasterNestedInput
+}
+
+export type ProductMasterUncheckedUpdateWithoutCategoriesInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -562,6 +849,18 @@ export type ProductMasterUncheckedUpdateWithoutVariantTypesInput = {
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductMasterNestedInput
+  variantTypes?: Prisma.ProductVariantTypeUncheckedUpdateManyWithoutProductMasterNestedInput
+  productImages?: Prisma.ProductImageUncheckedUpdateManyWithoutProductMasterNestedInput
+}
+
+export type ProductMasterUncheckedUpdateManyWithoutCategoriesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -572,11 +871,13 @@ export type ProductMasterUncheckedUpdateWithoutVariantTypesInput = {
 export type ProductMasterCountOutputType = {
   variants: number
   variantTypes: number
+  productImages: number
 }
 
 export type ProductMasterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   variants?: boolean | ProductMasterCountOutputTypeCountVariantsArgs
   variantTypes?: boolean | ProductMasterCountOutputTypeCountVariantTypesArgs
+  productImages?: boolean | ProductMasterCountOutputTypeCountProductImagesArgs
 }
 
 /**
@@ -603,17 +904,27 @@ export type ProductMasterCountOutputTypeCountVariantTypesArgs<ExtArgs extends ru
   where?: Prisma.ProductVariantTypeWhereInput
 }
 
+/**
+ * ProductMasterCountOutputType without action
+ */
+export type ProductMasterCountOutputTypeCountProductImagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductImageWhereInput
+}
+
 
 export type ProductMasterSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   description?: boolean
+  categoryId?: boolean
   slug?: boolean
   useVariant?: boolean
   status?: boolean
   createdAt?: boolean
   variants?: boolean | Prisma.ProductMaster$variantsArgs<ExtArgs>
   variantTypes?: boolean | Prisma.ProductMaster$variantTypesArgs<ExtArgs>
+  categories?: boolean | Prisma.ProductMaster$categoriesArgs<ExtArgs>
+  productImages?: boolean | Prisma.ProductMaster$productImagesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductMasterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productMaster"]>
 
@@ -621,51 +932,65 @@ export type ProductMasterSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   name?: boolean
   description?: boolean
+  categoryId?: boolean
   slug?: boolean
   useVariant?: boolean
   status?: boolean
   createdAt?: boolean
+  categories?: boolean | Prisma.ProductMaster$categoriesArgs<ExtArgs>
 }, ExtArgs["result"]["productMaster"]>
 
 export type ProductMasterSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   description?: boolean
+  categoryId?: boolean
   slug?: boolean
   useVariant?: boolean
   status?: boolean
   createdAt?: boolean
+  categories?: boolean | Prisma.ProductMaster$categoriesArgs<ExtArgs>
 }, ExtArgs["result"]["productMaster"]>
 
 export type ProductMasterSelectScalar = {
   id?: boolean
   name?: boolean
   description?: boolean
+  categoryId?: boolean
   slug?: boolean
   useVariant?: boolean
   status?: boolean
   createdAt?: boolean
 }
 
-export type ProductMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "slug" | "useVariant" | "status" | "createdAt", ExtArgs["result"]["productMaster"]>
+export type ProductMasterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "categoryId" | "slug" | "useVariant" | "status" | "createdAt", ExtArgs["result"]["productMaster"]>
 export type ProductMasterInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   variants?: boolean | Prisma.ProductMaster$variantsArgs<ExtArgs>
   variantTypes?: boolean | Prisma.ProductMaster$variantTypesArgs<ExtArgs>
+  categories?: boolean | Prisma.ProductMaster$categoriesArgs<ExtArgs>
+  productImages?: boolean | Prisma.ProductMaster$productImagesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductMasterCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ProductMasterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ProductMasterIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ProductMasterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  categories?: boolean | Prisma.ProductMaster$categoriesArgs<ExtArgs>
+}
+export type ProductMasterIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  categories?: boolean | Prisma.ProductMaster$categoriesArgs<ExtArgs>
+}
 
 export type $ProductMasterPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProductMaster"
   objects: {
     variants: Prisma.$ProductVariantPayload<ExtArgs>[]
     variantTypes: Prisma.$ProductVariantTypePayload<ExtArgs>[]
+    categories: Prisma.$CategoriesPayload<ExtArgs> | null
+    productImages: Prisma.$ProductImagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
     name: string
     description: string | null
+    categoryId: bigint | null
     slug: string
     useVariant: boolean
     status: $Enums.ProductStatus
@@ -1066,6 +1391,8 @@ export interface Prisma__ProductMasterClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   variants<T extends Prisma.ProductMaster$variantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductMaster$variantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   variantTypes<T extends Prisma.ProductMaster$variantTypesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductMaster$variantTypesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVariantTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  categories<T extends Prisma.ProductMaster$categoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductMaster$categoriesArgs<ExtArgs>>): Prisma.Prisma__CategoriesClient<runtime.Types.Result.GetResult<Prisma.$CategoriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  productImages<T extends Prisma.ProductMaster$productImagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductMaster$productImagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1098,6 +1425,7 @@ export interface ProductMasterFieldRefs {
   readonly id: Prisma.FieldRef<"ProductMaster", 'BigInt'>
   readonly name: Prisma.FieldRef<"ProductMaster", 'String'>
   readonly description: Prisma.FieldRef<"ProductMaster", 'String'>
+  readonly categoryId: Prisma.FieldRef<"ProductMaster", 'BigInt'>
   readonly slug: Prisma.FieldRef<"ProductMaster", 'String'>
   readonly useVariant: Prisma.FieldRef<"ProductMaster", 'Boolean'>
   readonly status: Prisma.FieldRef<"ProductMaster", 'ProductStatus'>
@@ -1351,6 +1679,10 @@ export type ProductMasterCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    */
   data: Prisma.ProductMasterCreateManyInput | Prisma.ProductMasterCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductMasterIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1421,6 +1753,10 @@ export type ProductMasterUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * Limit how many ProductMasters to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductMasterIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1535,6 +1871,49 @@ export type ProductMaster$variantTypesArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.ProductVariantTypeScalarFieldEnum | Prisma.ProductVariantTypeScalarFieldEnum[]
+}
+
+/**
+ * ProductMaster.categories
+ */
+export type ProductMaster$categoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Categories
+   */
+  select?: Prisma.CategoriesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Categories
+   */
+  omit?: Prisma.CategoriesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CategoriesInclude<ExtArgs> | null
+  where?: Prisma.CategoriesWhereInput
+}
+
+/**
+ * ProductMaster.productImages
+ */
+export type ProductMaster$productImagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductImage
+   */
+  select?: Prisma.ProductImageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductImage
+   */
+  omit?: Prisma.ProductImageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductImageInclude<ExtArgs> | null
+  where?: Prisma.ProductImageWhereInput
+  orderBy?: Prisma.ProductImageOrderByWithRelationInput | Prisma.ProductImageOrderByWithRelationInput[]
+  cursor?: Prisma.ProductImageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductImageScalarFieldEnum | Prisma.ProductImageScalarFieldEnum[]
 }
 
 /**
