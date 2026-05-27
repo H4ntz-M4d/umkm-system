@@ -10,6 +10,7 @@ import { InventoryLedgerModule } from './inventory-ledger/inventory-ledger.modul
 import { ExpenseCategoryModule } from './expense-category/expense-category.module';
 import { ExpenseModule } from './expense/expense.module';
 import { PosTransactionModule } from './pos-transaction/pos-transaction.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PosTransactionModule } from './pos-transaction/pos-transaction.module';
     ExpenseCategoryModule,
     ExpenseModule,
     PosTransactionModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}

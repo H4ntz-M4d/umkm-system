@@ -55,19 +55,45 @@ enum UserRole {
   CUSTOMER
 }
 
+model Categories {
+  id          BigInt   @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String   @db.VarChar(100)
+  status      Boolean  @default(true)
+  slug        String   @unique @db.VarChar(100)
+  createdAt   DateTime @default(now())
+
+  productMasters ProductMaster[]
+
+  @@map("categories")
+}
+
 model ProductMaster {
   id          BigInt        @id @default(autoincrement())
   name        String        @db.VarChar(255)
   description String?
+  categoryId  BigInt?
   slug        String        @unique @db.VarChar(255)
   useVariant  Boolean       @default(false)
   status      ProductStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
 
-  variants     ProductVariant[]
-  variantTypes ProductVariantType[]
+  variants      ProductVariant[]
+  variantTypes  ProductVariantType[]
+  categories    Categories?          @relation(fields: [categoryId], references: [id])
+  productImages ProductImage[]
 
   @@map("product_master")
+}
+
+model ProductImage {
+  id              BigInt @id @default(autoincrement())
+  productMasterId BigInt
+  image           String
+
+  productMaster ProductMaster @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
+
+  @@map("product_image")
 }
 
 model ProductVariant {
