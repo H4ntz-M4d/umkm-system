@@ -1,6 +1,7 @@
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { prisma } from '@repo/db';
 import { CategoriesDto } from 'categories/dto/categories.dto';
+import { toCategoriesResponse } from './categories.response';
 
 @Injectable()
 export class CategoriesService {
@@ -26,9 +27,14 @@ export class CategoriesService {
       },
     });
 
+    const result = data.map((item) => ({
+      ...toCategoriesResponse(item),
+      productCount: item._count.productMasters,
+    }));
+
     return {
       success: true,
-      data: data,
+      data: result,
       meta: {
         timeStamp: new Date().toISOString(),
       },
@@ -43,14 +49,6 @@ export class CategoriesService {
       select: {
         id: true,
         name: true,
-        description: true,
-        status: true,
-        slug: true,
-        _count: {
-          select: {
-            productMasters: true,
-          },
-        },
       },
     });
 
@@ -67,7 +65,7 @@ export class CategoriesService {
       },
     });
 
-    return res;
+    return toCategoriesResponse(res);
   }
 
   async findOne(id: bigint) {
@@ -97,7 +95,7 @@ export class CategoriesService {
       },
     });
 
-    return res;
+    return toCategoriesResponse(res);
   }
 
   async delete(id: bigint) {
@@ -107,6 +105,6 @@ export class CategoriesService {
       where: { id },
     });
 
-    return res;
+    return toCategoriesResponse(res);
   }
 }
