@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -42,6 +41,9 @@
   --font-sans: Inter, -apple-system, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
+  --font-instrument: "Instrument Serif", serif;
+  --font-display: "Playfair Display", serif;
+  --font-body: "DM Sans", sans-serif;
   --radius: 0.75rem;
   --shadow-x: 0px;
   --shadow-y: 4px;
@@ -51,17 +53,24 @@
   --shadow-color: hsl(20, 20%, 10%);
   --shadow-2xs: 0px 4px 10px 2px hsl(20 20% 10% / 0.03);
   --shadow-xs: 0px 4px 10px 2px hsl(20 20% 10% / 0.03);
-  --shadow-sm: 0px 4px 10px 2px hsl(20 20% 10% / 0.05), 0px 1px 2px 1px hsl(20 20% 10% / 0.05);
-  --shadow: 0px 4px 10px 2px hsl(20 20% 10% / 0.05), 0px 1px 2px 1px hsl(20 20% 10% / 0.05);
-  --shadow-md: 0px 4px 10px 2px hsl(20 20% 10% / 0.05), 0px 2px 4px 1px hsl(20 20% 10% / 0.05);
-  --shadow-lg: 0px 4px 10px 2px hsl(20 20% 10% / 0.05), 0px 4px 6px 1px hsl(20 20% 10% / 0.05);
-  --shadow-xl: 0px 4px 10px 2px hsl(20 20% 10% / 0.05), 0px 8px 10px 1px hsl(20 20% 10% / 0.05);
+  --shadow-sm:
+    0px 4px 10px 2px hsl(20 20% 10% / 0.05),
+    0px 1px 2px 1px hsl(20 20% 10% / 0.05);
+  --shadow:
+    0px 4px 10px 2px hsl(20 20% 10% / 0.05),
+    0px 1px 2px 1px hsl(20 20% 10% / 0.05);
+  --shadow-md:
+    0px 4px 10px 2px hsl(20 20% 10% / 0.05),
+    0px 2px 4px 1px hsl(20 20% 10% / 0.05);
+  --shadow-lg:
+    0px 4px 10px 2px hsl(20 20% 10% / 0.05),
+    0px 4px 6px 1px hsl(20 20% 10% / 0.05);
+  --shadow-xl:
+    0px 4px 10px 2px hsl(20 20% 10% / 0.05),
+    0px 8px 10px 1px hsl(20 20% 10% / 0.05);
   --shadow-2xl: 0px 4px 10px 2px hsl(20 20% 10% / 0.13);
   --tracking-normal: -0.01em;
   --spacing: 0.25rem;
-
-  --font-display: 'Playfair Display', serif;
-  --font-body: 'DM Sans', sans-serif;
 }
 
 .dark {
@@ -100,6 +109,9 @@
   --font-sans: Inter, -apple-system, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;
+  --font-instrument: "Instrument Serif", serif;
+  --font-display: "Playfair Display", serif;
+  --font-body: "DM Sans", sans-serif;
   --radius: 0.75rem;
   --shadow-x: 0px;
   --shadow-y: 6px;
@@ -107,17 +119,19 @@
   --shadow-spread: 2px;
   --shadow-opacity: 0.2;
   --shadow-color: hsl(0, 0%, 0%);
-  --shadow-2xs: 0px 6px 15px 2px hsl(0 0% 0% / 0.10);
-  --shadow-xs: 0px 6px 15px 2px hsl(0 0% 0% / 0.10);
-  --shadow-sm: 0px 6px 15px 2px hsl(0 0% 0% / 0.20), 0px 1px 2px 1px hsl(0 0% 0% / 0.20);
-  --shadow: 0px 6px 15px 2px hsl(0 0% 0% / 0.20), 0px 1px 2px 1px hsl(0 0% 0% / 0.20);
-  --shadow-md: 0px 6px 15px 2px hsl(0 0% 0% / 0.20), 0px 2px 4px 1px hsl(0 0% 0% / 0.20);
-  --shadow-lg: 0px 6px 15px 2px hsl(0 0% 0% / 0.20), 0px 4px 6px 1px hsl(0 0% 0% / 0.20);
-  --shadow-xl: 0px 6px 15px 2px hsl(0 0% 0% / 0.20), 0px 8px 10px 1px hsl(0 0% 0% / 0.20);
-  --shadow-2xl: 0px 6px 15px 2px hsl(0 0% 0% / 0.50);
-
-  --font-display: 'Playfair Display', serif;
-  --font-body: 'DM Sans', sans-serif;
+  --shadow-2xs: 0px 6px 15px 2px hsl(0 0% 0% / 0.1);
+  --shadow-xs: 0px 6px 15px 2px hsl(0 0% 0% / 0.1);
+  --shadow-sm:
+    0px 6px 15px 2px hsl(0 0% 0% / 0.2), 0px 1px 2px 1px hsl(0 0% 0% / 0.2);
+  --shadow:
+    0px 6px 15px 2px hsl(0 0% 0% / 0.2), 0px 1px 2px 1px hsl(0 0% 0% / 0.2);
+  --shadow-md:
+    0px 6px 15px 2px hsl(0 0% 0% / 0.2), 0px 2px 4px 1px hsl(0 0% 0% / 0.2);
+  --shadow-lg:
+    0px 6px 15px 2px hsl(0 0% 0% / 0.2), 0px 4px 6px 1px hsl(0 0% 0% / 0.2);
+  --shadow-xl:
+    0px 6px 15px 2px hsl(0 0% 0% / 0.2), 0px 8px 10px 1px hsl(0 0% 0% / 0.2);
+  --shadow-2xl: 0px 6px 15px 2px hsl(0 0% 0% / 0.5);
 }
 
 @theme inline {
@@ -157,8 +171,9 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
-  --font-display: 'Playfair Display', serif;
-  --font-body: 'DM Sans', sans-serif;
+  --font-instrument: var(--font-instrument);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -213,25 +228,30 @@ body {
   }
 
   /* Menghilangkan panah di Firefox */
-  input[type=number] {
+  input[type="number"] {
     -moz-appearance: textfield;
-      -webkit-appearance: initial;
-      margin: 0;
+    -webkit-appearance: initial;
+    margin: 0;
   }
 
-    /* Add to global.css or a module */
+  /* Add to global.css or a module */
   .qty-input-wrapper input::-webkit-outer-spin-button,
   .qty-input-wrapper input::-webkit-inner-spin-button {
     -webkit-appearance: auto !important;
     margin: initial !important;
   }
 
-  .qty-input-wrapper input[type=number] {
+  .qty-input-wrapper input[type="number"] {
     -moz-appearance: auto;
     appearance: auto;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-instrument);
   }
 }
