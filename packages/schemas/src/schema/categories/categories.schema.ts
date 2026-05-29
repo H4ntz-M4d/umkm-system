@@ -7,4 +7,4 @@ export const CategoriesSchema = z.object({
   slug: z.string(),
 });
 
-export type Categories = z.infer<typeof CategoriesSchema>;
+export type CategoriesSchemaInput = z.infer<typeof CategoriesSchema>;

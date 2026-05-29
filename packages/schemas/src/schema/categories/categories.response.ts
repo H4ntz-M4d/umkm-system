@@ -7,15 +7,10 @@ export const CategoriesData = z.object({
   description: z.string(),
   status: z.boolean(),
   slug: z.string(),
+  productCount: z.number(),
 });
 
-export const CategoriesResponse = ApiSuccessResponse(
-  z.array(
-    CategoriesData.extend({
-      productCount: z.number(),
-    }),
-  ),
-);
+export const CategoriesResponse = ApiSuccessResponse(z.array(CategoriesData));
 
 export const CategoryListResponse = ApiSuccessResponse(
   z.array(
@@ -26,4 +21,6 @@ export const CategoryListResponse = ApiSuccessResponse(
   ),
 );
 
-export const CategoryResponse = ApiSuccessResponse(CategoriesData);
+export const CategoryResponse = ApiSuccessResponse(
+  CategoriesData.omit({ productCount: true }),
+);
