@@ -3,6 +3,7 @@ import managementApi from "@/lib/api/api.management";
 import {
   CategoriesResponse,
   CategoriesSchemaInput,
+  CategoriesSummaryResponse,
   CategoryListResponse,
   CategoryResponse,
 } from "@repo/schemas";
@@ -20,6 +21,15 @@ export const fetchCategoryList = async () => {
   const res = await apiFetcher(
     managementApi.get("v1/categories/list"),
     CategoryListResponse,
+  );
+
+  return res;
+};
+
+export const fetchCategoriesSummary = async () => {
+  const res = await apiFetcher(
+    managementApi.get("v1/categories/summary"),
+    CategoriesSummaryResponse,
   );
 
   return res;

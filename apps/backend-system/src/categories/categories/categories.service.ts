@@ -55,6 +55,36 @@ export class CategoriesService {
     return data;
   }
 
+  async getCategoriesSummary() {
+    const totalCategories = await prisma.categories.count();
+    const activeCategories = await prisma.categories.count({
+      where: {
+        status: true,
+      },
+    });
+    const linkedProducts = await prisma.categories.count({
+      where: {
+        productMasters: {
+          some: {},
+        },
+      },
+    });
+
+    const data = {
+      totalCategories,
+      activeCategories,
+      linkedProducts,
+    };
+
+    return {
+      success: true,
+      data,
+      meta: {
+        timeStamp: new Date().toISOString(),
+      },
+    };
+  }
+
   async create(data: CategoriesDto) {
     const res = await prisma.categories.create({
       data: {

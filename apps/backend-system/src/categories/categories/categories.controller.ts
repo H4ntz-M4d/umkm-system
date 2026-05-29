@@ -26,6 +26,11 @@ export class CategoriesController {
     return this.categoriesService.getListCategories();
   }
 
+  @Get('/summary')
+  categoriesSummary() {
+    return this.categoriesService.getCategoriesSummary();
+  }
+
   @Post()
   create(@Body() data: CategoriesDto) {
     return this.categoriesService.create(data);
