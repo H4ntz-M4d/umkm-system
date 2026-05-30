@@ -33,6 +33,7 @@ export function toProductionResponse(entity: ProductionEntity) {
     sku: entity.variant.sku,
     productName: entity.variant.productMaster.name,
     quantityProduced: entity.quantityProduced,
+    type: entity.type,
     status: entity.status,
     createdAt: entity.createdAt.toISOString(),
     materials: entity.materials.map((material) => ({
@@ -52,6 +53,7 @@ type ProductionOnlyEntity = Prisma.ProductionGetPayload<{
     storeId: true;
     producedVariantId: true;
     quantityProduced: true;
+    type: true;
     status: true;
     createdAt: true;
   };
@@ -63,6 +65,7 @@ export function toProductionOnlyResponse(entity: ProductionOnlyEntity) {
     storeId: entity.storeId,
     producedVariantId: entity.producedVariantId,
     quantityProduced: entity.quantityProduced,
+    type: entity.type,
     status: entity.status,
     createdAt: entity.createdAt,
   };

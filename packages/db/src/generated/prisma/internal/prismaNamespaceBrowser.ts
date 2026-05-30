@@ -140,6 +140,7 @@ export const ProductMasterScalarFieldEnum = {
   categoryId: 'categoryId',
   slug: 'slug',
   useVariant: 'useVariant',
+  type: 'type',
   status: 'status',
   createdAt: 'createdAt'
 } as const
@@ -277,6 +278,7 @@ export const ProductionScalarFieldEnum = {
   storeId: 'storeId',
   producedVariantId: 'producedVariantId',
   quantityProduced: 'quantityProduced',
+  type: 'type',
   status: 'status',
   createdAt: 'createdAt'
 } as const

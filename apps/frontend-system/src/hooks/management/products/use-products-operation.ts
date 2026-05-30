@@ -17,11 +17,13 @@ export function useProductsOperation({
   search,
   idProduct,
   enabledProductVariantList = false,
+  enabledPosProductLists = false,
 }: {
   pagination?: { pageIndex: number; pageSize: number };
   search?: string | undefined;
   idProduct?: string | undefined;
   enabledProductVariantList?: boolean;
+  enabledPosProductLists: boolean;
 }) {
   const qc = useQueryClient();
   const isTableMode = !!pagination;
@@ -38,7 +40,7 @@ export function useProductsOperation({
   const getProductVariantList = useQuery({
     queryKey: ["products-variants"],
     queryFn: () => fetchProductVariantList(),
-    enabled: enabledProductVariantList
+    enabled: enabledProductVariantList,
   });
 
   const getProductsById = useQuery({
@@ -50,7 +52,8 @@ export function useProductsOperation({
   const getPosProductList = useQuery({
     queryKey: ["pos-products", "list"],
     queryFn: () => fetchPosProductList(),
-  })
+    enabled: enabledPosProductLists,
+  });
 
   const createProductMutation = useMutation({
     mutationFn: createProduct,

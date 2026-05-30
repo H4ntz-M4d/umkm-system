@@ -1,6 +1,11 @@
 import z from "zod";
 
 export const ProductStatusEnum = z.enum(["ACTIVE", "NONACTIVE", "DRAFT"]);
+export const ProductTypeEnum = z.enum([
+  "READY_STOCK",
+  "MADE_TO_ORDER",
+  "PRE_ORDER",
+]);
 
 export const VariantValueSchema = z
   .string()
@@ -26,6 +31,8 @@ export const ProductSchema = z.object({
     .string()
     .min(5, "Deskripsi minimal memiliki panjang 5 karakter"),
   useVariant: z.boolean(),
+  categoryId: z.string(),
+  type: ProductTypeEnum,
   status: ProductStatusEnum,
   variants: z.array(VariantSchema).optional(),
   variantsTypes: z.array(VariantTypeSchema).optional(),

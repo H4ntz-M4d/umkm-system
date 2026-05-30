@@ -75,6 +75,7 @@ model ProductMaster {
   categoryId  BigInt?
   slug        String        @unique @db.VarChar(255)
   useVariant  Boolean       @default(false)
+  type        ProductType   @default(MADE_TO_ORDER)
   status      ProductStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
 
@@ -84,6 +85,18 @@ model ProductMaster {
   productImages ProductImage[]
 
   @@map("product_master")
+}
+
+enum ProductStatus {
+  ACTIVE
+  NONACTIVE
+  DRAFT
+}
+
+enum ProductType {
+  MADE_TO_ORDER
+  PRE_ORDER
+  READY_STOCK
 }
 
 model ProductImage {
@@ -167,12 +180,6 @@ model ProductVariantOption {
   @@index([productVariantId])
   @@index([variantValueId])
   @@map("product_variant_option")
-}
-
-enum ProductStatus {
-  ACTIVE
-  NONACTIVE
-  DRAFT
 }
 
 model Customer {
@@ -278,6 +285,7 @@ model Production {
   storeId           BigInt
   producedVariantId BigInt
   quantityProduced  Int
+  type              ProductionType   @default(RESTOCK)
   status            ProductionStatus
   createdAt         DateTime         @default(now())
 
@@ -286,6 +294,13 @@ model Production {
   materials ProductionMaterial[]
 
   @@map("production")
+}
+
+enum ProductionType {
+  RESTOCK
+  MADE_TO_ORDER
+  BE_SPOKE
+  PRE_ORDER
 }
 
 enum ProductionStatus {
@@ -462,6 +477,7 @@ enum CashSource {
   POS
   ORDER
   EXPENSE
+  PRODUCTION
 }
 
 // ==================

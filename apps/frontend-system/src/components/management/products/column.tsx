@@ -50,7 +50,7 @@ export const columnsProducts = (
   },
   {
     accessorKey: "useVariant",
-    header: "Variant",
+    header: "Varian",
     cell: ({ row }) => <div>{row.original.useVariant ? "Ya" : "Tidak"}</div>,
   },
   {
@@ -88,7 +88,7 @@ export const columnsProducts = (
             variant={"destructive"}
             onClick={() => deleteStaffData(row.original.id.toString())}
           >
-            Delete
+            Hapus
           </Button>
         </div>
       );

@@ -1,7 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Pagination } from 'common/paginate/pagination';
-import { Prisma, prisma, ProductStatus, ProductVariant } from '@repo/db';
-import { CreateProductDto, UpdateProductDto } from 'products/dto/product.dto';
+import {
+  Prisma,
+  prisma,
+  ProductStatus,
+  ProductType,
+  ProductVariant,
+} from '@repo/db';
+import { CreateProductDto } from 'products/dto/product.dto';
 import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
 import {
@@ -43,6 +49,8 @@ export class ProductsService {
         description: true,
         slug: true,
         useVariant: true,
+        categoryId: true,
+        type: true,
         status: true,
         createdAt: true,
         variants: {
@@ -84,6 +92,8 @@ export class ProductsService {
         name: true,
         description: true,
         useVariant: true,
+        categoryId: true,
+        type: true,
         status: true,
         variants: {
           select: {
@@ -239,6 +249,14 @@ export class ProductsService {
 
       const status = statusMap[data.status] ?? ProductStatus.ACTIVE;
 
+      const typeMap: Record<string, ProductType> = {
+        READY_STOCK: ProductType.READY_STOCK,
+        MADE_TO_ORDER: ProductType.MADE_TO_ORDER,
+        PRE_ORDER: ProductType.PRE_ORDER,
+      };
+
+      const typeData = typeMap[data.type] ?? ProductType.READY_STOCK;
+
       const slugData = this.generateSlug(data.name);
 
       // 2. Create Product Master
@@ -247,6 +265,8 @@ export class ProductsService {
           name: data.name,
           description: data.description,
           useVariant: data.useVariant,
+          categoryId: BigInt(data.categoryId),
+          type: typeData,
           status: status,
           slug: slugData,
         },
@@ -395,6 +415,8 @@ export class ProductsService {
           name: true,
           description: true,
           useVariant: true,
+          categoryId: true,
+          type: true,
           status: true,
           variants: {
             select: {
@@ -465,6 +487,14 @@ export class ProductsService {
       };
       const status = statusMap[data.status] ?? existingProduct.status;
 
+      const typeMap: Record<string, ProductType> = {
+        READY_STOCK: ProductType.READY_STOCK,
+        MADE_TO_ORDER: ProductType.MADE_TO_ORDER,
+        PRE_ORDER: ProductType.PRE_ORDER,
+      };
+
+      const typeData = typeMap[data.type] ?? ProductType.READY_STOCK;
+
       // 2. Update Product Master
       await tx.productMaster.update({
         where: { id: id },
@@ -472,7 +502,9 @@ export class ProductsService {
           name: data.name,
           description: data.description,
           useVariant: data.useVariant,
-          status,
+          categoryId: BigInt(data.categoryId),
+          type: typeData,
+          status: status,
           slug: slugData,
         },
       });
