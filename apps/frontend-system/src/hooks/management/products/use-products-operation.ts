@@ -23,7 +23,7 @@ export function useProductsOperation({
   search?: string | undefined;
   idProduct?: string | undefined;
   enabledProductVariantList?: boolean;
-  enabledPosProductLists: boolean;
+  enabledPosProductLists?: boolean;
 }) {
   const qc = useQueryClient();
   const isTableMode = !!pagination;

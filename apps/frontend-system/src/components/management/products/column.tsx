@@ -6,9 +6,25 @@ import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { dayjs } from "@repo/utils";
 import { Badge } from "@/components/ui/badge";
-import { ProductsData, z } from "@repo/schemas";
+import {
+  ProductsData,
+  ProductStatusEnum,
+  ProductTypeEnum,
+  z,
+} from "@repo/schemas";
 
 type ProductResponse = z.infer<typeof ProductsData>;
+const typeData: Record<string, string> = {
+  [ProductTypeEnum.enum.READY_STOCK]: "Siap di Jual",
+  [ProductTypeEnum.enum.MADE_TO_ORDER]: "Made to Order",
+  [ProductTypeEnum.enum.PRE_ORDER]: "Pre Order",
+};
+
+const statusData: Record<string, string> = {
+  [ProductStatusEnum.enum.ACTIVE]: "Aktif",
+  [ProductStatusEnum.enum.NONACTIVE]: "Tidak Aktif",
+  [ProductStatusEnum.enum.DRAFT]: "Draft",
+};
 
 export const columnsProducts = (
   // setIdData: (id: string) => void,
@@ -54,9 +70,24 @@ export const columnsProducts = (
     cell: ({ row }) => <div>{row.original.useVariant ? "Ya" : "Tidak"}</div>,
   },
   {
+    accessorKey: "type",
+    header: "Tipe",
+    cell: ({ row }) => {
+      const type = row.original.type;
+      if (type in typeData) {
+        return <Badge variant={"outline"}>{typeData[type]}</Badge>;
+      }
+    },
+  },
+  {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <Badge>{row.original.status}</Badge>,
+    cell: ({ row }) => {
+      const status = row.original.status;
+      if (status in statusData) {
+        return <Badge>{statusData[status]}</Badge>;
+      }
+    },
   },
   {
     accessorKey: "createdAt",

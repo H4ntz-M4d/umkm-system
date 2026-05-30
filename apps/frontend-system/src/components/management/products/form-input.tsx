@@ -22,8 +22,6 @@ import {
   ProductSchema,
   ProductStatusEnum,
   ProductTypeEnum,
-  UpdateProductSchema,
-  UpdateProductSchemaInput,
 } from "@repo/schemas";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -97,7 +95,7 @@ export default function FormProduct({ id }: { id?: string }) {
       name: data.name,
       description: data.description ?? "",
       useVariant: data.useVariant,
-      categoryId: data.categoryId,
+      categoryId: data.categoryId ?? "",
       type: data.type,
       status: data.status,
       variantsTypes:
