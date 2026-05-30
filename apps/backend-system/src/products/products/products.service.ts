@@ -12,7 +12,6 @@ import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
 import {
   toAllProductsResponse,
-  toListProductResponse,
   toProductResponse,
   toProductResponseById,
   toProductVariantListResponse,
@@ -685,6 +684,8 @@ export class ProductsService {
         name: true,
         description: true,
         useVariant: true,
+        categoryId: true,
+        type: true,
         status: true,
         variants: {
           select: {
@@ -772,6 +773,8 @@ export class ProductsService {
         name: true,
         description: true,
         useVariant: true,
+        categoryId: true,
+        type: true,
         status: true,
         variants: {
           select: {
