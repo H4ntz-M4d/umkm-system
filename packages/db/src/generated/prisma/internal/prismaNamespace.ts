@@ -2511,6 +2511,7 @@ export const ProductMasterScalarFieldEnum = {
   categoryId: 'categoryId',
   slug: 'slug',
   useVariant: 'useVariant',
+  type: 'type',
   status: 'status',
   createdAt: 'createdAt'
 } as const
@@ -2648,6 +2649,7 @@ export const ProductionScalarFieldEnum = {
   storeId: 'storeId',
   producedVariantId: 'producedVariantId',
   quantityProduced: 'quantityProduced',
+  type: 'type',
   status: 'status',
   createdAt: 'createdAt'
 } as const
@@ -2893,6 +2895,20 @@ export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
 
 
 /**
+ * Reference to a field of type 'ProductType'
+ */
+export type EnumProductTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductType'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductType[]'
+ */
+export type ListEnumProductTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductType[]'>
+    
+
+
+/**
  * Reference to a field of type 'ProductStatus'
  */
 export type EnumProductStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductStatus'>
@@ -2973,6 +2989,20 @@ export type EnumLedgerSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
  * Reference to a field of type 'LedgerSource[]'
  */
 export type ListEnumLedgerSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LedgerSource[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductionType'
+ */
+export type EnumProductionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductionType'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductionType[]'
+ */
+export type ListEnumProductionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductionType[]'>
     
 
 

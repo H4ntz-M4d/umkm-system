@@ -33,6 +33,7 @@ export class ProductionService {
         storeId: true,
         producedVariantId: true,
         quantityProduced: true,
+        type: true,
         status: true,
         createdAt: true,
         variant: {

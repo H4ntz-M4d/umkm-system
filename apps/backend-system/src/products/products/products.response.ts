@@ -5,6 +5,8 @@ type ProductTableEntity = Prisma.ProductMasterGetPayload<{
     id: true;
     name: true;
     description: true;
+    categoryId: true;
+    type: true;
     status: true;
     slug: true;
     useVariant: true;
@@ -32,6 +34,8 @@ export function toAllProductsResponse(entity: ProductTableEntity) {
     id: entity.id,
     name: entity.name,
     description: entity.description,
+    categoryId: entity.categoryId,
+    type: entity.type,
     status: entity.status,
     slug: entity.slug,
     useVariant: entity.useVariant,
@@ -52,6 +56,8 @@ type ProductEntityById = Prisma.ProductMasterGetPayload<{
     name: true;
     description: true;
     useVariant: true;
+    categoryId: true;
+    type: true;
     status: true;
     variants: {
       select: {
@@ -96,6 +102,8 @@ export function toProductResponseById(entity: ProductEntityById) {
     name: entity.name,
     description: entity.description,
     useVariant: entity.useVariant,
+    categoryId: entity.categoryId,
+    type: entity.type,
     status: entity.status,
     variants: entity.variants.map((variant) => ({
       id: variant.id,
@@ -174,6 +182,8 @@ type ProductEntity = Prisma.ProductMasterGetPayload<{
     id: true;
     name: true;
     description: true;
+    categoryId: true;
+    type: true;
     status: true;
     useVariant: true;
     variants: {
@@ -192,6 +202,8 @@ export function toProductResponse(entity: ProductEntity) {
     id: entity.id,
     name: entity.name,
     description: entity.description,
+    categoryId: entity.categoryId,
+    type: entity.type,
     status: entity.status,
     useVariant: true,
     variants: entity.variants.map((variant) => ({

@@ -21,6 +21,7 @@ import {
   CreateProductSchemaInput,
   ProductSchema,
   ProductStatusEnum,
+  ProductTypeEnum,
   UpdateProductSchema,
   UpdateProductSchemaInput,
 } from "@repo/schemas";
@@ -38,12 +39,15 @@ import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCategoriesOperation } from "@/hooks/management/categories/use-categories-operation";
 
 const initialData: CreateProductSchemaInput = {
   name: "",
   description: "",
   useVariant: true,
   status: "ACTIVE",
+  type: "READY_STOCK",
+  categoryId: "",
   variants: [],
   variantsTypes: [],
 };
@@ -75,6 +79,10 @@ function generateCombinationSku(
 }
 
 export default function FormProduct({ id }: { id?: string }) {
+  const { getCategoriesListData } = useCategoriesOperation({
+    enableGetCategoriesList: true,
+  });
+
   const {
     createProductData,
     uploadImageData,
@@ -89,6 +97,8 @@ export default function FormProduct({ id }: { id?: string }) {
       name: data.name,
       description: data.description ?? "",
       useVariant: data.useVariant,
+      categoryId: data.categoryId,
+      type: data.type,
       status: data.status,
       variantsTypes:
         data.variantTypes?.map((vt) => ({
@@ -351,6 +361,79 @@ export default function FormProduct({ id }: { id?: string }) {
                           </Field>
                         )}
                       />
+                      <FieldGroup>
+                        <Field orientation={"horizontal"}>
+                          <Controller
+                            name="categoryId"
+                            control={control}
+                            render={({ field }) => (
+                              <Field>
+                                <FieldLabel>KATEGORI</FieldLabel>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={(val) => field.onChange(val)}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue
+                                      placeholder={"Pilih Kategori"}
+                                    />
+                                  </SelectTrigger>
+                                  <SelectContent position="popper">
+                                    {getCategoriesListData?.data?.map(
+                                      (item) => (
+                                        <SelectItem
+                                          key={item.id}
+                                          value={item.id}
+                                        >
+                                          {item.name}
+                                        </SelectItem>
+                                      ),
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            name="type"
+                            control={control}
+                            render={({ field }) => (
+                              <Field>
+                                <Field>TIPE PRODUK</Field>
+                                <Select
+                                  value={field.value}
+                                  onValueChange={field.onChange}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={"Pilih Tipe"} />
+                                  </SelectTrigger>
+                                  <SelectContent position="popper">
+                                    <SelectItem
+                                      value={
+                                        ProductTypeEnum.enum["READY_STOCK"]
+                                      }
+                                    >
+                                      Siap di Jual
+                                    </SelectItem>
+                                    <SelectItem
+                                      value={
+                                        ProductTypeEnum.enum["MADE_TO_ORDER"]
+                                      }
+                                    >
+                                      Made to Order
+                                    </SelectItem>
+                                    <SelectItem
+                                      value={ProductTypeEnum.enum["PRE_ORDER"]}
+                                    >
+                                      Pre Order
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </Field>
+                            )}
+                          />
+                        </Field>
+                      </FieldGroup>
                       <Controller
                         control={control}
                         name={"useVariant"}
@@ -862,7 +945,7 @@ export default function FormProduct({ id }: { id?: string }) {
                                 placeholder={"Pilih status Produk"}
                               />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent position="popper">
                               <SelectGroup>
                                 <SelectItem
                                   value={ProductStatusEnum.enum["ACTIVE"]}

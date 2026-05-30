@@ -1,6 +1,6 @@
 import z from "zod";
 import { ApiSuccessResponse } from "../../api.schema.response";
-import { ProductStatusEnum } from "./products.schema";
+import { ProductStatusEnum, ProductTypeEnum } from "./products.schema";
 import { Decimal } from "@repo/utils";
 
 export const VariantValuesData = z.object({
@@ -27,6 +27,8 @@ export const ProductsData = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string(),
+  type: ProductTypeEnum,
+  categoryId: z.string().nullable(),
   status: ProductStatusEnum,
   slug: z.string(),
   useVariant: z.boolean(),
@@ -38,6 +40,8 @@ export const ProductDataById = ProductsData.pick({
   name: true,
   description: true,
   useVariant: true,
+  categoryId: true,
+  type: true,
   status: true,
 }).extend({
   variants: z.array(
@@ -53,6 +57,8 @@ export const CreateUpdateProductData = ProductsData.pick({
   name: true,
   description: true,
   useVariant: true,
+  categoryId: true,
+  type: true,
   status: true,
 }).extend({
   variants: z.array(

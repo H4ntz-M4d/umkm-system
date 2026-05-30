@@ -44,7 +44,7 @@ export default function ProductManagementView() {
           />
 
           <Link href={"/management/products/new"}>
-            <Button>Add Product</Button>
+            <Button>Tambah Produk</Button>
           </Link>
         </div>
         <div className="bg-muted/50 rounded-xl md:min-h-min">

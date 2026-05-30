@@ -29,6 +29,15 @@ export const ProductStatus = {
 export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
 
 
+export const ProductType = {
+  MADE_TO_ORDER: 'MADE_TO_ORDER',
+  PRE_ORDER: 'PRE_ORDER',
+  READY_STOCK: 'READY_STOCK'
+} as const
+
+export type ProductType = (typeof ProductType)[keyof typeof ProductType]
+
+
 export const InventoryItemType = {
   RAW_MATERIAL: 'RAW_MATERIAL',
   PRODUCT_VARIANT: 'PRODUCT_VARIANT'
@@ -54,6 +63,16 @@ export const LedgerSource = {
 } as const
 
 export type LedgerSource = (typeof LedgerSource)[keyof typeof LedgerSource]
+
+
+export const ProductionType = {
+  RESTOCK: 'RESTOCK',
+  MADE_TO_ORDER: 'MADE_TO_ORDER',
+  BE_SPOKE: 'BE_SPOKE',
+  PRE_ORDER: 'PRE_ORDER'
+} as const
+
+export type ProductionType = (typeof ProductionType)[keyof typeof ProductionType]
 
 
 export const ProductionStatus = {
@@ -96,7 +115,8 @@ export type CashType = (typeof CashType)[keyof typeof CashType]
 export const CashSource = {
   POS: 'POS',
   ORDER: 'ORDER',
-  EXPENSE: 'EXPENSE'
+  EXPENSE: 'EXPENSE',
+  PRODUCTION: 'PRODUCTION'
 } as const
 
 export type CashSource = (typeof CashSource)[keyof typeof CashSource]
