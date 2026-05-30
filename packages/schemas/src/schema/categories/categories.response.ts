@@ -10,7 +10,14 @@ export const CategoriesData = z.object({
   productCount: z.number(),
 });
 
+export const CategoriesSummary = z.object({
+  totalCategories: z.number(),
+  activeCategories: z.number(),
+  linkedProducts: z.number(),
+});
+
 export const CategoriesResponse = ApiSuccessResponse(z.array(CategoriesData));
+export const CategoriesSummaryResponse = ApiSuccessResponse(CategoriesSummary);
 
 export const CategoryListResponse = ApiSuccessResponse(
   z.array(

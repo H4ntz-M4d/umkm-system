@@ -2,7 +2,9 @@ import {
   createCategories,
   deleteCategories,
   fetchCategories,
+  fetchCategoriesSummary,
   fetchCategoryList,
+  summaryCategories,
   updateCategories,
 } from "@/lib/queries/categories/categories.query";
 import { CategoriesSchemaInput } from "@repo/schemas";
@@ -33,6 +35,12 @@ export const useCategoriesOperation = ({
     enabled: enableGetCategoriesList,
   });
 
+  const getCategoriesSummary = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => fetchCategoriesSummary(),
+    enabled: enableGetCategories,
+  });
+
   const createCategoryMutatation = useMutation({
     mutationFn: createCategories,
     onSuccess: () => {
@@ -61,6 +69,7 @@ export const useCategoriesOperation = ({
   return {
     getCategoriesData: getCategories.data,
     getCategoriesListData: getCategoriesList.data,
+    getCategoriesSummaryData: getCategoriesSummary.data,
     createCategoriesData: createCategoryMutatation.mutate,
     isCreateCategoriesData: createCategoryMutatation.isPending,
     updateCategoriesData: updateCategoryMutatation.mutate,

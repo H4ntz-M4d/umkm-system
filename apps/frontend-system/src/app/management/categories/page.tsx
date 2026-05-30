@@ -14,19 +14,20 @@ import { Toaster } from "@/components/ui/sonner";
 import { useCategoriesOperation } from "@/hooks/management/categories/use-categories-operation";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Plus, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Page() {
   const [idData, setIdData] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const debouncedSearch = useDebounce(search, 500);
-  
 
-  const { getCategoriesData, removeCategoriesData } = useCategoriesOperation({
-    search: debouncedSearch,
-    enableGetCategories: true,
-  });
+  const { getCategoriesData, removeCategoriesData, getCategoriesSummaryData } =
+    useCategoriesOperation({
+      search: debouncedSearch,
+      enableGetCategories: true,
+    });
+  const summaryData = getCategoriesSummaryData?.data;
 
   const deleteById = (id: string) => {
     removeCategoriesData({ id: id });
@@ -71,14 +72,24 @@ export default function Page() {
 
       {/* Summary Content */}
       <div className="grid md:grid-cols-3 gap-5 mb-5">
-        {[1, 2, 3].map((item, i) => (
-          <Card key={i}>
-            <CardContent className="flex flex-col gap-2">
-              <h2 className="text-xl">Total Kategori</h2>
-              <h1 className="text-3xl">10</h1>
-            </CardContent>
-          </Card>
-        ))}
+        <Card>
+          <CardContent className="flex flex-col gap-2">
+            <h2 className="text-xl">Total Kategori</h2>
+            <h1 className="text-3xl">{summaryData?.totalCategories ?? 0}</h1>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col gap-2">
+            <h2 className="text-xl">Kategori Aktif</h2>
+            <h1 className="text-3xl">{summaryData?.activeCategories ?? 0}</h1>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex flex-col gap-2">
+            <h2 className="text-xl">Terhubung ke Produk</h2>
+            <h1 className="text-3xl">{summaryData?.linkedProducts ?? 0}</h1>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Table Content */}
