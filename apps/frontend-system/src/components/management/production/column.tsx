@@ -37,25 +37,29 @@ const status = [
   },
 ];
 
+const typeData = [
+  { id: "RESTOCK", label: "Restock" },
+  { id: "MADE_TO_ORDER", label: "Made-to-Order" },
+  { id: "BE_SPOKE", label: "Bespoke" },
+  { id: "PRE_ORDER", label: "Pre-Order" },
+];
+
 export const columnsProduction = (
   setIdData: (id: string) => void,
   deleteData: (id: string) => void,
 ): ColumnDef<ProductionResponse>[] => [
   {
-    accessorKey: "expanded",
-    header: () => null,
+    accessorKey: "type",
+    header: "Tipe",
     cell: ({ row }) => {
-      return (
-        <button
-          onClick={() => row.toggleExpanded()}
-          className="p-1 hover:bg-slate-100 rounded-full transition-transform"
-          style={{
-            transform: row.getIsExpanded() ? "rotate(90deg)" : "rotate(0deg)",
-          }}
-        >
-          <ChevronRight />
-        </button>
-      );
+      const currentType = row.original.type;
+      const typeConfig = typeData.find((val) => val.id === currentType);
+
+      if (!typeConfig) {
+        return <Badge>{currentType}</Badge>;
+      }
+
+      return <Badge variant={"outline"}>{typeConfig.label}</Badge>;
     },
   },
   {

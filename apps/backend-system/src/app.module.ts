@@ -4,7 +4,6 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ProductsModule } from './products/products.module';
-import { MaterialModule } from './material/material.module';
 import { ProductionModule } from './production/production.module';
 import { InventoryLedgerModule } from './inventory-ledger/inventory-ledger.module';
 import { ExpenseCategoryModule } from './expense-category/expense-category.module';
@@ -19,7 +18,6 @@ import { CategoriesModule } from './categories/categories.module';
     AuthModule,
     CloudinaryModule,
     ProductsModule,
-    MaterialModule,
     ProductionModule,
     InventoryLedgerModule,
     ExpenseCategoryModule,

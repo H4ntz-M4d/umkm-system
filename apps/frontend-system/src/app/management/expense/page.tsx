@@ -36,7 +36,7 @@ export default function Page() {
     <main className="flex flex-1 flex-col gap-4 py-4 px-6 pt-0">
       <div className="my-5 flex flex-row justify-between items-center">
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold">Pengeluaran</h2>
+          <h2 className="text-4xl font-instrument">Pengeluaran</h2>
           <p className="text-sm">
             Kelola pengeluaran, kategori pengeluaran, dan catatan financial Anda
             dengan mudah
@@ -52,7 +52,7 @@ export default function Page() {
           </Button>
         )}
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
         <ExpenseSummary />
       </div>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

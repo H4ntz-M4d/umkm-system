@@ -3,6 +3,8 @@ import {
   createProduction,
   deleteProduction,
   fetchProductionData,
+  fetchProductionSummary,
+  ProductionFilters,
   updateProduction,
   updateProductionStatus,
   updateProductionStatusCompleted,
@@ -13,34 +15,27 @@ import {
   UpdateProductionSchemaInput,
 } from "@repo/schemas";
 
-interface ProductionOperationProps {
-  idProduction?: string;
-  idProductionMaterial?: string;
-  pagination?: {
-    pageIndex: number;
-    pageSize: number;
-  };
-  search?: string;
-}
 export const useProductionOperation = ({
-  pagination,
-  search,
-}: ProductionOperationProps) => {
+  filters,
+  isTableMode = false,
+}: {
+  filters?: ProductionFilters;
+  isTableMode?: boolean;
+}) => {
   const qc = useQueryClient();
-  const isTableMode = !!pagination;
   const invalidate = () => qc.invalidateQueries({ queryKey: ["production"] });
 
   const getProductionData = useQuery({
-    queryKey: [
-      "production",
-      pagination?.pageIndex,
-      pagination?.pageSize,
-      search,
-    ],
-    queryFn: () =>
-      fetchProductionData(pagination?.pageIndex, pagination?.pageSize, search),
+    queryKey: ["production", filters ?? {}],
+    queryFn: () => fetchProductionData(filters ?? {}),
     enabled: isTableMode,
     throwOnError: true,
+  });
+
+  const getProductionSummary = useQuery({
+    queryKey: ["production"],
+    queryFn: () => fetchProductionSummary(),
+    enabled: isTableMode,
   });
 
   const createProductionMutation = useMutation({
@@ -51,7 +46,7 @@ export const useProductionOperation = ({
     },
     onError: (err) => {
       toast.error(err.message);
-    }
+    },
   });
 
   const updateProductionMutation = useMutation({
@@ -95,8 +90,8 @@ export const useProductionOperation = ({
       toast.success("Berhasil mengubah status data.");
     },
     onError: (err) => {
-      toast.error(err.message, {position: "top-center"});
-    }
+      toast.error(err.message, { position: "top-center" });
+    },
   });
 
   const deleteProductionMutation = useMutation({
@@ -106,13 +101,14 @@ export const useProductionOperation = ({
       toast.success("Data produksi telah berhasil dihapus.");
     },
     onError: (err) => {
-      toast.error(err.message, {position: "top-center"});
-    }
+      toast.error(err.message, { position: "top-center" });
+    },
   });
 
   return {
     dataProduction: getProductionData.data,
     isLoadingDataProduction: getProductionData.isLoading,
+    fetchProductionSummaryData: getProductionSummary.data,
     createProductionData: createProductionMutation.mutate,
     isCreating: createProductionMutation.isPending,
     updateProductionData: updateProductionMutation.mutate,

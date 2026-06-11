@@ -63,17 +63,15 @@ export const ModelName = {
   ProductVariantOption: 'ProductVariantOption',
   Customer: 'Customer',
   Employee: 'Employee',
-  RawMaterial: 'RawMaterial',
-  RawMaterialStock: 'RawMaterialStock',
   InventoryLedger: 'InventoryLedger',
   Production: 'Production',
-  ProductionMaterial: 'ProductionMaterial',
   ExpenseCategory: 'ExpenseCategory',
   Expense: 'Expense',
   ExpenseItem: 'ExpenseItem',
   Order: 'Order',
   OrderItem: 'OrderItem',
-  OrderShipment: 'OrderShipment',
+  BeSpokeDetails: 'BeSpokeDetails',
+  Shipment: 'Shipment',
   PaymentMethod: 'PaymentMethod',
   CashTransaction: 'CashTransaction',
   PosTransaction: 'PosTransaction',
@@ -235,29 +233,6 @@ export const EmployeeScalarFieldEnum = {
 export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
 
 
-export const RawMaterialScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  unit: 'unit',
-  cost: 'cost',
-  isActive: 'isActive'
-} as const
-
-export type RawMaterialScalarFieldEnum = (typeof RawMaterialScalarFieldEnum)[keyof typeof RawMaterialScalarFieldEnum]
-
-
-export const RawMaterialStockScalarFieldEnum = {
-  id: 'id',
-  rawMaterialId: 'rawMaterialId',
-  stock: 'stock',
-  reservedStock: 'reservedStock',
-  availableStock: 'availableStock',
-  updatedAt: 'updatedAt'
-} as const
-
-export type RawMaterialStockScalarFieldEnum = (typeof RawMaterialStockScalarFieldEnum)[keyof typeof RawMaterialStockScalarFieldEnum]
-
-
 export const InventoryLedgerScalarFieldEnum = {
   id: 'id',
   storeId: 'storeId',
@@ -280,20 +255,12 @@ export const ProductionScalarFieldEnum = {
   quantityProduced: 'quantityProduced',
   type: 'type',
   status: 'status',
+  notes: 'notes',
+  targetDate: 'targetDate',
   createdAt: 'createdAt'
 } as const
 
 export type ProductionScalarFieldEnum = (typeof ProductionScalarFieldEnum)[keyof typeof ProductionScalarFieldEnum]
-
-
-export const ProductionMaterialScalarFieldEnum = {
-  id: 'id',
-  productionId: 'productionId',
-  rawMaterialId: 'rawMaterialId',
-  quantityUsed: 'quantityUsed'
-} as const
-
-export type ProductionMaterialScalarFieldEnum = (typeof ProductionMaterialScalarFieldEnum)[keyof typeof ProductionMaterialScalarFieldEnum]
 
 
 export const ExpenseCategoryScalarFieldEnum = {
@@ -302,7 +269,6 @@ export const ExpenseCategoryScalarFieldEnum = {
   description: 'description',
   color: 'color',
   isActive: 'isActive',
-  isMaterialsCategory: 'isMaterialsCategory',
   createdAt: 'createdAt'
 } as const
 
@@ -325,7 +291,6 @@ export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeo
 export const ExpenseItemScalarFieldEnum = {
   id: 'id',
   expenseId: 'expenseId',
-  rawMaterialId: 'rawMaterialId',
   itemName: 'itemName',
   quantity: 'quantity',
   unit: 'unit',
@@ -363,9 +328,23 @@ export const OrderItemScalarFieldEnum = {
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
 
 
-export const OrderShipmentScalarFieldEnum = {
+export const BeSpokeDetailsScalarFieldEnum = {
+  id: 'id',
+  productionId: 'productionId',
+  customerId: 'customerId',
+  title: 'title',
+  description: 'description',
+  quotedPrice: 'quotedPrice',
+  createdAt: 'createdAt'
+} as const
+
+export type BeSpokeDetailsScalarFieldEnum = (typeof BeSpokeDetailsScalarFieldEnum)[keyof typeof BeSpokeDetailsScalarFieldEnum]
+
+
+export const ShipmentScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
+  beSpokeDetailsId: 'beSpokeDetailsId',
   recipientName: 'recipientName',
   phone: 'phone',
   addressLine: 'addressLine',
@@ -376,7 +355,7 @@ export const OrderShipmentScalarFieldEnum = {
   createdAt: 'createdAt'
 } as const
 
-export type OrderShipmentScalarFieldEnum = (typeof OrderShipmentScalarFieldEnum)[keyof typeof OrderShipmentScalarFieldEnum]
+export type ShipmentScalarFieldEnum = (typeof ShipmentScalarFieldEnum)[keyof typeof ShipmentScalarFieldEnum]
 
 
 export const PaymentMethodScalarFieldEnum = {

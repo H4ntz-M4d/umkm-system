@@ -31,6 +31,7 @@ export const useExpenseOperation = ({
   const fetchExpenseSummaryQuery = useQuery({
     queryKey: ["expense-summary"],
     queryFn: () => fetchExpenseSummary(),
+    throwOnError: true,
   });
 
   const createExpenseMutation = useMutation({

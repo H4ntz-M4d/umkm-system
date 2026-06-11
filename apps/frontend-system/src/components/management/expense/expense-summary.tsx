@@ -1,11 +1,17 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { useExpenseOperation } from "@/hooks/management/expense/use-expense-operations";
 import { toIDR } from "../../../../utils/format-money";
-import { BanknoteArrowDown, CirclePile, HandCoins, Package } from "lucide-react";
+import {
+  BanknoteArrowDown,
+  CirclePile,
+  HandCoins,
+  Package,
+} from "lucide-react";
 
 export default function ExpenseSummary() {
   const { fetchExpenseSummaryData } = useExpenseOperation({});
   const summary = fetchExpenseSummaryData?.data;
+  console.log(summary);
 
   return (
     <>
@@ -50,26 +56,8 @@ export default function ExpenseSummary() {
           <div className="absolute -right-5 -top-5 h-20 w-20 z-10 rounded-full bg-primary/10"></div>
           <div className="flex items-center justify-between mb-6">
             <div className="space-y-1">
-              <h3 className="text-lg">Bahan Baku</h3>
-              <p className="text-xs">Total Pengeluaran</p>
-            </div>
-            <div className="h-8 w-8 flex justify-center items-center rounded-md bg-secondary/10">
-              <Package size={20} className="text-secondary" />
-            </div>
-          </div>
-
-          <h1 className="text-2xl font-semibold">
-            {toIDR(summary?.totalExpenseRawMaterial ?? 0)}
-          </h1>
-        </CardContent>
-      </Card>
-      <Card className="py-0 bg-background shadow-md">
-        <CardContent className="relative flex flex-1 flex-col justify-center py-7">
-          <div className="absolute -right-5 -top-5 h-20 w-20 z-10 rounded-full bg-primary/10"></div>
-          <div className="flex items-center justify-between mb-6">
-            <div className="space-y-1">
-              <h3 className="text-lg">Pengeluaran Lainnya</h3>
-              <p className="text-xs">Total Pengeluaran</p>
+              <h3 className="text-lg">Total Kategori Aktif</h3>
+              <p className="text-xs">Kategori Pengeluaran</p>
             </div>
             <div className="h-8 w-8 flex justify-center items-center rounded-md bg-yellow-700/10">
               <CirclePile size={20} className="text-yellow-700" />
@@ -77,7 +65,7 @@ export default function ExpenseSummary() {
           </div>
 
           <h1 className="text-2xl font-semibold">
-            {toIDR(summary?.totalExpenseOther ?? 0)}
+            {summary?.totalActiveCategory ?? 0}
           </h1>
         </CardContent>
       </Card>

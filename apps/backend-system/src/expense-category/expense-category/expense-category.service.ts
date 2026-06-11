@@ -16,7 +16,6 @@ export class ExpenseCategoryService {
         description: true,
         color: true,
         isActive: true,
-        isMaterialsCategory: true,
         createdAt: true,
         _count: {
           select: {

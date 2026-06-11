@@ -110,33 +110,17 @@ export class ExpenseService {
       },
     });
 
-    const totalExpenseRawMaterial = await prisma.expense.aggregate({
-      _sum: {
-        totalAmount: true,
-      },
+    const totalActiveCategory = await prisma.expenseCategory.count({
       where: {
-        expenseCategory: {
-          isMaterialsCategory: true,
-        },
-      },
-    });
-
-    const totalExpenseOther = await prisma.expense.aggregate({
-      _sum: {
-        totalAmount: true,
-      },
-      where: {
-        expenseCategory: {
-          isMaterialsCategory: false,
-        },
+        isActive: true,
       },
     });
 
     const dataSummary = {
-      totalExpense: totalExpense._sum.totalAmount ?? 0,
-      totalExpenseThisMonth: totalExpenseThisMonth._sum.totalAmount ?? 0,
-      totalExpenseRawMaterial: totalExpenseRawMaterial._sum.totalAmount ?? 0,
-      totalExpenseOther: totalExpenseOther._sum.totalAmount ?? 0,
+      totalExpense: totalExpense._sum.totalAmount ?? String(0),
+      totalExpenseThisMonth:
+        totalExpenseThisMonth._sum.totalAmount ?? String(0),
+      totalActiveCategory: totalActiveCategory ?? 0,
     };
 
     return {
@@ -150,12 +134,6 @@ export class ExpenseService {
 
   async create(data: ExpenseDto) {
     const transaction = await prisma.$transaction(async (tx) => {
-      const category = await tx.expenseCategory.findUnique({
-        where: {
-          id: BigInt(data.categoryId),
-        },
-      });
-
       const expense = await tx.expense.create({
         data: {
           storeId: BigInt(data.storeId),
@@ -165,9 +143,6 @@ export class ExpenseService {
           date: data.date,
           expenseItem: {
             create: data.expenseItem.map((item) => ({
-              rawMaterialId: item.rawMaterialId
-                ? BigInt(item.rawMaterialId)
-                : null,
               itemName: item.itemName,
               quantity: item.quantity,
               unit: item.unit,
@@ -179,79 +154,6 @@ export class ExpenseService {
         include: { expenseItem: true },
       });
 
-      if (category?.isMaterialsCategory === true) {
-        for (const item of data.expenseItem) {
-          if (item.rawMaterialId) {
-            await tx.rawMaterialStock.upsert({
-              where: {
-                rawMaterialId: BigInt(item.rawMaterialId),
-              },
-              update: {
-                stock: {
-                  increment: item.quantity,
-                },
-              },
-              create: {
-                rawMaterialId: BigInt(item.rawMaterialId),
-                stock: item.quantity,
-                availableStock: item.quantity,
-                reservedStock: 0,
-                updatedAt: new Date(),
-              },
-            });
-
-            await tx.inventoryLedger.create({
-              data: {
-                storeId: BigInt(data.storeId),
-                itemType: 'RAW_MATERIAL',
-                itemId: BigInt(item.rawMaterialId),
-                direction: 'IN',
-                quantity: item.quantity,
-                source: 'PURCHASE',
-                referenceId: expense.id,
-                createdAt: new Date(),
-              },
-            });
-          } else {
-            if (item.itemName === undefined) {
-              throw new BadRequestException(
-                'Nama Bahan Baku tidak boleh kosong jika anda menambahkan bahan baku baru',
-              );
-            }
-
-            const material = await tx.rawMaterial.create({
-              data: {
-                name: item.itemName,
-                unit: item.unit,
-                cost: item.price,
-              },
-            });
-
-            await tx.rawMaterialStock.create({
-              data: {
-                rawMaterialId: material.id,
-                stock: item.quantity,
-                availableStock: item.quantity,
-                reservedStock: 0,
-                updatedAt: new Date(),
-              },
-            });
-
-            await tx.inventoryLedger.create({
-              data: {
-                storeId: BigInt(data.storeId),
-                itemType: 'RAW_MATERIAL',
-                itemId: BigInt(material.id),
-                direction: 'IN',
-                quantity: item.quantity,
-                source: 'PURCHASE',
-                referenceId: expense.id,
-                createdAt: new Date(),
-              },
-            });
-          }
-        }
-      }
       return expense;
     });
 
@@ -263,11 +165,6 @@ export class ExpenseService {
       where: { id },
       select: {
         id: true,
-        expenseCategory: {
-          select: {
-            isMaterialsCategory: true,
-          },
-        },
       },
     });
 
@@ -275,51 +172,11 @@ export class ExpenseService {
       throw new BadRequestException('Maaf data pengeluaran tidak ditemukan');
     }
 
-    if (isExisting.expenseCategory.isMaterialsCategory === true) {
-      const transaction = await prisma.$transaction(async (tx) => {
-        const ledger = await tx.inventoryLedger.findMany({
-          where: {
-            source: 'PURCHASE',
-            referenceId: isExisting.id,
-          },
-        });
+    const result = await prisma.expense.delete({
+      where: { id },
+      include: { expenseItem: true },
+    });
 
-        await tx.inventoryLedger.deleteMany({
-          where: {
-            source: 'PURCHASE',
-            referenceId: isExisting.id,
-          },
-        });
-
-        await Promise.all(
-          ledger.map((item) =>
-            tx.rawMaterialStock.update({
-              where: { rawMaterialId: item.itemId },
-              data: {
-                stock: {
-                  decrement: item.quantity,
-                },
-              },
-            }),
-          ),
-        );
-
-        const result = await tx.expense.delete({
-          where: { id },
-          include: { expenseItem: true },
-        });
-
-        return result;
-      });
-
-      return transaction;
-    } else {
-      const result = await prisma.expense.delete({
-        where: { id },
-        include: { expenseItem: true },
-      });
-
-      return result;
-    }
+    return result;
   }
 }

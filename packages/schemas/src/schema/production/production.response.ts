@@ -1,25 +1,23 @@
 import z, { string } from "zod";
 import { ApiSuccessResponse } from "../../api.schema.response";
-
-export const ProductionMaterialData = z.object({
-  id: z.string(),
-  productionId: z.string(),
-  rawMaterialId: z.string(),
-  quantityUsed: z.number(),
-  nameRawMaterial: z.string(),
-  unitRawMaterial: z.string(),
-});
+import { BeSpokeCustomer, BeSpokeData } from "../be-spoke/be-spoke.response";
 
 export const ProductionData = z.object({
   id: z.string(),
   storeId: z.string(),
-  producedVariantId: z.string(),
-  sku: z.string(),
+  producedVariantId: z.string().optional().nullable(),
+  sku: z.string().optional(),
   productName: z.string(),
   quantityProduced: z.number(),
+  type: z.string(),
   status: z.string(),
   createdAt: z.string(),
-  materials: z.array(ProductionMaterialData),
+  bespoke: BeSpokeData.extend({
+    customer: BeSpokeCustomer.partial().optional(),
+  })
+    .partial()
+    .optional()
+    .nullable(),
 });
 
 export const ProductionDataOnly = ProductionData.pick({
@@ -28,20 +26,19 @@ export const ProductionDataOnly = ProductionData.pick({
   producedVariantId: true,
   quantityProduced: true,
   status: true,
+  type: true,
   createdAt: true,
 });
 
-export const ProductionMaterialDataOnly = ProductionMaterialData.pick({
-  id: true,
-  productionId: true,
-  rawMaterialId: true,
-  quantityUsed: true,
+export const ProductionSummary = z.object({
+  planned: z.number(),
+  inProgress: z.number(),
+  completed: z.number(),
+  cancelled: z.number(),
 });
 
 export const ProductionResponse = ApiSuccessResponse(z.array(ProductionData));
 
 export const ProductionDataResponse = ApiSuccessResponse(ProductionDataOnly);
 
-export const ProductionMaterialResponse = ApiSuccessResponse(
-  ProductionMaterialDataOnly,
-);
+export const ProductionSummaryResponse = ApiSuccessResponse(ProductionSummary);

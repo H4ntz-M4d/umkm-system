@@ -40,7 +40,6 @@ export type ExpenseCategoryMinAggregateOutputType = {
   description: string | null
   color: string | null
   isActive: boolean | null
-  isMaterialsCategory: boolean | null
   createdAt: Date | null
 }
 
@@ -50,7 +49,6 @@ export type ExpenseCategoryMaxAggregateOutputType = {
   description: string | null
   color: string | null
   isActive: boolean | null
-  isMaterialsCategory: boolean | null
   createdAt: Date | null
 }
 
@@ -60,7 +58,6 @@ export type ExpenseCategoryCountAggregateOutputType = {
   description: number
   color: number
   isActive: number
-  isMaterialsCategory: number
   createdAt: number
   _all: number
 }
@@ -80,7 +77,6 @@ export type ExpenseCategoryMinAggregateInputType = {
   description?: true
   color?: true
   isActive?: true
-  isMaterialsCategory?: true
   createdAt?: true
 }
 
@@ -90,7 +86,6 @@ export type ExpenseCategoryMaxAggregateInputType = {
   description?: true
   color?: true
   isActive?: true
-  isMaterialsCategory?: true
   createdAt?: true
 }
 
@@ -100,7 +95,6 @@ export type ExpenseCategoryCountAggregateInputType = {
   description?: true
   color?: true
   isActive?: true
-  isMaterialsCategory?: true
   createdAt?: true
   _all?: true
 }
@@ -197,7 +191,6 @@ export type ExpenseCategoryGroupByOutputType = {
   description: string | null
   color: string
   isActive: boolean
-  isMaterialsCategory: boolean
   createdAt: Date
   _count: ExpenseCategoryCountAggregateOutputType | null
   _avg: ExpenseCategoryAvgAggregateOutputType | null
@@ -230,7 +223,6 @@ export type ExpenseCategoryWhereInput = {
   description?: Prisma.StringNullableFilter<"ExpenseCategory"> | string | null
   color?: Prisma.StringFilter<"ExpenseCategory"> | string
   isActive?: Prisma.BoolFilter<"ExpenseCategory"> | boolean
-  isMaterialsCategory?: Prisma.BoolFilter<"ExpenseCategory"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ExpenseCategory"> | Date | string
   expenses?: Prisma.ExpenseListRelationFilter
 }
@@ -241,7 +233,6 @@ export type ExpenseCategoryOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   color?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  isMaterialsCategory?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
 }
@@ -255,7 +246,6 @@ export type ExpenseCategoryWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"ExpenseCategory"> | string | null
   color?: Prisma.StringFilter<"ExpenseCategory"> | string
   isActive?: Prisma.BoolFilter<"ExpenseCategory"> | boolean
-  isMaterialsCategory?: Prisma.BoolFilter<"ExpenseCategory"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ExpenseCategory"> | Date | string
   expenses?: Prisma.ExpenseListRelationFilter
 }, "id">
@@ -266,7 +256,6 @@ export type ExpenseCategoryOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   color?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  isMaterialsCategory?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ExpenseCategoryCountOrderByAggregateInput
   _avg?: Prisma.ExpenseCategoryAvgOrderByAggregateInput
@@ -284,7 +273,6 @@ export type ExpenseCategoryScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"ExpenseCategory"> | string | null
   color?: Prisma.StringWithAggregatesFilter<"ExpenseCategory"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"ExpenseCategory"> | boolean
-  isMaterialsCategory?: Prisma.BoolWithAggregatesFilter<"ExpenseCategory"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ExpenseCategory"> | Date | string
 }
 
@@ -294,7 +282,6 @@ export type ExpenseCategoryCreateInput = {
   description?: string | null
   color: string
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: Date | string
   expenses?: Prisma.ExpenseCreateNestedManyWithoutExpenseCategoryInput
 }
@@ -305,7 +292,6 @@ export type ExpenseCategoryUncheckedCreateInput = {
   description?: string | null
   color: string
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: Date | string
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutExpenseCategoryInput
 }
@@ -316,7 +302,6 @@ export type ExpenseCategoryUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isMaterialsCategory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expenses?: Prisma.ExpenseUpdateManyWithoutExpenseCategoryNestedInput
 }
@@ -327,7 +312,6 @@ export type ExpenseCategoryUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isMaterialsCategory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutExpenseCategoryNestedInput
 }
@@ -338,7 +322,6 @@ export type ExpenseCategoryCreateManyInput = {
   description?: string | null
   color: string
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: Date | string
 }
 
@@ -348,7 +331,6 @@ export type ExpenseCategoryUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isMaterialsCategory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -358,7 +340,6 @@ export type ExpenseCategoryUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isMaterialsCategory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -368,7 +349,6 @@ export type ExpenseCategoryCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   color?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  isMaterialsCategory?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -382,7 +362,6 @@ export type ExpenseCategoryMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   color?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  isMaterialsCategory?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -392,7 +371,6 @@ export type ExpenseCategoryMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   color?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
-  isMaterialsCategory?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -425,7 +403,6 @@ export type ExpenseCategoryCreateWithoutExpensesInput = {
   description?: string | null
   color: string
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: Date | string
 }
 
@@ -435,7 +412,6 @@ export type ExpenseCategoryUncheckedCreateWithoutExpensesInput = {
   description?: string | null
   color: string
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: Date | string
 }
 
@@ -461,7 +437,6 @@ export type ExpenseCategoryUpdateWithoutExpensesInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isMaterialsCategory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -471,7 +446,6 @@ export type ExpenseCategoryUncheckedUpdateWithoutExpensesInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isMaterialsCategory?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -512,7 +486,6 @@ export type ExpenseCategorySelect<ExtArgs extends runtime.Types.Extensions.Inter
   description?: boolean
   color?: boolean
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: boolean
   expenses?: boolean | Prisma.ExpenseCategory$expensesArgs<ExtArgs>
   _count?: boolean | Prisma.ExpenseCategoryCountOutputTypeDefaultArgs<ExtArgs>
@@ -524,7 +497,6 @@ export type ExpenseCategorySelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   description?: boolean
   color?: boolean
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["expenseCategory"]>
 
@@ -534,7 +506,6 @@ export type ExpenseCategorySelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   description?: boolean
   color?: boolean
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["expenseCategory"]>
 
@@ -544,11 +515,10 @@ export type ExpenseCategorySelectScalar = {
   description?: boolean
   color?: boolean
   isActive?: boolean
-  isMaterialsCategory?: boolean
   createdAt?: boolean
 }
 
-export type ExpenseCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "color" | "isActive" | "isMaterialsCategory" | "createdAt", ExtArgs["result"]["expenseCategory"]>
+export type ExpenseCategoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "color" | "isActive" | "createdAt", ExtArgs["result"]["expenseCategory"]>
 export type ExpenseCategoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expenses?: boolean | Prisma.ExpenseCategory$expensesArgs<ExtArgs>
   _count?: boolean | Prisma.ExpenseCategoryCountOutputTypeDefaultArgs<ExtArgs>
@@ -567,7 +537,6 @@ export type $ExpenseCategoryPayload<ExtArgs extends runtime.Types.Extensions.Int
     description: string | null
     color: string
     isActive: boolean
-    isMaterialsCategory: boolean
     createdAt: Date
   }, ExtArgs["result"]["expenseCategory"]>
   composites: {}
@@ -998,7 +967,6 @@ export interface ExpenseCategoryFieldRefs {
   readonly description: Prisma.FieldRef<"ExpenseCategory", 'String'>
   readonly color: Prisma.FieldRef<"ExpenseCategory", 'String'>
   readonly isActive: Prisma.FieldRef<"ExpenseCategory", 'Boolean'>
-  readonly isMaterialsCategory: Prisma.FieldRef<"ExpenseCategory", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"ExpenseCategory", 'DateTime'>
 }
     

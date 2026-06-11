@@ -61,11 +61,6 @@ const data = {
       ],
     },
     {
-      title: "Bahan Baku",
-      url: "/management/raw-materials",
-      icon: CirclePileIcon,
-    },
-    {
       title: "Kategori Produk",
       url: "/management/categories",
       icon: Grid2X2Plus,

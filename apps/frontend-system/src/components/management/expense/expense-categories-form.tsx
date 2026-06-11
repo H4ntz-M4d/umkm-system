@@ -194,45 +194,15 @@ export default function ExpenseCategoriesForm({
                       <FieldLabel>
                         <Field orientation={"horizontal"}>
                           <FieldContent className="gap-0">
-                            <FieldTitle className="font-medium text-lg">
+                            <FieldTitle className="font-medium text-base">
                               Aktif Status
                             </FieldTitle>
-                            <FieldDescription>
+                            <FieldDescription className="text-sm">
                               Kategori akan ada dan dapat di gunakan untuk
                               catatan pengeluaran
                             </FieldDescription>
                           </FieldContent>
                           <Switch
-                            checked={field.value}
-                            onCheckedChange={(val) => field.onChange(val)}
-                          />
-                        </Field>
-                      </FieldLabel>
-                    </FieldGroup>
-                  )}
-                />
-
-                <Controller
-                  name="isMaterialsCategory"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FieldGroup>
-                      <FieldLabel className="has-data-[state=checked]:bg-accent has-data-[state=checked]:border-accent-foreground">
-                        <Field orientation={"horizontal"}>
-                          <div className="bg-accent text-accent-foreground size-10 flex justify-center items-center rounded-md">
-                            <Package />
-                          </div>
-                          <FieldContent className="gap-0">
-                            <FieldTitle className="font-medium text-lg">
-                              Hubungkan ke Bahan Baku
-                            </FieldTitle>
-                            <FieldDescription>
-                              Aktifkan switch ini untuk membiarkan kategori ini
-                              memperbarui stok dari bahan baku secara otomatis
-                            </FieldDescription>
-                          </FieldContent>
-                          <Switch
-                            className="data-checked:bg-accent-foreground"
                             checked={field.value}
                             onCheckedChange={(val) => field.onChange(val)}
                           />

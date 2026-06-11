@@ -47,13 +47,11 @@ export class InventoryLedgerService {
             l.source, l.quantity, l."referenceId", l."createdAt",
             CASE
                 WHEN l."itemType" = 'PRODUCT_VARIANT' THEN pm.name || ' - ' || pv.sku
-                WHEN l."itemType" = 'RAW_MATERIAL' THEN rm.name
             END AS "itemName"
         FROM inventory_ledger l
         LEFT JOIN store s ON l."storeId" = s.id
         LEFT JOIN product_variant pv ON l."itemId" = pv.id AND l."itemType" = 'PRODUCT_VARIANT'
         LEFT JOIN product_master pm ON pv."productMasterId" = pm.id
-        LEFT JOIN raw_material rm ON l."itemId" = rm.id AND l."itemType" = 'RAW_MATERIAL'
     )
     SELECT * FROM custom_inventory_ledger
     ${whereCondition}
@@ -72,13 +70,11 @@ export class InventoryLedgerService {
             l.source, l.quantity, l."referenceId", l."createdAt",
             CASE
                 WHEN l."itemType" = 'PRODUCT_VARIANT' THEN pm.name || ' - ' || pv.sku
-                WHEN l."itemType" = 'RAW_MATERIAL' THEN rm.name
             END AS "itemName"
         FROM inventory_ledger l
         LEFT JOIN store s ON l."storeId" = s.id
         LEFT JOIN product_variant pv ON l."itemId" = pv.id AND l."itemType" = 'PRODUCT_VARIANT'
         LEFT JOIN product_master pm ON pv."productMasterId" = pm.id
-        LEFT JOIN raw_material rm ON l."itemId" = rm.id AND l."itemType" = 'RAW_MATERIAL'
      )
     SELECT COUNT(*)::integer as count FROM custom_inventory_ledger
     ${whereCondition}
@@ -125,9 +121,7 @@ export class InventoryLedgerService {
         productVariant:
           historyByType.find((item) => item.itemType === 'PRODUCT_VARIANT')
             ?._count._all ?? 0,
-        rawMaterial:
-          historyByType.find((item) => item.itemType === 'RAW_MATERIAL')?._count
-            ._all ?? 0,
+        rawMaterial: 0,
       },
     };
     return result;
