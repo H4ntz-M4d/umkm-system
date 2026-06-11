@@ -12,38 +12,46 @@ type ProductionEntity = Prisma.ProductionGetPayload<{
         };
       };
     };
-    materials: {
+    beSpokeDetails: {
       include: {
-        rawMaterial: {
-          select: {
-            name: true;
-            unit: true;
-          };
-        };
+        customer: true;
       };
     };
   };
 }>;
 
 export function toProductionResponse(entity: ProductionEntity) {
+  let productName;
+  if (entity.variant) {
+    productName = `${entity.variant?.productMaster.name}`;
+  } else {
+    productName = entity.beSpokeDetails?.title;
+  }
+
   return {
     id: entity.id,
     storeId: entity.storeId,
     producedVariantId: entity.producedVariantId,
-    sku: entity.variant.sku,
-    productName: entity.variant.productMaster.name,
+    productName: productName,
+    sku: entity.variant?.sku ?? '-',
     quantityProduced: entity.quantityProduced,
     type: entity.type,
     status: entity.status,
+    targetDate: entity.targetDate,
+    notes: entity.notes,
     createdAt: entity.createdAt.toISOString(),
-    materials: entity.materials.map((material) => ({
-      id: material.id,
-      productionId: material.productionId,
-      rawMaterialId: material.rawMaterialId,
-      quantityUsed: material.quantityUsed,
-      nameRawMaterial: material.rawMaterial.name,
-      unitRawMaterial: material.rawMaterial.unit,
-    })),
+    bespoke: {
+      id: entity.beSpokeDetails?.id,
+      title: entity.beSpokeDetails?.title,
+      description: entity.beSpokeDetails?.description,
+      quotedPrice: entity.beSpokeDetails?.quotedPrice,
+      customer: {
+        id: entity.beSpokeDetails?.customer?.id,
+        name: entity.beSpokeDetails?.customer?.name,
+        email: entity.beSpokeDetails?.customer?.email,
+        phone: entity.beSpokeDetails?.customer?.phone,
+      },
+    },
   };
 }
 
@@ -55,6 +63,8 @@ type ProductionOnlyEntity = Prisma.ProductionGetPayload<{
     quantityProduced: true;
     type: true;
     status: true;
+    targetDate: true;
+    notes: true;
     createdAt: true;
   };
 }>;
@@ -67,26 +77,8 @@ export function toProductionOnlyResponse(entity: ProductionOnlyEntity) {
     quantityProduced: entity.quantityProduced,
     type: entity.type,
     status: entity.status,
+    targetDate: entity.targetDate,
+    notes: entity.notes,
     createdAt: entity.createdAt,
-  };
-}
-
-type ProductionMaterialEntity = Prisma.ProductionMaterialGetPayload<{
-  select: {
-    id: true;
-    productionId: true;
-    rawMaterialId: true;
-    quantityUsed: true;
-  };
-}>;
-
-export function toProductionMaterialOnlyResponse(
-  entity: ProductionMaterialEntity,
-) {
-  return {
-    id: entity.id,
-    productionId: entity.productionId,
-    rawMaterialId: entity.rawMaterialId,
-    quantityUsed: entity.quantityUsed,
   };
 }

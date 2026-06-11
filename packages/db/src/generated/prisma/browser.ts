@@ -78,16 +78,6 @@ export type Customer = Prisma.CustomerModel
  */
 export type Employee = Prisma.EmployeeModel
 /**
- * Model RawMaterial
- * 
- */
-export type RawMaterial = Prisma.RawMaterialModel
-/**
- * Model RawMaterialStock
- * 
- */
-export type RawMaterialStock = Prisma.RawMaterialStockModel
-/**
  * Model InventoryLedger
  * 
  */
@@ -97,11 +87,6 @@ export type InventoryLedger = Prisma.InventoryLedgerModel
  * 
  */
 export type Production = Prisma.ProductionModel
-/**
- * Model ProductionMaterial
- * 
- */
-export type ProductionMaterial = Prisma.ProductionMaterialModel
 /**
  * Model ExpenseCategory
  * 
@@ -128,10 +113,15 @@ export type Order = Prisma.OrderModel
  */
 export type OrderItem = Prisma.OrderItemModel
 /**
- * Model OrderShipment
+ * Model BeSpokeDetails
  * 
  */
-export type OrderShipment = Prisma.OrderShipmentModel
+export type BeSpokeDetails = Prisma.BeSpokeDetailsModel
+/**
+ * Model Shipment
+ * 
+ */
+export type Shipment = Prisma.ShipmentModel
 /**
  * Model PaymentMethod
  * 

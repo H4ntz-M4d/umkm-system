@@ -40,7 +40,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { useExpenseCategoriesOperation } from "@/hooks/management/expense/use-expense-categories-operations";
-import { useMaterialsOperations } from "@/hooks/management/raw-materials/use-materials-operation";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { ExpenseSchema, ExpenseSchemaInput } from "@repo/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -120,18 +119,10 @@ export function AddExpenseDialog({
 
   const { storeList } = useStoreOperations({ enableStoreList: true });
   const { dataExpenseCategories } = useExpenseCategoriesOperation({});
-  const { dataRawMaterialList } = useMaterialsOperations({
-    enabledRawMaterialList: true,
-  });
   const { createExpenseData } = useExpenseOperation({});
 
   const selectedCategory = watch("categoryId");
   const items = watch("expenseItem");
-  const [showMaterials, setShowMaterials] = useState(true);
-
-  const isMaterialCategory = dataExpenseCategories?.data?.some(
-    (cat) => selectedCategory === cat.id && cat.isMaterialsCategory,
-  );
 
   const addItem = () => {
     append({
@@ -235,15 +226,10 @@ export function AddExpenseDialog({
                           <SelectTrigger className="bg-background">
                             <SelectValue placeholder="Select category" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent position="popper">
                             {dataExpenseCategories?.data?.map((cat) => (
                               <SelectItem key={cat.id} value={cat.id}>
-                                <div className="flex items-center gap-2">
                                   {cat.name}
-                                  {cat.isMaterialsCategory && (
-                                    <Package className="h-3 w-3 text-secondary" />
-                                  )}
-                                </div>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -254,395 +240,178 @@ export function AddExpenseDialog({
                 </FieldGroup>
               </FieldGroup>
 
-              {/* Materials Section - Only shows for material categories */}
-              {isMaterialCategory && (
-                <div className="rounded-lg border-2 border-secondary/30 bg-accent/50 p-4">
-                  <div className="mb-4 flex items-center gap-2">
-                    <Package className="h-5 w-5 text-secondary" />
-                    <h3 className="font-semibold text-secondary">
-                      Raw Material Details
-                    </h3>
-                  </div>
-                  <p className="mb-4 text-sm text-muted-foreground">
-                    This expense will be linked to your inventory. Add the
-                    materials purchased below.
-                  </p>
+              <div className="rounded-lg border-2 border-secondary/30 bg-accent/50 p-4">
+                <div className="mb-4 flex items-center gap-2">
+                  <Boxes className="h-5 w-5 text-secondary" />
+                  <h3 className="font-semibold text-secondary">Detail Item</h3>
+                </div>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  Catat item dari pengeluaran anda di sini. Item di sini tidak
+                  terhubung dengan bahan baku
+                </p>
 
-                  <div className="space-y-3">
-                    {fields.map((item, index) => (
-                      <FieldGroup
-                        key={item.id}
-                        className="grid md:grid-cols-12 gap-2 items-end"
-                      >
-                        {showMaterials ? (
-                          <Controller
-                            name={`expenseItem.${index}.rawMaterialId`}
-                            control={control}
-                            render={({ field }) => (
-                              <Field className="md:col-span-4">
-                                <FieldLabel className="text-xs">
-                                  Material
-                                </FieldLabel>
-                                <Select
-                                  value={field.value}
-                                  onValueChange={(val) => field.onChange(val)}
-                                >
-                                  <SelectTrigger className="bg-background">
-                                    <SelectValue placeholder="Select material" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {dataRawMaterialList?.data?.map((mat) => (
-                                      <SelectItem key={mat.id} value={mat.id}>
-                                        {mat.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </Field>
-                            )}
-                          />
-                        ) : (
-                          <Controller
-                            name={`expenseItem.${index}.itemName`}
-                            control={control}
-                            render={({ field }) => (
-                              <Field className="md:col-span-4">
-                                <FieldLabel className="text-xs">
-                                  Material
-                                </FieldLabel>
-                                <Input {...field} placeholder="Nama Item" />
-                              </Field>
-                            )}
-                          />
+                <div className="space-y-3">
+                  {fields.map((item, index) => (
+                    <FieldGroup
+                      key={item.id}
+                      className="grid grid-cols-6 md:grid-cols-12 gap-2 items-end"
+                    >
+                      <Controller
+                        name={`expenseItem.${index}.itemName`}
+                        control={control}
+                        render={({ field }) => (
+                          <Field className="md:col-span-4">
+                            <FieldLabel className="text-xs">Item</FieldLabel>
+                            <Input
+                              className="bg-background"
+                              placeholder="Nama Item"
+                              {...field}
+                            />
+                          </Field>
                         )}
+                      />
 
-                        <Controller
-                          name={`expenseItem.${index}.quantity`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-1">
-                              <FieldLabel className="text-xs">
-                                Quantity
-                              </FieldLabel>
-                              <Input
-                                type="number"
-                                placeholder="0"
-                                value={field.value}
-                                onChange={(e) => {
-                                  const qty = Number(e.target.value);
-                                  field.onChange(qty);
+                      <Controller
+                        name={`expenseItem.${index}.quantity`}
+                        control={control}
+                        render={({ field }) => (
+                          <Field className="md:col-span-1">
+                            <FieldLabel className="text-xs">
+                              Quantity
+                            </FieldLabel>
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              value={field.value}
+                              onChange={(e) => {
+                                const qty = Number(e.target.value);
+                                field.onChange(qty);
 
-                                  const price = getValues(
-                                    `expenseItem.${index}.price`,
-                                  );
-                                  setValue(
-                                    `expenseItem.${index}.subtotal`,
-                                    qty * price,
-                                  );
-                                }}
-                                className="bg-background"
-                              />
-                            </Field>
-                          )}
-                        />
+                                const price = getValues(
+                                  `expenseItem.${index}.price`,
+                                );
+                                setValue(
+                                  `expenseItem.${index}.subtotal`,
+                                  qty * price,
+                                );
+                              }}
+                              className="bg-background"
+                            />
+                          </Field>
+                        )}
+                      />
 
-                        <Controller
-                          name={`expenseItem.${index}.unit`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-2">
-                              <FieldLabel className="text-xs">Unit</FieldLabel>
-                              <CreatableCombobox
-                                options={unitOptions}
-                                value={field.value}
-                                onChange={(val) => field.onChange(val)}
-                                onCreate={async (input) => {
-                                  const newUnit = {
-                                    value: input.toLowerCase(),
-                                    label: input,
-                                  };
-                                  setUnitOptions((draft) => {
-                                    draft.push(newUnit);
-                                  });
-                                  return newUnit;
-                                }}
-                              />
-                            </Field>
-                          )}
-                        />
+                      <Controller
+                        name={`expenseItem.${index}.unit`}
+                        control={control}
+                        render={({ field }) => (
+                          <Field className="md:col-span-2">
+                            <FieldLabel className="text-xs">Unit</FieldLabel>
+                            <CreatableCombobox
+                              options={unitOptions}
+                              value={field.value}
+                              onChange={(val) => field.onChange(val)}
+                              onCreate={async (input) => {
+                                const newUnit = {
+                                  value: input.toLowerCase(),
+                                  label: input,
+                                };
+                                setUnitOptions((draft) => {
+                                  draft.push(newUnit);
+                                });
+                                return newUnit;
+                              }}
+                            />
+                          </Field>
+                        )}
+                      />
 
-                        <Controller
-                          name={`expenseItem.${index}.price`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-2">
-                              <FieldLabel className="text-xs">
-                                Harga per Unit
-                              </FieldLabel>
-                              <Input
-                                type="number"
-                                placeholder="0"
-                                value={field.value}
-                                onChange={(e) => {
-                                  const price = Number(e.target.value);
-                                  field.onChange(price);
+                      <Controller
+                        name={`expenseItem.${index}.price`}
+                        control={control}
+                        render={({ field }) => (
+                          <Field className="md:col-span-2">
+                            <FieldLabel className="text-xs">
+                              Harga per Unit
+                            </FieldLabel>
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              value={field.value}
+                              onChange={(e) => {
+                                const price = Number(e.target.value);
+                                field.onChange(price);
 
-                                  const qty = getValues(
-                                    `expenseItem.${index}.quantity`,
-                                  );
-                                  setValue(
-                                    `expenseItem.${index}.subtotal`,
-                                    qty * price,
-                                  );
-                                }}
-                                className="bg-background"
-                              />
-                            </Field>
-                          )}
-                        />
+                                const qty = getValues(
+                                  `expenseItem.${index}.quantity`,
+                                );
+                                setValue(
+                                  `expenseItem.${index}.subtotal`,
+                                  qty * price,
+                                );
+                              }}
+                              className="bg-background"
+                            />
+                          </Field>
+                        )}
+                      />
 
-                        <Controller
-                          name={`expenseItem.${index}.subtotal`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-2">
-                              <FieldLabel className="text-xs">
-                                Sub Total
-                              </FieldLabel>
-                              <Input
-                                type="number"
-                                placeholder="0"
-                                value={Number(field.value)}
-                                readOnly
-                                className="bg-background"
-                              />
-                            </Field>
-                          )}
-                        />
+                      <Controller
+                        name={`expenseItem.${index}.subtotal`}
+                        control={control}
+                        render={({ field }) => (
+                          <Field className="md:col-span-2">
+                            <FieldLabel className="text-xs">
+                              Sub Total
+                            </FieldLabel>
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              value={Number(field.value)}
+                              readOnly
+                              className="bg-background"
+                            />
+                          </Field>
+                        )}
+                      />
 
-                        <Field className="col-span-1">
-                          <Switch
-                            checked={showMaterials}
-                            onCheckedChange={() => {
-                              resetField(`expenseItem.${index}.rawMaterialId`);
-                              resetField(`expenseItem.${index}.itemName`);
-                              setShowMaterials(!showMaterials);
-                            }}
-                          />
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            type="button"
-                            onClick={() => remove(index)}
-                            disabled={fields.length === 1}
-                            className="text-muted-foreground hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </Field>
-                      </FieldGroup>
-                    ))}
+                      <Field className="col-span-1">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          type="button"
+                          onClick={() => remove(index)}
+                          disabled={fields.length === 1}
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </Field>
+                    </FieldGroup>
+                  ))}
 
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addItem}
-                      className="gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Item
-                    </Button>
-                  </div>
-
-                  {/* Total */}
-                  <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Total Amount
-                    </span>
-                    <span className="font-mono text-lg font-semibold text-card-foreground">
-                      {toIDR(calculateTotal())}
-                    </span>
-                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addItem}
+                    className="gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Item
+                  </Button>
                 </div>
-              )}
 
-              {!isMaterialCategory && selectedCategory && (
-                <div className="rounded-lg border-2 border-secondary/30 bg-accent/50 p-4">
-                  <div className="mb-4 flex items-center gap-2">
-                    <Boxes className="h-5 w-5 text-secondary" />
-                    <h3 className="font-semibold text-secondary">
-                      Detail Item
-                    </h3>
-                  </div>
-                  <p className="mb-4 text-sm text-muted-foreground">
-                    Catat item dari pengeluaran anda di sini. Item di sini tidak
-                    terhubung dengan bahan baku
-                  </p>
-
-                  <div className="space-y-3">
-                    {fields.map((item, index) => (
-                      <FieldGroup
-                        key={item.id}
-                        className="grid grid-cols-6 md:grid-cols-12 gap-2 items-end"
-                      >
-                        <Controller
-                          name={`expenseItem.${index}.itemName`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-4">
-                              <FieldLabel className="text-xs">Item</FieldLabel>
-                              <Input
-                                className="bg-background"
-                                placeholder="Nama Item"
-                                {...field}
-                              />
-                            </Field>
-                          )}
-                        />
-
-                        <Controller
-                          name={`expenseItem.${index}.quantity`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-1">
-                              <FieldLabel className="text-xs">
-                                Quantity
-                              </FieldLabel>
-                              <Input
-                                type="number"
-                                placeholder="0"
-                                value={field.value}
-                                onChange={(e) => {
-                                  const qty = Number(e.target.value);
-                                  field.onChange(qty);
-
-                                  const price = getValues(
-                                    `expenseItem.${index}.price`,
-                                  );
-                                  setValue(
-                                    `expenseItem.${index}.subtotal`,
-                                    qty * price,
-                                  );
-                                }}
-                                className="bg-background"
-                              />
-                            </Field>
-                          )}
-                        />
-
-                        <Controller
-                          name={`expenseItem.${index}.unit`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-2">
-                              <FieldLabel className="text-xs">Unit</FieldLabel>
-                              <CreatableCombobox
-                                options={unitOptions}
-                                value={field.value}
-                                onChange={(val) => field.onChange(val)}
-                                onCreate={async (input) => {
-                                  const newUnit = {
-                                    value: input.toLowerCase(),
-                                    label: input,
-                                  };
-                                  setUnitOptions((draft) => {
-                                    draft.push(newUnit);
-                                  });
-                                  return newUnit;
-                                }}
-                              />
-                            </Field>
-                          )}
-                        />
-
-                        <Controller
-                          name={`expenseItem.${index}.price`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-2">
-                              <FieldLabel className="text-xs">
-                                Harga per Unit
-                              </FieldLabel>
-                              <Input
-                                type="number"
-                                placeholder="0"
-                                value={field.value}
-                                onChange={(e) => {
-                                  const price = Number(e.target.value);
-                                  field.onChange(price);
-
-                                  const qty = getValues(
-                                    `expenseItem.${index}.quantity`,
-                                  );
-                                  setValue(
-                                    `expenseItem.${index}.subtotal`,
-                                    qty * price,
-                                  );
-                                }}
-                                className="bg-background"
-                              />
-                            </Field>
-                          )}
-                        />
-
-                        <Controller
-                          name={`expenseItem.${index}.subtotal`}
-                          control={control}
-                          render={({ field }) => (
-                            <Field className="md:col-span-2">
-                              <FieldLabel className="text-xs">
-                                Sub Total
-                              </FieldLabel>
-                              <Input
-                                type="number"
-                                placeholder="0"
-                                value={Number(field.value)}
-                                readOnly
-                                className="bg-background"
-                              />
-                            </Field>
-                          )}
-                        />
-
-                        <Field className="col-span-1">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            type="button"
-                            onClick={() => remove(index)}
-                            disabled={fields.length === 1}
-                            className="text-muted-foreground hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </Field>
-                      </FieldGroup>
-                    ))}
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addItem}
-                      className="gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Item
-                    </Button>
-                  </div>
-
-                  {/* Total */}
-                  <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      Total Amount
-                    </span>
-                    <span className="font-mono text-lg font-semibold text-card-foreground">
-                      {toIDR(calculateTotal())}
-                    </span>
-                  </div>
+                {/* Total */}
+                <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Total Amount
+                  </span>
+                  <span className="font-mono text-lg font-semibold text-card-foreground">
+                    {toIDR(calculateTotal())}
+                  </span>
                 </div>
-              )}
+              </div>
 
               {/* Payment Method */}
               <FieldSet>

@@ -30,13 +30,11 @@ import {
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment, useState } from "react";
-import {
-  DataTableProductionMaterials,
-} from "@/components/management/production/production-material-data-table";
+import { DataTableProductionMaterials } from "@/components/management/production/production-material-data-table";
 import { ProductionData, z } from "@repo/schemas";
 import { columnsProductionMaterials } from "@/components/management/production/variant-column";
 
-type ProductionResponse = z.infer<typeof ProductionData>
+type ProductionResponse = z.infer<typeof ProductionData>;
 
 interface DataTableProps<TData extends ProductionResponse, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -53,7 +51,7 @@ export function DataTableProduction<TData extends ProductionResponse, TValue>({
   pagination,
   onPaginationChange,
 }: DataTableProps<TData, TValue>) {
-  const [expanded, setExpanded] = useState<ExpandedState>({})
+  const [expanded, setExpanded] = useState<ExpandedState>({});
   const table = useReactTable({
     data,
     columns,
@@ -63,7 +61,7 @@ export function DataTableProduction<TData extends ProductionResponse, TValue>({
     onPaginationChange,
     state: {
       pagination,
-      expanded
+      expanded,
     },
     onExpandedChange: setExpanded,
     getExpandedRowModel: getExpandedRowModel(),
@@ -97,31 +95,20 @@ export function DataTableProduction<TData extends ProductionResponse, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <Fragment key={row.id}>
-                  <TableRow
-                    className="bg-primary-foreground"
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="text-center">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                  {row.getIsExpanded() && (
-                    <TableRow className={"bg-primary-foreground"}>
-                      <TableCell colSpan={row.getVisibleCells().length}>
-                        <DataTableProductionMaterials
-                          columns={columnsProductionMaterials()}
-                          data={row.original.materials}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </Fragment>
+                <TableRow
+                  className="bg-primary-foreground"
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="text-center">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))
             ) : (
               <TableRow>

@@ -7,7 +7,6 @@ export const ExpenseCategoryData = z.object({
   description: z.string(),
   color: z.string(),
   isActive: z.boolean(),
-  isMaterialsCategory: z.boolean(),
   createdAt: z.string(),
   expenseCount: z.number(),
   totalExpenses: z.number(),
@@ -19,7 +18,6 @@ export const SingleExpenseCategoryData = ExpenseCategoryData.pick({
   description: true,
   color: true,
   isActive: true,
-  isMaterialsCategory: true,
   createdAt: true,
 })
 

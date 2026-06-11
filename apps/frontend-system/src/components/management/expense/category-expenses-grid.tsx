@@ -63,14 +63,6 @@ export default function ExpenseCategoriesView() {
                         <h3 className="font-body font-semibold text-sm">
                           {item.name}
                         </h3>
-                        {item.isMaterialsCategory && (
-                          <Badge
-                            variant={"outline"}
-                            className="bg-secondary/10 border-secondary/50 text-secondary"
-                          >
-                            Terhubung Stok
-                          </Badge>
-                        )}
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

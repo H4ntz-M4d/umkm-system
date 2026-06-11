@@ -190,9 +190,10 @@ model Customer {
   image     String?  @db.VarChar(255)
   createdAt DateTime @default(now())
 
-  userId BigInt? @unique
-  users  Users?  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders Order[]
+  userId         BigInt?          @unique
+  users          Users?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders         Order[]
+  beSpokeDetails BeSpokeDetails[]
 
   @@map("customer")
 }
@@ -209,32 +210,6 @@ model Employee {
   userId BigInt @unique
 
   @@map("employee")
-}
-
-model RawMaterial {
-  id                  BigInt               @id @default(autoincrement())
-  name                String               @db.VarChar(100)
-  unit                String               @db.VarChar(100)
-  cost                Decimal?             @db.Decimal(18, 2)
-  isActive            Boolean              @default(true)
-  productionMaterials ProductionMaterial[]
-  rawMaterialStocks   RawMaterialStock?
-  expenseItems        ExpenseItem[]
-
-  @@map("raw_material")
-}
-
-model RawMaterialStock {
-  id             BigInt   @id @default(autoincrement())
-  rawMaterialId  BigInt   @unique
-  stock          Int
-  reservedStock  Int
-  availableStock Int
-  updatedAt      DateTime @default(now())
-
-  rawMaterial RawMaterial @relation(fields: [rawMaterialId], references: [id], onDelete: Cascade)
-
-  @@map("raw_material_stock")
 }
 
 // ==================
@@ -259,7 +234,6 @@ model InventoryLedger {
 }
 
 enum InventoryItemType {
-  RAW_MATERIAL
   PRODUCT_VARIANT
 }
 
@@ -269,7 +243,6 @@ enum LedgerDirection {
 }
 
 enum LedgerSource {
-  PURCHASE
   PRODUCTION
   POS
   ONLINE_ORDER
@@ -283,15 +256,17 @@ enum LedgerSource {
 model Production {
   id                BigInt           @id @default(autoincrement())
   storeId           BigInt
-  producedVariantId BigInt
+  producedVariantId BigInt?
   quantityProduced  Int
   type              ProductionType   @default(RESTOCK)
   status            ProductionStatus
+  notes             String?
+  targetDate        DateTime
   createdAt         DateTime         @default(now())
 
-  store     Store                @relation(fields: [storeId], references: [id])
-  variant   ProductVariant       @relation(fields: [producedVariantId], references: [id])
-  materials ProductionMaterial[]
+  store          Store           @relation(fields: [storeId], references: [id])
+  variant        ProductVariant? @relation(fields: [producedVariantId], references: [id])
+  beSpokeDetails BeSpokeDetails?
 
   @@map("production")
 }
@@ -310,31 +285,18 @@ enum ProductionStatus {
   CANCELLED
 }
 
-model ProductionMaterial {
-  id            BigInt @id @default(autoincrement())
-  productionId  BigInt
-  rawMaterialId BigInt
-  quantityUsed  Int
-
-  production  Production  @relation(fields: [productionId], references: [id], onDelete: Cascade)
-  rawMaterial RawMaterial @relation(fields: [rawMaterialId], references: [id])
-
-  @@map("production_material")
-}
-
 // ==================
 // EXPENSE
 // ==================
 
 model ExpenseCategory {
-  id                  BigInt    @id @default(autoincrement())
-  name                String    @db.VarChar(100)
-  description         String?
-  color               String    @db.VarChar(100)
-  isActive            Boolean   @default(true)
-  isMaterialsCategory Boolean   @default(false)
-  createdAt           DateTime  @default(now())
-  expenses            Expense[]
+  id          BigInt    @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  description String?
+  color       String    @db.VarChar(100)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  expenses    Expense[]
 
   @@map("expense_category")
 }
@@ -357,23 +319,21 @@ model Expense {
 }
 
 model ExpenseItem {
-  id            BigInt  @id @default(autoincrement())
-  expenseId     BigInt
-  rawMaterialId BigInt?
-  itemName      String? @db.VarChar(100)
-  quantity      Int
-  unit          String  @db.VarChar(100)
-  price         Decimal
-  subtotal      Decimal
+  id        BigInt  @id @default(autoincrement())
+  expenseId BigInt
+  itemName  String? @db.VarChar(100)
+  quantity  Int
+  unit      String  @db.VarChar(100)
+  price     Decimal
+  subtotal  Decimal
 
-  expense     Expense      @relation(fields: [expenseId], references: [id], onDelete: Cascade)
-  rawMaterial RawMaterial? @relation(fields: [rawMaterialId], references: [id], onDelete: Cascade)
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
 
   @@map("expense_item")
 }
 
 // ==================
-// E-COMMERCE
+// E-COMMERCE & Be Spoke
 // ==================
 
 model Order {
@@ -389,7 +349,7 @@ model Order {
 
   customer Customer?      @relation(fields: [customerId], references: [id])
   items    OrderItem[]
-  shipment OrderShipment?
+  shipment Shipment?
   payment  PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
 
   @@map("order")
@@ -415,21 +375,39 @@ model OrderItem {
   @@map("order_item")
 }
 
-model OrderShipment {
-  id            BigInt   @id @default(autoincrement())
-  orderId       BigInt   @unique
-  recipientName String   @db.VarChar(255)
-  phone         String   @db.VarChar(15)
-  addressLine   String
-  city          String   @db.VarChar(100)
-  province      String   @db.VarChar(100)
-  courier       String   @db.VarChar(100)
-  shippingCost  Decimal
-  createdAt     DateTime @default(now())
+model BeSpokeDetails {
+  id           BigInt   @id @default(autoincrement())
+  productionId BigInt   @unique
+  customerId   BigInt?
+  title        String   @db.VarChar(100)
+  description  String?
+  quotedPrice  Decimal  @db.Decimal(18, 2)
+  createdAt    DateTime @default(now())
 
-  order Order @relation(fields: [orderId], references: [id])
+  production Production @relation(fields: [productionId], references: [id])
+  customer   Customer?  @relation(fields: [customerId], references: [id])
+  shipments  Shipment?
 
-  @@map("order_shipment")
+  @@map("be_spoke_details")
+}
+
+model Shipment {
+  id               BigInt   @id @default(autoincrement())
+  orderId          BigInt?  @unique
+  beSpokeDetailsId BigInt?  @unique
+  recipientName    String   @db.VarChar(255)
+  phone            String   @db.VarChar(15)
+  addressLine      String
+  city             String   @db.VarChar(100)
+  province         String   @db.VarChar(100)
+  courier          String   @db.VarChar(100)
+  shippingCost     Decimal
+  createdAt        DateTime @default(now())
+
+  order          Order?          @relation(fields: [orderId], references: [id])
+  beSpokeDetails BeSpokeDetails? @relation(fields: [beSpokeDetailsId], references: [id])
+
+  @@map("shipment")
 }
 
 // ==================

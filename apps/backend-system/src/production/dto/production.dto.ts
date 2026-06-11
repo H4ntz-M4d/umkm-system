@@ -1,12 +1,13 @@
 import { createZodDto } from 'nestjs-zod';
 import {
+  ProductionBeSpokeSchema,
   ProductionSchema,
-  UpdateProductionMaterialSchema,
   UpdateProductionSchema,
 } from '@repo/schemas';
 
 export class CreateProductionDto extends createZodDto(ProductionSchema) {}
 export class UpdateProductionDto extends createZodDto(UpdateProductionSchema) {}
-export class UpdateProductionMaterialDto extends createZodDto(
-  UpdateProductionMaterialSchema,
+
+export class CreateProductionBeSpokeDto extends createZodDto(
+  ProductionBeSpokeSchema,
 ) {}

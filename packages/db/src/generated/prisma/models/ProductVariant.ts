@@ -485,6 +485,11 @@ export type ProductVariantScalarRelationFilter = {
   isNot?: Prisma.ProductVariantWhereInput
 }
 
+export type ProductVariantNullableScalarRelationFilter = {
+  is?: Prisma.ProductVariantWhereInput | null
+  isNot?: Prisma.ProductVariantWhereInput | null
+}
+
 export type ProductVariantCreateNestedManyWithoutProductMasterInput = {
   create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutProductMasterInput, Prisma.ProductVariantUncheckedCreateWithoutProductMasterInput> | Prisma.ProductVariantCreateWithoutProductMasterInput[] | Prisma.ProductVariantUncheckedCreateWithoutProductMasterInput[]
   connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutProductMasterInput | Prisma.ProductVariantCreateOrConnectWithoutProductMasterInput[]
@@ -577,10 +582,12 @@ export type ProductVariantCreateNestedOneWithoutProductionsInput = {
   connect?: Prisma.ProductVariantWhereUniqueInput
 }
 
-export type ProductVariantUpdateOneRequiredWithoutProductionsNestedInput = {
+export type ProductVariantUpdateOneWithoutProductionsNestedInput = {
   create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutProductionsInput, Prisma.ProductVariantUncheckedCreateWithoutProductionsInput>
   connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutProductionsInput
   upsert?: Prisma.ProductVariantUpsertWithoutProductionsInput
+  disconnect?: Prisma.ProductVariantWhereInput | boolean
+  delete?: Prisma.ProductVariantWhereInput | boolean
   connect?: Prisma.ProductVariantWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantUpdateToOneWithWhereWithoutProductionsInput, Prisma.ProductVariantUpdateWithoutProductionsInput>, Prisma.ProductVariantUncheckedUpdateWithoutProductionsInput>
 }

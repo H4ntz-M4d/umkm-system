@@ -4,7 +4,6 @@ import { ApiSuccessResponse } from "../../api.schema.response";
 export const ExpenseItemData = z.object({
   id: z.string(),
   expenseId: z.string(),
-  rawMaterialId: z.string().nullable(),
   itemName: z.string().nullable(),
   quantity: z.number(),
   unit: z.string(),
@@ -32,8 +31,7 @@ export const ExpenseDetailData = ExpenseData.omit({
 export const ExpenseSummary = z.object({
   totalExpense: z.string(),
   totalExpenseThisMonth: z.string(),
-  totalExpenseRawMaterial: z.string(),
-  totalExpenseOther: z.string(),
+  totalActiveCategory: z.number(),
 });
 
 export const ExpenseSummaryResponse = ApiSuccessResponse(ExpenseSummary);

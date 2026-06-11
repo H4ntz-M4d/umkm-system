@@ -4,22 +4,39 @@ import {
   CreateProductionSchemaInput,
   ProductionDataResponse,
   ProductionResponse,
+  ProductionSummaryResponse,
   UpdateProductionSchemaInput,
 } from "@repo/schemas";
 
-export const fetchProductionData = async (
-  pageIndex = 0,
-  pageSize = 10,
-  search?: string,
-) => {
+export interface ProductionFilters {
+  skip?: number;
+  limit?: number;
+  search?: string;
+  type?: string;
+  status?: string;
+}
+
+export const fetchProductionData = async (filter: ProductionFilters) => {
+  const filters = Object.fromEntries(
+    Object.entries(filter).filter(([_, v]) => v !== undefined && v !== ""),
+  );
+
+  const queryFilter = new URLSearchParams(filters).toString();
   const res = await apiFetcher(
-    managementApi.get(
-      `v1/production?page=${pageIndex}&pageSize=${pageSize}&search=${search}`,
-    ),
+    managementApi.get(`v1/production?${queryFilter}`),
     ProductionResponse,
   );
 
   return { data: res.data, total: res.meta.total };
+};
+
+export const fetchProductionSummary = async () => {
+  const res = await apiFetcher(
+    managementApi.get("v1/production/summary"),
+    ProductionSummaryResponse,
+  );
+
+  return res;
 };
 
 export const createProduction = async (data: CreateProductionSchemaInput) => {

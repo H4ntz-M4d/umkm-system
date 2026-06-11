@@ -25,6 +25,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { CreateProductionSchemaInput } from "@repo/schemas";
+import { Textarea } from "@/components/ui/textarea";
+import { DatePickerSimple } from "@/components/ui/date-picker-simple";
 
 const status = [
   {
@@ -48,42 +50,13 @@ export default function ProductionForm({
   control,
   formState,
 }: ProductionFormProps) {
-  const { storeList } = useStoreOperations({ enableStoreList: true });
   const { fetchProductVariantList } = useProductsOperation({
     enabledProductVariantList: true,
   });
-
   const { errors } = formState;
 
   return (
-    <FieldGroup>
-      <Controller
-        name={"storeId"}
-        control={control}
-        render={({ field }) => (
-          <Field>
-            <FieldLabel>Nama Toko</FieldLabel>
-            <Select
-              value={field.value === 0 ? undefined : field.value?.toString()}
-              onValueChange={(val) => field.onChange(Number(val))}
-            >
-              <SelectTrigger className="bg-card rounded-md">
-                <SelectValue placeholder={"Pilih Toko"} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {storeList?.data?.map((list) => (
-                    <SelectItem key={list.id} value={list.id}>
-                      {list.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <FieldError>{errors.storeId?.message}</FieldError>
-          </Field>
-        )}
-      />
+    <FieldGroup className="mb-5">
       <Controller
         name={"producedVariantId"}
         control={control}
@@ -91,10 +64,10 @@ export default function ProductionForm({
           <Field>
             <FieldLabel>Produk Variant</FieldLabel>
             <Select
-              value={field.value === 0 ? undefined : field.value?.toString()}
-              onValueChange={(val) => field.onChange(Number(val))}
+              value={field.value}
+              onValueChange={(val) => field.onChange(val)}
             >
-              <SelectTrigger className="bg-card rounded-md">
+              <SelectTrigger className=" rounded-md">
                 <SelectValue
                   placeholder={"Pilih produk yang ingin di produksi"}
                 />
@@ -131,7 +104,7 @@ export default function ProductionForm({
               <FieldLabel>Jumlah diproduksi</FieldLabel>
               <Input
                 type={"number"}
-                className="bg-card"
+                className=""
                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                 {...field}
                 value={field.value?.toString()}
@@ -151,7 +124,7 @@ export default function ProductionForm({
                 value={field.value?.toString()}
                 onValueChange={(val) => field.onChange(val)}
               >
-                <SelectTrigger className="bg-card rounded-md">
+                <SelectTrigger className=" rounded-md">
                   <SelectValue
                     placeholder={"Pilih produk yang ingin di produksi"}
                   />
@@ -171,6 +144,36 @@ export default function ProductionForm({
           )}
         />
       </Field>
+      <div className="grid grid-cols-2">
+        <Controller
+          control={control}
+          name="targetDate"
+          render={({ field }) => (
+            <Field>
+              <FieldLabel>Target Selesai</FieldLabel>
+              <DatePickerSimple
+                value={field.value as Date}
+                onValueChange={(val) => field.onChange(val)}
+              />
+            </Field>
+          )}
+        />
+      </div>
+      <Controller
+        name={"notes"}
+        control={control}
+        render={({ field }) => (
+          <Field>
+            <FieldLabel>Catatan</FieldLabel>
+            <Textarea
+              {...field}
+              placeholder="Masukkan catatan disini..."
+              className="h-20"
+            />
+            <FieldError>{errors.notes?.message}</FieldError>
+          </Field>
+        )}
+      />
     </FieldGroup>
   );
 }

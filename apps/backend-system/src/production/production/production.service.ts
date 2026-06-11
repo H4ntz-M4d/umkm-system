@@ -1,32 +1,64 @@
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
-import { prisma, ProductionStatus } from '@repo/db';
+import { Prisma, prisma, ProductionStatus, ProductionType } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
 import {
   toProductionOnlyResponse,
   toProductionResponse,
 } from 'production/production/productions.response';
 import {
-  CreateProductionDto,
+  CreateProductionBeSpokeDto,
   UpdateProductionDto,
 } from 'production/dto/production.dto';
+import { BeSpokeRequiredSchema } from '@repo/schemas';
 
 @Injectable()
 export class ProductionService {
-  async findAll(pagination: Pagination, search?: string) {
+  async findAll(
+    pagination: Pagination,
+    search?: string,
+    type?: ProductionType,
+    status?: ProductionStatus,
+  ) {
     const skip = pagination.skip ?? 0;
     const limit = pagination.limit ?? 10;
-    const data = await prisma.production.findMany({
-      skip: skip,
-      take: limit,
-      where: {
-        variant: {
-          productMaster: {
-            name: {
+    const whereClause: Prisma.ProductionWhereInput = {};
+
+    if (status) {
+      whereClause.status = status;
+    }
+
+    if (type) {
+      whereClause.type = type;
+    }
+
+    if (search) {
+      whereClause.OR = [
+        {
+          variant: {
+            productMaster: {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+        {
+          beSpokeDetails: {
+            title: {
               contains: search,
               mode: 'insensitive',
             },
           },
         },
+      ];
+    }
+    const data = await prisma.production.findMany({
+      skip: skip,
+      take: limit,
+      where: whereClause,
+      orderBy: {
+        status: 'asc',
       },
       select: {
         id: true,
@@ -35,6 +67,8 @@ export class ProductionService {
         quantityProduced: true,
         type: true,
         status: true,
+        targetDate: true,
+        notes: true,
         createdAt: true,
         variant: {
           select: {
@@ -46,24 +80,17 @@ export class ProductionService {
             },
           },
         },
-        materials: {
-          select: {
-            id: true,
-            productionId: true,
-            rawMaterialId: true,
-            quantityUsed: true,
-            rawMaterial: {
-              select: {
-                name: true,
-                unit: true,
-              },
-            },
+        beSpokeDetails: {
+          include: {
+            customer: true,
           },
         },
       },
     });
 
-    const total = await prisma.production.count();
+    const total = await prisma.production.count({
+      where: whereClause,
+    });
     const result = data.map(toProductionResponse);
     return {
       success: true,
@@ -99,7 +126,58 @@ export class ProductionService {
     return toProductionOnlyResponse(data);
   }
 
-  async create(data: CreateProductionDto) {
+  async productionSummary() {
+    const planned = await prisma.production.count({
+      where: { status: 'PLANNED' },
+    });
+
+    const inProgress = await prisma.production.count({
+      where: { status: 'IN_PROGRESS' },
+    });
+
+    const thisMonth = new Date();
+    const startOfMonth = new Date(
+      thisMonth.getFullYear(),
+      thisMonth.getMonth(),
+      1,
+    );
+    const startOfNextMonth = new Date(
+      thisMonth.getFullYear(),
+      thisMonth.getMonth() + 1,
+      1,
+    );
+
+    const completed = await prisma.production.count({
+      where: {
+        status: 'COMPLETED',
+        createdAt: {
+          gte: startOfMonth,
+          lt: startOfNextMonth,
+        },
+      },
+    });
+
+    const cancelled = await prisma.production.count({
+      where: {
+        status: 'CANCELLED',
+        createdAt: {
+          gte: startOfMonth,
+          lt: startOfNextMonth,
+        },
+      },
+    });
+
+    const result = {
+      planned: planned ?? 0,
+      inProgress: inProgress ?? 0,
+      completed: completed ?? 0,
+      cancelled: cancelled ?? 0,
+    };
+
+    return result;
+  }
+
+  async create(data: CreateProductionBeSpokeDto) {
     const statusMap: Record<string, ProductionStatus> = {
       PLANNED: ProductionStatus.PLANNED,
       IN_PROGRESS: ProductionStatus.IN_PROGRESS,
@@ -108,30 +186,75 @@ export class ProductionService {
     };
     const status = statusMap[data.status] ?? ProductionStatus.PLANNED;
 
+    const typeMap: Record<string, ProductionType> = {
+      RESTOCK: ProductionType.RESTOCK,
+      MADE_TO_ORDER: ProductionType.MADE_TO_ORDER,
+      BE_SPOKE: ProductionType.BE_SPOKE,
+      PRE_ORDER: ProductionType.PRE_ORDER,
+    };
+
+    const typeData = typeMap[data.type] ?? ProductionType.RESTOCK;
+
     if (status === 'COMPLETED' || status === 'CANCELLED') {
       throw new BadRequestException('Maaf status tidak valid');
     }
 
-    const production = await prisma.production.create({
-      data: {
-        storeId: data.storeId,
-        producedVariantId: data.producedVariantId,
-        quantityProduced: data.quantityProduced,
-        status: status,
-        createdAt: new Date().toISOString(),
-        materials: {
-          create: data.materials.map((material) => ({
-            rawMaterialId: material.rawMaterialId,
-            quantityUsed: material.quantityUsed,
-          })),
+    const transaction = await prisma.$transaction(async (tx) => {
+      const production = await tx.production.create({
+        data: {
+          storeId: data.storeId,
+          producedVariantId: data.producedVariantId
+            ? BigInt(data.producedVariantId)
+            : null,
+          quantityProduced: data.quantityProduced,
+          status: status,
+          type: typeData,
+          notes: data.notes,
+          targetDate: data.targetDate,
+          createdAt: new Date().toISOString(),
         },
-      },
+      });
+
+      if (data.type === 'BE_SPOKE') {
+        if (!data.bespoke) {
+          throw new BadRequestException('Data BE SPOKE kosong harap coba lagi');
+        }
+
+        const bespoke = BeSpokeRequiredSchema.parse(data.bespoke);
+
+        let customer;
+        customer = await tx.customer.findFirst({
+          where: { email: data.bespoke?.email },
+        });
+
+        if (!customer) {
+          customer = await tx.customer.create({
+            data: {
+              name: bespoke.name,
+              email: bespoke.email,
+              phone: bespoke.phone,
+            },
+          });
+        }
+
+        await tx.beSpokeDetails.create({
+          data: {
+            title: bespoke.title,
+            productionId: production.id,
+            customerId: customer.id,
+            description: bespoke.description,
+            quotedPrice: bespoke.quotedPrice,
+          },
+        });
+      }
+
+      return toProductionOnlyResponse(production);
     });
 
-    return toProductionOnlyResponse(production);
+    return toProductionOnlyResponse(transaction);
   }
 
-  async updateProduction(id: bigint, data: CreateProductionDto) {
+  async updateProduction(id: bigint, data: CreateProductionBeSpokeDto) {
     const isExisting = await prisma.production.findUnique({
       where: { id: id },
     });
@@ -152,31 +275,110 @@ export class ProductionService {
         ? statusMap[data.status]
         : isExisting.status;
 
+    const typeMap: Record<string, ProductionType> = {
+      RESTOCK: ProductionType.RESTOCK,
+      MADE_TO_ORDER: ProductionType.MADE_TO_ORDER,
+      BE_SPOKE: ProductionType.BE_SPOKE,
+      PRE_ORDER: ProductionType.PRE_ORDER,
+    };
+
+    const typeData = typeMap[data.type] ?? isExisting.type;
+
     if (status === 'COMPLETED' || status === 'CANCELLED') {
       throw new BadRequestException('Maaf status tidak valid');
     }
 
-    const production = await prisma.production.update({
-      where: { id: id },
-      data: {
-        storeId: data.storeId,
-        producedVariantId: data.producedVariantId,
-        quantityProduced: data.quantityProduced,
-        status: status,
-        materials:
-          data.materials !== undefined
-            ? {
-                deleteMany: {},
-                create: data.materials.map((material) => ({
-                  rawMaterialId: material.rawMaterialId,
-                  quantityUsed: material.quantityUsed,
-                })),
-              }
-            : undefined,
-      },
+    const transaction = await prisma.$transaction(async (tx) => {
+      const production = await tx.production.update({
+        where: { id: id },
+        data: {
+          storeId: data.storeId,
+          producedVariantId: data.producedVariantId
+            ? BigInt(data.producedVariantId)
+            : null,
+          quantityProduced: data.quantityProduced,
+          status: status,
+          type: typeData,
+          notes: data.notes,
+          targetDate: data.targetDate,
+          createdAt: new Date().toISOString(),
+        },
+      });
+
+      const isExistingBespoke = await tx.beSpokeDetails.findUnique({
+        where: { productionId: id },
+      });
+
+      if (!isExistingBespoke) {
+        if (data.type === 'BE_SPOKE') {
+          if (!data.bespoke) {
+            throw new BadRequestException(
+              'Data BE SPOKE kosong harap coba lagi',
+            );
+          }
+
+          const bespoke = BeSpokeRequiredSchema.parse(data.bespoke);
+
+          let customer;
+          customer = await tx.customer.findFirst({
+            where: { email: data.bespoke?.email },
+          });
+
+          if (!customer) {
+            customer = await tx.customer.create({
+              data: {
+                name: bespoke?.name,
+                email: bespoke?.email,
+                phone: bespoke?.phone,
+              },
+            });
+          }
+
+          await tx.beSpokeDetails.create({
+            data: {
+              title: bespoke.title,
+              productionId: production.id,
+              customerId: customer.id,
+              description: bespoke.description,
+              quotedPrice: bespoke.quotedPrice,
+            },
+          });
+        }
+
+        return toProductionOnlyResponse(production);
+      } else {
+        if (data.type === 'BE_SPOKE') {
+          if (!data.bespoke) {
+            throw new BadRequestException(
+              'Data BE SPOKE kosong harap coba lagi',
+            );
+          }
+
+          await tx.customer.update({
+            where: { id: isExistingBespoke.customerId! },
+            data: {
+              name: data.bespoke?.name,
+              email: data.bespoke?.email,
+              phone: data.bespoke?.phone,
+            },
+          });
+
+          await tx.beSpokeDetails.update({
+            where: { productionId: id },
+            data: {
+              title: data.bespoke.title,
+              productionId: production.id,
+              customerId: isExistingBespoke?.customerId,
+              description: data.bespoke.description,
+              quotedPrice: data.bespoke.quotedPrice,
+            },
+          });
+        }
+        return toProductionOnlyResponse(production);
+      }
     });
 
-    return toProductionOnlyResponse(production);
+    return toProductionOnlyResponse(transaction);
   }
 
   async updateStatusNotCompleted(id: bigint, data: UpdateProductionDto) {
@@ -215,12 +417,21 @@ export class ProductionService {
   async updateStatusCompleted(id: bigint, data: UpdateProductionDto) {
     const isExisting = await prisma.production.findUnique({
       where: { id: id },
-      include: {
-        materials: true,
-      },
     });
 
     if (!isExisting) throw new HttpException('Maaf data tidak ditemukan', 404);
+
+    if (isExisting.status === 'COMPLETED') {
+      throw new BadRequestException(
+        'Maaf, pekerjaan produksi ini sudah selesai dijalankan.',
+      );
+    }
+
+    if (isExisting.status === 'CANCELLED') {
+      throw new BadRequestException(
+        'Maaf, pekerjaan produksi yang sudah dibatalkan tidak bisa diselesaikan.',
+      );
+    }
 
     const statusMap: Record<string, ProductionStatus> = {
       PLANNED: ProductionStatus.PLANNED,
@@ -234,103 +445,47 @@ export class ProductionService {
         ? statusMap[data.status]
         : isExisting.status;
 
-    if (
-      status === 'PLANNED' ||
-      status === 'IN_PROGRESS' ||
-      status === 'CANCELLED'
-    ) {
-      throw new BadRequestException('Maaf status tidak valid');
+    if (status !== 'COMPLETED') {
+      throw new BadRequestException(
+        'Maaf, fungsi ini hanya menerima perubahan status ke COMPLETED',
+      );
     }
 
     const transaksi = await prisma.$transaction(async (tx) => {
-      const materialIds = isExisting.materials.map((m) => m.rawMaterialId);
-      const materialStocks = await tx.rawMaterialStock.findMany({
-        where: {
-          rawMaterialId: {
-            in: materialIds,
-          },
-        },
-      });
-
-      const stockMaterials = new Map(
-        materialStocks.map((m) => [m.rawMaterialId, m]),
-      );
-
-      for (const materialStock of isExisting.materials) {
-        const stocks = stockMaterials.get(materialStock.rawMaterialId);
-        if (!stocks || stocks.stock < materialStock.quantityUsed) {
-          throw new BadRequestException(
-            'Maaf stok dari bahan baku tidak mencukupi untuk digunakan',
-          );
-        }
-      }
-
-      for (const material of isExisting.materials) {
-        const updated = await tx.rawMaterialStock.updateMany({
+      if (isExisting.producedVariantId) {
+        await tx.productVariantStock.upsert({
           where: {
-            rawMaterialId: material.rawMaterialId,
+            productVariantId: isExisting.producedVariantId,
+          },
+          update: {
             stock: {
-              gte: material.quantityUsed,
+              increment: isExisting.quantityProduced,
             },
           },
-          data: {
-            stock: {
-              decrement: material.quantityUsed,
-            },
+          create: {
+            productVariantId: isExisting.producedVariantId,
+            stock: isExisting.quantityProduced,
+            reserved_stock: 0,
+          },
+          select: {
+            id: true,
+            stock: true,
+            reserved_stock: true,
           },
         });
 
-        if (updated.count === 0) {
-          throw new BadRequestException(
-            'Konflik stok (race condition), silahkan ulangi',
-          );
-        }
-      }
-
-      await tx.inventoryLedger.createMany({
-        data: isExisting.materials.map((material) => ({
-          storeId: isExisting.storeId,
-          itemType: 'RAW_MATERIAL',
-          itemId: material.rawMaterialId,
-          direction: 'OUT',
-          quantity: material.quantityUsed,
-          source: 'PRODUCTION',
-          referenceId: isExisting.id,
-        })),
-      });
-
-      await tx.productVariantStock.upsert({
-        where: {
-          productVariantId: isExisting.producedVariantId,
-        },
-        update: {
-          stock: {
-            increment: isExisting.quantityProduced,
+        await tx.inventoryLedger.create({
+          data: {
+            storeId: isExisting.storeId,
+            itemType: 'PRODUCT_VARIANT',
+            itemId: isExisting.producedVariantId,
+            direction: 'IN',
+            quantity: isExisting.quantityProduced,
+            source: 'PRODUCTION',
+            referenceId: isExisting.id,
           },
-        },
-        create: {
-          productVariantId: isExisting.producedVariantId,
-          stock: isExisting.quantityProduced,
-          reserved_stock: 0,
-        },
-        select: {
-          id: true,
-          stock: true,
-          reserved_stock: true,
-        },
-      });
-
-      await tx.inventoryLedger.create({
-        data: {
-          storeId: isExisting.storeId,
-          itemType: 'PRODUCT_VARIANT',
-          itemId: isExisting.producedVariantId,
-          direction: 'IN',
-          quantity: isExisting.quantityProduced,
-          source: 'PRODUCTION',
-          referenceId: isExisting.id,
-        },
-      });
+        });
+      }
 
       const result = await tx.production.update({
         where: { id: id },

@@ -1,2 +1,0 @@
--- AlterEnum
-ALTER TYPE "CashSource" ADD VALUE 'PRODUCTION';

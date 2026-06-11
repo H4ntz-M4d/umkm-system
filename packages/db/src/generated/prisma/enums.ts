@@ -39,7 +39,6 @@ export type ProductType = (typeof ProductType)[keyof typeof ProductType]
 
 
 export const InventoryItemType = {
-  RAW_MATERIAL: 'RAW_MATERIAL',
   PRODUCT_VARIANT: 'PRODUCT_VARIANT'
 } as const
 
@@ -55,7 +54,6 @@ export type LedgerDirection = (typeof LedgerDirection)[keyof typeof LedgerDirect
 
 
 export const LedgerSource = {
-  PURCHASE: 'PURCHASE',
   PRODUCTION: 'PRODUCTION',
   POS: 'POS',
   ONLINE_ORDER: 'ONLINE_ORDER',

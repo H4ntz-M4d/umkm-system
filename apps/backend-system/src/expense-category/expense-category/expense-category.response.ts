@@ -7,7 +7,6 @@ interface ExpenseCategoryEntity extends Prisma.ExpenseCategoryGetPayload<{
     description: true;
     color: true;
     isActive: true;
-    isMaterialsCategory: true;
     createdAt: true;
     _count: {
       select: {
@@ -26,7 +25,6 @@ export function toExpenseCategoryResponse(entity: ExpenseCategoryEntity) {
     description: entity.description,
     color: entity.color,
     isActive: entity.isActive,
-    isMaterialsCategory: entity.isMaterialsCategory,
     createdAt: entity.createdAt,
     expenseCount: entity._count.expenses,
     totalExpenses: Number(entity.totalExpense || 0),
@@ -40,7 +38,6 @@ type ExpenseCategoryOnlyEntity = Prisma.ExpenseCategoryGetPayload<{
     description: true;
     color: true;
     isActive: true;
-    isMaterialsCategory: true;
     createdAt: true;
   };
 }>;
@@ -54,7 +51,6 @@ export function toExpenseCategoryOnlyResponse(
     description: entity.description,
     color: entity.color,
     isActive: entity.isActive,
-    isMaterialsCategory: entity.isMaterialsCategory,
     createdAt: entity.createdAt,
   };
 }
