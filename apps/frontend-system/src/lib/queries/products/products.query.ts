@@ -5,6 +5,7 @@ import {
   ProductResponseById,
   ProductsResponse,
   ProductVariantResponse,
+  ProductListDataResponse,
 } from "@repo/schemas";
 import { apiFetcher } from "@/lib/api/api.fetcher";
 
@@ -41,7 +42,10 @@ export const fetchProductById = async (id: string) => {
 };
 
 export const fetchPosProductList = async () => {
-  const res = await managementApi.get("v1/products/point-of-sales/list").json<any>();
+  const res = await apiFetcher(
+    managementApi.get("v1/products/point-of-sales/list"),
+    ProductListDataResponse,
+  );
   return res;
 };
 

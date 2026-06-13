@@ -1,9 +1,17 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { PosTransactionService } from './pos-transaction.service';
 import { CreatePosTransactionDto } from 'pos-transaction/dto/pos-transaction.dto';
 import { Pagination } from 'common/paginate/pagination';
 
-@Controller('api/v1/pos-transaction')
+@Controller('api/v1/pos-transactions')
 export class PosTransactionController {
   constructor(private posTransactionService: PosTransactionService) {}
 
@@ -32,5 +40,10 @@ export class PosTransactionController {
   @Post()
   async upsert(@Body() data: CreatePosTransactionDto) {
     return await this.posTransactionService.upsert(data);
+  }
+
+  @Patch('/cancelled')
+  async cancelTransactions(@Body() transId: string[]) {
+    return await this.posTransactionService.cancelTransaction(transId);
   }
 }

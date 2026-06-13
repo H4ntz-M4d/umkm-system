@@ -17,8 +17,8 @@ export const VariantTypesData = z.object({
 export const VariantData = z.object({
   id: z.string(),
   sku: z.string(),
-  price: z.string().transform((val) => new Decimal(val)),
-  cost: z.string().transform((val) => new Decimal(val)),
+  price: z.string(),
+  cost: z.string(),
   image: z.string().optional().nullable(),
   productVariantStocks: z.number().optional(),
 });
@@ -83,6 +83,33 @@ export const ProductVariantListData = ProductsData.pick({
   ),
 });
 
+export const OptionsData = z.object({
+  productVariantId: z.string().optional(),
+  variantValueId: z.string().optional(),
+  variantValue: z.object({
+    value: z.string().optional(),
+  }),
+});
+
+export const ProductListData = ProductsData.pick({
+  id: true,
+  name: true,
+  description: true,
+  categoryId: true,
+  useVariant: true,
+}).extend({
+  variants: z.array(
+    VariantData.omit({
+      sku: true,
+      cost: true,
+      productVariantStocks: true,
+    }).extend({
+      stock: z.number(),
+      options: z.array(OptionsData).optional().nullable(),
+    }),
+  ),
+});
+
 export const AllProductResponse = ApiSuccessResponse(z.array(ProductsData));
 
 export const ProductResponseById = ApiSuccessResponse(ProductDataById);
@@ -91,4 +118,8 @@ export const ProductsResponse = ApiSuccessResponse(CreateUpdateProductData);
 
 export const ProductVariantResponse = ApiSuccessResponse(
   z.array(ProductVariantListData),
+);
+
+export const ProductListDataResponse = ApiSuccessResponse(
+  z.array(ProductListData),
 );

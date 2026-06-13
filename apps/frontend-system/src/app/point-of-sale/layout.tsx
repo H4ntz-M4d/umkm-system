@@ -5,6 +5,7 @@ import { getAdminProfile } from "@/lib/queries/auth/auth.api";
 import { cookies, headers } from "next/headers";
 import { useAuth } from "@/lib/queries/auth/useAuth";
 import HeaderPos from "@/components/pos/header";
+import PosProvider from "@/components/providers/pos-provider";
 
 interface PosLayoutProps {
   children: ReactNode;
@@ -40,13 +41,14 @@ export default async function PosLayout({ children }: PosLayoutProps) {
         user.role.slice(1).toLocaleLowerCase();
     } catch (err) {}
   }
+
   return (
     <>
-      <ManagementProvider>
+      <PosProvider user={user}>
         <HeaderPos user={userPosData} />
 
         {children}
-      </ManagementProvider>
+      </PosProvider>
     </>
   );
 }

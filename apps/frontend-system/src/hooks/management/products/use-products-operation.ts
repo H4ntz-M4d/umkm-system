@@ -53,6 +53,7 @@ export function useProductsOperation({
     queryKey: ["pos-products", "list"],
     queryFn: () => fetchPosProductList(),
     enabled: enabledPosProductLists,
+    throwOnError: true,
   });
 
   const createProductMutation = useMutation({

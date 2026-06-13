@@ -121,9 +121,85 @@ export class PosTransactionService {
       where: {
         status: PosStatus.PARKED,
       },
+      include: {
+        items: {
+          select: {
+            productVariantId: true,
+            quantity: true,
+            price: true,
+            variant: {
+              select: {
+                productMaster: {
+                  select: {
+                    name: true,
+                  },
+                },
+                options: {
+                  select: {
+                    variantValue: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
-    return res;
+    const result = res.map((r) => {
+      return {
+        transId: r.transId,
+        status: r.status,
+        itemTransaction: r.items.map((it) => {
+          const variantOpt = it.variant.options
+            .map((vo) => vo.variantValue.value)
+            .join(' - ');
+          return {
+            productVariantId: it.productVariantId,
+            price: it.price,
+            qty: it.quantity,
+            itemTransactionName: it.variant.productMaster.name,
+            itemTransactionVariantOpt: variantOpt,
+          };
+        }),
+      };
+    });
+
+    return result;
+  }
+
+  async paidOperation(
+    data: CreatePosTransactionDto,
+    posTx: bigint,
+    tx: Prisma.TransactionClient,
+  ) {
+    await tx.inventoryLedger.createMany({
+      data: data.itemTransaction.map((item) => ({
+        itemType: 'PRODUCT_VARIANT',
+        itemId: BigInt(item.productVariantId),
+        source: 'POS',
+        referenceId: BigInt(posTx),
+        direction: 'OUT',
+        quantity: item.quantity,
+        storeId: BigInt(data.storeId),
+      })),
+    });
+
+    for (const items of data.itemTransaction) {
+      await tx.productVariantStock.update({
+        where: {
+          productVariantId: BigInt(items.productVariantId),
+        },
+        data: {
+          stock: {
+            decrement: items.quantity,
+          },
+          reserved_stock: {
+            increment: items.quantity,
+          },
+        },
+      });
+    }
   }
 
   async upsert(data: CreatePosTransactionDto) {
@@ -164,8 +240,6 @@ export class PosTransactionService {
           stock.productVariantId === BigInt(dataStock.productVariantId),
       );
 
-      console.log(itemStock);
-
       if (itemStock && itemStock.stock < dataStock.quantity) {
         const variantNames = itemStock.productVariant.options
           .map((opt) => opt.variantValue.value)
@@ -186,7 +260,17 @@ export class PosTransactionService {
 
     const status = statusMap[data.status] ?? PosStatus.DRAFT;
 
+    if (data.itemTransaction.length === 0)
+      throw new BadRequestException(
+        'Item transaksi kosong, tidak bisa melakukan transaksi',
+      );
+
     const transaction = await prisma.$transaction(async (tx) => {
+      const totalAmount = data.itemTransaction.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0,
+      );
+
       if (!data.transId) {
         const transId = idFormat('POS');
         const posTx = await tx.posTransaction.create({
@@ -197,18 +281,20 @@ export class PosTransactionService {
             paymentMethodId: data.paymentMethodId
               ? BigInt(data.paymentMethodId)
               : null,
-            totalAmount: data.totalAmount,
+            totalAmount: totalAmount,
             status: status,
             items: {
               create: data.itemTransaction.map((item) => ({
                 productVariantId: BigInt(item.productVariantId),
                 quantity: item.quantity,
                 price: item.price,
-                subtotal: item.subtotal,
+                subtotal: item.price * item.quantity,
               })),
             },
           },
         });
+
+        if (status === 'PAID') await this.paidOperation(data, posTx.id, tx);
 
         return posTx;
       } else {
@@ -222,7 +308,7 @@ export class PosTransactionService {
             paymentMethodId: data.paymentMethodId
               ? BigInt(data.paymentMethodId)
               : null,
-            totalAmount: data.totalAmount,
+            totalAmount: totalAmount,
             status: status,
           },
         });
@@ -264,7 +350,7 @@ export class PosTransactionService {
                 productVariantId: BigInt(item.productVariantId),
                 quantity: item.quantity,
                 price: item.price,
-                subtotal: item.subtotal,
+                subtotal: item.price * item.quantity,
               })),
             });
           }
@@ -281,16 +367,30 @@ export class PosTransactionService {
               data: {
                 quantity: item.quantity,
                 price: item.price,
-                subtotal: item.subtotal,
+                subtotal: item.price * item.quantity,
               },
             });
           }
         }
 
+        if (status === 'PAID') await this.paidOperation(data, posTx.id, tx);
         return posTx;
       }
     });
 
     return transaction;
+  }
+
+  async cancelTransaction(transactionId: string[]) {
+    return prisma.posTransaction.updateMany({
+      where: {
+        transId: {
+          in: transactionId,
+        },
+      },
+      data: {
+        status: 'CANCELLED',
+      },
+    });
   }
 }

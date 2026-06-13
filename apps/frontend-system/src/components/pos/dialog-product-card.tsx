@@ -6,30 +6,41 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { ProductList } from "@/app/point-of-sale/system/page";
 
 interface DialogProductCardProps {
   product: any;
   open?: boolean;
-  setIdPm: (idPm: string | null) => void;
+  pickerVariantId?: string | null;
+  setPickerProduct: (id: ProductList | null) => void;
+  setPickerVariantId: (id: string | null) => void;
+  confirmPickVariant: () => void;
 }
 
 export default function DialogProductCard({
   product,
   open,
-  setIdPm,
+  pickerVariantId,
+  setPickerProduct,
+  setPickerVariantId,
+  confirmPickVariant,
 }: DialogProductCardProps) {
   return (
     <Dialog
       open={open}
       onOpenChange={(open) => {
         if (!open) {
-          setIdPm(null);
+          setPickerProduct(null);
+          setPickerVariantId(null);
         }
       }}
     >
@@ -49,25 +60,46 @@ export default function DialogProductCard({
               const varOpt = variant.options
                 .map((opt) => opt.variantValue.value)
                 .join(" - ");
+              const active = pickerVariantId === variant.id;
+              const oos = variant?.stock === 0;
               return (
-                <Card key={variant.id}>
-                  <CardContent className="flex flex-col gap-2">
-                    <h4 className="text-base">{varOpt}</h4>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-muted-foreground">
-                        Stok: {variant.stock ?? 0}
-                      </p>
-                      <p>{toIDR(variant.price)}</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <button
+                  key={variant.id}
+                  onClick={() => setPickerVariantId(variant.id)}
+                  disabled={oos}
+                  className={cn(
+                    "flex flex-col items-start gap-1.5 rounded-lg border p-3 text-left transition-all",
+                    active
+                      ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                      : "border-border bg-background hover:border-primary/40",
+                    oos && "opacity-50 cursor-not-allowed",
+                  )}
+                >
+                  <div className="flex items-center gap-2 w-full">
+                    <span className="text-sm font-medium truncate">
+                      {varOpt}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between w-full text-[11px]">
+                    <span className="text-muted-foreground">
+                      Stok: {variant.stock ?? 0}
+                    </span>
+                    <span className="font-semibold text-primary">
+                      {toIDR(variant.price)}
+                    </span>
+                  </div>
+                </button>
               );
             })}
           </div>
         </div>
         <div className="flex flex-row items-center justify-end gap-3 my-2">
-          <Button variant={"outline"}>Batal</Button>
-          <Button>
+          <DialogClose asChild>
+            <Button variant={"outline"} type="button">
+              Batal
+            </Button>
+          </DialogClose>
+          <Button type="button" onClick={confirmPickVariant}>
             <Plus />
             Tambah ke Pesanan
           </Button>
