@@ -238,3 +238,55 @@ export function toProductVariantListResponse(entity: ProductVariantListEntity) {
     })),
   };
 }
+
+type ProductListEntity = Prisma.ProductMasterGetPayload<{
+  select: {
+    id: true;
+    categoryId: true;
+    name: true;
+    description: true;
+    useVariant: true;
+    variants: {
+      select: {
+        id: true;
+        sku: true;
+        price: true;
+        image: true;
+        productVariantStocks: {
+          select: {
+            stock: true;
+          };
+        };
+        options: {
+          select: {
+            productVariantId: true;
+            variantValueId: true;
+            variantValue: {
+              select: {
+                value: true;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+}>;
+
+export function toProductListResponse(entity: ProductListEntity) {
+  return {
+    id: entity.id,
+    categoryId: entity.categoryId,
+    name: entity.name,
+    description: entity.description,
+    useVariant: entity.useVariant,
+    variants: entity.variants.map((variant) => ({
+      id: variant.id,
+      sku: variant.sku,
+      price: variant.price,
+      image: variant.image,
+      stock: variant.productVariantStocks?.stock ?? 0,
+      options: variant.options,
+    })),
+  };
+}

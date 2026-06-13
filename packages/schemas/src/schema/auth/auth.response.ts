@@ -14,6 +14,7 @@ export const UsersProfile = z.discriminatedUnion("role", [
   BaseProfile.extend({
     role: z.enum(["ADMIN", "GUDANG", "KASIR", "OWNER"]),
     storeId: z.string().optional(),
+    storeName: z.string().optional(),
   }),
 
   BaseProfile.extend({
@@ -27,11 +28,9 @@ export const RegisterResponse = BaseProfile.pick({
 }).extend({
   phone: z.string(),
   usersId: z.string().optional(),
-})
+});
 
-export const LoginResponse = ApiSuccessResponse(
-  z.object({ message: message }),
-);
+export const LoginResponse = ApiSuccessResponse(z.object({ message: message }));
 
 export const UserProfileResponse = ApiSuccessResponse(UsersProfile);
 

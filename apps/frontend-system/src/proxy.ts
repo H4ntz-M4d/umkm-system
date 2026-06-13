@@ -16,7 +16,10 @@ function isTokenExpired(token?: string) {
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   
-  if (pathname.startsWith("/management")) {
+  if (
+    pathname.startsWith("/management") ||
+    pathname.startsWith("/point-of-sale")
+  ) {
     const accessToken = request.cookies.get("access_token_admin")?.value;
     const refreshToken = request.cookies.get("refresh_token_admin")?.value;
     if ((!accessToken || isTokenExpired(accessToken)) && refreshToken) {

@@ -131,6 +131,11 @@ export class AuthService {
             name: true,
           },
         },
+        store: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 

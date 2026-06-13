@@ -8,20 +8,17 @@ export const PostTransactionStatus = z.enum([
 ]);
 
 export const PosTransactionItemSchema = z.object({
-  posTransactionId: z.string().optional(),
   productVariantId: z.string(),
   quantity: z.number(),
   price: z.number(),
-  subtotal: z.number(),
 });
 
 export const PosTransactionSchema = z.object({
-  transId: z.string().optional(),
+  transId: z.string().nullable(),
   storeId: z.string(),
   cashierId: z.string(),
-  paymentMethodId: z.string().optional(),
+  paymentMethodId: z.string().optional().nullable(),
   status: PostTransactionStatus,
-  totalAmount: z.number(),
   itemTransaction: z.array(PosTransactionItemSchema),
 });
 

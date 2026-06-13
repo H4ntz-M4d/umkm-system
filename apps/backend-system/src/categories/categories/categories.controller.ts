@@ -8,10 +8,17 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CategoriesDto } from 'categories/dto/categories.dto';
+import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
+import { RolesGuard } from 'common/guards/guard.roles';
+import { Roles } from 'common/decorator/roles.decorator';
+import { UserRole } from '@repo/db';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
 @Controller('api/v1/categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}

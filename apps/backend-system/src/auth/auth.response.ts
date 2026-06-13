@@ -12,6 +12,11 @@ type UserEmployeeProfileEntity = Prisma.UsersGetPayload<{
         name: true;
       };
     };
+    store: {
+      select: {
+        name: true;
+      };
+    };
   };
 }>;
 
@@ -23,6 +28,7 @@ export function toEmployeeProfileResponse(entity: UserEmployeeProfileEntity) {
     isActive: entity.isActive,
     storeId: entity.storeId,
     name: entity.employees?.name,
+    storeName: entity.store?.name,
   };
 }
 

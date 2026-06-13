@@ -8,11 +8,12 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { toIDR } from "../../../utils/format-money";
+import { ProductList } from "@/app/point-of-sale/system/page";
 
 interface ProductCardProps {
   product: any;
   index?: number;
-  handleProductClick: () => void;
+  handleProductClick: (product: ProductList) => void;
   setIdPm: (idPm: string) => void;
 }
 
@@ -37,7 +38,7 @@ const ProductCard = ({
       transition={{ delay: index * 0.1 }}
       className="group cursor-pointer hover:border-primary border hover:shadow-xl relative bg-card rounded-2xl overflow-hidden shadow-warm hover:shadow-warm-lg transition-all duration-300"
       onClick={() => {
-        handleProductClick();
+        handleProductClick(product);
         setIdPm(product.id);
       }}
     >

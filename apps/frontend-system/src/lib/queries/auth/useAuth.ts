@@ -1,10 +1,12 @@
 import { create } from "zustand";
 
-type AdminUser = {
+export type AdminUser = {
   id: string;
   name: string;
   email: string;
   role: string;
+  storeId?: string;
+  storeName?: string;
 };
 
 type AuthState = {

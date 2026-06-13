@@ -12,6 +12,7 @@ import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
 import {
   toAllProductsResponse,
+  toProductListResponse,
   toProductResponse,
   toProductResponseById,
   toProductVariantListResponse,
@@ -161,9 +162,19 @@ export class ProductsService {
     const data = await prisma.productMaster.findMany({
       where: {
         status: ProductStatus.ACTIVE,
+        variants: {
+          some: {
+            productVariantStocks: {
+              stock: {
+                gt: 0,
+              },
+            },
+          },
+        },
       },
       select: {
         id: true,
+        categoryId: true,
         name: true,
         description: true,
         useVariant: true,
@@ -194,37 +205,10 @@ export class ProductsService {
             price: 'asc',
           },
         },
-        variantTypes: {
-          select: {
-            id: true,
-            name: true,
-            values: {
-              select: {
-                id: true,
-                variantTypeId: true,
-                value: true,
-                options: true,
-              },
-            },
-          },
-        },
       },
     });
 
-    const formattedData = data.map((product) => ({
-      ...product,
-      variants: product.variants.map((variant) => {
-        return {
-          id: variant.id,
-          sku: variant.sku,
-          price: variant.price,
-          image: variant.image,
-          // Kamu bisa meratakan (flatten) properti stock-nya agar lebih rapi saat di-return
-          stock: variant.productVariantStocks?.stock ?? 0,
-          options: variant.options,
-        };
-      }),
-    }));
+    const formattedData = data.map(toProductListResponse);
 
     return {
       success: true,
@@ -387,7 +371,7 @@ export class ProductsService {
             );
           }
 
-          await tx.productVariant.create({
+          const pv = await tx.productVariant.create({
             data: {
               productMasterId: product.id,
               sku: variant.sku,
@@ -399,7 +383,7 @@ export class ProductsService {
 
           await tx.productVariantStock.create({
             data: {
-              productVariantId: product.id,
+              productVariantId: pv.id,
               stock: 0,
               reserved_stock: 0,
             },
