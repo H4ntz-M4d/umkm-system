@@ -1,20 +1,22 @@
-import ky from 'ky';
-import { useCustomerAuth } from '@/lib/queries/auth/userCustomerAuth';
+import ky from "ky";
+import { useCustomerAuth } from "@/lib/queries/auth/userCustomerAuth";
+
+const baseURL =
+  typeof window === "undefined"
+    ? process.env.SERVER_API_URL // server → http://localhost:5000/api
+    : `${process.env.NEXT_PUBLIC_API_URL}/`;
 
 export const customerApi = ky.create({
-  prefixUrl: process.env.NEXT_PUBLIC_API_URL,
-  credentials: 'include',
+  prefixUrl: baseURL,
+  credentials: "include",
   hooks: {
     afterResponse: [
       async (_req, _opt, res) => {
-        if (res.status === 401) {
+        if (res.status === 401 && !_req.url.includes("auth/c/ref")) {
           try {
-            await ky.post(
-              `${process.env.NEXT_PUBLIC_API_URL}auth/c/ref`,
-              {
-                credentials: "include",
-              },
-            );
+            await ky.post(`${process.env.NEXT_PUBLIC_API_URL}auth/c/ref`, {
+              credentials: "include",
+            });
 
             return ky(_req);
           } catch (err) {
@@ -24,7 +26,7 @@ export const customerApi = ky.create({
           }
         }
 
-        return res
+        return res;
         // if (!res.ok) {
         //   const body = await res.json();
         //   throw body;
@@ -34,4 +36,4 @@ export const customerApi = ky.create({
   },
 });
 
-export default customerApi
+export default customerApi;
