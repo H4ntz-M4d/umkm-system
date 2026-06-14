@@ -15,7 +15,7 @@ function isTokenExpired(token?: string) {
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  
+
   if (
     pathname.startsWith("/management") ||
     pathname.startsWith("/point-of-sale")
@@ -109,9 +109,47 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  const customerAccessToken = request.cookies.get(
+    "access_token_customer",
+  )?.value;
+  const customerRefreshToken = request.cookies.get(
+    "refresh_token_customer",
+  )?.value;
+
+  if (
+    (!customerAccessToken || isTokenExpired(customerAccessToken)) &&
+    customerRefreshToken
+  ) {
+    try {
+      const refreshRes = await fetch(
+        `${process.env.SERVER_API_URL}auth/c/ref`,
+        {
+          method: "POST",
+          headers: { Cookie: `refresh_token_customer=${customerRefreshToken}` },
+        },
+      );
+
+      if (refreshRes.ok) {
+        const data = await refreshRes.json();
+        const requestHeaders = new Headers(request.headers);
+        requestHeaders.set("x-access-token-customer", data.accessToken);
+
+        const response = NextResponse.next({
+          request: { headers: requestHeaders },
+        });
+        refreshRes.headers.getSetCookie().forEach((cookie) => {
+          response.headers.append("Set-Cookie", cookie);
+        });
+        return response;
+      }
+    } catch {
+      // Gagal refresh, lanjut sebagai guest
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

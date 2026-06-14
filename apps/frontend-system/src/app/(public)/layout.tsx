@@ -17,13 +17,12 @@ export default async function PublicLayout({ children }: PublicLayoutProps) {
     headerStore.get("x-access-token-customer") ||
     cookieStore.get("access_token_customer")?.value;
 
-  let user = null
-
+  let user = null;
   if (token) {
     try {
-      user = await getCustomerProfile(token)
+      user = await getCustomerProfile(token);
     } catch (error) {
-      console.log(error)
+      console.log("Ini error:", error);
     }
   }
 

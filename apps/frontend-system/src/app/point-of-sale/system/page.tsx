@@ -17,7 +17,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   PosTransactionSchemaInput,
   PosTransactionsParkedData,
@@ -27,12 +27,18 @@ import {
 import { toIDR } from "../../../../utils/format-money";
 import { AdminUser, useAuth } from "@/lib/queries/auth/useAuth";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
+import { CameraScannerDialog } from "@/components/pos/camera-dialog";
+import { beepError, beepSuccess } from "../../../../utils/beep";
+import { toast } from "sonner";
+import { useBarcodeScanner } from "@/hooks/use-barcode-scanner";
+import { Toaster } from "@/components/ui/sonner";
 
 export type ProductList = z.infer<typeof ProductListData>;
 
 type Variant = {
   id: string;
   price: string;
+  sku: string;
 };
 
 type CartItem = {
@@ -53,6 +59,10 @@ export default function PosPage() {
   const [pickerVariantId, setPickerVariantId] = useState<string | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [transPosId, setTransPosId] = useState<string | null>(null);
+  const [visibleProducts, setVisibleProducts] = useState(12);
+  const productsList = fetchPosProductListData?.data || [];
+  const displayProduct = productsList.slice(0, visibleProducts);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   const user = useAuth((state) => state.user);
 
@@ -68,7 +78,7 @@ export default function PosPage() {
     }
   }, []);
 
-  const detailProduct = fetchPosProductListData?.data?.find(
+  const detailProduct = productsList?.find(
     (product: any) => product.id === idPm,
   );
 
@@ -203,17 +213,44 @@ export default function PosPage() {
     localStorage.setItem("pos_cart", JSON.stringify(cartItems));
   };
 
+  const findVariantBySku = (codeSku: string) => {
+    const trimmed = codeSku.trim();
+    for (const product of productsList) {
+      const productVariant = product.variants.find((v) => v.sku === trimmed);
+      if (productVariant) {
+        return { product, productVariant };
+      }
+    }
+  };
+
+  const handleBarcodeScan = useCallback((codeSku: string) => {
+    const match = findVariantBySku(codeSku);
+    if (!match) {
+      beepError();
+      toast.error("Barcode tidak ditemukan", { position: "top-center", description: codeSku });
+      return;
+    }
+    addToCart(match.product, match.productVariant);
+    beepSuccess();
+    const varOpt = match.productVariant.options
+      ?.map((v) => v.variantValue.value)
+      .join(" - ");
+    toast.success(`+1 ${match.product.name}`, { position: "top-center", description: `${varOpt}` });
+  }, [productsList, addToCart]);
+
+  useBarcodeScanner(handleBarcodeScan);
+
   return (
     <>
       <div className="bg-sidebar min-h-screen">
         <div className="py-6 px-10">
-          <div className="grid grid-cols-12 gap-4 mb-6">
-            <div className="col-span-8 space-y-5">
-              <PosFiltersComponent />
+          <div className="grid md:grid-cols-12 gap-4 mb-6 h-[calc(100vh-80px)] overflow-hidden">
+            <div className="md:col-span-8 flex flex-col space-y-5 overflow-y-auto no-scrollbar">
+              <PosFiltersComponent setCameraOpen={setCameraOpen} />
 
               {/* List Produk */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                {fetchPosProductListData?.data?.map((product, i) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {displayProduct?.map((product, i) => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -223,8 +260,15 @@ export default function PosPage() {
                   />
                 ))}
               </div>
+              <Button
+                type="button"
+                variant={"outline"}
+                onClick={() => setVisibleProducts((prev) => prev + 12)}
+              >
+                Tampilkan lebih banyak
+              </Button>
             </div>
-            <div className="col-span-4 space-y-4">
+            <div className="md:col-span-4 space-y-4 overflow-y-auto sticky top-0 h-full">
               {/* Proses Order */}
               <Card>
                 <CardHeader>
@@ -434,6 +478,11 @@ export default function PosPage() {
             </div>
           </div>
         </div>
+        <CameraScannerDialog
+          open={cameraOpen}
+          onOpenChange={setCameraOpen}
+          onDetected={handleBarcodeScan}
+        />
         <DialogProductCard
           product={detailProduct}
           open={!!pickerProduct}
@@ -442,6 +491,7 @@ export default function PosPage() {
           setPickerVariantId={setPickerVariantId}
           confirmPickVariant={confirmPickVariant}
         />
+        <Toaster />
       </div>
     </>
   );
