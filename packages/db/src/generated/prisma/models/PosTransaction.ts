@@ -260,6 +260,7 @@ export type PosTransactionWhereInput = {
   users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
   paymentMethod?: Prisma.XOR<Prisma.PaymentMethodNullableScalarRelationFilter, Prisma.PaymentMethodWhereInput> | null
   items?: Prisma.PosTransactionItemListRelationFilter
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailListRelationFilter
 }
 
 export type PosTransactionOrderByWithRelationInput = {
@@ -275,6 +276,7 @@ export type PosTransactionOrderByWithRelationInput = {
   users?: Prisma.UsersOrderByWithRelationInput
   paymentMethod?: Prisma.PaymentMethodOrderByWithRelationInput
   items?: Prisma.PosTransactionItemOrderByRelationAggregateInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailOrderByRelationAggregateInput
 }
 
 export type PosTransactionWhereUniqueInput = Prisma.AtLeast<{
@@ -293,6 +295,7 @@ export type PosTransactionWhereUniqueInput = Prisma.AtLeast<{
   users?: Prisma.XOR<Prisma.UsersScalarRelationFilter, Prisma.UsersWhereInput>
   paymentMethod?: Prisma.XOR<Prisma.PaymentMethodNullableScalarRelationFilter, Prisma.PaymentMethodWhereInput> | null
   items?: Prisma.PosTransactionItemListRelationFilter
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailListRelationFilter
 }, "id" | "transId">
 
 export type PosTransactionOrderByWithAggregationInput = {
@@ -335,6 +338,7 @@ export type PosTransactionCreateInput = {
   users: Prisma.UsersCreateNestedOneWithoutPosTransactionsInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutPosTransactionsInput
   items?: Prisma.PosTransactionItemCreateNestedManyWithoutPosTransactionInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionUncheckedCreateInput = {
@@ -347,6 +351,7 @@ export type PosTransactionUncheckedCreateInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   items?: Prisma.PosTransactionItemUncheckedCreateNestedManyWithoutPosTransactionInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionUpdateInput = {
@@ -359,6 +364,7 @@ export type PosTransactionUpdateInput = {
   users?: Prisma.UsersUpdateOneRequiredWithoutPosTransactionsNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutPosTransactionsNestedInput
   items?: Prisma.PosTransactionItemUpdateManyWithoutPosTransactionNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionUncheckedUpdateInput = {
@@ -371,6 +377,7 @@ export type PosTransactionUncheckedUpdateInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.PosTransactionItemUncheckedUpdateManyWithoutPosTransactionNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionCreateManyInput = {
@@ -411,6 +418,11 @@ export type PosTransactionListRelationFilter = {
 
 export type PosTransactionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type PosTransactionNullableScalarRelationFilter = {
+  is?: Prisma.PosTransactionWhereInput | null
+  isNot?: Prisma.PosTransactionWhereInput | null
 }
 
 export type PosTransactionCountOrderByAggregateInput = {
@@ -593,6 +605,22 @@ export type PosTransactionUncheckedUpdateManyWithoutPaymentMethodNestedInput = {
   deleteMany?: Prisma.PosTransactionScalarWhereInput | Prisma.PosTransactionScalarWhereInput[]
 }
 
+export type PosTransactionCreateNestedOneWithoutQrisPaymentDetailsInput = {
+  create?: Prisma.XOR<Prisma.PosTransactionCreateWithoutQrisPaymentDetailsInput, Prisma.PosTransactionUncheckedCreateWithoutQrisPaymentDetailsInput>
+  connectOrCreate?: Prisma.PosTransactionCreateOrConnectWithoutQrisPaymentDetailsInput
+  connect?: Prisma.PosTransactionWhereUniqueInput
+}
+
+export type PosTransactionUpdateOneWithoutQrisPaymentDetailsNestedInput = {
+  create?: Prisma.XOR<Prisma.PosTransactionCreateWithoutQrisPaymentDetailsInput, Prisma.PosTransactionUncheckedCreateWithoutQrisPaymentDetailsInput>
+  connectOrCreate?: Prisma.PosTransactionCreateOrConnectWithoutQrisPaymentDetailsInput
+  upsert?: Prisma.PosTransactionUpsertWithoutQrisPaymentDetailsInput
+  disconnect?: Prisma.PosTransactionWhereInput | boolean
+  delete?: Prisma.PosTransactionWhereInput | boolean
+  connect?: Prisma.PosTransactionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PosTransactionUpdateToOneWithWhereWithoutQrisPaymentDetailsInput, Prisma.PosTransactionUpdateWithoutQrisPaymentDetailsInput>, Prisma.PosTransactionUncheckedUpdateWithoutQrisPaymentDetailsInput>
+}
+
 export type EnumPosStatusFieldUpdateOperationsInput = {
   set?: $Enums.PosStatus
 }
@@ -620,6 +648,7 @@ export type PosTransactionCreateWithoutStoreInput = {
   users: Prisma.UsersCreateNestedOneWithoutPosTransactionsInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutPosTransactionsInput
   items?: Prisma.PosTransactionItemCreateNestedManyWithoutPosTransactionInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionUncheckedCreateWithoutStoreInput = {
@@ -631,6 +660,7 @@ export type PosTransactionUncheckedCreateWithoutStoreInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   items?: Prisma.PosTransactionItemUncheckedCreateNestedManyWithoutPosTransactionInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionCreateOrConnectWithoutStoreInput = {
@@ -682,6 +712,7 @@ export type PosTransactionCreateWithoutUsersInput = {
   store: Prisma.StoreCreateNestedOneWithoutPosTransactionsInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutPosTransactionsInput
   items?: Prisma.PosTransactionItemCreateNestedManyWithoutPosTransactionInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionUncheckedCreateWithoutUsersInput = {
@@ -693,6 +724,7 @@ export type PosTransactionUncheckedCreateWithoutUsersInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   items?: Prisma.PosTransactionItemUncheckedCreateNestedManyWithoutPosTransactionInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionCreateOrConnectWithoutUsersInput = {
@@ -730,6 +762,7 @@ export type PosTransactionCreateWithoutPaymentMethodInput = {
   store: Prisma.StoreCreateNestedOneWithoutPosTransactionsInput
   users: Prisma.UsersCreateNestedOneWithoutPosTransactionsInput
   items?: Prisma.PosTransactionItemCreateNestedManyWithoutPosTransactionInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionUncheckedCreateWithoutPaymentMethodInput = {
@@ -741,6 +774,7 @@ export type PosTransactionUncheckedCreateWithoutPaymentMethodInput = {
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   items?: Prisma.PosTransactionItemUncheckedCreateNestedManyWithoutPosTransactionInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionCreateOrConnectWithoutPaymentMethodInput = {
@@ -769,6 +803,70 @@ export type PosTransactionUpdateManyWithWhereWithoutPaymentMethodInput = {
   data: Prisma.XOR<Prisma.PosTransactionUpdateManyMutationInput, Prisma.PosTransactionUncheckedUpdateManyWithoutPaymentMethodInput>
 }
 
+export type PosTransactionCreateWithoutQrisPaymentDetailsInput = {
+  id?: bigint | number
+  transId: string
+  status: $Enums.PosStatus
+  totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  store: Prisma.StoreCreateNestedOneWithoutPosTransactionsInput
+  users: Prisma.UsersCreateNestedOneWithoutPosTransactionsInput
+  paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutPosTransactionsInput
+  items?: Prisma.PosTransactionItemCreateNestedManyWithoutPosTransactionInput
+}
+
+export type PosTransactionUncheckedCreateWithoutQrisPaymentDetailsInput = {
+  id?: bigint | number
+  storeId: bigint | number
+  cashierId: bigint | number
+  transId: string
+  paymentMethodId?: bigint | number | null
+  status: $Enums.PosStatus
+  totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  items?: Prisma.PosTransactionItemUncheckedCreateNestedManyWithoutPosTransactionInput
+}
+
+export type PosTransactionCreateOrConnectWithoutQrisPaymentDetailsInput = {
+  where: Prisma.PosTransactionWhereUniqueInput
+  create: Prisma.XOR<Prisma.PosTransactionCreateWithoutQrisPaymentDetailsInput, Prisma.PosTransactionUncheckedCreateWithoutQrisPaymentDetailsInput>
+}
+
+export type PosTransactionUpsertWithoutQrisPaymentDetailsInput = {
+  update: Prisma.XOR<Prisma.PosTransactionUpdateWithoutQrisPaymentDetailsInput, Prisma.PosTransactionUncheckedUpdateWithoutQrisPaymentDetailsInput>
+  create: Prisma.XOR<Prisma.PosTransactionCreateWithoutQrisPaymentDetailsInput, Prisma.PosTransactionUncheckedCreateWithoutQrisPaymentDetailsInput>
+  where?: Prisma.PosTransactionWhereInput
+}
+
+export type PosTransactionUpdateToOneWithWhereWithoutQrisPaymentDetailsInput = {
+  where?: Prisma.PosTransactionWhereInput
+  data: Prisma.XOR<Prisma.PosTransactionUpdateWithoutQrisPaymentDetailsInput, Prisma.PosTransactionUncheckedUpdateWithoutQrisPaymentDetailsInput>
+}
+
+export type PosTransactionUpdateWithoutQrisPaymentDetailsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  transId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumPosStatusFieldUpdateOperationsInput | $Enums.PosStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  store?: Prisma.StoreUpdateOneRequiredWithoutPosTransactionsNestedInput
+  users?: Prisma.UsersUpdateOneRequiredWithoutPosTransactionsNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutPosTransactionsNestedInput
+  items?: Prisma.PosTransactionItemUpdateManyWithoutPosTransactionNestedInput
+}
+
+export type PosTransactionUncheckedUpdateWithoutQrisPaymentDetailsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  cashierId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  transId?: Prisma.StringFieldUpdateOperationsInput | string
+  paymentMethodId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  status?: Prisma.EnumPosStatusFieldUpdateOperationsInput | $Enums.PosStatus
+  totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.PosTransactionItemUncheckedUpdateManyWithoutPosTransactionNestedInput
+}
+
 export type PosTransactionCreateWithoutItemsInput = {
   id?: bigint | number
   transId: string
@@ -778,6 +876,7 @@ export type PosTransactionCreateWithoutItemsInput = {
   store: Prisma.StoreCreateNestedOneWithoutPosTransactionsInput
   users: Prisma.UsersCreateNestedOneWithoutPosTransactionsInput
   paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutPosTransactionsInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionUncheckedCreateWithoutItemsInput = {
@@ -789,6 +888,7 @@ export type PosTransactionUncheckedCreateWithoutItemsInput = {
   status: $Enums.PosStatus
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedCreateNestedManyWithoutTransactionInput
 }
 
 export type PosTransactionCreateOrConnectWithoutItemsInput = {
@@ -816,6 +916,7 @@ export type PosTransactionUpdateWithoutItemsInput = {
   store?: Prisma.StoreUpdateOneRequiredWithoutPosTransactionsNestedInput
   users?: Prisma.UsersUpdateOneRequiredWithoutPosTransactionsNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutPosTransactionsNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionUncheckedUpdateWithoutItemsInput = {
@@ -827,6 +928,7 @@ export type PosTransactionUncheckedUpdateWithoutItemsInput = {
   status?: Prisma.EnumPosStatusFieldUpdateOperationsInput | $Enums.PosStatus
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionCreateManyStoreInput = {
@@ -848,6 +950,7 @@ export type PosTransactionUpdateWithoutStoreInput = {
   users?: Prisma.UsersUpdateOneRequiredWithoutPosTransactionsNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutPosTransactionsNestedInput
   items?: Prisma.PosTransactionItemUpdateManyWithoutPosTransactionNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionUncheckedUpdateWithoutStoreInput = {
@@ -859,6 +962,7 @@ export type PosTransactionUncheckedUpdateWithoutStoreInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.PosTransactionItemUncheckedUpdateManyWithoutPosTransactionNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionUncheckedUpdateManyWithoutStoreInput = {
@@ -890,6 +994,7 @@ export type PosTransactionUpdateWithoutUsersInput = {
   store?: Prisma.StoreUpdateOneRequiredWithoutPosTransactionsNestedInput
   paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutPosTransactionsNestedInput
   items?: Prisma.PosTransactionItemUpdateManyWithoutPosTransactionNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionUncheckedUpdateWithoutUsersInput = {
@@ -901,6 +1006,7 @@ export type PosTransactionUncheckedUpdateWithoutUsersInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.PosTransactionItemUncheckedUpdateManyWithoutPosTransactionNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionUncheckedUpdateManyWithoutUsersInput = {
@@ -932,6 +1038,7 @@ export type PosTransactionUpdateWithoutPaymentMethodInput = {
   store?: Prisma.StoreUpdateOneRequiredWithoutPosTransactionsNestedInput
   users?: Prisma.UsersUpdateOneRequiredWithoutPosTransactionsNestedInput
   items?: Prisma.PosTransactionItemUpdateManyWithoutPosTransactionNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionUncheckedUpdateWithoutPaymentMethodInput = {
@@ -943,6 +1050,7 @@ export type PosTransactionUncheckedUpdateWithoutPaymentMethodInput = {
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.PosTransactionItemUncheckedUpdateManyWithoutPosTransactionNestedInput
+  qrisPaymentDetails?: Prisma.QrisPaymentDetailUncheckedUpdateManyWithoutTransactionNestedInput
 }
 
 export type PosTransactionUncheckedUpdateManyWithoutPaymentMethodInput = {
@@ -962,10 +1070,12 @@ export type PosTransactionUncheckedUpdateManyWithoutPaymentMethodInput = {
 
 export type PosTransactionCountOutputType = {
   items: number
+  qrisPaymentDetails: number
 }
 
 export type PosTransactionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | PosTransactionCountOutputTypeCountItemsArgs
+  qrisPaymentDetails?: boolean | PosTransactionCountOutputTypeCountQrisPaymentDetailsArgs
 }
 
 /**
@@ -985,6 +1095,13 @@ export type PosTransactionCountOutputTypeCountItemsArgs<ExtArgs extends runtime.
   where?: Prisma.PosTransactionItemWhereInput
 }
 
+/**
+ * PosTransactionCountOutputType without action
+ */
+export type PosTransactionCountOutputTypeCountQrisPaymentDetailsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.QrisPaymentDetailWhereInput
+}
+
 
 export type PosTransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -999,6 +1116,7 @@ export type PosTransactionSelect<ExtArgs extends runtime.Types.Extensions.Intern
   users?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PosTransaction$paymentMethodArgs<ExtArgs>
   items?: boolean | Prisma.PosTransaction$itemsArgs<ExtArgs>
+  qrisPaymentDetails?: boolean | Prisma.PosTransaction$qrisPaymentDetailsArgs<ExtArgs>
   _count?: boolean | Prisma.PosTransactionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["posTransaction"]>
 
@@ -1047,6 +1165,7 @@ export type PosTransactionInclude<ExtArgs extends runtime.Types.Extensions.Inter
   users?: boolean | Prisma.UsersDefaultArgs<ExtArgs>
   paymentMethod?: boolean | Prisma.PosTransaction$paymentMethodArgs<ExtArgs>
   items?: boolean | Prisma.PosTransaction$itemsArgs<ExtArgs>
+  qrisPaymentDetails?: boolean | Prisma.PosTransaction$qrisPaymentDetailsArgs<ExtArgs>
   _count?: boolean | Prisma.PosTransactionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PosTransactionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1067,6 +1186,7 @@ export type $PosTransactionPayload<ExtArgs extends runtime.Types.Extensions.Inte
     users: Prisma.$UsersPayload<ExtArgs>
     paymentMethod: Prisma.$PaymentMethodPayload<ExtArgs> | null
     items: Prisma.$PosTransactionItemPayload<ExtArgs>[]
+    qrisPaymentDetails: Prisma.$QrisPaymentDetailPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -1475,6 +1595,7 @@ export interface Prisma__PosTransactionClient<T, Null = never, ExtArgs extends r
   users<T extends Prisma.UsersDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UsersDefaultArgs<ExtArgs>>): Prisma.Prisma__UsersClient<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   paymentMethod<T extends Prisma.PosTransaction$paymentMethodArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PosTransaction$paymentMethodArgs<ExtArgs>>): Prisma.Prisma__PaymentMethodClient<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.PosTransaction$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PosTransaction$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PosTransactionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  qrisPaymentDetails<T extends Prisma.PosTransaction$qrisPaymentDetailsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PosTransaction$qrisPaymentDetailsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QrisPaymentDetailPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1948,6 +2069,30 @@ export type PosTransaction$itemsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.PosTransactionItemScalarFieldEnum | Prisma.PosTransactionItemScalarFieldEnum[]
+}
+
+/**
+ * PosTransaction.qrisPaymentDetails
+ */
+export type PosTransaction$qrisPaymentDetailsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the QrisPaymentDetail
+   */
+  select?: Prisma.QrisPaymentDetailSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the QrisPaymentDetail
+   */
+  omit?: Prisma.QrisPaymentDetailOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QrisPaymentDetailInclude<ExtArgs> | null
+  where?: Prisma.QrisPaymentDetailWhereInput
+  orderBy?: Prisma.QrisPaymentDetailOrderByWithRelationInput | Prisma.QrisPaymentDetailOrderByWithRelationInput[]
+  cursor?: Prisma.QrisPaymentDetailWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.QrisPaymentDetailScalarFieldEnum | Prisma.QrisPaymentDetailScalarFieldEnum[]
 }
 
 /**

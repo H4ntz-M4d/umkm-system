@@ -252,13 +252,13 @@ export class PosTransactionService {
     }
 
     const statusMap: Record<string, PosStatus> = {
-      DRAFT: PosStatus.DRAFT,
+      PENDING: PosStatus.PENDING,
       PARKED: PosStatus.PARKED,
       PAID: PosStatus.PAID,
       CANCELLED: PosStatus.CANCELLED,
     };
 
-    const status = statusMap[data.status] ?? PosStatus.DRAFT;
+    const status = statusMap[data.status] ?? PosStatus.PENDING;
 
     if (data.itemTransaction.length === 0)
       throw new BadRequestException(

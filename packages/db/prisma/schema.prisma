@@ -429,7 +429,6 @@ model PaymentMethod {
 enum PaymentChannel {
   CASH
   MIDTRANS
-  MANUAL
   BANK_TRANSFER
 }
 
@@ -458,6 +457,27 @@ enum CashSource {
   PRODUCTION
 }
 
+model QrisPaymentDetail {
+  id            String         @id @default(cuid())
+  transactionId BigInt         @unique
+  transaction   PosTransaction @relation(fields: [transactionId], references: [id])
+  midtransId    String? // order_id Midtrans untuk webhook lookup
+  qrString      String?
+  qrUrl         String?
+  qrExpiresAt   DateTime?
+}
+
+model TransferPaymentDetail {
+  id            BigInt         @id @default(autoincrement())
+  transactionId BigInt         @unique
+  transaction   PosTransaction @relation(fields: [transactionId], references: [id])
+  bank          String         @db.VarChar(50)
+  paymentProof  String?        @db.VarChar(500)
+  confirmedAt   DateTime?
+
+  @@map("transfer_payment_detail")
+}
+
 // ==================
 // POS (OFFLINE SALES)
 // ==================
@@ -476,13 +496,15 @@ model PosTransaction {
   users         Users          @relation(fields: [cashierId], references: [id])
   paymentMethod PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
 
-  items PosTransactionItem[]
+  items                 PosTransactionItem[]
+  qrisPaymentDetails    QrisPaymentDetail?
+  transferPaymentDetail TransferPaymentDetail?
 
   @@map("pos_transaction")
 }
 
 enum PosStatus {
-  DRAFT
+  PENDING
   PARKED
   PAID
   CANCELLED

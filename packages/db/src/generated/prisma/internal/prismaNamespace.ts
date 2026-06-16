@@ -407,6 +407,7 @@ export const ModelName = {
   Shipment: 'Shipment',
   PaymentMethod: 'PaymentMethod',
   CashTransaction: 'CashTransaction',
+  QrisPaymentDetail: 'QrisPaymentDetail',
   PosTransaction: 'PosTransaction',
   PosTransactionItem: 'PosTransactionItem'
 } as const
@@ -424,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "store" | "users" | "categories" | "productMaster" | "productImage" | "productVariant" | "productVariantStock" | "productVariantType" | "productVariantValue" | "productVariantOption" | "customer" | "employee" | "inventoryLedger" | "production" | "expenseCategory" | "expense" | "expenseItem" | "order" | "orderItem" | "beSpokeDetails" | "shipment" | "paymentMethod" | "cashTransaction" | "posTransaction" | "posTransactionItem"
+    modelProps: "store" | "users" | "categories" | "productMaster" | "productImage" | "productVariant" | "productVariantStock" | "productVariantType" | "productVariantValue" | "productVariantOption" | "customer" | "employee" | "inventoryLedger" | "production" | "expenseCategory" | "expense" | "expenseItem" | "order" | "orderItem" | "beSpokeDetails" | "shipment" | "paymentMethod" | "cashTransaction" | "qrisPaymentDetail" | "posTransaction" | "posTransactionItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2130,6 +2131,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    QrisPaymentDetail: {
+      payload: Prisma.$QrisPaymentDetailPayload<ExtArgs>
+      fields: Prisma.QrisPaymentDetailFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.QrisPaymentDetailFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.QrisPaymentDetailFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>
+        }
+        findFirst: {
+          args: Prisma.QrisPaymentDetailFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.QrisPaymentDetailFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>
+        }
+        findMany: {
+          args: Prisma.QrisPaymentDetailFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>[]
+        }
+        create: {
+          args: Prisma.QrisPaymentDetailCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>
+        }
+        createMany: {
+          args: Prisma.QrisPaymentDetailCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.QrisPaymentDetailCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>[]
+        }
+        delete: {
+          args: Prisma.QrisPaymentDetailDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>
+        }
+        update: {
+          args: Prisma.QrisPaymentDetailUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>
+        }
+        deleteMany: {
+          args: Prisma.QrisPaymentDetailDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.QrisPaymentDetailUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.QrisPaymentDetailUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>[]
+        }
+        upsert: {
+          args: Prisma.QrisPaymentDetailUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QrisPaymentDetailPayload>
+        }
+        aggregate: {
+          args: Prisma.QrisPaymentDetailAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQrisPaymentDetail>
+        }
+        groupBy: {
+          args: Prisma.QrisPaymentDetailGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QrisPaymentDetailGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.QrisPaymentDetailCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QrisPaymentDetailCountAggregateOutputType> | number
+        }
+      }
+    }
     PosTransaction: {
       payload: Prisma.$PosTransactionPayload<ExtArgs>
       fields: Prisma.PosTransactionFieldRefs
@@ -2606,6 +2681,18 @@ export const CashTransactionScalarFieldEnum = {
 export type CashTransactionScalarFieldEnum = (typeof CashTransactionScalarFieldEnum)[keyof typeof CashTransactionScalarFieldEnum]
 
 
+export const QrisPaymentDetailScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  midtransId: 'midtransId',
+  qrString: 'qrString',
+  qrUrl: 'qrUrl',
+  qrExpiresAt: 'qrExpiresAt'
+} as const
+
+export type QrisPaymentDetailScalarFieldEnum = (typeof QrisPaymentDetailScalarFieldEnum)[keyof typeof QrisPaymentDetailScalarFieldEnum]
+
+
 export const PosTransactionScalarFieldEnum = {
   id: 'id',
   storeId: 'storeId',
@@ -3052,6 +3139,7 @@ export type GlobalOmitConfig = {
   shipment?: Prisma.ShipmentOmit
   paymentMethod?: Prisma.PaymentMethodOmit
   cashTransaction?: Prisma.CashTransactionOmit
+  qrisPaymentDetail?: Prisma.QrisPaymentDetailOmit
   posTransaction?: Prisma.PosTransactionOmit
   posTransactionItem?: Prisma.PosTransactionItemOmit
 }

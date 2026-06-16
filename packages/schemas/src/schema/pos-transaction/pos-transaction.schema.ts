@@ -1,11 +1,13 @@
 import z from "zod";
 
 export const PostTransactionStatus = z.enum([
-  "DRAFT",
+  "PENDING",
   "PARKED",
   "PAID",
   "CANCELLED",
 ]);
+
+export const PaymentChannelEnum = z.enum(['CASH', 'BANK_TRANSFER', 'MIDTRANS'])
 
 export const PosTransactionItemSchema = z.object({
   productVariantId: z.string(),

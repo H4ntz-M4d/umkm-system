@@ -74,6 +74,7 @@ export const ModelName = {
   Shipment: 'Shipment',
   PaymentMethod: 'PaymentMethod',
   CashTransaction: 'CashTransaction',
+  QrisPaymentDetail: 'QrisPaymentDetail',
   PosTransaction: 'PosTransaction',
   PosTransactionItem: 'PosTransactionItem'
 } as const
@@ -381,6 +382,18 @@ export const CashTransactionScalarFieldEnum = {
 } as const
 
 export type CashTransactionScalarFieldEnum = (typeof CashTransactionScalarFieldEnum)[keyof typeof CashTransactionScalarFieldEnum]
+
+
+export const QrisPaymentDetailScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  midtransId: 'midtransId',
+  qrString: 'qrString',
+  qrUrl: 'qrUrl',
+  qrExpiresAt: 'qrExpiresAt'
+} as const
+
+export type QrisPaymentDetailScalarFieldEnum = (typeof QrisPaymentDetailScalarFieldEnum)[keyof typeof QrisPaymentDetailScalarFieldEnum]
 
 
 export const PosTransactionScalarFieldEnum = {
