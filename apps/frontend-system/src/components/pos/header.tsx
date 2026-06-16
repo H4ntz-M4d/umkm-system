@@ -1,3 +1,4 @@
+"use client";
 import { ModeToggle } from "../theme-mode";
 import { Badge } from "../ui/badge";
 
@@ -30,7 +31,10 @@ export default function HeaderPos({ user }: { user: UserData }) {
           </div>
         </div>
         <div className="flex justify-center items-center gap-3">
-          <Badge variant={"outline"} className="text-white py-2 px-4 space-x-1 hidden md:flex">
+          <Badge
+            variant={"outline"}
+            className="text-white py-2 px-4 space-x-1 hidden md:flex"
+          >
             <div className="rounded-full size-7 flex items-center justify-center bg-primary">
               <h3 className="font-bold">{initialName}</h3>
             </div>

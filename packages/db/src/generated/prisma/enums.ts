@@ -95,8 +95,8 @@ export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 export const PaymentChannel = {
   CASH: 'CASH',
   MIDTRANS: 'MIDTRANS',
-  MANUAL: 'MANUAL',
-  BANK_TRANSFER: 'BANK_TRANSFER'
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  QRIS: 'QRIS'
 } as const
 
 export type PaymentChannel = (typeof PaymentChannel)[keyof typeof PaymentChannel]
@@ -121,7 +121,7 @@ export type CashSource = (typeof CashSource)[keyof typeof CashSource]
 
 
 export const PosStatus = {
-  DRAFT: 'DRAFT',
+  PENDING: 'PENDING',
   PARKED: 'PARKED',
   PAID: 'PAID',
   CANCELLED: 'CANCELLED'

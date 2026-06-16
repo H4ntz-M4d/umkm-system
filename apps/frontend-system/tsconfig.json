@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "src/components/pos/pos-payment.-dialogtsx"  ],
   "exclude": ["node_modules"]
 }

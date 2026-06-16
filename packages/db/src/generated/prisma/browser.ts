@@ -133,6 +133,11 @@ export type PaymentMethod = Prisma.PaymentMethodModel
  */
 export type CashTransaction = Prisma.CashTransactionModel
 /**
+ * Model QrisPaymentDetail
+ * 
+ */
+export type QrisPaymentDetail = Prisma.QrisPaymentDetailModel
+/**
  * Model PosTransaction
  * 
  */

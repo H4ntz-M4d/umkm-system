@@ -100,7 +100,6 @@ export const ProductListData = ProductsData.pick({
 }).extend({
   variants: z.array(
     VariantData.omit({
-      sku: true,
       cost: true,
       productVariantStocks: true,
     }).extend({
