@@ -165,6 +165,7 @@ export default function PaymentMethodDialog({
                         <Button
                           key={i}
                           variant={"outline"}
+                          type="button"
                           className={`flex flex-col gap-2 h-auto ${field.value === pc.value ? "bg-primary/5 border ring-1 ring-primary" : ""}`}
                           onClick={() => {
                             field.onChange(pc.value);
