@@ -150,6 +150,11 @@ export type Shipment = Prisma.ShipmentModel
  */
 export type PaymentMethod = Prisma.PaymentMethodModel
 /**
+ * Model BankAccount
+ * 
+ */
+export type BankAccount = Prisma.BankAccountModel
+/**
  * Model CashTransaction
  * 
  */
@@ -159,6 +164,11 @@ export type CashTransaction = Prisma.CashTransactionModel
  * 
  */
 export type QrisPaymentDetail = Prisma.QrisPaymentDetailModel
+/**
+ * Model TransferPaymentDetail
+ * 
+ */
+export type TransferPaymentDetail = Prisma.TransferPaymentDetailModel
 /**
  * Model PosTransaction
  * 

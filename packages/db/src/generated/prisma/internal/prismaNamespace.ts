@@ -406,8 +406,10 @@ export const ModelName = {
   BeSpokeDetails: 'BeSpokeDetails',
   Shipment: 'Shipment',
   PaymentMethod: 'PaymentMethod',
+  BankAccount: 'BankAccount',
   CashTransaction: 'CashTransaction',
   QrisPaymentDetail: 'QrisPaymentDetail',
+  TransferPaymentDetail: 'TransferPaymentDetail',
   PosTransaction: 'PosTransaction',
   PosTransactionItem: 'PosTransactionItem'
 } as const
@@ -425,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "store" | "users" | "categories" | "productMaster" | "productImage" | "productVariant" | "productVariantStock" | "productVariantType" | "productVariantValue" | "productVariantOption" | "customer" | "employee" | "inventoryLedger" | "production" | "expenseCategory" | "expense" | "expenseItem" | "order" | "orderItem" | "beSpokeDetails" | "shipment" | "paymentMethod" | "cashTransaction" | "qrisPaymentDetail" | "posTransaction" | "posTransactionItem"
+    modelProps: "store" | "users" | "categories" | "productMaster" | "productImage" | "productVariant" | "productVariantStock" | "productVariantType" | "productVariantValue" | "productVariantOption" | "customer" | "employee" | "inventoryLedger" | "production" | "expenseCategory" | "expense" | "expenseItem" | "order" | "orderItem" | "beSpokeDetails" | "shipment" | "paymentMethod" | "bankAccount" | "cashTransaction" | "qrisPaymentDetail" | "transferPaymentDetail" | "posTransaction" | "posTransactionItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2057,6 +2059,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BankAccount: {
+      payload: Prisma.$BankAccountPayload<ExtArgs>
+      fields: Prisma.BankAccountFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BankAccountFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BankAccountFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>
+        }
+        findFirst: {
+          args: Prisma.BankAccountFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BankAccountFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>
+        }
+        findMany: {
+          args: Prisma.BankAccountFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>[]
+        }
+        create: {
+          args: Prisma.BankAccountCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>
+        }
+        createMany: {
+          args: Prisma.BankAccountCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BankAccountCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>[]
+        }
+        delete: {
+          args: Prisma.BankAccountDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>
+        }
+        update: {
+          args: Prisma.BankAccountUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>
+        }
+        deleteMany: {
+          args: Prisma.BankAccountDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BankAccountUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BankAccountUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>[]
+        }
+        upsert: {
+          args: Prisma.BankAccountUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BankAccountPayload>
+        }
+        aggregate: {
+          args: Prisma.BankAccountAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBankAccount>
+        }
+        groupBy: {
+          args: Prisma.BankAccountGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankAccountGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BankAccountCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BankAccountCountAggregateOutputType> | number
+        }
+      }
+    }
     CashTransaction: {
       payload: Prisma.$CashTransactionPayload<ExtArgs>
       fields: Prisma.CashTransactionFieldRefs
@@ -2202,6 +2278,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.QrisPaymentDetailCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.QrisPaymentDetailCountAggregateOutputType> | number
+        }
+      }
+    }
+    TransferPaymentDetail: {
+      payload: Prisma.$TransferPaymentDetailPayload<ExtArgs>
+      fields: Prisma.TransferPaymentDetailFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TransferPaymentDetailFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TransferPaymentDetailFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>
+        }
+        findFirst: {
+          args: Prisma.TransferPaymentDetailFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TransferPaymentDetailFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>
+        }
+        findMany: {
+          args: Prisma.TransferPaymentDetailFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>[]
+        }
+        create: {
+          args: Prisma.TransferPaymentDetailCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>
+        }
+        createMany: {
+          args: Prisma.TransferPaymentDetailCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TransferPaymentDetailCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>[]
+        }
+        delete: {
+          args: Prisma.TransferPaymentDetailDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>
+        }
+        update: {
+          args: Prisma.TransferPaymentDetailUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>
+        }
+        deleteMany: {
+          args: Prisma.TransferPaymentDetailDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TransferPaymentDetailUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TransferPaymentDetailUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>[]
+        }
+        upsert: {
+          args: Prisma.TransferPaymentDetailUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPaymentDetailPayload>
+        }
+        aggregate: {
+          args: Prisma.TransferPaymentDetailAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTransferPaymentDetail>
+        }
+        groupBy: {
+          args: Prisma.TransferPaymentDetailGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TransferPaymentDetailGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TransferPaymentDetailCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TransferPaymentDetailCountAggregateOutputType> | number
         }
       }
     }
@@ -2658,13 +2808,23 @@ export type ShipmentScalarFieldEnum = (typeof ShipmentScalarFieldEnum)[keyof typ
 
 export const PaymentMethodScalarFieldEnum = {
   id: 'id',
-  code: 'code',
   name: 'name',
   channel: 'channel',
   isActive: 'isActive'
 } as const
 
 export type PaymentMethodScalarFieldEnum = (typeof PaymentMethodScalarFieldEnum)[keyof typeof PaymentMethodScalarFieldEnum]
+
+
+export const BankAccountScalarFieldEnum = {
+  id: 'id',
+  paymentMethodId: 'paymentMethodId',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountName: 'accountName'
+} as const
+
+export type BankAccountScalarFieldEnum = (typeof BankAccountScalarFieldEnum)[keyof typeof BankAccountScalarFieldEnum]
 
 
 export const CashTransactionScalarFieldEnum = {
@@ -2691,6 +2851,17 @@ export const QrisPaymentDetailScalarFieldEnum = {
 } as const
 
 export type QrisPaymentDetailScalarFieldEnum = (typeof QrisPaymentDetailScalarFieldEnum)[keyof typeof QrisPaymentDetailScalarFieldEnum]
+
+
+export const TransferPaymentDetailScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  bank: 'bank',
+  paymentProof: 'paymentProof',
+  confirmedAt: 'confirmedAt'
+} as const
+
+export type TransferPaymentDetailScalarFieldEnum = (typeof TransferPaymentDetailScalarFieldEnum)[keyof typeof TransferPaymentDetailScalarFieldEnum]
 
 
 export const PosTransactionScalarFieldEnum = {
@@ -3138,8 +3309,10 @@ export type GlobalOmitConfig = {
   beSpokeDetails?: Prisma.BeSpokeDetailsOmit
   shipment?: Prisma.ShipmentOmit
   paymentMethod?: Prisma.PaymentMethodOmit
+  bankAccount?: Prisma.BankAccountOmit
   cashTransaction?: Prisma.CashTransactionOmit
   qrisPaymentDetail?: Prisma.QrisPaymentDetailOmit
+  transferPaymentDetail?: Prisma.TransferPaymentDetailOmit
   posTransaction?: Prisma.PosTransactionOmit
   posTransactionItem?: Prisma.PosTransactionItemOmit
 }

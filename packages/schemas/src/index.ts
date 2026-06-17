@@ -21,6 +21,8 @@ export * from "./schema/expense-category/expense-category.schema";
 export * from "./schema/expense-category/expense-category.response";
 export * from "./schema/expense/expense.schema";
 export * from "./schema/expense/expense.response";
+export * from "./schema/payment-method/payment-method.response";
+export * from "./schema/payment-method/payment-method.schema";
 export * from "./schema/pos-transaction/pos-transaction.schema";
 export * from "./schema/pos-transaction/pos-transaction.response";
 import z from "zod";

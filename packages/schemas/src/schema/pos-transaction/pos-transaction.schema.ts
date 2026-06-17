@@ -7,8 +7,6 @@ export const PostTransactionStatus = z.enum([
   "CANCELLED",
 ]);
 
-export const PaymentChannelEnum = z.enum(['CASH', 'BANK_TRANSFER', 'MIDTRANS'])
-
 export const PosTransactionItemSchema = z.object({
   productVariantId: z.string(),
   quantity: z.number(),

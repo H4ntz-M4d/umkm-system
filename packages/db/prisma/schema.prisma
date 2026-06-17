@@ -415,15 +415,26 @@ model Shipment {
 // ==================
 
 model PaymentMethod {
-  id              BigInt           @id @default(autoincrement())
-  code            String           @unique @db.VarChar(100)
-  name            String           @db.VarChar(100)
+  id              BigInt          @id @default(autoincrement())
+  name            String          @db.VarChar(100)
   channel         PaymentChannel
-  isActive        Boolean          @default(true)
+  isActive        Boolean         @default(true)
   orders          Order[]
-  posTransactions PosTransaction[]
+  posTransactions PosTransaction?
+  bankAccount     BankAccount?
 
   @@map("payment_method")
+}
+
+model BankAccount {
+  id              BigInt        @id @default(autoincrement())
+  paymentMethodId BigInt        @unique
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Cascade)
+  bankName        String        @db.VarChar(100) // "BNI", "BRI"
+  accountNumber   String        @db.VarChar(50) // nomor rekening
+  accountName     String        @db.VarChar(100) // nama pemilik rekening
+
+  @@map("bank_account")
 }
 
 enum PaymentChannel {
@@ -487,7 +498,7 @@ model PosTransaction {
   storeId         BigInt
   cashierId       BigInt
   transId         String    @unique @db.VarChar(100)
-  paymentMethodId BigInt?
+  paymentMethodId BigInt?   @unique
   status          PosStatus
   totalAmount     Decimal
   createdAt       DateTime  @default(now())
