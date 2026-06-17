@@ -14,7 +14,6 @@ const channelMap: Record<PaymentChannel, string> = {
 export const columnsPaymentMethod = (
   deleteById: (id: string) => void,
   setIdData: (id: string) => void,
-  setIsOpen: (isOpen: boolean) => void,
 ): ColumnDef<PaymentResponseData>[] => [
   {
     id: "id",
@@ -50,7 +49,6 @@ export const columnsPaymentMethod = (
             variant={"outline"}
             onClick={() => {
               setIdData(row.original.id.toString());
-              setIsOpen(true);
             }}
           >
             Edit

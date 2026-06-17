@@ -22,7 +22,7 @@ export const usePaymentMethodOperations = () => {
     mutationFn: createPayment,
     onSuccess: () => {
       invalidate();
-      toast.success("Metode pembayaran berhasil di buat");
+      toast.success("Metode pembayaran berhasil dibuat");
     },
   });
 
@@ -36,7 +36,7 @@ export const usePaymentMethodOperations = () => {
     }) => updatePayment(id, data),
     onSuccess: () => {
       invalidate();
-      toast.success("Metode pembayaran berhasil di buat");
+      toast.success("Metode pembayaran berhasil diubah");
     },
   });
 
@@ -44,7 +44,7 @@ export const usePaymentMethodOperations = () => {
     mutationFn: ({ id }: { id: string }) => removePayment(id),
     onSuccess: () => {
       invalidate();
-      toast.success("Metode pembayaran berhasil di buat");
+      toast.success("Metode pembayaran berhasil dihapus");
     },
   });
 
