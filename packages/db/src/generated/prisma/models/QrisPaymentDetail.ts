@@ -187,7 +187,7 @@ export type QrisPaymentDetailGroupByArgs<ExtArgs extends runtime.Types.Extension
 
 export type QrisPaymentDetailGroupByOutputType = {
   id: string
-  transactionId: bigint | null
+  transactionId: bigint
   midtransId: string | null
   qrString: string | null
   qrUrl: string | null
@@ -219,17 +219,17 @@ export type QrisPaymentDetailWhereInput = {
   OR?: Prisma.QrisPaymentDetailWhereInput[]
   NOT?: Prisma.QrisPaymentDetailWhereInput | Prisma.QrisPaymentDetailWhereInput[]
   id?: Prisma.StringFilter<"QrisPaymentDetail"> | string
-  transactionId?: Prisma.BigIntNullableFilter<"QrisPaymentDetail"> | bigint | number | null
+  transactionId?: Prisma.BigIntFilter<"QrisPaymentDetail"> | bigint | number
   midtransId?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
   qrString?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
   qrUrl?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
   qrExpiresAt?: Prisma.DateTimeNullableFilter<"QrisPaymentDetail"> | Date | string | null
-  transaction?: Prisma.XOR<Prisma.PosTransactionNullableScalarRelationFilter, Prisma.PosTransactionWhereInput> | null
+  transaction?: Prisma.XOR<Prisma.PosTransactionScalarRelationFilter, Prisma.PosTransactionWhereInput>
 }
 
 export type QrisPaymentDetailOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  transactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  transactionId?: Prisma.SortOrder
   midtransId?: Prisma.SortOrderInput | Prisma.SortOrder
   qrString?: Prisma.SortOrderInput | Prisma.SortOrder
   qrUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -239,20 +239,20 @@ export type QrisPaymentDetailOrderByWithRelationInput = {
 
 export type QrisPaymentDetailWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  transactionId?: bigint | number
   AND?: Prisma.QrisPaymentDetailWhereInput | Prisma.QrisPaymentDetailWhereInput[]
   OR?: Prisma.QrisPaymentDetailWhereInput[]
   NOT?: Prisma.QrisPaymentDetailWhereInput | Prisma.QrisPaymentDetailWhereInput[]
-  transactionId?: Prisma.BigIntNullableFilter<"QrisPaymentDetail"> | bigint | number | null
   midtransId?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
   qrString?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
   qrUrl?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
   qrExpiresAt?: Prisma.DateTimeNullableFilter<"QrisPaymentDetail"> | Date | string | null
-  transaction?: Prisma.XOR<Prisma.PosTransactionNullableScalarRelationFilter, Prisma.PosTransactionWhereInput> | null
-}, "id">
+  transaction?: Prisma.XOR<Prisma.PosTransactionScalarRelationFilter, Prisma.PosTransactionWhereInput>
+}, "id" | "transactionId">
 
 export type QrisPaymentDetailOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  transactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  transactionId?: Prisma.SortOrder
   midtransId?: Prisma.SortOrderInput | Prisma.SortOrder
   qrString?: Prisma.SortOrderInput | Prisma.SortOrder
   qrUrl?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -269,7 +269,7 @@ export type QrisPaymentDetailScalarWhereWithAggregatesInput = {
   OR?: Prisma.QrisPaymentDetailScalarWhereWithAggregatesInput[]
   NOT?: Prisma.QrisPaymentDetailScalarWhereWithAggregatesInput | Prisma.QrisPaymentDetailScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"QrisPaymentDetail"> | string
-  transactionId?: Prisma.BigIntNullableWithAggregatesFilter<"QrisPaymentDetail"> | bigint | number | null
+  transactionId?: Prisma.BigIntWithAggregatesFilter<"QrisPaymentDetail"> | bigint | number
   midtransId?: Prisma.StringNullableWithAggregatesFilter<"QrisPaymentDetail"> | string | null
   qrString?: Prisma.StringNullableWithAggregatesFilter<"QrisPaymentDetail"> | string | null
   qrUrl?: Prisma.StringNullableWithAggregatesFilter<"QrisPaymentDetail"> | string | null
@@ -282,12 +282,12 @@ export type QrisPaymentDetailCreateInput = {
   qrString?: string | null
   qrUrl?: string | null
   qrExpiresAt?: Date | string | null
-  transaction?: Prisma.PosTransactionCreateNestedOneWithoutQrisPaymentDetailsInput
+  transaction: Prisma.PosTransactionCreateNestedOneWithoutQrisPaymentDetailsInput
 }
 
 export type QrisPaymentDetailUncheckedCreateInput = {
   id?: string
-  transactionId?: bigint | number | null
+  transactionId: bigint | number
   midtransId?: string | null
   qrString?: string | null
   qrUrl?: string | null
@@ -300,12 +300,12 @@ export type QrisPaymentDetailUpdateInput = {
   qrString?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qrExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  transaction?: Prisma.PosTransactionUpdateOneWithoutQrisPaymentDetailsNestedInput
+  transaction?: Prisma.PosTransactionUpdateOneRequiredWithoutQrisPaymentDetailsNestedInput
 }
 
 export type QrisPaymentDetailUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  transactionId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   midtransId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qrString?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -314,7 +314,7 @@ export type QrisPaymentDetailUncheckedUpdateInput = {
 
 export type QrisPaymentDetailCreateManyInput = {
   id?: string
-  transactionId?: bigint | number | null
+  transactionId: bigint | number
   midtransId?: string | null
   qrString?: string | null
   qrUrl?: string | null
@@ -331,7 +331,7 @@ export type QrisPaymentDetailUpdateManyMutationInput = {
 
 export type QrisPaymentDetailUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  transactionId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  transactionId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   midtransId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qrString?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -373,60 +373,45 @@ export type QrisPaymentDetailSumOrderByAggregateInput = {
   transactionId?: Prisma.SortOrder
 }
 
-export type QrisPaymentDetailListRelationFilter = {
-  every?: Prisma.QrisPaymentDetailWhereInput
-  some?: Prisma.QrisPaymentDetailWhereInput
-  none?: Prisma.QrisPaymentDetailWhereInput
-}
-
-export type QrisPaymentDetailOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
+export type QrisPaymentDetailNullableScalarRelationFilter = {
+  is?: Prisma.QrisPaymentDetailWhereInput | null
+  isNot?: Prisma.QrisPaymentDetailWhereInput | null
 }
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
-export type QrisPaymentDetailCreateNestedManyWithoutTransactionInput = {
-  create?: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput> | Prisma.QrisPaymentDetailCreateWithoutTransactionInput[] | Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput[]
-  connectOrCreate?: Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput | Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput[]
-  createMany?: Prisma.QrisPaymentDetailCreateManyTransactionInputEnvelope
-  connect?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
+export type QrisPaymentDetailCreateNestedOneWithoutTransactionInput = {
+  create?: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput>
+  connectOrCreate?: Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput
+  connect?: Prisma.QrisPaymentDetailWhereUniqueInput
 }
 
-export type QrisPaymentDetailUncheckedCreateNestedManyWithoutTransactionInput = {
-  create?: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput> | Prisma.QrisPaymentDetailCreateWithoutTransactionInput[] | Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput[]
-  connectOrCreate?: Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput | Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput[]
-  createMany?: Prisma.QrisPaymentDetailCreateManyTransactionInputEnvelope
-  connect?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
+export type QrisPaymentDetailUncheckedCreateNestedOneWithoutTransactionInput = {
+  create?: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput>
+  connectOrCreate?: Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput
+  connect?: Prisma.QrisPaymentDetailWhereUniqueInput
 }
 
-export type QrisPaymentDetailUpdateManyWithoutTransactionNestedInput = {
-  create?: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput> | Prisma.QrisPaymentDetailCreateWithoutTransactionInput[] | Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput[]
-  connectOrCreate?: Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput | Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput[]
-  upsert?: Prisma.QrisPaymentDetailUpsertWithWhereUniqueWithoutTransactionInput | Prisma.QrisPaymentDetailUpsertWithWhereUniqueWithoutTransactionInput[]
-  createMany?: Prisma.QrisPaymentDetailCreateManyTransactionInputEnvelope
-  set?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
-  disconnect?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
-  delete?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
-  connect?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
-  update?: Prisma.QrisPaymentDetailUpdateWithWhereUniqueWithoutTransactionInput | Prisma.QrisPaymentDetailUpdateWithWhereUniqueWithoutTransactionInput[]
-  updateMany?: Prisma.QrisPaymentDetailUpdateManyWithWhereWithoutTransactionInput | Prisma.QrisPaymentDetailUpdateManyWithWhereWithoutTransactionInput[]
-  deleteMany?: Prisma.QrisPaymentDetailScalarWhereInput | Prisma.QrisPaymentDetailScalarWhereInput[]
+export type QrisPaymentDetailUpdateOneWithoutTransactionNestedInput = {
+  create?: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput>
+  connectOrCreate?: Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput
+  upsert?: Prisma.QrisPaymentDetailUpsertWithoutTransactionInput
+  disconnect?: Prisma.QrisPaymentDetailWhereInput | boolean
+  delete?: Prisma.QrisPaymentDetailWhereInput | boolean
+  connect?: Prisma.QrisPaymentDetailWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.QrisPaymentDetailUpdateToOneWithWhereWithoutTransactionInput, Prisma.QrisPaymentDetailUpdateWithoutTransactionInput>, Prisma.QrisPaymentDetailUncheckedUpdateWithoutTransactionInput>
 }
 
-export type QrisPaymentDetailUncheckedUpdateManyWithoutTransactionNestedInput = {
-  create?: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput> | Prisma.QrisPaymentDetailCreateWithoutTransactionInput[] | Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput[]
-  connectOrCreate?: Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput | Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput[]
-  upsert?: Prisma.QrisPaymentDetailUpsertWithWhereUniqueWithoutTransactionInput | Prisma.QrisPaymentDetailUpsertWithWhereUniqueWithoutTransactionInput[]
-  createMany?: Prisma.QrisPaymentDetailCreateManyTransactionInputEnvelope
-  set?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
-  disconnect?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
-  delete?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
-  connect?: Prisma.QrisPaymentDetailWhereUniqueInput | Prisma.QrisPaymentDetailWhereUniqueInput[]
-  update?: Prisma.QrisPaymentDetailUpdateWithWhereUniqueWithoutTransactionInput | Prisma.QrisPaymentDetailUpdateWithWhereUniqueWithoutTransactionInput[]
-  updateMany?: Prisma.QrisPaymentDetailUpdateManyWithWhereWithoutTransactionInput | Prisma.QrisPaymentDetailUpdateManyWithWhereWithoutTransactionInput[]
-  deleteMany?: Prisma.QrisPaymentDetailScalarWhereInput | Prisma.QrisPaymentDetailScalarWhereInput[]
+export type QrisPaymentDetailUncheckedUpdateOneWithoutTransactionNestedInput = {
+  create?: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput>
+  connectOrCreate?: Prisma.QrisPaymentDetailCreateOrConnectWithoutTransactionInput
+  upsert?: Prisma.QrisPaymentDetailUpsertWithoutTransactionInput
+  disconnect?: Prisma.QrisPaymentDetailWhereInput | boolean
+  delete?: Prisma.QrisPaymentDetailWhereInput | boolean
+  connect?: Prisma.QrisPaymentDetailWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.QrisPaymentDetailUpdateToOneWithWhereWithoutTransactionInput, Prisma.QrisPaymentDetailUpdateWithoutTransactionInput>, Prisma.QrisPaymentDetailUncheckedUpdateWithoutTransactionInput>
 }
 
 export type QrisPaymentDetailCreateWithoutTransactionInput = {
@@ -450,45 +435,15 @@ export type QrisPaymentDetailCreateOrConnectWithoutTransactionInput = {
   create: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput>
 }
 
-export type QrisPaymentDetailCreateManyTransactionInputEnvelope = {
-  data: Prisma.QrisPaymentDetailCreateManyTransactionInput | Prisma.QrisPaymentDetailCreateManyTransactionInput[]
-  skipDuplicates?: boolean
-}
-
-export type QrisPaymentDetailUpsertWithWhereUniqueWithoutTransactionInput = {
-  where: Prisma.QrisPaymentDetailWhereUniqueInput
+export type QrisPaymentDetailUpsertWithoutTransactionInput = {
   update: Prisma.XOR<Prisma.QrisPaymentDetailUpdateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedUpdateWithoutTransactionInput>
   create: Prisma.XOR<Prisma.QrisPaymentDetailCreateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedCreateWithoutTransactionInput>
+  where?: Prisma.QrisPaymentDetailWhereInput
 }
 
-export type QrisPaymentDetailUpdateWithWhereUniqueWithoutTransactionInput = {
-  where: Prisma.QrisPaymentDetailWhereUniqueInput
+export type QrisPaymentDetailUpdateToOneWithWhereWithoutTransactionInput = {
+  where?: Prisma.QrisPaymentDetailWhereInput
   data: Prisma.XOR<Prisma.QrisPaymentDetailUpdateWithoutTransactionInput, Prisma.QrisPaymentDetailUncheckedUpdateWithoutTransactionInput>
-}
-
-export type QrisPaymentDetailUpdateManyWithWhereWithoutTransactionInput = {
-  where: Prisma.QrisPaymentDetailScalarWhereInput
-  data: Prisma.XOR<Prisma.QrisPaymentDetailUpdateManyMutationInput, Prisma.QrisPaymentDetailUncheckedUpdateManyWithoutTransactionInput>
-}
-
-export type QrisPaymentDetailScalarWhereInput = {
-  AND?: Prisma.QrisPaymentDetailScalarWhereInput | Prisma.QrisPaymentDetailScalarWhereInput[]
-  OR?: Prisma.QrisPaymentDetailScalarWhereInput[]
-  NOT?: Prisma.QrisPaymentDetailScalarWhereInput | Prisma.QrisPaymentDetailScalarWhereInput[]
-  id?: Prisma.StringFilter<"QrisPaymentDetail"> | string
-  transactionId?: Prisma.BigIntNullableFilter<"QrisPaymentDetail"> | bigint | number | null
-  midtransId?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
-  qrString?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
-  qrUrl?: Prisma.StringNullableFilter<"QrisPaymentDetail"> | string | null
-  qrExpiresAt?: Prisma.DateTimeNullableFilter<"QrisPaymentDetail"> | Date | string | null
-}
-
-export type QrisPaymentDetailCreateManyTransactionInput = {
-  id?: string
-  midtransId?: string | null
-  qrString?: string | null
-  qrUrl?: string | null
-  qrExpiresAt?: Date | string | null
 }
 
 export type QrisPaymentDetailUpdateWithoutTransactionInput = {
@@ -507,14 +462,6 @@ export type QrisPaymentDetailUncheckedUpdateWithoutTransactionInput = {
   qrExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
-export type QrisPaymentDetailUncheckedUpdateManyWithoutTransactionInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  midtransId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  qrString?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  qrUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  qrExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-}
-
 
 
 export type QrisPaymentDetailSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -524,7 +471,7 @@ export type QrisPaymentDetailSelect<ExtArgs extends runtime.Types.Extensions.Int
   qrString?: boolean
   qrUrl?: boolean
   qrExpiresAt?: boolean
-  transaction?: boolean | Prisma.QrisPaymentDetail$transactionArgs<ExtArgs>
+  transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qrisPaymentDetail"]>
 
 export type QrisPaymentDetailSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -534,7 +481,7 @@ export type QrisPaymentDetailSelectCreateManyAndReturn<ExtArgs extends runtime.T
   qrString?: boolean
   qrUrl?: boolean
   qrExpiresAt?: boolean
-  transaction?: boolean | Prisma.QrisPaymentDetail$transactionArgs<ExtArgs>
+  transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qrisPaymentDetail"]>
 
 export type QrisPaymentDetailSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -544,7 +491,7 @@ export type QrisPaymentDetailSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   qrString?: boolean
   qrUrl?: boolean
   qrExpiresAt?: boolean
-  transaction?: boolean | Prisma.QrisPaymentDetail$transactionArgs<ExtArgs>
+  transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["qrisPaymentDetail"]>
 
 export type QrisPaymentDetailSelectScalar = {
@@ -558,23 +505,23 @@ export type QrisPaymentDetailSelectScalar = {
 
 export type QrisPaymentDetailOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transactionId" | "midtransId" | "qrString" | "qrUrl" | "qrExpiresAt", ExtArgs["result"]["qrisPaymentDetail"]>
 export type QrisPaymentDetailInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  transaction?: boolean | Prisma.QrisPaymentDetail$transactionArgs<ExtArgs>
+  transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
 }
 export type QrisPaymentDetailIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  transaction?: boolean | Prisma.QrisPaymentDetail$transactionArgs<ExtArgs>
+  transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
 }
 export type QrisPaymentDetailIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  transaction?: boolean | Prisma.QrisPaymentDetail$transactionArgs<ExtArgs>
+  transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
 }
 
 export type $QrisPaymentDetailPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "QrisPaymentDetail"
   objects: {
-    transaction: Prisma.$PosTransactionPayload<ExtArgs> | null
+    transaction: Prisma.$PosTransactionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    transactionId: bigint | null
+    transactionId: bigint
     midtransId: string | null
     qrString: string | null
     qrUrl: string | null
@@ -973,7 +920,7 @@ readonly fields: QrisPaymentDetailFieldRefs;
  */
 export interface Prisma__QrisPaymentDetailClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  transaction<T extends Prisma.QrisPaymentDetail$transactionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QrisPaymentDetail$transactionArgs<ExtArgs>>): Prisma.Prisma__PosTransactionClient<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  transaction<T extends Prisma.PosTransactionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PosTransactionDefaultArgs<ExtArgs>>): Prisma.Prisma__PosTransactionClient<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1227,7 +1174,7 @@ export type QrisPaymentDetailCreateArgs<ExtArgs extends runtime.Types.Extensions
   /**
    * The data needed to create a QrisPaymentDetail.
    */
-  data?: Prisma.XOR<Prisma.QrisPaymentDetailCreateInput, Prisma.QrisPaymentDetailUncheckedCreateInput>
+  data: Prisma.XOR<Prisma.QrisPaymentDetailCreateInput, Prisma.QrisPaymentDetailUncheckedCreateInput>
 }
 
 /**
@@ -1402,25 +1349,6 @@ export type QrisPaymentDetailDeleteManyArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many QrisPaymentDetails to delete.
    */
   limit?: number
-}
-
-/**
- * QrisPaymentDetail.transaction
- */
-export type QrisPaymentDetail$transactionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the PosTransaction
-   */
-  select?: Prisma.PosTransactionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the PosTransaction
-   */
-  omit?: Prisma.PosTransactionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PosTransactionInclude<ExtArgs> | null
-  where?: Prisma.PosTransactionWhereInput
 }
 
 /**

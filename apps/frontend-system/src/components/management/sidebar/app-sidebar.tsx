@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   BaggageClaim,
   BanknoteArrowDown,
@@ -10,17 +10,18 @@ import {
   Grid2X2,
   Grid2X2Plus,
   Handbag,
+  Landmark,
   LayoutDashboard,
   PackageOpen,
   ScrollText,
   ShoppingBasketIcon,
   Store,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "@/components/management/sidebar/nav-main"
-import { NavUser } from "@/components/management/sidebar/nav-user"
-import { Logo } from "@/components/management/sidebar/logo"
+import { NavMain } from "@/components/management/sidebar/nav-main";
+import { NavUser } from "@/components/management/sidebar/nav-user";
+import { Logo } from "@/components/management/sidebar/logo";
 import {
   Sidebar,
   SidebarContent,
@@ -32,9 +33,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/queries/auth/useAuth";
 
 // This is sample data.
@@ -85,6 +86,11 @@ const data = {
   ],
   reportAndFinanceItems: [
     {
+      title: "Metode Pembayaran",
+      url: "/management/payment-method",
+      icon: Landmark,
+    },
+    {
       title: "Pesanan",
       url: "#",
       icon: BaggageClaim,
@@ -112,7 +118,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <Sidebar collapsible="icon" {...props} variant="sidebar">
@@ -124,27 +130,42 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem className="flex justify-center items-center">
-                <SidebarMenuButton asChild isActive={pathname === '/management/dashboard'} tooltip={'Dashboard'}>
-                  <Link href={'/management/dashboard'}>
-                    <LayoutDashboard /> <span>Dashboard</span></Link>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/management/dashboard"}
+                  tooltip={"Dashboard"}
+                >
+                  <Link href={"/management/dashboard"}>
+                    <LayoutDashboard /> <span>Dashboard</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem className="flex justify-center items-center">
-                <SidebarMenuButton asChild isActive={pathname === '/point-of-sale/system'} tooltip={'Point of Sale'}>
-                  <Link href={'/point-of-sale/system'}>
-                    <ScrollText /> <span>POS</span></Link>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/point-of-sale/system"}
+                  tooltip={"Point of Sale"}
+                >
+                  <Link href={"/point-of-sale/system"}>
+                    <ScrollText /> <span>POS</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <NavMain masterItems={data.masterItems} inventoryAndProductionItems={data.inventoryAndProductionItems} reportAndFinanceItems={data.reportAndFinanceItems} pathname={pathname}/>
+        <NavMain
+          masterItems={data.masterItems}
+          inventoryAndProductionItems={data.inventoryAndProductionItems}
+          reportAndFinanceItems={data.reportAndFinanceItems}
+          pathname={pathname}
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

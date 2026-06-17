@@ -95,8 +95,7 @@ export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 export const PaymentChannel = {
   CASH: 'CASH',
   MIDTRANS: 'MIDTRANS',
-  BANK_TRANSFER: 'BANK_TRANSFER',
-  QRIS: 'QRIS'
+  BANK_TRANSFER: 'BANK_TRANSFER'
 } as const
 
 export type PaymentChannel = (typeof PaymentChannel)[keyof typeof PaymentChannel]
