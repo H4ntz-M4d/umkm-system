@@ -30,7 +30,7 @@ import {
   z,
 } from "@repo/schemas";
 import { BanknoteArrowDown, Landmark, QrCodeIcon } from "lucide-react";
-import { ComponentType } from "react";
+import { ComponentType, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 type PaymentChannel = z.infer<typeof PaymentChannelEnum>;
@@ -55,18 +55,18 @@ const paymentChannelData = paymentChannel.map((pc) => {
 });
 
 interface PaymentMethodDialogProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  onOpenChange: (open: boolean) => void;
   idData: string | null;
   paymentData?: PaymentResponseData;
 }
 
 export default function PaymentMethodDialog({
-  open,
-  setOpen,
+  onOpenChange,
   idData,
   paymentData,
 }: PaymentMethodDialogProps) {
+  const [open, setOpen] = useState(false);
+  const isOpen = open || !!paymentData;
   const initialValues: PaymentMethodSchemaInput = {
     name: paymentData?.name ?? "",
     channel: (paymentData?.channel as PaymentChannel) ?? "CASH",
@@ -78,19 +78,9 @@ export default function PaymentMethodDialog({
     },
   };
 
-  const { control, handleSubmit, formState, setValue } =
+  const { control, handleSubmit, formState, setValue, reset } =
     useForm<PaymentMethodSchemaInput>({
       resolver: zodResolver(PaymentMethodSchema),
-      defaultValues: {
-        name: paymentData?.name ?? "",
-        channel: (paymentData?.channel as PaymentChannel) ?? "CASH",
-        isActive: paymentData?.isActive ?? false,
-        bankAccount: {
-          bankName: paymentData?.name ?? "",
-          accountName: paymentData?.name ?? "",
-          accountNumber: paymentData?.name ?? "",
-        },
-      },
       values: initialValues,
     });
 
@@ -107,10 +97,28 @@ export default function PaymentMethodDialog({
     } else {
       createPaymentData(data);
     }
+    setOpen(false);
+  };
+
+  const handleOpenDialog = (open: boolean) => {
+    setOpen(open);
+    onOpenChange(open);
+    if (!open) {
+      reset({
+        name: "",
+        channel: "CASH",
+        isActive: false,
+        bankAccount: {
+          bankName: "",
+          accountName: "",
+          accountNumber: "",
+        },
+      });
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenDialog}>
       <DialogTrigger asChild>
         <Button>Tambah metode</Button>
       </DialogTrigger>
@@ -128,7 +136,7 @@ export default function PaymentMethodDialog({
               Masukkan metode pembayaran yang diinginkan
             </DialogDescription>
           </DialogHeader>
-          <div className="overflow-y-auto no-scrollbar max-h-[70vh] px-1">
+          <div className="overflow-y-auto no-scrollbar max-h-[70vh] px-1 py-5">
             <FieldGroup>
               <Controller
                 control={control}

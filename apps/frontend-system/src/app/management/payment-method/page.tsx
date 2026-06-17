@@ -5,11 +5,11 @@ import { DataTablePaymentMethod } from "@/components/management/payment-method/p
 import PaymentMethodDialog from "@/components/management/payment-method/payment-method-dialog";
 import { Button } from "@/components/ui/button";
 import { InputGroupInlineStart } from "@/components/ui/search";
+import { Toaster } from "@/components/ui/sonner";
 import { usePaymentMethodOperations } from "@/hooks/management/payment-method/use-payment-method-operations";
 import { useState } from "react";
 
 export default function Page() {
-  const [open, setOpen] = useState(false);
   const [idData, setIddata] = useState<string | null>(null);
   const { fetchPaymentData, removePaymentData } = usePaymentMethodOperations();
 
@@ -28,8 +28,7 @@ export default function Page() {
           </p>
         </div>
         <PaymentMethodDialog
-          open={open}
-          setOpen={setOpen}
+          onOpenChange={(open) => !open && setIddata(null)}
           idData={idData}
           paymentData={selectedData}
         />
@@ -39,10 +38,11 @@ export default function Page() {
       </div>
       <div className="bg-muted/50 rounded-xl md:min-h-min">
         <DataTablePaymentMethod
-          columns={columnsPaymentMethod(deleteByIdData, setIddata, setOpen)}
+          columns={columnsPaymentMethod(deleteByIdData, setIddata)}
           data={fetchPaymentData?.data ?? []}
         />
       </div>
+      <Toaster />
     </main>
   );
 }
