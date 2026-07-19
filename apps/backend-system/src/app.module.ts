@@ -11,9 +11,14 @@ import { ExpenseModule } from './expense/expense.module';
 import { PosTransactionModule } from './pos-transaction/pos-transaction.module';
 import { CategoriesModule } from './categories/categories.module';
 import { PaymentModule } from './payment/payment.module';
+import { MidtransModule } from './midtrans/midtrans.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     StoresModule,
     UsersModule,
     AuthModule,
@@ -26,6 +31,7 @@ import { PaymentModule } from './payment/payment.module';
     PosTransactionModule,
     CategoriesModule,
     PaymentModule,
+    MidtransModule,
   ],
 })
 export class AppModule {}

@@ -9,7 +9,6 @@ import {
   Post,
   Put,
   Query,
-  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -53,8 +52,11 @@ export class ProductsController {
   }
 
   @Get('/point-of-sales/list')
-  async getProductList() {
-    return await this.productsService.getProductList();
+  async getProductList(
+    @Query('search') search?: string,
+    @Query('categoryId') categoryId?: string,
+  ) {
+    return await this.productsService.getProductList(search, categoryId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

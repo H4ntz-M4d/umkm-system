@@ -415,13 +415,14 @@ model Shipment {
 // ==================
 
 model PaymentMethod {
-  id              BigInt          @id @default(autoincrement())
-  name            String          @db.VarChar(100)
-  channel         PaymentChannel
-  isActive        Boolean         @default(true)
-  orders          Order[]
-  posTransactions PosTransaction?
-  bankAccount     BankAccount?
+  id                    BigInt                  @id @default(autoincrement())
+  name                  String                  @db.VarChar(100)
+  channel               PaymentChannel
+  isActive              Boolean                 @default(true)
+  orders                Order[]
+  posTransactions       PosTransaction[]
+  bankAccount           BankAccount?
+  transferPaymentDetail TransferPaymentDetail[]
 
   @@map("payment_method")
 }
@@ -479,12 +480,13 @@ model QrisPaymentDetail {
 }
 
 model TransferPaymentDetail {
-  id            BigInt         @id @default(autoincrement())
-  transactionId BigInt         @unique
-  transaction   PosTransaction @relation(fields: [transactionId], references: [id])
-  bank          String         @db.VarChar(50)
-  paymentProof  String?        @db.VarChar(500)
-  confirmedAt   DateTime?
+  id              BigInt         @id @default(autoincrement())
+  transactionId   BigInt         @unique
+  transaction     PosTransaction @relation(fields: [transactionId], references: [id])
+  paymentMethodId BigInt?
+  paymentMethod   PaymentMethod?  @relation(fields: [paymentMethodId], references: [id], onDelete: Cascade)
+  paymentProof    String?        @db.VarChar(255)
+  confirmedAt     DateTime?
 
   @@map("transfer_payment_detail")
 }
@@ -498,7 +500,7 @@ model PosTransaction {
   storeId         BigInt
   cashierId       BigInt
   transId         String    @unique @db.VarChar(100)
-  paymentMethodId BigInt?   @unique
+  paymentMethodId BigInt?
   status          PosStatus
   totalAmount     Decimal
   createdAt       DateTime  @default(now())

@@ -27,8 +27,16 @@ export const PosTransactionResponse = ApiSuccessResponse(
   z.array(PosTransactionData),
 );
 
-export const PosTransactionResponseMutation =
-  ApiSuccessResponse(PosTransactionData);
+export const PosTransactionGetStatusResponse = ApiSuccessResponse(
+  PosTransactionData.pick({ status: true }),
+);
+
+export const PosTransactionResponseMutation = ApiSuccessResponse(
+  PosTransactionData.extend({
+    qrString: z.string().optional().nullable(),
+    qrUrl: z.string().optional().nullable(),
+  }),
+);
 
 export const PosTransactionsParkedResponse = ApiSuccessResponse(
   z.array(PosTransactionsParkedData),

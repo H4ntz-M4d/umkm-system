@@ -5,7 +5,9 @@ import {
   fetchPosTransactions,
   mutatePosTransaction,
   PosTransactionFilters,
+  uploadPaymentProof,
 } from "@/lib/queries/pos-transaction/pos-transaction.query";
+import { toast } from "sonner";
 
 export const usePosTransactionOperations = ({
   filters,
@@ -38,7 +40,21 @@ export const usePosTransactionOperations = ({
     mutationFn: mutatePosTransaction,
     onSuccess: () => {
       invalidate();
-      console.log("Transaksi kasir berhasil dibuat");
+      toast.success("Transaksi kasir berhasil dibuat");
+    },
+  });
+
+  const uploadPaymentProofMutation = useMutation({
+    mutationFn: ({
+      transPosId,
+      formData,
+    }: {
+      transPosId: string;
+      formData: FormData;
+    }) => uploadPaymentProof(transPosId, formData),
+    onSuccess: () => {
+      invalidate();
+      toast.success("Bukti pembayaran telah berhasil diupload dan status transaksi sudah diubah ke Terbayar")
     },
   });
 
@@ -53,7 +69,10 @@ export const usePosTransactionOperations = ({
   return {
     fetchPosTransactionsData: fetchPosTransactionsQuery.data,
     fetchPosTransactionsParkedData: fetchPosTransactionsParkedQuery.data,
-    mutationPosTransactionData: mutationPosTransaction.mutate,
+    mutationPosTransactionData: mutationPosTransaction.mutateAsync,
+    uploadPaymentProofData: uploadPaymentProofMutation.mutate,
+    isLoadingmutationPosTransactionData: mutationPosTransaction.isPending,
+    isLoadingUploadPaymentProofData: uploadPaymentProofMutation.isPending,
     cancelPosTransactionData: cancelPosTransactionMutation.mutate,
   };
 };

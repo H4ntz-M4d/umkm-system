@@ -29,17 +29,19 @@ export type AggregateTransferPaymentDetail = {
 export type TransferPaymentDetailAvgAggregateOutputType = {
   id: number | null
   transactionId: number | null
+  paymentMethodId: number | null
 }
 
 export type TransferPaymentDetailSumAggregateOutputType = {
   id: bigint | null
   transactionId: bigint | null
+  paymentMethodId: bigint | null
 }
 
 export type TransferPaymentDetailMinAggregateOutputType = {
   id: bigint | null
   transactionId: bigint | null
-  bank: string | null
+  paymentMethodId: bigint | null
   paymentProof: string | null
   confirmedAt: Date | null
 }
@@ -47,7 +49,7 @@ export type TransferPaymentDetailMinAggregateOutputType = {
 export type TransferPaymentDetailMaxAggregateOutputType = {
   id: bigint | null
   transactionId: bigint | null
-  bank: string | null
+  paymentMethodId: bigint | null
   paymentProof: string | null
   confirmedAt: Date | null
 }
@@ -55,7 +57,7 @@ export type TransferPaymentDetailMaxAggregateOutputType = {
 export type TransferPaymentDetailCountAggregateOutputType = {
   id: number
   transactionId: number
-  bank: number
+  paymentMethodId: number
   paymentProof: number
   confirmedAt: number
   _all: number
@@ -65,17 +67,19 @@ export type TransferPaymentDetailCountAggregateOutputType = {
 export type TransferPaymentDetailAvgAggregateInputType = {
   id?: true
   transactionId?: true
+  paymentMethodId?: true
 }
 
 export type TransferPaymentDetailSumAggregateInputType = {
   id?: true
   transactionId?: true
+  paymentMethodId?: true
 }
 
 export type TransferPaymentDetailMinAggregateInputType = {
   id?: true
   transactionId?: true
-  bank?: true
+  paymentMethodId?: true
   paymentProof?: true
   confirmedAt?: true
 }
@@ -83,7 +87,7 @@ export type TransferPaymentDetailMinAggregateInputType = {
 export type TransferPaymentDetailMaxAggregateInputType = {
   id?: true
   transactionId?: true
-  bank?: true
+  paymentMethodId?: true
   paymentProof?: true
   confirmedAt?: true
 }
@@ -91,7 +95,7 @@ export type TransferPaymentDetailMaxAggregateInputType = {
 export type TransferPaymentDetailCountAggregateInputType = {
   id?: true
   transactionId?: true
-  bank?: true
+  paymentMethodId?: true
   paymentProof?: true
   confirmedAt?: true
   _all?: true
@@ -186,7 +190,7 @@ export type TransferPaymentDetailGroupByArgs<ExtArgs extends runtime.Types.Exten
 export type TransferPaymentDetailGroupByOutputType = {
   id: bigint
   transactionId: bigint
-  bank: string
+  paymentMethodId: bigint | null
   paymentProof: string | null
   confirmedAt: Date | null
   _count: TransferPaymentDetailCountAggregateOutputType | null
@@ -217,19 +221,21 @@ export type TransferPaymentDetailWhereInput = {
   NOT?: Prisma.TransferPaymentDetailWhereInput | Prisma.TransferPaymentDetailWhereInput[]
   id?: Prisma.BigIntFilter<"TransferPaymentDetail"> | bigint | number
   transactionId?: Prisma.BigIntFilter<"TransferPaymentDetail"> | bigint | number
-  bank?: Prisma.StringFilter<"TransferPaymentDetail"> | string
+  paymentMethodId?: Prisma.BigIntNullableFilter<"TransferPaymentDetail"> | bigint | number | null
   paymentProof?: Prisma.StringNullableFilter<"TransferPaymentDetail"> | string | null
   confirmedAt?: Prisma.DateTimeNullableFilter<"TransferPaymentDetail"> | Date | string | null
   transaction?: Prisma.XOR<Prisma.PosTransactionScalarRelationFilter, Prisma.PosTransactionWhereInput>
+  paymentMethod?: Prisma.XOR<Prisma.PaymentMethodNullableScalarRelationFilter, Prisma.PaymentMethodWhereInput> | null
 }
 
 export type TransferPaymentDetailOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  bank?: Prisma.SortOrder
+  paymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentProof?: Prisma.SortOrderInput | Prisma.SortOrder
   confirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   transaction?: Prisma.PosTransactionOrderByWithRelationInput
+  paymentMethod?: Prisma.PaymentMethodOrderByWithRelationInput
 }
 
 export type TransferPaymentDetailWhereUniqueInput = Prisma.AtLeast<{
@@ -238,16 +244,17 @@ export type TransferPaymentDetailWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TransferPaymentDetailWhereInput | Prisma.TransferPaymentDetailWhereInput[]
   OR?: Prisma.TransferPaymentDetailWhereInput[]
   NOT?: Prisma.TransferPaymentDetailWhereInput | Prisma.TransferPaymentDetailWhereInput[]
-  bank?: Prisma.StringFilter<"TransferPaymentDetail"> | string
+  paymentMethodId?: Prisma.BigIntNullableFilter<"TransferPaymentDetail"> | bigint | number | null
   paymentProof?: Prisma.StringNullableFilter<"TransferPaymentDetail"> | string | null
   confirmedAt?: Prisma.DateTimeNullableFilter<"TransferPaymentDetail"> | Date | string | null
   transaction?: Prisma.XOR<Prisma.PosTransactionScalarRelationFilter, Prisma.PosTransactionWhereInput>
+  paymentMethod?: Prisma.XOR<Prisma.PaymentMethodNullableScalarRelationFilter, Prisma.PaymentMethodWhereInput> | null
 }, "id" | "transactionId">
 
 export type TransferPaymentDetailOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  bank?: Prisma.SortOrder
+  paymentMethodId?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentProof?: Prisma.SortOrderInput | Prisma.SortOrder
   confirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TransferPaymentDetailCountOrderByAggregateInput
@@ -263,39 +270,39 @@ export type TransferPaymentDetailScalarWhereWithAggregatesInput = {
   NOT?: Prisma.TransferPaymentDetailScalarWhereWithAggregatesInput | Prisma.TransferPaymentDetailScalarWhereWithAggregatesInput[]
   id?: Prisma.BigIntWithAggregatesFilter<"TransferPaymentDetail"> | bigint | number
   transactionId?: Prisma.BigIntWithAggregatesFilter<"TransferPaymentDetail"> | bigint | number
-  bank?: Prisma.StringWithAggregatesFilter<"TransferPaymentDetail"> | string
+  paymentMethodId?: Prisma.BigIntNullableWithAggregatesFilter<"TransferPaymentDetail"> | bigint | number | null
   paymentProof?: Prisma.StringNullableWithAggregatesFilter<"TransferPaymentDetail"> | string | null
   confirmedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TransferPaymentDetail"> | Date | string | null
 }
 
 export type TransferPaymentDetailCreateInput = {
   id?: bigint | number
-  bank: string
   paymentProof?: string | null
   confirmedAt?: Date | string | null
   transaction: Prisma.PosTransactionCreateNestedOneWithoutTransferPaymentDetailInput
+  paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutTransferPaymentDetailInput
 }
 
 export type TransferPaymentDetailUncheckedCreateInput = {
   id?: bigint | number
   transactionId: bigint | number
-  bank: string
+  paymentMethodId?: bigint | number | null
   paymentProof?: string | null
   confirmedAt?: Date | string | null
 }
 
 export type TransferPaymentDetailUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  bank?: Prisma.StringFieldUpdateOperationsInput | string
   paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   transaction?: Prisma.PosTransactionUpdateOneRequiredWithoutTransferPaymentDetailNestedInput
+  paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutTransferPaymentDetailNestedInput
 }
 
 export type TransferPaymentDetailUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   transactionId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  bank?: Prisma.StringFieldUpdateOperationsInput | string
+  paymentMethodId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -303,14 +310,13 @@ export type TransferPaymentDetailUncheckedUpdateInput = {
 export type TransferPaymentDetailCreateManyInput = {
   id?: bigint | number
   transactionId: bigint | number
-  bank: string
+  paymentMethodId?: bigint | number | null
   paymentProof?: string | null
   confirmedAt?: Date | string | null
 }
 
 export type TransferPaymentDetailUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  bank?: Prisma.StringFieldUpdateOperationsInput | string
   paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -318,15 +324,25 @@ export type TransferPaymentDetailUpdateManyMutationInput = {
 export type TransferPaymentDetailUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   transactionId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  bank?: Prisma.StringFieldUpdateOperationsInput | string
+  paymentMethodId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type TransferPaymentDetailListRelationFilter = {
+  every?: Prisma.TransferPaymentDetailWhereInput
+  some?: Prisma.TransferPaymentDetailWhereInput
+  none?: Prisma.TransferPaymentDetailWhereInput
+}
+
+export type TransferPaymentDetailOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type TransferPaymentDetailCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  bank?: Prisma.SortOrder
+  paymentMethodId?: Prisma.SortOrder
   paymentProof?: Prisma.SortOrder
   confirmedAt?: Prisma.SortOrder
 }
@@ -334,12 +350,13 @@ export type TransferPaymentDetailCountOrderByAggregateInput = {
 export type TransferPaymentDetailAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
+  paymentMethodId?: Prisma.SortOrder
 }
 
 export type TransferPaymentDetailMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  bank?: Prisma.SortOrder
+  paymentMethodId?: Prisma.SortOrder
   paymentProof?: Prisma.SortOrder
   confirmedAt?: Prisma.SortOrder
 }
@@ -347,7 +364,7 @@ export type TransferPaymentDetailMaxOrderByAggregateInput = {
 export type TransferPaymentDetailMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
-  bank?: Prisma.SortOrder
+  paymentMethodId?: Prisma.SortOrder
   paymentProof?: Prisma.SortOrder
   confirmedAt?: Prisma.SortOrder
 }
@@ -355,11 +372,54 @@ export type TransferPaymentDetailMinOrderByAggregateInput = {
 export type TransferPaymentDetailSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
+  paymentMethodId?: Prisma.SortOrder
 }
 
 export type TransferPaymentDetailNullableScalarRelationFilter = {
   is?: Prisma.TransferPaymentDetailWhereInput | null
   isNot?: Prisma.TransferPaymentDetailWhereInput | null
+}
+
+export type TransferPaymentDetailCreateNestedManyWithoutPaymentMethodInput = {
+  create?: Prisma.XOR<Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput, Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput> | Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput[] | Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput[]
+  connectOrCreate?: Prisma.TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput | Prisma.TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput[]
+  createMany?: Prisma.TransferPaymentDetailCreateManyPaymentMethodInputEnvelope
+  connect?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+}
+
+export type TransferPaymentDetailUncheckedCreateNestedManyWithoutPaymentMethodInput = {
+  create?: Prisma.XOR<Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput, Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput> | Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput[] | Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput[]
+  connectOrCreate?: Prisma.TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput | Prisma.TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput[]
+  createMany?: Prisma.TransferPaymentDetailCreateManyPaymentMethodInputEnvelope
+  connect?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+}
+
+export type TransferPaymentDetailUpdateManyWithoutPaymentMethodNestedInput = {
+  create?: Prisma.XOR<Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput, Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput> | Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput[] | Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput[]
+  connectOrCreate?: Prisma.TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput | Prisma.TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput[]
+  upsert?: Prisma.TransferPaymentDetailUpsertWithWhereUniqueWithoutPaymentMethodInput | Prisma.TransferPaymentDetailUpsertWithWhereUniqueWithoutPaymentMethodInput[]
+  createMany?: Prisma.TransferPaymentDetailCreateManyPaymentMethodInputEnvelope
+  set?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+  disconnect?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+  delete?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+  connect?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+  update?: Prisma.TransferPaymentDetailUpdateWithWhereUniqueWithoutPaymentMethodInput | Prisma.TransferPaymentDetailUpdateWithWhereUniqueWithoutPaymentMethodInput[]
+  updateMany?: Prisma.TransferPaymentDetailUpdateManyWithWhereWithoutPaymentMethodInput | Prisma.TransferPaymentDetailUpdateManyWithWhereWithoutPaymentMethodInput[]
+  deleteMany?: Prisma.TransferPaymentDetailScalarWhereInput | Prisma.TransferPaymentDetailScalarWhereInput[]
+}
+
+export type TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedInput = {
+  create?: Prisma.XOR<Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput, Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput> | Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput[] | Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput[]
+  connectOrCreate?: Prisma.TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput | Prisma.TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput[]
+  upsert?: Prisma.TransferPaymentDetailUpsertWithWhereUniqueWithoutPaymentMethodInput | Prisma.TransferPaymentDetailUpsertWithWhereUniqueWithoutPaymentMethodInput[]
+  createMany?: Prisma.TransferPaymentDetailCreateManyPaymentMethodInputEnvelope
+  set?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+  disconnect?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+  delete?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+  connect?: Prisma.TransferPaymentDetailWhereUniqueInput | Prisma.TransferPaymentDetailWhereUniqueInput[]
+  update?: Prisma.TransferPaymentDetailUpdateWithWhereUniqueWithoutPaymentMethodInput | Prisma.TransferPaymentDetailUpdateWithWhereUniqueWithoutPaymentMethodInput[]
+  updateMany?: Prisma.TransferPaymentDetailUpdateManyWithWhereWithoutPaymentMethodInput | Prisma.TransferPaymentDetailUpdateManyWithWhereWithoutPaymentMethodInput[]
+  deleteMany?: Prisma.TransferPaymentDetailScalarWhereInput | Prisma.TransferPaymentDetailScalarWhereInput[]
 }
 
 export type TransferPaymentDetailCreateNestedOneWithoutTransactionInput = {
@@ -394,16 +454,67 @@ export type TransferPaymentDetailUncheckedUpdateOneWithoutTransactionNestedInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.TransferPaymentDetailUpdateToOneWithWhereWithoutTransactionInput, Prisma.TransferPaymentDetailUpdateWithoutTransactionInput>, Prisma.TransferPaymentDetailUncheckedUpdateWithoutTransactionInput>
 }
 
-export type TransferPaymentDetailCreateWithoutTransactionInput = {
+export type TransferPaymentDetailCreateWithoutPaymentMethodInput = {
   id?: bigint | number
-  bank: string
+  paymentProof?: string | null
+  confirmedAt?: Date | string | null
+  transaction: Prisma.PosTransactionCreateNestedOneWithoutTransferPaymentDetailInput
+}
+
+export type TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput = {
+  id?: bigint | number
+  transactionId: bigint | number
   paymentProof?: string | null
   confirmedAt?: Date | string | null
 }
 
+export type TransferPaymentDetailCreateOrConnectWithoutPaymentMethodInput = {
+  where: Prisma.TransferPaymentDetailWhereUniqueInput
+  create: Prisma.XOR<Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput, Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput>
+}
+
+export type TransferPaymentDetailCreateManyPaymentMethodInputEnvelope = {
+  data: Prisma.TransferPaymentDetailCreateManyPaymentMethodInput | Prisma.TransferPaymentDetailCreateManyPaymentMethodInput[]
+  skipDuplicates?: boolean
+}
+
+export type TransferPaymentDetailUpsertWithWhereUniqueWithoutPaymentMethodInput = {
+  where: Prisma.TransferPaymentDetailWhereUniqueInput
+  update: Prisma.XOR<Prisma.TransferPaymentDetailUpdateWithoutPaymentMethodInput, Prisma.TransferPaymentDetailUncheckedUpdateWithoutPaymentMethodInput>
+  create: Prisma.XOR<Prisma.TransferPaymentDetailCreateWithoutPaymentMethodInput, Prisma.TransferPaymentDetailUncheckedCreateWithoutPaymentMethodInput>
+}
+
+export type TransferPaymentDetailUpdateWithWhereUniqueWithoutPaymentMethodInput = {
+  where: Prisma.TransferPaymentDetailWhereUniqueInput
+  data: Prisma.XOR<Prisma.TransferPaymentDetailUpdateWithoutPaymentMethodInput, Prisma.TransferPaymentDetailUncheckedUpdateWithoutPaymentMethodInput>
+}
+
+export type TransferPaymentDetailUpdateManyWithWhereWithoutPaymentMethodInput = {
+  where: Prisma.TransferPaymentDetailScalarWhereInput
+  data: Prisma.XOR<Prisma.TransferPaymentDetailUpdateManyMutationInput, Prisma.TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodInput>
+}
+
+export type TransferPaymentDetailScalarWhereInput = {
+  AND?: Prisma.TransferPaymentDetailScalarWhereInput | Prisma.TransferPaymentDetailScalarWhereInput[]
+  OR?: Prisma.TransferPaymentDetailScalarWhereInput[]
+  NOT?: Prisma.TransferPaymentDetailScalarWhereInput | Prisma.TransferPaymentDetailScalarWhereInput[]
+  id?: Prisma.BigIntFilter<"TransferPaymentDetail"> | bigint | number
+  transactionId?: Prisma.BigIntFilter<"TransferPaymentDetail"> | bigint | number
+  paymentMethodId?: Prisma.BigIntNullableFilter<"TransferPaymentDetail"> | bigint | number | null
+  paymentProof?: Prisma.StringNullableFilter<"TransferPaymentDetail"> | string | null
+  confirmedAt?: Prisma.DateTimeNullableFilter<"TransferPaymentDetail"> | Date | string | null
+}
+
+export type TransferPaymentDetailCreateWithoutTransactionInput = {
+  id?: bigint | number
+  paymentProof?: string | null
+  confirmedAt?: Date | string | null
+  paymentMethod?: Prisma.PaymentMethodCreateNestedOneWithoutTransferPaymentDetailInput
+}
+
 export type TransferPaymentDetailUncheckedCreateWithoutTransactionInput = {
   id?: bigint | number
-  bank: string
+  paymentMethodId?: bigint | number | null
   paymentProof?: string | null
   confirmedAt?: Date | string | null
 }
@@ -426,14 +537,42 @@ export type TransferPaymentDetailUpdateToOneWithWhereWithoutTransactionInput = {
 
 export type TransferPaymentDetailUpdateWithoutTransactionInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  bank?: Prisma.StringFieldUpdateOperationsInput | string
   paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.PaymentMethodUpdateOneWithoutTransferPaymentDetailNestedInput
 }
 
 export type TransferPaymentDetailUncheckedUpdateWithoutTransactionInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  bank?: Prisma.StringFieldUpdateOperationsInput | string
+  paymentMethodId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type TransferPaymentDetailCreateManyPaymentMethodInput = {
+  id?: bigint | number
+  transactionId: bigint | number
+  paymentProof?: string | null
+  confirmedAt?: Date | string | null
+}
+
+export type TransferPaymentDetailUpdateWithoutPaymentMethodInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  transaction?: Prisma.PosTransactionUpdateOneRequiredWithoutTransferPaymentDetailNestedInput
+}
+
+export type TransferPaymentDetailUncheckedUpdateWithoutPaymentMethodInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  transactionId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  transactionId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   paymentProof?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   confirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -443,58 +582,65 @@ export type TransferPaymentDetailUncheckedUpdateWithoutTransactionInput = {
 export type TransferPaymentDetailSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transactionId?: boolean
-  bank?: boolean
+  paymentMethodId?: boolean
   paymentProof?: boolean
   confirmedAt?: boolean
   transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.TransferPaymentDetail$paymentMethodArgs<ExtArgs>
 }, ExtArgs["result"]["transferPaymentDetail"]>
 
 export type TransferPaymentDetailSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transactionId?: boolean
-  bank?: boolean
+  paymentMethodId?: boolean
   paymentProof?: boolean
   confirmedAt?: boolean
   transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.TransferPaymentDetail$paymentMethodArgs<ExtArgs>
 }, ExtArgs["result"]["transferPaymentDetail"]>
 
 export type TransferPaymentDetailSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transactionId?: boolean
-  bank?: boolean
+  paymentMethodId?: boolean
   paymentProof?: boolean
   confirmedAt?: boolean
   transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.TransferPaymentDetail$paymentMethodArgs<ExtArgs>
 }, ExtArgs["result"]["transferPaymentDetail"]>
 
 export type TransferPaymentDetailSelectScalar = {
   id?: boolean
   transactionId?: boolean
-  bank?: boolean
+  paymentMethodId?: boolean
   paymentProof?: boolean
   confirmedAt?: boolean
 }
 
-export type TransferPaymentDetailOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transactionId" | "bank" | "paymentProof" | "confirmedAt", ExtArgs["result"]["transferPaymentDetail"]>
+export type TransferPaymentDetailOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transactionId" | "paymentMethodId" | "paymentProof" | "confirmedAt", ExtArgs["result"]["transferPaymentDetail"]>
 export type TransferPaymentDetailInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.TransferPaymentDetail$paymentMethodArgs<ExtArgs>
 }
 export type TransferPaymentDetailIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.TransferPaymentDetail$paymentMethodArgs<ExtArgs>
 }
 export type TransferPaymentDetailIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.PosTransactionDefaultArgs<ExtArgs>
+  paymentMethod?: boolean | Prisma.TransferPaymentDetail$paymentMethodArgs<ExtArgs>
 }
 
 export type $TransferPaymentDetailPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "TransferPaymentDetail"
   objects: {
     transaction: Prisma.$PosTransactionPayload<ExtArgs>
+    paymentMethod: Prisma.$PaymentMethodPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
     transactionId: bigint
-    bank: string
+    paymentMethodId: bigint | null
     paymentProof: string | null
     confirmedAt: Date | null
   }, ExtArgs["result"]["transferPaymentDetail"]>
@@ -892,6 +1038,7 @@ readonly fields: TransferPaymentDetailFieldRefs;
 export interface Prisma__TransferPaymentDetailClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   transaction<T extends Prisma.PosTransactionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PosTransactionDefaultArgs<ExtArgs>>): Prisma.Prisma__PosTransactionClient<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  paymentMethod<T extends Prisma.TransferPaymentDetail$paymentMethodArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransferPaymentDetail$paymentMethodArgs<ExtArgs>>): Prisma.Prisma__PaymentMethodClient<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -923,7 +1070,7 @@ export interface Prisma__TransferPaymentDetailClient<T, Null = never, ExtArgs ex
 export interface TransferPaymentDetailFieldRefs {
   readonly id: Prisma.FieldRef<"TransferPaymentDetail", 'BigInt'>
   readonly transactionId: Prisma.FieldRef<"TransferPaymentDetail", 'BigInt'>
-  readonly bank: Prisma.FieldRef<"TransferPaymentDetail", 'String'>
+  readonly paymentMethodId: Prisma.FieldRef<"TransferPaymentDetail", 'BigInt'>
   readonly paymentProof: Prisma.FieldRef<"TransferPaymentDetail", 'String'>
   readonly confirmedAt: Prisma.FieldRef<"TransferPaymentDetail", 'DateTime'>
 }
@@ -1319,6 +1466,25 @@ export type TransferPaymentDetailDeleteManyArgs<ExtArgs extends runtime.Types.Ex
    * Limit how many TransferPaymentDetails to delete.
    */
   limit?: number
+}
+
+/**
+ * TransferPaymentDetail.paymentMethod
+ */
+export type TransferPaymentDetail$paymentMethodArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PaymentMethod
+   */
+  select?: Prisma.PaymentMethodSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PaymentMethod
+   */
+  omit?: Prisma.PaymentMethodOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentMethodInclude<ExtArgs> | null
+  where?: Prisma.PaymentMethodWhereInput
 }
 
 /**

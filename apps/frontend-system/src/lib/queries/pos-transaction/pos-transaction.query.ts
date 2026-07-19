@@ -1,6 +1,7 @@
 import { apiFetcher } from "@/lib/api/api.fetcher";
 import managementApi from "@/lib/api/api.management";
 import {
+  PosTransactionGetStatusResponse,
   PosTransactionResponse,
   PosTransactionResponseMutation,
   PosTransactionSchemaInput,
@@ -34,11 +35,29 @@ export const fetchPosTransactionParked = async () => {
   );
 };
 
+export const getStatusTransaction = async (transPosId: string) => {
+  return await apiFetcher(
+    managementApi.get(`v1/pos-transactions/${transPosId}/check-status`),
+    PosTransactionGetStatusResponse,
+  );
+};
+
 export const mutatePosTransaction = async (data: PosTransactionSchemaInput) => {
   return await apiFetcher(
     managementApi.post("v1/pos-transactions", { json: data }),
     PosTransactionResponseMutation,
   );
+};
+
+export const uploadPaymentProof = async (
+  transPosId: string,
+  formData: FormData,
+) => {
+  return await managementApi
+    .post(`v1/pos-transactions/${transPosId}/upload-paymentProof`, {
+      body: formData,
+    })
+    .json();
 };
 
 export const cancelPosTransaction = async (transId: string[]) => {

@@ -158,7 +158,14 @@ export class ProductsService {
     return result;
   }
 
-  async getProductList() {
+  async getProductList(search?: string, categoryId?: string) {
+    const dynamicFilters = [
+      search?.trim() && { name: { contains: search, mode: 'insensitive' } },
+      categoryId?.trim() && {
+        categories: { id: BigInt(categoryId) },
+      },
+    ].filter(Boolean) as Prisma.ProductMasterWhereInput[];
+
     const data = await prisma.productMaster.findMany({
       where: {
         status: ProductStatus.ACTIVE,
@@ -171,6 +178,7 @@ export class ProductsService {
             },
           },
         },
+        ...(dynamicFilters.length > 0 && { AND: dynamicFilters }),
       },
       select: {
         id: true,

@@ -1,6 +1,6 @@
 "use client";
 
-import { BanknoteArrowDown, Landmark, QrCodeIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import {
   Dialog,
@@ -9,15 +9,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
 import { CashPanel } from "./payment-display/CashPanel";
 import { TransferPanel } from "./payment-display/BankTransferPanel";
-import { PaymentChannelEnum, z } from "@repo/schemas";
-import { ComponentType, useState } from "react";
+import { useState } from "react";
 import { CartItem } from "./pos-view";
 import PaymentChannel from "./payment-display/payment-channel";
 import { toIDR } from "../../../utils/format-money";
+import { usePaymentMethodOperations } from "@/hooks/management/payment-method/use-payment-method-operations";
+import { QrisPanel } from "./payment-display/QrisPanel";
 
 interface PosPaymentDialogProps {
   openPayment: boolean;
@@ -25,31 +24,8 @@ interface PosPaymentDialogProps {
   clearCart: () => void;
   cart: CartItem[];
   totalShopping: number;
+  transPosId: string | null;
 }
-
-export type PAYMENT_METHOD = {
-  paymentId: number;
-  code: string;
-  name: string;
-  paymentChannel: string;
-};
-
-const PAYMENT_METHOD = [
-  { paymentId: 1, code: "cash", name: "Cash", paymentChannel: "CASH" },
-  {
-    paymentId: 2,
-    code: "502199334050",
-    name: "BRI",
-    paymentChannel: "BANK_TRANSFER",
-  },
-  {
-    paymentId: 3,
-    code: "342355661090",
-    name: "BNI",
-    paymentChannel: "BANK_TRANSFER",
-  },
-  { paymentId: 4, code: "qris", name: "QRIS", paymentChannel: "MIDTRANS" },
-];
 
 export default function PosPaymentDialog({
   openPayment,
@@ -57,26 +33,30 @@ export default function PosPaymentDialog({
   clearCart,
   cart,
   totalShopping,
+  transPosId,
 }: PosPaymentDialogProps) {
-  const [selected, setSelected] = useState<number | null>(null);
-  const selectedPayment = PAYMENT_METHOD.find(
-    (pm) => pm.paymentId === selected,
+  const [selected, setSelected] = useState<string | undefined>(undefined);
+
+  const { fetchPaymentData } = usePaymentMethodOperations();
+  const selectedPayment = fetchPaymentData?.data.find(
+    (pm) => pm.id === selected,
   );
 
   const handleSuccess = () => {
     clearCart();
+    setOpenPayment(false)
   };
 
   const handleOpenChange = (open: boolean) => {
     setOpenPayment(open);
     if (!open) {
-      setSelected(null);
+      setSelected(undefined);
     }
   };
 
   return (
     <Dialog open={openPayment} onOpenChange={handleOpenChange}>
-      <DialogContent className="min-w-lg p-6">
+      <DialogContent className="min-w-lg max-h-[85vh] p-6 overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-2xl">Proses Pembayaran</DialogTitle>
           <DialogDescription className="text-base">
@@ -84,7 +64,7 @@ export default function PosPaymentDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="space-y-5 flex-1 overflow-y-auto no-scrollbar">
           <Card>
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-row justify-between gap-3">
@@ -116,23 +96,35 @@ export default function PosPaymentDialog({
           </Card>
           <div className="space-y-3">
             <PaymentChannel
-              paymentData={PAYMENT_METHOD}
+              paymentData={fetchPaymentData?.data ?? []}
               setSelected={setSelected}
             />
-            {selectedPayment?.paymentChannel === "CASH" && (
+            {selectedPayment?.channel === "CASH" && (
               <CashPanel
                 total={totalShopping}
                 cartPayload={cart}
                 onSuccess={handleSuccess}
+                transPosId={transPosId}
+                paymentId={selectedPayment.id}
               />
             )}
-            {selectedPayment?.paymentChannel === "BANK_TRANSFER" && (
+            {selectedPayment?.channel === "BANK_TRANSFER" && (
               <TransferPanel
-                method="TRANSFER_BNI"
                 total={totalShopping}
                 cartPayload={cart}
                 paymentData={selectedPayment}
                 onSuccess={handleSuccess}
+                transPosId={transPosId}
+                paymentId={selectedPayment.id}
+              />
+            )}
+            {selectedPayment?.channel === "MIDTRANS" && (
+              <QrisPanel
+                total={totalShopping}
+                cartPayload={cart}
+                onSuccess={handleSuccess}
+                transPosId={transPosId}
+                paymentId={selectedPayment.id}
               />
             )}
           </div>
