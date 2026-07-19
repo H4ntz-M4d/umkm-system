@@ -15,7 +15,7 @@ export default function HeaderPos({ user }: { user: UserData }) {
     .toUpperCase();
 
   return (
-    <div className="py-2 px-6">
+    <div className="py-2 px-6 sticky md:relative top-0 z-50 bg-background">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="hidden bg-sidebar-primary text-sidebar-primary-foreground md:flex aspect-square size-9 items-center justify-center rounded-lg">

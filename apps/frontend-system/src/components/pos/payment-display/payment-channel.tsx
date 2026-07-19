@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
-import { PAYMENT_METHOD } from "../pos-payment-dialog";
+import { PaymentResponseData } from "@repo/schemas";
 
 interface PaymentChannelProps {
-  paymentData: PAYMENT_METHOD[];
-  setSelected: (selected: number) => void;
+  paymentData: PaymentResponseData[];
+  setSelected: (selected: string | undefined) => void;
 }
 
 export default function PaymentChannel({
@@ -28,10 +28,10 @@ export default function PaymentChannel({
   setSelected,
 }: PaymentChannelProps) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<number | null>();
+  const [value, setValue] = useState<string | undefined>();
 
   const handleValueSelected = () => {
-    setSelected(Number(value));
+    setSelected(value);
     setOpen(false);
   };
   return (
@@ -49,14 +49,14 @@ export default function PaymentChannel({
           </DialogDescription>
         </DialogHeader>
         <div>
-          <RadioGroup onValueChange={(value) => setValue(Number(value))}>
+          <RadioGroup value={value} onValueChange={(value) => setValue(value)}>
             {paymentData.map((p) => (
-              <FieldLabel key={p.paymentId}>
+              <FieldLabel key={p.id}>
                 <Field orientation={"horizontal"}>
                   <FieldContent>
                     <FieldTitle>{p.name}</FieldTitle>
                   </FieldContent>
-                  <RadioGroupItem value={p.paymentId.toString()} />
+                  <RadioGroupItem value={p.id} />
                 </Field>
               </FieldLabel>
             ))}

@@ -2856,7 +2856,7 @@ export type QrisPaymentDetailScalarFieldEnum = (typeof QrisPaymentDetailScalarFi
 export const TransferPaymentDetailScalarFieldEnum = {
   id: 'id',
   transactionId: 'transactionId',
-  bank: 'bank',
+  paymentMethodId: 'paymentMethodId',
   paymentProof: 'paymentProof',
   confirmedAt: 'confirmedAt'
 } as const

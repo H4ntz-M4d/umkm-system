@@ -12,18 +12,25 @@ import {
 import { toast } from "sonner";
 import { CreateProductSchemaInput } from "@repo/schemas";
 
+export interface PosFilters {
+  search?: string;
+  categoryId?: string;
+}
+
 export function useProductsOperation({
   pagination,
   search,
   idProduct,
   enabledProductVariantList = false,
   enabledPosProductLists = false,
+  posFilters,
 }: {
   pagination?: { pageIndex: number; pageSize: number };
   search?: string | undefined;
   idProduct?: string | undefined;
   enabledProductVariantList?: boolean;
   enabledPosProductLists?: boolean;
+  posFilters?: PosFilters;
 }) {
   const qc = useQueryClient();
   const isTableMode = !!pagination;
@@ -50,8 +57,8 @@ export function useProductsOperation({
   });
 
   const getPosProductList = useQuery({
-    queryKey: ["pos-products", "list"],
-    queryFn: () => fetchPosProductList(),
+    queryKey: ["pos-products", "list", posFilters ?? {}],
+    queryFn: () => fetchPosProductList(posFilters ?? {}),
     enabled: enabledPosProductLists,
     throwOnError: true,
   });

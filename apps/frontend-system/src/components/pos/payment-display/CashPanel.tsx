@@ -4,22 +4,34 @@
 import { useState } from "react";
 import { CartItem } from "../pos-view";
 import { Button } from "@/components/ui/button";
+import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
+import { AdminUser, useAuth } from "@/lib/queries/auth/useAuth";
+import loading from "@/app/management/stores/loading";
 
 interface Props {
   total: number;
+  transPosId: string | null;
+  paymentId: string;
   cartPayload: CartItem[];
   onSuccess: () => void;
 }
 
-export function CashPanel({ total, cartPayload, onSuccess }: Props) {
+export function CashPanel({
+  total,
+  cartPayload,
+  onSuccess,
+  transPosId,
+  paymentId,
+}: Props) {
   const [cashAmount, setCashAmount] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const { mutationPosTransactionData, isLoadingmutationPosTransactionData } = usePosTransactionOperations({});
+  const user = useAuth((state) => state.user);
+  const loading = isLoadingmutationPosTransactionData;
   const change = cashAmount - total;
   const isValid = cashAmount >= total;
 
-  const onBack = () => {}
+  const onBack = () => {};
 
   // Nominal cepat
   const QUICK_AMOUNTS = [
@@ -28,16 +40,26 @@ export function CashPanel({ total, cartPayload, onSuccess }: Props) {
     Math.ceil(total / 100000) * 100000, // bulatkan ke 100rb terdekat
   ].filter((v, i, arr) => arr.indexOf(v) === i && v >= total); // unik dan >= total
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (cashier: AdminUser | null) => {
     if (!isValid) return;
-    setLoading(true);
     setError(null);
     try {
+      if (!cashier || !cashier.storeId) return;
+      await mutationPosTransactionData({
+        storeId: cashier.storeId,
+        cashierId: cashier.id,
+        status: "PAID",
+        transId: transPosId,
+        paymentMethodId: paymentId,
+        itemTransaction: cartPayload.map((c) => ({
+          price: Number(c.price),
+          quantity: c.qty,
+          productVariantId: c.productVariantId,
+        })),
+      });
       onSuccess();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Transaksi gagal");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -91,7 +113,7 @@ export function CashPanel({ total, cartPayload, onSuccess }: Props) {
       {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
       <Button
-        onClick={handleConfirm}
+        onClick={() => handleConfirm(user)}
         disabled={!isValid || loading}
         className="w-full"
       >

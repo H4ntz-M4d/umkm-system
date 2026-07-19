@@ -41,9 +41,19 @@ export const fetchProductById = async (id: string) => {
   return res;
 };
 
-export const fetchPosProductList = async () => {
+export const fetchPosProductList = async (posFilters: {
+  search?: string;
+  categoryId?: string;
+}) => {
+  const cleanFilter = Object.fromEntries(
+    Object.entries(posFilters).filter(
+      ([_, v]) => v !== undefined && v.toString().trim() !== "",
+    ),
+  );
   const res = await apiFetcher(
-    managementApi.get("v1/products/point-of-sales/list"),
+    managementApi.get("v1/products/point-of-sales/list", {
+      searchParams: cleanFilter,
+    }),
     ProductListDataResponse,
   );
   return res;

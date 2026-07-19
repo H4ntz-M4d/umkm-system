@@ -5,59 +5,90 @@ import { useState } from "react";
 import { CartItem } from "../pos-view";
 import { Clipboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PAYMENT_METHOD } from "../pos-payment-dialog";
+import { PaymentResponseData } from "@repo/schemas";
+import { toIDR } from "../../../../utils/format-money";
+import { AdminUser, useAuth } from "@/lib/queries/auth/useAuth";
+import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
+import { Input } from "@/components/ui/input";
+import loading from "@/app/management/stores/loading";
 
 interface Props {
-  method: "TRANSFER_BNI" | "TRANSFER_BRI";
   total: number;
   cartPayload: CartItem[];
   onSuccess: () => void;
-  paymentData: PAYMENT_METHOD;
+  paymentData: PaymentResponseData;
+  transPosId: string | null;
+  paymentId: string;
 }
 
 type Step = "info" | "waiting" | "proof";
 
 export function TransferPanel({
-  method,
   total,
   cartPayload,
   paymentData,
   onSuccess,
+  transPosId,
+  paymentId,
 }: Props) {
   const [step, setStep] = useState<Step>("info");
   const [transactionId, setTransactionId] = useState<string | null>(null);
   const [proofFile, setProofFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const {
+    mutationPosTransactionData,
+    uploadPaymentProofData,
+    isLoadingUploadPaymentProofData,
+    isLoadingmutationPosTransactionData,
+  } = usePosTransactionOperations({});
+  const user = useAuth((state) => state.user);
 
   // Step 1: buat transaksi, tampilkan info rekening
-  const handleCreateTransaction = async () => {
-    setLoading(true);
+  const handleCreateTransaction = async (cashier: AdminUser | null) => {
     setError(null);
     try {
-      // setTransactionId(result.id);
+      if (!cashier || !cashier.storeId) return;
+      const result = await mutationPosTransactionData({
+        storeId: cashier.storeId,
+        cashierId: cashier.id,
+        status: "PENDING",
+        transId: transPosId,
+        paymentMethodId: paymentId,
+        itemTransaction: cartPayload.map((c) => ({
+          price: Number(c.price),
+          quantity: c.qty,
+          productVariantId: c.productVariantId,
+        })),
+      });
+
+      setTransactionId(result.data.id);
       setStep("waiting");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal membuat transaksi");
-    } finally {
-      setLoading(false);
     }
   };
 
   // Step 2: kasir upload bukti dan konfirmasi
   const handleConfirm = async () => {
     if (!transactionId || !proofFile) return;
-    setLoading(true);
     setError(null);
     try {
-      // Upload bukti ke storage dulu (Cloudinary/S3)
-      const proofUrl = await uploadProof(proofFile);
-      //   await confirmTransfer(transactionId, proofUrl)
-      onSuccess();
+      const formData = new FormData();
+      formData.append("paymentProof", proofFile);
+
+      await uploadPaymentProofData(
+        {
+          transPosId: transactionId,
+          formData: formData,
+        },
+        {
+          onSuccess: () => {
+            onSuccess();
+          },
+        },
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Konfirmasi gagal");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -73,11 +104,15 @@ export function TransferPanel({
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-500">No. Rekening</span>
               <div className="flex items-center gap-1">
-                <span className="font-medium">{paymentData.code}</span>
+                <span className="font-medium">{paymentData.accountNumber}</span>
                 <Button
                   variant={"ghost"}
                   className="size-1"
-                  onClick={() => navigator.clipboard.writeText(String(paymentData.code))}
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      String(paymentData.accountNumber),
+                    )
+                  }
                 >
                   <Clipboard />
                 </Button>
@@ -85,13 +120,13 @@ export function TransferPanel({
             </div>
             <div className="flex justify-between mb-2">
               <span className="text-sm text-gray-500">Atas Nama</span>
-              <span className="font-medium">Nurkayekti</span>
+              <span className="font-medium">{paymentData.accountName}</span>
             </div>
             <div className="flex justify-between border-t pt-2 mt-2">
               <span className="text-sm text-gray-500">Nominal Transfer</span>
               <div className="flex items-center gap-1">
                 <span className="font-semibold text-primary">
-                  {formatRupiah(total)}
+                  {toIDR(total)}
                 </span>
                 <Button
                   variant={"link"}
@@ -106,8 +141,11 @@ export function TransferPanel({
 
           {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
-          <Button onClick={handleCreateTransaction} disabled={loading}>
-            {loading ? "Membuat transaksi..." : "Pelanggan sudah transfer →"}
+          <Button
+            onClick={() => handleCreateTransaction(user)}
+            disabled={isLoadingmutationPosTransactionData}
+          >
+            {isLoadingmutationPosTransactionData ? "Membuat transaksi..." : "Pelanggan sudah transfer →"}
           </Button>
         </div>
       )}
@@ -129,7 +167,7 @@ export function TransferPanel({
             <label className="text-sm text-gray-500 mb-2 block">
               Upload bukti transfer
             </label>
-            <input
+            <Input
               type="file"
               accept="image/*"
               onChange={(e) => setProofFile(e.target.files?.[0] ?? null)}
@@ -151,33 +189,13 @@ export function TransferPanel({
 
           <button
             onClick={handleConfirm}
-            disabled={!proofFile || loading}
+            disabled={!proofFile || isLoadingUploadPaymentProofData}
             className="w-full bg-green-600 text-white rounded-xl py-3 font-medium disabled:opacity-50"
           >
-            {loading ? "Mengkonfirmasi..." : "Konfirmasi Pembayaran"}
+            {isLoadingUploadPaymentProofData ? "Mengkonfirmasi..." : "Konfirmasi Pembayaran"}
           </button>
         </div>
       )}
     </div>
   );
-}
-
-async function uploadProof(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append("file", file);
-  const res = await fetch("/api/upload/payment-proof", {
-    method: "POST",
-    body: formData,
-  });
-  if (!res.ok) throw new Error("Upload bukti gagal");
-  const data = await res.json();
-  return data.url;
-}
-
-function formatRupiah(amount: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount);
 }
