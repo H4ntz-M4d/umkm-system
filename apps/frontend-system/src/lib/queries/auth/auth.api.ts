@@ -1,7 +1,7 @@
 import managementApi from "../../api/api.management";
 import customerApi from "../../api/api.customer";
-import { useCustomerAuth } from "./userCustomerAuth";
-import { useAuth } from "./useAuth";
+import { useCustomerAuth } from "../../../stores/userCustomerAuth";
+import { useAuth } from "../../../stores/useAuth";
 import { apiFetcher } from "@/lib/api/api.fetcher";
 import {
   CustomerRegisterInput,

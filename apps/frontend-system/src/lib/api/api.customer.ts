@@ -1,5 +1,5 @@
 import ky from "ky";
-import { useCustomerAuth } from "@/lib/queries/auth/userCustomerAuth";
+import { useCustomerAuth } from "@/stores/userCustomerAuth";
 
 const baseURL =
   typeof window === "undefined"

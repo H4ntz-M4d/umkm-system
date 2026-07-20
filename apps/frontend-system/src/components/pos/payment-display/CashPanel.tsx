@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CartItem } from "../pos-view";
 import { Button } from "@/components/ui/button";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
-import { AdminUser, useAuth } from "@/lib/queries/auth/useAuth";
+import { AdminUser, useAuth } from "@/stores/useAuth";
 import loading from "@/app/management/stores/loading";
 
 interface Props {

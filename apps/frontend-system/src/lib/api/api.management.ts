@@ -1,5 +1,5 @@
 import ky from "ky";
-import { useAuth } from "@/lib/queries/auth/useAuth";
+import { useAuth } from "@/stores/useAuth";
 
 const baseURL = typeof window === "undefined"
   ? process.env.SERVER_API_URL              // server → http://localhost:5000/api

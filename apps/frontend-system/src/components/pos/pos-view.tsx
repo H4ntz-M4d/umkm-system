@@ -1,6 +1,6 @@
 "use client";
 
-import DialogProductCard from "@/components/pos/dialog-product-card";
+import DialogProductCard from "@/components/pos/dialog-pos/dialog-product-card";
 import PosFiltersComponent from "@/components/pos/pos-filters";
 import ProductCard from "@/components/pos/products-card";
 import { Button } from "@/components/ui/button";
@@ -10,16 +10,18 @@ import {
 } from "@/hooks/management/products/use-products-operation";
 import { useEffect, useState } from "react";
 import { PosTransactionSchemaInput, ProductListData, z } from "@repo/schemas";
-import { AdminUser, useAuth } from "@/lib/queries/auth/useAuth";
+import { AdminUser, useAuth } from "@/stores/useAuth";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { CameraScannerDialog } from "@/components/pos/camera-dialog";
 import { toast } from "sonner";
 import { useBarcodeScanner } from "@/hooks/use-barcode-scanner";
 import { Toaster } from "@/components/ui/sonner";
 import { beepError, beepSuccess } from "../../../utils/beep";
-import PosPaymentDialog from "./pos-payment-dialog";
+import PosPaymentDialog from "./dialog-pos/pos-payment-dialog";
 import OrderProcess from "./order-process";
 import OrderQueue from "./order-queue";
+import DialogOrderProcess from "./dialog-pos/dialog-order-process";
+import DialogOrderQueue from "./dialog-pos/dialog-order-queue";
 
 export type ProductList = z.infer<typeof ProductListData>;
 
@@ -101,6 +103,9 @@ export default function PosView() {
         ];
 
     setCart(updated);
+    toast.success("+1 Product telah ditambahkan ke keranjang", {
+      position: "top-center",
+    });
   };
 
   const confirmPickVariant = () => {
@@ -195,10 +200,10 @@ export default function PosView() {
   return (
     <>
       <div className="bg-sidebar min-h-screen">
-        <div className="py-6 px-5 md:px-10">
+        <div className="py-6 px-5 md:px-8">
           <div className="grid md:grid-cols-12 gap-4 mb-6">
             {/* left side */}
-            <div className="md:col-span-8 flex flex-col overflow-hidden space-y-5">
+            <div className="lg:col-span-6 md:col-span-7 flex flex-col overflow-hidden space-y-5">
               <PosFiltersComponent
                 setCameraOpen={setCameraOpen}
                 onSearchChange={(val) => setFilters({ search: val })}
@@ -227,31 +232,37 @@ export default function PosView() {
             </div>
 
             {/* right side */}
-            <div className="md:col-span-4 space-y-4 md:sticky md:top-10 h-fit">
-              {/* Proses Order */}
-              <OrderProcess
-                cart={cart}
-                setCart={setCart}
-                clearCart={clearCart}
-                existOnParked={existOnParked}
-                parkedCart={parkedCart}
-                setOpenPayment={setOpenPayment}
-                transPosId={transPosId}
-                user={user}
-                totalShopping={totalShopping}
-              />
+            <div className="hidden md:block lg:col-span-6 md:col-span-5 md:sticky md:top-10 h-fit">
+              <div className="grid grid-cols-12 gap-3">
+                {/* Proses Order */}
+                <div className="hidden md:block md:col-span-12 lg:col-span-7">
+                  <OrderProcess
+                    cart={cart}
+                    setCart={setCart}
+                    clearCart={clearCart}
+                    existOnParked={existOnParked}
+                    parkedCart={parkedCart}
+                    setOpenPayment={setOpenPayment}
+                    transPosId={transPosId}
+                    user={user}
+                    totalShopping={totalShopping}
+                  />
+                </div>
 
-              {/* Antrian Order*/}
-              <OrderQueue
-                cart={cart}
-                setCart={setCart}
-                parkedCart={parkedCart}
-                parkedData={parkedData}
-                transPosId={transPosId}
-                setTransPosId={setTransPosId}
-                totalShopping={totalShopping}
-                user={user}
-              />
+                {/* Antrian Order*/}
+                <div className="hidden lg:block lg:col-span-5">
+                  <OrderQueue
+                    cart={cart}
+                    setCart={setCart}
+                    parkedCart={parkedCart}
+                    parkedData={parkedData}
+                    transPosId={transPosId}
+                    setTransPosId={setTransPosId}
+                    totalShopping={totalShopping}
+                    user={user}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -275,6 +286,26 @@ export default function PosView() {
           cart={cart}
           totalShopping={totalShopping(cart)}
           transPosId={transPosId}
+        />
+        <DialogOrderProcess
+          cart={cart}
+          setCart={setCart}
+          clearCart={clearCart}
+          existOnParked={existOnParked}
+          parkedCart={parkedCart}
+          setOpenPayment={setOpenPayment}
+          transPosId={transPosId}
+          totalShopping={totalShopping}
+        />
+
+        <DialogOrderQueue
+          cart={cart}
+          setCart={setCart}
+          parkedCart={parkedCart}
+          parkedData={parkedData}
+          transPosId={transPosId}
+          setTransPosId={setTransPosId}
+          totalShopping={totalShopping}
         />
         <Toaster />
       </div>

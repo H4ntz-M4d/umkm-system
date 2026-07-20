@@ -1,9 +1,9 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { toIDR } from "../../../utils/format-money";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
+import { toIDR } from "../../../../utils/format-money";
+import { Button } from "../../ui/button";
+import { Card, CardContent } from "../../ui/card";
 import {
   Dialog,
   DialogClose,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
+} from "../../ui/dialog";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { ProductList } from "@/app/point-of-sale/system/page";

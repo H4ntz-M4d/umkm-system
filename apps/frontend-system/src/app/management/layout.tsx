@@ -5,7 +5,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 import { getAdminProfile } from "@/lib/queries/auth/auth.api";
 import { cookies, headers } from "next/headers";
-import { useAuth } from "@/lib/queries/auth/useAuth";
+import { useAuth } from "@/stores/useAuth";
 
 interface AdminLayoutProps {
   children: ReactNode;

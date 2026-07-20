@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/lib/queries/auth/useAuth";
+import { useAuth } from "@/stores/useAuth";
 
 // This is sample data.
 const data = {

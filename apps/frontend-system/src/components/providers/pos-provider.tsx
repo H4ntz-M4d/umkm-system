@@ -1,6 +1,6 @@
 "use client"
 
-import { AdminUser, useAuth } from "@/lib/queries/auth/useAuth";
+import { AdminUser, useAuth } from "@/stores/useAuth";
 import React, { useEffect } from "react";
 
 interface PosProviderProps {
