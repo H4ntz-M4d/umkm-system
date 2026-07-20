@@ -3,9 +3,10 @@ import { ManagementProvider } from "@/components/providers/management-provider";
 import { ReactNode } from "react";
 import { getAdminProfile } from "@/lib/queries/auth/auth.api";
 import { cookies, headers } from "next/headers";
-import { useAuth } from "@/lib/queries/auth/useAuth";
+import { useAuth } from "@/stores/useAuth";
 import HeaderPos from "@/components/pos/header";
 import PosProvider from "@/components/providers/pos-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface PosLayoutProps {
   children: ReactNode;
@@ -27,25 +28,19 @@ export default async function PosLayout({ children }: PosLayoutProps) {
   if (!token) return null;
 
   let user = null;
-  const userPosData: UserData = {
-    name: "",
-    role: "",
-  };
 
   if (token) {
     try {
       user = await getAdminProfile(token);
-      userPosData.name = user.name;
-      userPosData.role =
-        user.role.charAt(0).toUpperCase() +
-        user.role.slice(1).toLocaleLowerCase();
     } catch (err) {}
   }
 
   return (
     <>
       <PosProvider user={user}>
-        <HeaderPos user={userPosData} />
+        <TooltipProvider>
+          <HeaderPos />
+        </TooltipProvider>
 
         {children}
       </PosProvider>

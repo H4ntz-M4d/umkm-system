@@ -4,7 +4,7 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import loginSideImage from "@/assets/login-side.jpg";
 import { useRouter } from "next/router";
-import { useAuth } from "@/lib/queries/auth/useAuth";
+import { useAuth } from "@/stores/useAuth";
 import { LoginSchema, z } from "@repo/schemas";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -1,8 +1,8 @@
 "use client";
 
 import { getAdminProfile } from "@/lib/queries/auth/auth.api";
-import { useAuth } from "@/lib/queries/auth/useAuth";
-import { useCustomerAuth } from "@/lib/queries/auth/userCustomerAuth";
+import { useAuth } from "@/stores/useAuth";
+import { useCustomerAuth } from "@/stores/userCustomerAuth";
 import { useEffect, useState } from "react";
 import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
 

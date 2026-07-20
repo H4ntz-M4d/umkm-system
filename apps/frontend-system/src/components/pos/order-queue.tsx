@@ -8,7 +8,8 @@ import { Separator } from "../ui/separator";
 import { PosTransactionsParkedData, z } from "@repo/schemas";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { CartItem } from "./pos-view";
-import { AdminUser } from "@/lib/queries/auth/useAuth";
+import { AdminUser } from "@/stores/useAuth";
+import { ScrollArea } from "../ui/scroll-area";
 
 type ItemCart = {
   price: string;
@@ -82,7 +83,7 @@ export default function OrderQueue({
         <Separator />
       </CardHeader>
       <CardContent className="space-y-5 px-0">
-        <div className="flex flex-col">
+        <ScrollArea className="flex flex-col md:max-h-150 lg:max-h-120">
           {parkedData?.length ? (
             parkedData?.map((item, index) => (
               <div key={index} className="flex flex-col gap-5 p-2">
@@ -102,7 +103,7 @@ export default function OrderQueue({
                       <span>{toIDR(totalShopping(item.itemTransaction))}</span>
                     </div>
                   </div>
-                  <div className={"grid lg:grid-cols-2 gap-3 flex-1"}>
+                  <div className={"flex flex-col gap-3 flex-1"}>
                     <Button
                       variant={"outline"}
                       size={"sm"}
@@ -130,17 +131,17 @@ export default function OrderQueue({
               </div>
             ))
           ) : (
-            <div className="flex flex-col justify-center items-center flex-1 min-w-0 gap-2 text-muted-foreground/60 my-5">
+            <div className="flex flex-col justify-center items-center flex-1 min-w-0 gap-2 text-muted-foreground/70 my-5">
               <ListTodo />
               <p className="text-sm font-medium truncate">
                 List Antrian Transaksi
               </p>
-              <p className="text-xs">
+              <p className="text-xs text-center">
                 Masukkan ke antrian jika pelanggan masih ingin memilih produk
               </p>
             </div>
           )}
-        </div>
+        </ScrollArea>
       </CardContent>
     </Card>
   );

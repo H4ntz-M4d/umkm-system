@@ -7,7 +7,7 @@ import { Clipboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PaymentResponseData } from "@repo/schemas";
 import { toIDR } from "../../../../utils/format-money";
-import { AdminUser, useAuth } from "@/lib/queries/auth/useAuth";
+import { AdminUser, useAuth } from "@/stores/useAuth";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { Input } from "@/components/ui/input";
 import loading from "@/app/management/stores/loading";

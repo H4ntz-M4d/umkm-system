@@ -1,7 +1,7 @@
 "use client";
 
 import { getCustomerProfile } from "@/lib/queries/auth/auth.api";
-import { useCustomerAuth } from "@/lib/queries/auth/userCustomerAuth";
+import { useCustomerAuth } from "@/stores/userCustomerAuth";
 import { useEffect, useState } from "react";
 import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
 import { UserProfileResponse, z } from "@repo/schemas";

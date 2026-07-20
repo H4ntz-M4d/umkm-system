@@ -1,22 +1,22 @@
 "use client";
 
 import { XIcon } from "lucide-react";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent } from "../../ui/card";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { CashPanel } from "./payment-display/CashPanel";
-import { TransferPanel } from "./payment-display/BankTransferPanel";
+} from "../../ui/dialog";
+import { CashPanel } from "../payment-display/CashPanel";
+import { TransferPanel } from "../payment-display/BankTransferPanel";
 import { useState } from "react";
-import { CartItem } from "./pos-view";
-import PaymentChannel from "./payment-display/payment-channel";
-import { toIDR } from "../../../utils/format-money";
+import { CartItem } from "../pos-view";
+import PaymentChannel from "../payment-display/payment-channel";
+import { toIDR } from "../../../../utils/format-money";
 import { usePaymentMethodOperations } from "@/hooks/management/payment-method/use-payment-method-operations";
-import { QrisPanel } from "./payment-display/QrisPanel";
+import { QrisPanel } from "../payment-display/QrisPanel";
 
 interface PosPaymentDialogProps {
   openPayment: boolean;
@@ -56,7 +56,7 @@ export default function PosPaymentDialog({
 
   return (
     <Dialog open={openPayment} onOpenChange={handleOpenChange}>
-      <DialogContent className="min-w-lg max-h-[85vh] p-6 overflow-hidden flex flex-col">
+      <DialogContent className="md:min-w-lg max-h-[85vh] p-6 overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-2xl">Proses Pembayaran</DialogTitle>
           <DialogDescription className="text-base">

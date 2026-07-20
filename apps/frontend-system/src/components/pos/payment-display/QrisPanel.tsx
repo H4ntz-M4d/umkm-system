@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CartItem } from "../pos-view";
 import { AlertCircle, CircleCheck, Clipboard, ClockAlert } from "lucide-react";
 import { toIDR } from "../../../../utils/format-money";
-import { useAuth } from "@/lib/queries/auth/useAuth";
+import { useAuth } from "@/stores/useAuth";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { getStatusTransaction } from "@/lib/queries/pos-transaction/pos-transaction.query";
 import { setTimeout } from "timers";

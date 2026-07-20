@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MobileHeader from "./mobile-header";
 import { NavItem, NavItemProfile } from "./nav-item";
-import { useCustomerAuth } from "@/lib/queries/auth/userCustomerAuth";
+import { useCustomerAuth } from "@/stores/userCustomerAuth";
 import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
 import { Separator } from "@/components/ui/separator";
 
