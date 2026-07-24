@@ -92,7 +92,7 @@ const data = {
     },
     {
       title: "Pesanan",
-      url: "#",
+      url: "/management/order-transaction",
       icon: BaggageClaim,
     },
     {

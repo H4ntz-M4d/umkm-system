@@ -9,6 +9,7 @@ interface PosTransactionAllEntity extends Prisma.PosTransactionGetPayload<{
     paymentMethodId: true;
     totalAmount: true;
     createdAt: true;
+    status: true;
     users: {
       select: {
         employees: {
@@ -18,10 +19,14 @@ interface PosTransactionAllEntity extends Prisma.PosTransactionGetPayload<{
         };
       };
     };
+    store: {
+      select: {
+        name: true;
+      };
+    };
     paymentMethod: {
       select: {
         name: true;
-        channel: true;
       };
     };
     items: {
@@ -58,10 +63,11 @@ export function toPosTransactionResponse(entity: PosTransactionAllEntity) {
     id: entity.id,
     transId: entity.transId,
     storeId: entity.storeId,
+    storeName: entity.store.name,
     cashierName: entity.users.employees?.name,
     paymentMethod: entity.paymentMethod?.name,
-    paymentChannel: entity.paymentMethod?.channel,
     totalAmount: entity.totalAmount,
+    status: entity.status,
     createdAt: entity.createdAt,
     items: entity.items.map((item) => {
       const variantValues = item.variant.options

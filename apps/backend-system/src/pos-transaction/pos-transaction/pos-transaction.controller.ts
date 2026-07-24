@@ -24,6 +24,8 @@ export class PosTransactionController {
     @Query() pagination: Pagination,
     @Query('search') search?: string,
     @Query('paymentChannel') paymentChannel?: string,
+    @Query('storeId') storeId?: string,
+    @Query('status') status?: string,
     @Query('dateFrom') dateFrom?: string,
     @Query('dateTo') dateTo?: string,
   ) {
@@ -31,6 +33,8 @@ export class PosTransactionController {
       pagination,
       search,
       paymentChannel,
+      storeId,
+      status,
       dateFrom,
       dateTo,
     );
