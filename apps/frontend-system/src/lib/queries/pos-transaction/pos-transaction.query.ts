@@ -13,6 +13,8 @@ export interface PosTransactionFilters {
   limit?: number;
   search?: string;
   paymentChannel?: string;
+  storeId?: string;
+  status?: string;
   dateFrom?: string;
   dateTo?: string;
 }
@@ -21,9 +23,9 @@ export const fetchPosTransactions = async (filters: PosTransactionFilters) => {
   const filter = Object.fromEntries(
     Object.entries(filters).filter(([_, v]) => v !== undefined || v !== ""),
   );
-  const queryFilters = new URLSearchParams(filter);
+  const queryFilters = new URLSearchParams(filter).toString();
   return await apiFetcher(
-    managementApi.get(`v1/pos-transactions/${queryFilters}`),
+    managementApi.get(`v1/pos-transactions?${queryFilters}`),
     PosTransactionResponse,
   );
 };

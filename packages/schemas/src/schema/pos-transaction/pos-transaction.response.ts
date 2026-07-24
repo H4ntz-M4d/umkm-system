@@ -4,8 +4,16 @@ import { ApiSuccessResponse } from "../../api.schema.response";
 
 export const PosTransactionData = PosTransactionSchema.omit({
   itemTransaction: true,
+  cashierId: true,
+  status: true,
 }).extend({
   id: z.string(),
+  status: z.string(),
+  cashierName: z.string(),
+  paymentMethod: z.string(),
+  storeName: z.string(),
+  totalAmount: z.string(),
+  createdAt: z.string(),
 });
 
 export const ItemsPosTransaction = z.object({
@@ -22,6 +30,8 @@ export const PosTransactionsParkedData = PosTransactionSchema.pick({
 }).extend({
   itemTransaction: z.array(ItemsPosTransaction),
 });
+
+export type PosTransactionDataType = z.infer<typeof PosTransactionData>;
 
 export const PosTransactionResponse = ApiSuccessResponse(
   z.array(PosTransactionData),

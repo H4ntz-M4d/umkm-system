@@ -23,6 +23,8 @@ export class PosTransactionService {
     pagination: Pagination,
     search?: string,
     paymentChannel?: string,
+    storeId?: string,
+    status?: string,
     dateFrom?: string,
     dateTo?: string,
   ) {
@@ -30,33 +32,40 @@ export class PosTransactionService {
     const limit = pagination.limit ?? 10;
 
     const whereClause: Prisma.PosTransactionWhereInput = {
-      paymentMethod: {
-        channel: paymentChannel
-          ? (paymentChannel as Prisma.EnumPaymentChannelFilter)
-          : undefined,
-        name: search
-          ? {
+      ...(paymentChannel && {
+        paymentMethod: {
+          name: {
+            contains: paymentChannel,
+            mode: 'insensitive',
+          },
+        },
+      }),
+      ...(storeId && {
+        storeId: BigInt(storeId),
+      }),
+      ...(status && {
+        status: PosStatus[status as keyof typeof PosStatus],
+      }),
+      ...(search && {
+        OR: [
+          {
+            users: {
+              employees: {
+                name: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+          {
+            transId: {
               contains: search,
               mode: 'insensitive',
-            }
-          : undefined,
-      },
-      users: {
-        employees: {
-          name: search
-            ? {
-                contains: search,
-                mode: 'insensitive',
-              }
-            : undefined,
-        },
-      },
-      transId: search
-        ? {
-            contains: search,
-            mode: 'insensitive',
-          }
-        : undefined,
+            },
+          },
+        ],
+      }),
       createdAt: {
         gte: dateFrom ? toStartOfDay(dateFrom) : undefined,
         lte: dateTo ? toEndOfDay(dateTo) : undefined,
@@ -104,6 +113,11 @@ export class PosTransactionService {
                 name: true,
               },
             },
+          },
+        },
+        store: {
+          select: {
+            name: true,
           },
         },
       },
