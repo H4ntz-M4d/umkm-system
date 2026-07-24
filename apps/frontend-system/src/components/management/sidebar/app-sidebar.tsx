@@ -97,7 +97,7 @@ const data = {
     },
     {
       title: "Transakasi",
-      url: "#",
+      url: "/management/transaction-flow",
       icon: BanknoteArrowDown,
     },
     {

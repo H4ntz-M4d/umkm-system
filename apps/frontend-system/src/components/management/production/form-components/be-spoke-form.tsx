@@ -62,7 +62,7 @@ export default function BeSpokeForm({
         name="bespoke.description"
         render={({field}) => (
           <Field>
-            <FieldLabel>Title</FieldLabel>
+            <FieldLabel>Deskripsi</FieldLabel>
             <Textarea className="h-20" placeholder="Bahan baku, ukuran, spesial untuk..." {...field} />
           </Field>
         )}

@@ -24,6 +24,7 @@ model Store {
   productions      Production[]
   expenses         Expense[]
   posTransactions  PosTransaction[]
+  cashTransactions CashTransaction[]
 
   @@map("store")
 }
@@ -446,7 +447,7 @@ enum PaymentChannel {
 
 model CashTransaction {
   id          BigInt     @id @default(autoincrement())
-  branchId    BigInt
+  storeId     BigInt
   type        CashType
   amount      Decimal
   source      CashSource
@@ -454,6 +455,9 @@ model CashTransaction {
   note        String?
   createdAt   DateTime   @default(now())
 
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@unique([referenceId, source])
   @@map("cash_transaction")
 }
 
@@ -469,22 +473,12 @@ enum CashSource {
   PRODUCTION
 }
 
-model QrisPaymentDetail {
-  id            String         @id @default(cuid())
-  transactionId BigInt         @unique
-  transaction   PosTransaction @relation(fields: [transactionId], references: [id])
-  midtransId    String? // order_id Midtrans untuk webhook lookup
-  qrString      String?
-  qrUrl         String?
-  qrExpiresAt   DateTime?
-}
-
 model TransferPaymentDetail {
   id              BigInt         @id @default(autoincrement())
   transactionId   BigInt         @unique
   transaction     PosTransaction @relation(fields: [transactionId], references: [id])
   paymentMethodId BigInt?
-  paymentMethod   PaymentMethod?  @relation(fields: [paymentMethodId], references: [id], onDelete: Cascade)
+  paymentMethod   PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: Cascade)
   paymentProof    String?        @db.VarChar(255)
   confirmedAt     DateTime?
 
@@ -510,7 +504,6 @@ model PosTransaction {
   paymentMethod PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
 
   items                 PosTransactionItem[]
-  qrisPaymentDetails    QrisPaymentDetail?
   transferPaymentDetail TransferPaymentDetail?
 
   @@map("pos_transaction")
@@ -531,9 +524,9 @@ model PosTransactionItem {
   price            Decimal
   subtotal         Decimal
 
-  posTransaction PosTransaction @relation(fields: [posTransactionId], references: [id])
+  posTransaction PosTransaction @relation(fields: [posTransactionId], references: [id], onDelete: Cascade)
   variant        ProductVariant @relation(fields: [productVariantId], references: [id])
 
-  @@unique([posTransactionId, productVariantId])
+  @@unique([posTransactionId, productVariantId])  
   @@map("pos_transaction_item")
 }

@@ -154,6 +154,16 @@ export class ExpenseService {
         include: { expenseItem: true },
       });
 
+      await tx.cashTransaction.create({
+        data: {
+          type: 'OUT',
+          source: 'EXPENSE',
+          referenceId: expense.id,
+          amount: expense.totalAmount,
+          storeId: expense.storeId,
+        },
+      });
+
       return expense;
     });
 
@@ -175,6 +185,15 @@ export class ExpenseService {
     const result = await prisma.expense.delete({
       where: { id },
       include: { expenseItem: true },
+    });
+
+    await prisma.cashTransaction.delete({
+      where: {
+        referenceId_source: {
+          referenceId: id,
+          source: 'EXPENSE',
+        },
+      },
     });
 
     return result;

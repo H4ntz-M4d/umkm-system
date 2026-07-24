@@ -36,3 +36,7 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Manual Book
+manual_book.md
+Manual Book ( Dokumentasi Sistem).pdf

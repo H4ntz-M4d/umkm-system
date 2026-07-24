@@ -75,7 +75,6 @@ export const ModelName = {
   PaymentMethod: 'PaymentMethod',
   BankAccount: 'BankAccount',
   CashTransaction: 'CashTransaction',
-  QrisPaymentDetail: 'QrisPaymentDetail',
   TransferPaymentDetail: 'TransferPaymentDetail',
   PosTransaction: 'PosTransaction',
   PosTransactionItem: 'PosTransactionItem'
@@ -384,7 +383,7 @@ export type BankAccountScalarFieldEnum = (typeof BankAccountScalarFieldEnum)[key
 
 export const CashTransactionScalarFieldEnum = {
   id: 'id',
-  branchId: 'branchId',
+  storeId: 'storeId',
   type: 'type',
   amount: 'amount',
   source: 'source',
@@ -394,18 +393,6 @@ export const CashTransactionScalarFieldEnum = {
 } as const
 
 export type CashTransactionScalarFieldEnum = (typeof CashTransactionScalarFieldEnum)[keyof typeof CashTransactionScalarFieldEnum]
-
-
-export const QrisPaymentDetailScalarFieldEnum = {
-  id: 'id',
-  transactionId: 'transactionId',
-  midtransId: 'midtransId',
-  qrString: 'qrString',
-  qrUrl: 'qrUrl',
-  qrExpiresAt: 'qrExpiresAt'
-} as const
-
-export type QrisPaymentDetailScalarFieldEnum = (typeof QrisPaymentDetailScalarFieldEnum)[keyof typeof QrisPaymentDetailScalarFieldEnum]
 
 
 export const TransferPaymentDetailScalarFieldEnum = {

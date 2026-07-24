@@ -25,5 +25,6 @@ export * from "./schema/payment-method/payment-method.response";
 export * from "./schema/payment-method/payment-method.schema";
 export * from "./schema/pos-transaction/pos-transaction.schema";
 export * from "./schema/pos-transaction/pos-transaction.response";
+export * from "./schema/transaction-flow/transaction-flow.response";
 import z from "zod";
 export { z };

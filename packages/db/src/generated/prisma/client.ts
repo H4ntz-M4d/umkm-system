@@ -160,11 +160,6 @@ export type BankAccount = Prisma.BankAccountModel
  */
 export type CashTransaction = Prisma.CashTransactionModel
 /**
- * Model QrisPaymentDetail
- * 
- */
-export type QrisPaymentDetail = Prisma.QrisPaymentDetailModel
-/**
  * Model TransferPaymentDetail
  * 
  */

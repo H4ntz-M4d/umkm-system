@@ -17,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataTablePagination } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -36,7 +35,7 @@ interface DataTableProps<TData, TValue> {
   onPaginationChange: OnChangeFn<PaginationState>;
 }
 
-export function DataTableRawMaterials<TData, TValue>({
+export function DataTableTransactionFlow<TData, TValue>({
   columns,
   data,
   pageCount,
@@ -89,7 +88,7 @@ export function DataTableRawMaterials<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="text-center">
+                    <TableCell key={cell.id} className="text-center h-15">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
