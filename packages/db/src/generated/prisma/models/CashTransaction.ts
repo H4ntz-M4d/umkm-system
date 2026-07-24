@@ -28,21 +28,21 @@ export type AggregateCashTransaction = {
 
 export type CashTransactionAvgAggregateOutputType = {
   id: number | null
-  branchId: number | null
+  storeId: number | null
   amount: runtime.Decimal | null
   referenceId: number | null
 }
 
 export type CashTransactionSumAggregateOutputType = {
   id: bigint | null
-  branchId: bigint | null
+  storeId: bigint | null
   amount: runtime.Decimal | null
   referenceId: bigint | null
 }
 
 export type CashTransactionMinAggregateOutputType = {
   id: bigint | null
-  branchId: bigint | null
+  storeId: bigint | null
   type: $Enums.CashType | null
   amount: runtime.Decimal | null
   source: $Enums.CashSource | null
@@ -53,7 +53,7 @@ export type CashTransactionMinAggregateOutputType = {
 
 export type CashTransactionMaxAggregateOutputType = {
   id: bigint | null
-  branchId: bigint | null
+  storeId: bigint | null
   type: $Enums.CashType | null
   amount: runtime.Decimal | null
   source: $Enums.CashSource | null
@@ -64,7 +64,7 @@ export type CashTransactionMaxAggregateOutputType = {
 
 export type CashTransactionCountAggregateOutputType = {
   id: number
-  branchId: number
+  storeId: number
   type: number
   amount: number
   source: number
@@ -77,21 +77,21 @@ export type CashTransactionCountAggregateOutputType = {
 
 export type CashTransactionAvgAggregateInputType = {
   id?: true
-  branchId?: true
+  storeId?: true
   amount?: true
   referenceId?: true
 }
 
 export type CashTransactionSumAggregateInputType = {
   id?: true
-  branchId?: true
+  storeId?: true
   amount?: true
   referenceId?: true
 }
 
 export type CashTransactionMinAggregateInputType = {
   id?: true
-  branchId?: true
+  storeId?: true
   type?: true
   amount?: true
   source?: true
@@ -102,7 +102,7 @@ export type CashTransactionMinAggregateInputType = {
 
 export type CashTransactionMaxAggregateInputType = {
   id?: true
-  branchId?: true
+  storeId?: true
   type?: true
   amount?: true
   source?: true
@@ -113,7 +113,7 @@ export type CashTransactionMaxAggregateInputType = {
 
 export type CashTransactionCountAggregateInputType = {
   id?: true
-  branchId?: true
+  storeId?: true
   type?: true
   amount?: true
   source?: true
@@ -211,7 +211,7 @@ export type CashTransactionGroupByArgs<ExtArgs extends runtime.Types.Extensions.
 
 export type CashTransactionGroupByOutputType = {
   id: bigint
-  branchId: bigint
+  storeId: bigint
   type: $Enums.CashType
   amount: runtime.Decimal
   source: $Enums.CashSource
@@ -245,43 +245,47 @@ export type CashTransactionWhereInput = {
   OR?: Prisma.CashTransactionWhereInput[]
   NOT?: Prisma.CashTransactionWhereInput | Prisma.CashTransactionWhereInput[]
   id?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
-  branchId?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
+  storeId?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
   type?: Prisma.EnumCashTypeFilter<"CashTransaction"> | $Enums.CashType
   amount?: Prisma.DecimalFilter<"CashTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   source?: Prisma.EnumCashSourceFilter<"CashTransaction"> | $Enums.CashSource
   referenceId?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
   note?: Prisma.StringNullableFilter<"CashTransaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CashTransaction"> | Date | string
+  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
 }
 
 export type CashTransactionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  branchId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   source?: Prisma.SortOrder
   referenceId?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  store?: Prisma.StoreOrderByWithRelationInput
 }
 
 export type CashTransactionWhereUniqueInput = Prisma.AtLeast<{
   id?: bigint | number
+  referenceId_source?: Prisma.CashTransactionReferenceIdSourceCompoundUniqueInput
   AND?: Prisma.CashTransactionWhereInput | Prisma.CashTransactionWhereInput[]
   OR?: Prisma.CashTransactionWhereInput[]
   NOT?: Prisma.CashTransactionWhereInput | Prisma.CashTransactionWhereInput[]
-  branchId?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
+  storeId?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
   type?: Prisma.EnumCashTypeFilter<"CashTransaction"> | $Enums.CashType
   amount?: Prisma.DecimalFilter<"CashTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   source?: Prisma.EnumCashSourceFilter<"CashTransaction"> | $Enums.CashSource
   referenceId?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
   note?: Prisma.StringNullableFilter<"CashTransaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CashTransaction"> | Date | string
-}, "id">
+  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
+}, "id" | "referenceId_source">
 
 export type CashTransactionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  branchId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   source?: Prisma.SortOrder
@@ -300,7 +304,7 @@ export type CashTransactionScalarWhereWithAggregatesInput = {
   OR?: Prisma.CashTransactionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CashTransactionScalarWhereWithAggregatesInput | Prisma.CashTransactionScalarWhereWithAggregatesInput[]
   id?: Prisma.BigIntWithAggregatesFilter<"CashTransaction"> | bigint | number
-  branchId?: Prisma.BigIntWithAggregatesFilter<"CashTransaction"> | bigint | number
+  storeId?: Prisma.BigIntWithAggregatesFilter<"CashTransaction"> | bigint | number
   type?: Prisma.EnumCashTypeWithAggregatesFilter<"CashTransaction"> | $Enums.CashType
   amount?: Prisma.DecimalWithAggregatesFilter<"CashTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   source?: Prisma.EnumCashSourceWithAggregatesFilter<"CashTransaction"> | $Enums.CashSource
@@ -311,18 +315,18 @@ export type CashTransactionScalarWhereWithAggregatesInput = {
 
 export type CashTransactionCreateInput = {
   id?: bigint | number
-  branchId: bigint | number
   type: $Enums.CashType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   source: $Enums.CashSource
   referenceId: bigint | number
   note?: string | null
   createdAt?: Date | string
+  store: Prisma.StoreCreateNestedOneWithoutCashTransactionsInput
 }
 
 export type CashTransactionUncheckedCreateInput = {
   id?: bigint | number
-  branchId: bigint | number
+  storeId: bigint | number
   type: $Enums.CashType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   source: $Enums.CashSource
@@ -333,18 +337,18 @@ export type CashTransactionUncheckedCreateInput = {
 
 export type CashTransactionUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  branchId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   type?: Prisma.EnumCashTypeFieldUpdateOperationsInput | $Enums.CashType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   source?: Prisma.EnumCashSourceFieldUpdateOperationsInput | $Enums.CashSource
   referenceId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  store?: Prisma.StoreUpdateOneRequiredWithoutCashTransactionsNestedInput
 }
 
 export type CashTransactionUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  branchId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   type?: Prisma.EnumCashTypeFieldUpdateOperationsInput | $Enums.CashType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   source?: Prisma.EnumCashSourceFieldUpdateOperationsInput | $Enums.CashSource
@@ -355,7 +359,7 @@ export type CashTransactionUncheckedUpdateInput = {
 
 export type CashTransactionCreateManyInput = {
   id?: bigint | number
-  branchId: bigint | number
+  storeId: bigint | number
   type: $Enums.CashType
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   source: $Enums.CashSource
@@ -366,7 +370,6 @@ export type CashTransactionCreateManyInput = {
 
 export type CashTransactionUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  branchId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   type?: Prisma.EnumCashTypeFieldUpdateOperationsInput | $Enums.CashType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   source?: Prisma.EnumCashSourceFieldUpdateOperationsInput | $Enums.CashSource
@@ -377,7 +380,7 @@ export type CashTransactionUpdateManyMutationInput = {
 
 export type CashTransactionUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  branchId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   type?: Prisma.EnumCashTypeFieldUpdateOperationsInput | $Enums.CashType
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   source?: Prisma.EnumCashSourceFieldUpdateOperationsInput | $Enums.CashSource
@@ -386,9 +389,24 @@ export type CashTransactionUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type CashTransactionListRelationFilter = {
+  every?: Prisma.CashTransactionWhereInput
+  some?: Prisma.CashTransactionWhereInput
+  none?: Prisma.CashTransactionWhereInput
+}
+
+export type CashTransactionOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type CashTransactionReferenceIdSourceCompoundUniqueInput = {
+  referenceId: bigint | number
+  source: $Enums.CashSource
+}
+
 export type CashTransactionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  branchId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   source?: Prisma.SortOrder
@@ -399,14 +417,14 @@ export type CashTransactionCountOrderByAggregateInput = {
 
 export type CashTransactionAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  branchId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   referenceId?: Prisma.SortOrder
 }
 
 export type CashTransactionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  branchId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   source?: Prisma.SortOrder
@@ -417,7 +435,7 @@ export type CashTransactionMaxOrderByAggregateInput = {
 
 export type CashTransactionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  branchId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   source?: Prisma.SortOrder
@@ -428,9 +446,51 @@ export type CashTransactionMinOrderByAggregateInput = {
 
 export type CashTransactionSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  branchId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   referenceId?: Prisma.SortOrder
+}
+
+export type CashTransactionCreateNestedManyWithoutStoreInput = {
+  create?: Prisma.XOR<Prisma.CashTransactionCreateWithoutStoreInput, Prisma.CashTransactionUncheckedCreateWithoutStoreInput> | Prisma.CashTransactionCreateWithoutStoreInput[] | Prisma.CashTransactionUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.CashTransactionCreateOrConnectWithoutStoreInput | Prisma.CashTransactionCreateOrConnectWithoutStoreInput[]
+  createMany?: Prisma.CashTransactionCreateManyStoreInputEnvelope
+  connect?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+}
+
+export type CashTransactionUncheckedCreateNestedManyWithoutStoreInput = {
+  create?: Prisma.XOR<Prisma.CashTransactionCreateWithoutStoreInput, Prisma.CashTransactionUncheckedCreateWithoutStoreInput> | Prisma.CashTransactionCreateWithoutStoreInput[] | Prisma.CashTransactionUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.CashTransactionCreateOrConnectWithoutStoreInput | Prisma.CashTransactionCreateOrConnectWithoutStoreInput[]
+  createMany?: Prisma.CashTransactionCreateManyStoreInputEnvelope
+  connect?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+}
+
+export type CashTransactionUpdateManyWithoutStoreNestedInput = {
+  create?: Prisma.XOR<Prisma.CashTransactionCreateWithoutStoreInput, Prisma.CashTransactionUncheckedCreateWithoutStoreInput> | Prisma.CashTransactionCreateWithoutStoreInput[] | Prisma.CashTransactionUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.CashTransactionCreateOrConnectWithoutStoreInput | Prisma.CashTransactionCreateOrConnectWithoutStoreInput[]
+  upsert?: Prisma.CashTransactionUpsertWithWhereUniqueWithoutStoreInput | Prisma.CashTransactionUpsertWithWhereUniqueWithoutStoreInput[]
+  createMany?: Prisma.CashTransactionCreateManyStoreInputEnvelope
+  set?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+  disconnect?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+  delete?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+  connect?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+  update?: Prisma.CashTransactionUpdateWithWhereUniqueWithoutStoreInput | Prisma.CashTransactionUpdateWithWhereUniqueWithoutStoreInput[]
+  updateMany?: Prisma.CashTransactionUpdateManyWithWhereWithoutStoreInput | Prisma.CashTransactionUpdateManyWithWhereWithoutStoreInput[]
+  deleteMany?: Prisma.CashTransactionScalarWhereInput | Prisma.CashTransactionScalarWhereInput[]
+}
+
+export type CashTransactionUncheckedUpdateManyWithoutStoreNestedInput = {
+  create?: Prisma.XOR<Prisma.CashTransactionCreateWithoutStoreInput, Prisma.CashTransactionUncheckedCreateWithoutStoreInput> | Prisma.CashTransactionCreateWithoutStoreInput[] | Prisma.CashTransactionUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.CashTransactionCreateOrConnectWithoutStoreInput | Prisma.CashTransactionCreateOrConnectWithoutStoreInput[]
+  upsert?: Prisma.CashTransactionUpsertWithWhereUniqueWithoutStoreInput | Prisma.CashTransactionUpsertWithWhereUniqueWithoutStoreInput[]
+  createMany?: Prisma.CashTransactionCreateManyStoreInputEnvelope
+  set?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+  disconnect?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+  delete?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+  connect?: Prisma.CashTransactionWhereUniqueInput | Prisma.CashTransactionWhereUniqueInput[]
+  update?: Prisma.CashTransactionUpdateWithWhereUniqueWithoutStoreInput | Prisma.CashTransactionUpdateWithWhereUniqueWithoutStoreInput[]
+  updateMany?: Prisma.CashTransactionUpdateManyWithWhereWithoutStoreInput | Prisma.CashTransactionUpdateManyWithWhereWithoutStoreInput[]
+  deleteMany?: Prisma.CashTransactionScalarWhereInput | Prisma.CashTransactionScalarWhereInput[]
 }
 
 export type EnumCashTypeFieldUpdateOperationsInput = {
@@ -441,44 +501,147 @@ export type EnumCashSourceFieldUpdateOperationsInput = {
   set?: $Enums.CashSource
 }
 
+export type CashTransactionCreateWithoutStoreInput = {
+  id?: bigint | number
+  type: $Enums.CashType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  source: $Enums.CashSource
+  referenceId: bigint | number
+  note?: string | null
+  createdAt?: Date | string
+}
+
+export type CashTransactionUncheckedCreateWithoutStoreInput = {
+  id?: bigint | number
+  type: $Enums.CashType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  source: $Enums.CashSource
+  referenceId: bigint | number
+  note?: string | null
+  createdAt?: Date | string
+}
+
+export type CashTransactionCreateOrConnectWithoutStoreInput = {
+  where: Prisma.CashTransactionWhereUniqueInput
+  create: Prisma.XOR<Prisma.CashTransactionCreateWithoutStoreInput, Prisma.CashTransactionUncheckedCreateWithoutStoreInput>
+}
+
+export type CashTransactionCreateManyStoreInputEnvelope = {
+  data: Prisma.CashTransactionCreateManyStoreInput | Prisma.CashTransactionCreateManyStoreInput[]
+  skipDuplicates?: boolean
+}
+
+export type CashTransactionUpsertWithWhereUniqueWithoutStoreInput = {
+  where: Prisma.CashTransactionWhereUniqueInput
+  update: Prisma.XOR<Prisma.CashTransactionUpdateWithoutStoreInput, Prisma.CashTransactionUncheckedUpdateWithoutStoreInput>
+  create: Prisma.XOR<Prisma.CashTransactionCreateWithoutStoreInput, Prisma.CashTransactionUncheckedCreateWithoutStoreInput>
+}
+
+export type CashTransactionUpdateWithWhereUniqueWithoutStoreInput = {
+  where: Prisma.CashTransactionWhereUniqueInput
+  data: Prisma.XOR<Prisma.CashTransactionUpdateWithoutStoreInput, Prisma.CashTransactionUncheckedUpdateWithoutStoreInput>
+}
+
+export type CashTransactionUpdateManyWithWhereWithoutStoreInput = {
+  where: Prisma.CashTransactionScalarWhereInput
+  data: Prisma.XOR<Prisma.CashTransactionUpdateManyMutationInput, Prisma.CashTransactionUncheckedUpdateManyWithoutStoreInput>
+}
+
+export type CashTransactionScalarWhereInput = {
+  AND?: Prisma.CashTransactionScalarWhereInput | Prisma.CashTransactionScalarWhereInput[]
+  OR?: Prisma.CashTransactionScalarWhereInput[]
+  NOT?: Prisma.CashTransactionScalarWhereInput | Prisma.CashTransactionScalarWhereInput[]
+  id?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
+  storeId?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
+  type?: Prisma.EnumCashTypeFilter<"CashTransaction"> | $Enums.CashType
+  amount?: Prisma.DecimalFilter<"CashTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  source?: Prisma.EnumCashSourceFilter<"CashTransaction"> | $Enums.CashSource
+  referenceId?: Prisma.BigIntFilter<"CashTransaction"> | bigint | number
+  note?: Prisma.StringNullableFilter<"CashTransaction"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"CashTransaction"> | Date | string
+}
+
+export type CashTransactionCreateManyStoreInput = {
+  id?: bigint | number
+  type: $Enums.CashType
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  source: $Enums.CashSource
+  referenceId: bigint | number
+  note?: string | null
+  createdAt?: Date | string
+}
+
+export type CashTransactionUpdateWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  type?: Prisma.EnumCashTypeFieldUpdateOperationsInput | $Enums.CashType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  source?: Prisma.EnumCashSourceFieldUpdateOperationsInput | $Enums.CashSource
+  referenceId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CashTransactionUncheckedUpdateWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  type?: Prisma.EnumCashTypeFieldUpdateOperationsInput | $Enums.CashType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  source?: Prisma.EnumCashSourceFieldUpdateOperationsInput | $Enums.CashSource
+  referenceId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CashTransactionUncheckedUpdateManyWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  type?: Prisma.EnumCashTypeFieldUpdateOperationsInput | $Enums.CashType
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  source?: Prisma.EnumCashSourceFieldUpdateOperationsInput | $Enums.CashSource
+  referenceId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 
 
 export type CashTransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  branchId?: boolean
+  storeId?: boolean
   type?: boolean
   amount?: boolean
   source?: boolean
   referenceId?: boolean
   note?: boolean
   createdAt?: boolean
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashTransaction"]>
 
 export type CashTransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  branchId?: boolean
+  storeId?: boolean
   type?: boolean
   amount?: boolean
   source?: boolean
   referenceId?: boolean
   note?: boolean
   createdAt?: boolean
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashTransaction"]>
 
 export type CashTransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  branchId?: boolean
+  storeId?: boolean
   type?: boolean
   amount?: boolean
   source?: boolean
   referenceId?: boolean
   note?: boolean
   createdAt?: boolean
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["cashTransaction"]>
 
 export type CashTransactionSelectScalar = {
   id?: boolean
-  branchId?: boolean
+  storeId?: boolean
   type?: boolean
   amount?: boolean
   source?: boolean
@@ -487,14 +650,25 @@ export type CashTransactionSelectScalar = {
   createdAt?: boolean
 }
 
-export type CashTransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "type" | "amount" | "source" | "referenceId" | "note" | "createdAt", ExtArgs["result"]["cashTransaction"]>
+export type CashTransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "type" | "amount" | "source" | "referenceId" | "note" | "createdAt", ExtArgs["result"]["cashTransaction"]>
+export type CashTransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+}
+export type CashTransactionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+}
+export type CashTransactionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
+}
 
 export type $CashTransactionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CashTransaction"
-  objects: {}
+  objects: {
+    store: Prisma.$StorePayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
-    branchId: bigint
+    storeId: bigint
     type: $Enums.CashType
     amount: runtime.Decimal
     source: $Enums.CashSource
@@ -895,6 +1069,7 @@ readonly fields: CashTransactionFieldRefs;
  */
 export interface Prisma__CashTransactionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  store<T extends Prisma.StoreDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StoreDefaultArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -925,7 +1100,7 @@ export interface Prisma__CashTransactionClient<T, Null = never, ExtArgs extends 
  */
 export interface CashTransactionFieldRefs {
   readonly id: Prisma.FieldRef<"CashTransaction", 'BigInt'>
-  readonly branchId: Prisma.FieldRef<"CashTransaction", 'BigInt'>
+  readonly storeId: Prisma.FieldRef<"CashTransaction", 'BigInt'>
   readonly type: Prisma.FieldRef<"CashTransaction", 'CashType'>
   readonly amount: Prisma.FieldRef<"CashTransaction", 'Decimal'>
   readonly source: Prisma.FieldRef<"CashTransaction", 'CashSource'>
@@ -949,6 +1124,10 @@ export type CashTransactionFindUniqueArgs<ExtArgs extends runtime.Types.Extensio
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
+  /**
    * Filter, which CashTransaction to fetch.
    */
   where: Prisma.CashTransactionWhereUniqueInput
@@ -967,6 +1146,10 @@ export type CashTransactionFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.E
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
+  /**
    * Filter, which CashTransaction to fetch.
    */
   where: Prisma.CashTransactionWhereUniqueInput
@@ -984,6 +1167,10 @@ export type CashTransactionFindFirstArgs<ExtArgs extends runtime.Types.Extension
    * Omit specific fields from the CashTransaction
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
   /**
    * Filter, which CashTransaction to fetch.
    */
@@ -1033,6 +1220,10 @@ export type CashTransactionFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ex
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
+  /**
    * Filter, which CashTransaction to fetch.
    */
   where?: Prisma.CashTransactionWhereInput
@@ -1081,6 +1272,10 @@ export type CashTransactionFindManyArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
+  /**
    * Filter, which CashTransactions to fetch.
    */
   where?: Prisma.CashTransactionWhereInput
@@ -1124,6 +1319,10 @@ export type CashTransactionCreateArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
+  /**
    * The data needed to create a CashTransaction.
    */
   data: Prisma.XOR<Prisma.CashTransactionCreateInput, Prisma.CashTransactionUncheckedCreateInput>
@@ -1157,6 +1356,10 @@ export type CashTransactionCreateManyAndReturnArgs<ExtArgs extends runtime.Types
    */
   data: Prisma.CashTransactionCreateManyInput | Prisma.CashTransactionCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1171,6 +1374,10 @@ export type CashTransactionUpdateArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the CashTransaction
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
   /**
    * The data needed to update a CashTransaction.
    */
@@ -1223,6 +1430,10 @@ export type CashTransactionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types
    * Limit how many CashTransactions to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1237,6 +1448,10 @@ export type CashTransactionUpsertArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the CashTransaction
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
   /**
    * The filter to search for the CashTransaction to update in case it exists.
    */
@@ -1263,6 +1478,10 @@ export type CashTransactionDeleteArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the CashTransaction
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
   /**
    * Filter which CashTransaction to delete.
    */
@@ -1295,4 +1514,8 @@ export type CashTransactionDefaultArgs<ExtArgs extends runtime.Types.Extensions.
    * Omit specific fields from the CashTransaction
    */
   omit?: Prisma.CashTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashTransactionInclude<ExtArgs> | null
 }

@@ -422,6 +422,10 @@ export type TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedIn
   deleteMany?: Prisma.TransferPaymentDetailScalarWhereInput | Prisma.TransferPaymentDetailScalarWhereInput[]
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type TransferPaymentDetailCreateNestedOneWithoutTransactionInput = {
   create?: Prisma.XOR<Prisma.TransferPaymentDetailCreateWithoutTransactionInput, Prisma.TransferPaymentDetailUncheckedCreateWithoutTransactionInput>
   connectOrCreate?: Prisma.TransferPaymentDetailCreateOrConnectWithoutTransactionInput

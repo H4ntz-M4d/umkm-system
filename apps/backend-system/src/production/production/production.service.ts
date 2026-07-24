@@ -492,7 +492,26 @@ export class ProductionService {
         data: {
           status: status,
         },
+        include: {
+          beSpokeDetails: {
+            select: {
+              quotedPrice: true,
+            },
+          },
+        },
       });
+
+      if (result.type === 'BE_SPOKE') {
+        await tx.cashTransaction.create({
+          data: {
+            type: 'IN',
+            source: 'PRODUCTION',
+            referenceId: result.id,
+            amount: result.beSpokeDetails?.quotedPrice ?? 0,
+            storeId: result.storeId,
+          },
+        });
+      }
 
       return result;
     });

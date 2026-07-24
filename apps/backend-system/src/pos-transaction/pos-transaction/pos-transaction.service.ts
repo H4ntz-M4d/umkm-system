@@ -196,6 +196,20 @@ export class PosTransactionService {
       })),
     });
 
+    const totalAmount = data.itemTransaction
+      .map((item) => item.price * item.quantity)
+      .reduce((total, item) => total + item, 0);
+
+    await tx.cashTransaction.create({
+      data: {
+        type: 'OUT',
+        source: 'EXPENSE',
+        referenceId: posTx,
+        amount: totalAmount,
+        storeId: BigInt(data.storeId),
+      },
+    });
+
     for (const items of data.itemTransaction) {
       await tx.productVariantStock.update({
         where: {
