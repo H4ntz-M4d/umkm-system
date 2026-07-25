@@ -305,7 +305,7 @@ export type ExpenseItemScalarFieldEnum = (typeof ExpenseItemScalarFieldEnum)[key
 
 export const OrderScalarFieldEnum = {
   id: 'id',
-  branchId: 'branchId',
+  storeId: 'storeId',
   customerId: 'customerId',
   orderId: 'orderId',
   paymentMethodId: 'paymentMethodId',

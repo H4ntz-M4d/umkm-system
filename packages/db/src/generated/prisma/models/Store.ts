@@ -214,6 +214,7 @@ export type StoreWhereInput = {
   expenses?: Prisma.ExpenseListRelationFilter
   posTransactions?: Prisma.PosTransactionListRelationFilter
   cashTransactions?: Prisma.CashTransactionListRelationFilter
+  orders?: Prisma.OrderListRelationFilter
 }
 
 export type StoreOrderByWithRelationInput = {
@@ -227,6 +228,7 @@ export type StoreOrderByWithRelationInput = {
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
   posTransactions?: Prisma.PosTransactionOrderByRelationAggregateInput
   cashTransactions?: Prisma.CashTransactionOrderByRelationAggregateInput
+  orders?: Prisma.OrderOrderByRelationAggregateInput
 }
 
 export type StoreWhereUniqueInput = Prisma.AtLeast<{
@@ -243,6 +245,7 @@ export type StoreWhereUniqueInput = Prisma.AtLeast<{
   expenses?: Prisma.ExpenseListRelationFilter
   posTransactions?: Prisma.PosTransactionListRelationFilter
   cashTransactions?: Prisma.CashTransactionListRelationFilter
+  orders?: Prisma.OrderListRelationFilter
 }, "id">
 
 export type StoreOrderByWithAggregationInput = {
@@ -278,6 +281,7 @@ export type StoreCreateInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateInput = {
@@ -291,6 +295,7 @@ export type StoreUncheckedCreateInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUpdateInput = {
@@ -304,6 +309,7 @@ export type StoreUpdateInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateInput = {
@@ -317,6 +323,7 @@ export type StoreUncheckedUpdateInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateManyInput = {
@@ -457,6 +464,20 @@ export type StoreUpdateOneRequiredWithoutExpensesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutExpensesInput, Prisma.StoreUpdateWithoutExpensesInput>, Prisma.StoreUncheckedUpdateWithoutExpensesInput>
 }
 
+export type StoreCreateNestedOneWithoutOrdersInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutOrdersInput, Prisma.StoreUncheckedCreateWithoutOrdersInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutOrdersInput
+  connect?: Prisma.StoreWhereUniqueInput
+}
+
+export type StoreUpdateOneRequiredWithoutOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutOrdersInput, Prisma.StoreUncheckedCreateWithoutOrdersInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutOrdersInput
+  upsert?: Prisma.StoreUpsertWithoutOrdersInput
+  connect?: Prisma.StoreWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutOrdersInput, Prisma.StoreUpdateWithoutOrdersInput>, Prisma.StoreUncheckedUpdateWithoutOrdersInput>
+}
+
 export type StoreCreateNestedOneWithoutCashTransactionsInput = {
   create?: Prisma.XOR<Prisma.StoreCreateWithoutCashTransactionsInput, Prisma.StoreUncheckedCreateWithoutCashTransactionsInput>
   connectOrCreate?: Prisma.StoreCreateOrConnectWithoutCashTransactionsInput
@@ -495,6 +516,7 @@ export type StoreCreateWithoutUsersInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutUsersInput = {
@@ -507,6 +529,7 @@ export type StoreUncheckedCreateWithoutUsersInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutUsersInput = {
@@ -535,6 +558,7 @@ export type StoreUpdateWithoutUsersInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutUsersInput = {
@@ -547,6 +571,7 @@ export type StoreUncheckedUpdateWithoutUsersInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutInventoryLedgersInput = {
@@ -559,6 +584,7 @@ export type StoreCreateWithoutInventoryLedgersInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutInventoryLedgersInput = {
@@ -571,6 +597,7 @@ export type StoreUncheckedCreateWithoutInventoryLedgersInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutInventoryLedgersInput = {
@@ -599,6 +626,7 @@ export type StoreUpdateWithoutInventoryLedgersInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutInventoryLedgersInput = {
@@ -611,6 +639,7 @@ export type StoreUncheckedUpdateWithoutInventoryLedgersInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutProductionsInput = {
@@ -623,6 +652,7 @@ export type StoreCreateWithoutProductionsInput = {
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutProductionsInput = {
@@ -635,6 +665,7 @@ export type StoreUncheckedCreateWithoutProductionsInput = {
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutProductionsInput = {
@@ -663,6 +694,7 @@ export type StoreUpdateWithoutProductionsInput = {
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutProductionsInput = {
@@ -675,6 +707,7 @@ export type StoreUncheckedUpdateWithoutProductionsInput = {
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutExpensesInput = {
@@ -687,6 +720,7 @@ export type StoreCreateWithoutExpensesInput = {
   productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutExpensesInput = {
@@ -699,6 +733,7 @@ export type StoreUncheckedCreateWithoutExpensesInput = {
   productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutExpensesInput = {
@@ -727,6 +762,7 @@ export type StoreUpdateWithoutExpensesInput = {
   productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutExpensesInput = {
@@ -737,6 +773,75 @@ export type StoreUncheckedUpdateWithoutExpensesInput = {
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
   productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreCreateWithoutOrdersInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
+  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
+  cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+}
+
+export type StoreUncheckedCreateWithoutOrdersInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
+  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
+  cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+}
+
+export type StoreCreateOrConnectWithoutOrdersInput = {
+  where: Prisma.StoreWhereUniqueInput
+  create: Prisma.XOR<Prisma.StoreCreateWithoutOrdersInput, Prisma.StoreUncheckedCreateWithoutOrdersInput>
+}
+
+export type StoreUpsertWithoutOrdersInput = {
+  update: Prisma.XOR<Prisma.StoreUpdateWithoutOrdersInput, Prisma.StoreUncheckedUpdateWithoutOrdersInput>
+  create: Prisma.XOR<Prisma.StoreCreateWithoutOrdersInput, Prisma.StoreUncheckedCreateWithoutOrdersInput>
+  where?: Prisma.StoreWhereInput
+}
+
+export type StoreUpdateToOneWithWhereWithoutOrdersInput = {
+  where?: Prisma.StoreWhereInput
+  data: Prisma.XOR<Prisma.StoreUpdateWithoutOrdersInput, Prisma.StoreUncheckedUpdateWithoutOrdersInput>
+}
+
+export type StoreUpdateWithoutOrdersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
+  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
+  cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreUncheckedUpdateWithoutOrdersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
+  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
 }
@@ -751,6 +856,7 @@ export type StoreCreateWithoutCashTransactionsInput = {
   productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutCashTransactionsInput = {
@@ -763,6 +869,7 @@ export type StoreUncheckedCreateWithoutCashTransactionsInput = {
   productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutCashTransactionsInput = {
@@ -791,6 +898,7 @@ export type StoreUpdateWithoutCashTransactionsInput = {
   productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutCashTransactionsInput = {
@@ -803,6 +911,7 @@ export type StoreUncheckedUpdateWithoutCashTransactionsInput = {
   productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutPosTransactionsInput = {
@@ -815,6 +924,7 @@ export type StoreCreateWithoutPosTransactionsInput = {
   productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutPosTransactionsInput = {
@@ -827,6 +937,7 @@ export type StoreUncheckedCreateWithoutPosTransactionsInput = {
   productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutPosTransactionsInput = {
@@ -855,6 +966,7 @@ export type StoreUpdateWithoutPosTransactionsInput = {
   productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutPosTransactionsInput = {
@@ -867,6 +979,7 @@ export type StoreUncheckedUpdateWithoutPosTransactionsInput = {
   productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 
@@ -881,6 +994,7 @@ export type StoreCountOutputType = {
   expenses: number
   posTransactions: number
   cashTransactions: number
+  orders: number
 }
 
 export type StoreCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -890,6 +1004,7 @@ export type StoreCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   expenses?: boolean | StoreCountOutputTypeCountExpensesArgs
   posTransactions?: boolean | StoreCountOutputTypeCountPosTransactionsArgs
   cashTransactions?: boolean | StoreCountOutputTypeCountCashTransactionsArgs
+  orders?: boolean | StoreCountOutputTypeCountOrdersArgs
 }
 
 /**
@@ -944,6 +1059,13 @@ export type StoreCountOutputTypeCountCashTransactionsArgs<ExtArgs extends runtim
   where?: Prisma.CashTransactionWhereInput
 }
 
+/**
+ * StoreCountOutputType without action
+ */
+export type StoreCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderWhereInput
+}
+
 
 export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -956,6 +1078,7 @@ export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   expenses?: boolean | Prisma.Store$expensesArgs<ExtArgs>
   posTransactions?: boolean | Prisma.Store$posTransactionsArgs<ExtArgs>
   cashTransactions?: boolean | Prisma.Store$cashTransactionsArgs<ExtArgs>
+  orders?: boolean | Prisma.Store$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
@@ -988,6 +1111,7 @@ export type StoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   expenses?: boolean | Prisma.Store$expensesArgs<ExtArgs>
   posTransactions?: boolean | Prisma.Store$posTransactionsArgs<ExtArgs>
   cashTransactions?: boolean | Prisma.Store$cashTransactionsArgs<ExtArgs>
+  orders?: boolean | Prisma.Store$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StoreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1002,6 +1126,7 @@ export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
     posTransactions: Prisma.$PosTransactionPayload<ExtArgs>[]
     cashTransactions: Prisma.$CashTransactionPayload<ExtArgs>[]
+    orders: Prisma.$OrderPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -1408,6 +1533,7 @@ export interface Prisma__StoreClient<T, Null = never, ExtArgs extends runtime.Ty
   expenses<T extends Prisma.Store$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   posTransactions<T extends Prisma.Store$posTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$posTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cashTransactions<T extends Prisma.Store$cashTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$cashTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orders<T extends Prisma.Store$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1970,6 +2096,30 @@ export type Store$cashTransactionsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.CashTransactionScalarFieldEnum | Prisma.CashTransactionScalarFieldEnum[]
+}
+
+/**
+ * Store.orders
+ */
+export type Store$ordersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Order
+   */
+  select?: Prisma.OrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Order
+   */
+  omit?: Prisma.OrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderInclude<ExtArgs> | null
+  where?: Prisma.OrderWhereInput
+  orderBy?: Prisma.OrderOrderByWithRelationInput | Prisma.OrderOrderByWithRelationInput[]
+  cursor?: Prisma.OrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
 }
 
 /**
