@@ -25,6 +25,7 @@ model Store {
   expenses         Expense[]
   posTransactions  PosTransaction[]
   cashTransactions CashTransaction[]
+  orders           Order[]
 
   @@map("store")
 }
@@ -339,7 +340,7 @@ model ExpenseItem {
 
 model Order {
   id                BigInt      @id @default(autoincrement())
-  branchId          BigInt
+  storeId           BigInt
   customerId        BigInt?
   orderId           String      @unique @db.VarChar(100)
   paymentMethodId   BigInt
@@ -352,6 +353,7 @@ model Order {
   items    OrderItem[]
   shipment Shipment?
   payment  PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+  store    Store          @relation(fields: [storeId], references: [id])
 
   @@map("order")
 }
@@ -527,6 +529,6 @@ model PosTransactionItem {
   posTransaction PosTransaction @relation(fields: [posTransactionId], references: [id], onDelete: Cascade)
   variant        ProductVariant @relation(fields: [productVariantId], references: [id])
 
-  @@unique([posTransactionId, productVariantId])  
+  @@unique([posTransactionId, productVariantId])
   @@map("pos_transaction_item")
 }
