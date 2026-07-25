@@ -1,10 +1,12 @@
 "use client";
 
 import PosTransactionView from "@/components/management/order-transaction/pos/pos-transaction-view";
+import OrderListView from "@/components/management/order-transaction/online/order-list-view";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePaginationParams } from "@/hooks/use-paginations-params";
 import { PosTransactionFilters } from "@/lib/queries/pos-transaction/pos-transaction.query";
+import { OrderFilters } from "@/lib/queries/order/order.query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 
@@ -12,12 +14,17 @@ export default function Page() {
   const searchParams = useSearchParams();
   const { pagination, onPaginationChange } = usePaginationParams();
   const posFilters: PosTransactionFilters = {
-    search: searchParams.get("search") || "",
-    status: searchParams.get("status") || "",
-    paymentChannel: searchParams.get("paymentChannel") || "",
-    storeId: searchParams.get("storeId") || "",
+    search: searchParams.get("posTransactioSearch") || "",
+    status: searchParams.get("posTransactioStatus") || "",
+    paymentChannel: searchParams.get("posTransactioPaymentChannel") || "",
+    storeId: searchParams.get("posTransactioStore") || "",
     page: pagination.pageIndex,
     limit: pagination.pageSize,
+  };
+  const orderFilters: OrderFilters = {
+    search: searchParams.get("orderSearch") || "",
+    status: searchParams.get("orderStatus") || "",
+    store: searchParams.get("orderStore") || "",
   };
   const router = useRouter();
   const pathName = usePathname();
@@ -29,7 +36,7 @@ export default function Page() {
       const params = new URLSearchParams(searchParams);
 
       Object.entries(newParams).forEach(([key, value]) => {
-        if (value === undefined) {
+        if (value === undefined || value === "") {
           params.delete(key);
         } else {
           params.set(key, value.toString());
@@ -55,6 +62,7 @@ export default function Page() {
   const handleTabChange = (val: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", val);
+    params.set("page", "0");
     router.push(`${pathName}?${params.toString()}`);
   };
   return (
@@ -85,7 +93,14 @@ export default function Page() {
             handleUpdateParams={handleUpdateParamsSelection}
           />
         </TabsContent>
-        <TabsContent value="order-online">Isi Online Order</TabsContent>
+        <TabsContent value="order-online">
+          <OrderListView
+            pagination={pagination}
+            onPaginationChange={onPaginationChange}
+            orderFilters={orderFilters}
+            handleUpdateParams={handleUpdateParamsSelection}
+          />
+        </TabsContent>
       </Tabs>
     </main>
   );

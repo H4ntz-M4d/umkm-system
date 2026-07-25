@@ -91,12 +91,12 @@ const data = {
       icon: Landmark,
     },
     {
-      title: "Pesanan",
+      title: "Pesanan Online dan Kasir",
       url: "/management/order-transaction",
       icon: BaggageClaim,
     },
     {
-      title: "Transakasi",
+      title: "Alur Transakasi",
       url: "/management/transaction-flow",
       icon: BanknoteArrowDown,
     },
