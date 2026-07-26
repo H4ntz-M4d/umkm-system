@@ -13,7 +13,6 @@ const StockFlow = z.object({
 
 const HistoryByType = z.object({
   productVariant: z.number(),
-  rawMaterial: z.number(),
 });
 
 export const LedgerData = z.object({

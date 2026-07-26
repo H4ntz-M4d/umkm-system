@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { prisma, Prisma } from '@repo/db';
 import { TransactionFlowData, TransactionFlowSummary, z } from '@repo/schemas';
+import { OrderService } from 'order/order.service';
+import { PosTransactionService } from 'pos-transaction/pos-transaction/pos-transaction.service';
 
 @Injectable()
 export class TransactionFlowService {
+  constructor(
+    private posTransactionService: PosTransactionService,
+    private orderService: OrderService,
+  ) {}
+
   async findAll(params: {
     type?: string;
     source?: string;
@@ -83,5 +90,21 @@ export class TransactionFlowService {
     });
 
     return result;
+  }
+
+  async summaryAmountPosAndOrderTransaction() {
+    const posAmount = this.posTransactionService.getTotalAmount();
+    const orderAmount = this.orderService.getTotalAmount();
+
+    const result = await Promise.all([posAmount, orderAmount]);
+    const posTotal = Number(result[0].totalAmount);
+    const orderTotal = Number(result[1].totalAmount);
+    const totalTransaction = result[0].totalTransaction + result[1].totalOrder;
+
+    return {
+      posTotal,
+      orderTotal,
+      totalTransaction,
+    };
   }
 }

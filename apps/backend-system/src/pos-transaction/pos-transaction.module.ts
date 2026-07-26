@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { PosTransactionService } from './pos-transaction/pos-transaction.service';
 import { PosTransactionController } from './pos-transaction/pos-transaction.controller';
-import { CloudinaryService } from 'cloudinary/cloudinary.service';
-import { MidtransService } from 'midtrans/midtrans.service';
+import { CloudinaryModule } from 'cloudinary/cloudinary.module';
+import { MidtransModule } from 'midtrans/midtrans.module';
 
 @Module({
-  providers: [PosTransactionService, CloudinaryService, MidtransService],
+  imports: [CloudinaryModule, MidtransModule],
+  providers: [PosTransactionService],
   controllers: [PosTransactionController],
+  exports: [PosTransactionService],
 })
 export class PosTransactionModule {}

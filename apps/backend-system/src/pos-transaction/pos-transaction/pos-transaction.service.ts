@@ -141,6 +141,32 @@ export class PosTransactionService {
     };
   }
 
+  async getTotalAmount() {
+    const now = new Date();
+    const dateFrom = new Date(now.getFullYear(), now.getMonth(), 1);
+    const dateTo = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const totalAmount = await prisma.posTransaction.aggregate({
+      where: {
+        status: 'PAID',
+        createdAt: {
+          gte: dateFrom,
+          lt: dateTo,
+        },
+      },
+      _sum: {
+        totalAmount: true,
+      },
+    });
+
+    const total = await prisma.posTransaction.count();
+    const result = {
+      totalAmount: totalAmount._sum.totalAmount ?? 0,
+      totalTransaction: total,
+    };
+
+    return result;
+  }
+
   async findManyByParked() {
     const res = await prisma.posTransaction.findMany({
       where: {

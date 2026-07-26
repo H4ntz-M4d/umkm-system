@@ -26,4 +26,9 @@ export class TransactionFlowController {
   summaryTransaction() {
     return this.transactionFlowService.summaryTransaction();
   }
+
+  @Get('/summary-amount-pos-and-order-transaction')
+  summaryPosAndOrderTransaction() {
+    return this.transactionFlowService.summaryAmountPosAndOrderTransaction();
+  }
 }

@@ -17,6 +17,12 @@ export const TransactionFlowSummary = z.object({
   netTransaction: z.number(),
 });
 
+export const SummaryDataAmountPosAndOrder = z.object({
+  posTotal: z.number(),
+  orderTotal: z.number(),
+  totalTransaction: z.number(),
+});
+
 export type TransactionFlowDataType = z.infer<typeof TransactionFlowData>;
 export type TransactionFlowSummaryType = z.infer<typeof TransactionFlowSummary>;
 
@@ -26,4 +32,8 @@ export const TransactionFlowResponse = ApiSuccessResponse(
 
 export const SummaryTransactionResponse = ApiSuccessResponse(
   TransactionFlowSummary,
+);
+
+export const SummaryResponseAmountPosAndOrder = ApiSuccessResponse(
+  SummaryDataAmountPosAndOrder,
 );

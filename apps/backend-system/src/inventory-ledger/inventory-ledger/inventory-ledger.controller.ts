@@ -22,7 +22,7 @@ export class InventoryLedgerController {
     });
   }
 
-  @Get('summary')
+  @Get('/summary')
   getSummary() {
     return this.ledgerService.getSummary();
   }

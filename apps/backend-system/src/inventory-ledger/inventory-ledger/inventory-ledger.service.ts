@@ -121,7 +121,6 @@ export class InventoryLedgerService {
         productVariant:
           historyByType.find((item) => item.itemType === 'PRODUCT_VARIANT')
             ?._count._all ?? 0,
-        rawMaterial: 0,
       },
     };
     return result;
