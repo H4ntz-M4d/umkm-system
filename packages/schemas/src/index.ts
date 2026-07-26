@@ -28,5 +28,7 @@ export * from "./schema/pos-transaction/pos-transaction.response";
 export * from "./schema/transaction-flow/transaction-flow.response";
 export * from "./schema/order/order.schema";
 export * from "./schema/order/order.response";
+export * from "./schema/dashboard/dashboard.schema";
+export * from "./schema/dashboard/dashboard.response";
 import z from "zod";
 export { z };
