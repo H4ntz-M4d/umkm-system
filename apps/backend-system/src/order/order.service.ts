@@ -112,4 +112,29 @@ export class OrderService {
       },
     });
   }
+
+  async getTotalAmount() {
+    const now = new Date();
+    const dateFrom = new Date(now.getFullYear(), now.getMonth(), 1);
+    const dateTo = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const totalAmount = await prisma.order.aggregate({
+      where: {
+        status: 'PAID',
+        createdAt: {
+          gte: dateFrom,
+          lt: dateTo,
+        },
+      },
+      _sum: {
+        totalAmount: true,
+      },
+    });
+
+    const total = await prisma.order.count();
+    const result = {
+      totalAmount: totalAmount._sum.totalAmount ?? 0,
+      totalOrder: total,
+    };
+    return result;
+  }
 }

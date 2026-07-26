@@ -1,6 +1,7 @@
 import { apiFetcher } from "@/lib/api/api.fetcher";
 import managementApi from "@/lib/api/api.management";
 import {
+  SummaryResponseAmountPosAndOrder,
   SummaryTransactionResponse,
   TransactionFlowResponse,
 } from "@repo/schemas";
@@ -30,5 +31,14 @@ export const fetchTransactionFlowSummary = async () => {
   return await apiFetcher(
     managementApi.get(`v1/transaction-flow/summary`),
     SummaryTransactionResponse,
+  );
+};
+
+export const fetchTransactionFlowSummaryAmountPosAndOrder = async () => {
+  return await apiFetcher(
+    managementApi.get(
+      `v1/transaction-flow/summary-amount-pos-and-order-transaction`,
+    ),
+    SummaryResponseAmountPosAndOrder,
   );
 };

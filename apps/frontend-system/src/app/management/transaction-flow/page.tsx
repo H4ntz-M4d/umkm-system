@@ -20,7 +20,7 @@ export default function Page() {
     type: searchParams.get("type") || "",
   };
 
-  const { getTransactionFlowData } = useTransactionFlowOperations({ filters });
+  const { getTransactionFlowData } = useTransactionFlowOperations({ filters, isTableMode: true });
 
   const pageCount = getTransactionFlowData?.meta.total
     ? Math.ceil(getTransactionFlowData?.meta.total / pagination.pageSize)
