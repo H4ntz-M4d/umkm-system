@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductionService } from 'production/production/production.service';
 import { Pagination } from 'common/paginate/pagination';
@@ -16,8 +17,13 @@ import {
   CreateProductionBeSpokeDto,
   UpdateProductionDto,
 } from 'production/dto/production.dto';
-import { ProductionStatus, ProductionType } from '@repo/db';
+import { ProductionStatus, ProductionType, UserRole } from '@repo/db';
+import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
+import { RolesGuard } from 'common/guards/guard.roles';
+import { Roles } from 'common/decorator/roles.decorator';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
 @Controller('api/v1/production')
 export class ProductionController {
   constructor(private productionService: ProductionService) {}

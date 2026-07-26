@@ -17,19 +17,17 @@ import { RolesGuard } from 'common/guards/guard.roles';
 import { Roles } from 'common/decorator/roles.decorator';
 import { UserRole } from '@repo/db';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.OWNER, UserRole.ADMIN)
 @Controller('/api/v1/stores')
 export class StoresController {
   constructor(private service: StoresService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Get()
   findAll(@Query() pagination: Pagination) {
     return this.service.findAll(pagination);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Get('/list')
   findAllStore() {
     return this.service.findAllStore();
