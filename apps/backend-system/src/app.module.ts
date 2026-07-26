@@ -15,6 +15,7 @@ import { MidtransModule } from './midtrans/midtrans.module';
 import { ConfigModule } from '@nestjs/config';
 import { TransactionFlowModule } from './transaction-flow/transaction-flow.module';
 import { OrderModule } from './order/order.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { OrderModule } from './order/order.module';
     MidtransModule,
     TransactionFlowModule,
     OrderModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}
