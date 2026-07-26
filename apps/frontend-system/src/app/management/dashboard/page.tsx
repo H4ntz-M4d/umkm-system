@@ -1,16 +1,46 @@
-"use client"
+import DashboardView from "@/components/management/dashboard/view";
+import {
+  DASHBOARD_QUERY_STALE_TIME,
+  fetchExpenseByCategory,
+  fetchOmzetTrend,
+  fetchOrderTrend,
+  fetchProductionStatus,
+} from "@/lib/queries/dashboard/dashboard.query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const queryClient = new QueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["dashboard-order-trend", "daily"],
+      queryFn: () => fetchOrderTrend("daily"),
+      staleTime: DASHBOARD_QUERY_STALE_TIME,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["dashboard-expense-by-category", "monthly"],
+      queryFn: () => fetchExpenseByCategory("monthly"),
+      staleTime: DASHBOARD_QUERY_STALE_TIME,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["dashboard-production-status"],
+      queryFn: () => fetchProductionStatus(),
+      staleTime: DASHBOARD_QUERY_STALE_TIME,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["dashboard-omzet-trend", "daily"],
+      queryFn: () => fetchOmzetTrend("daily"),
+      staleTime: DASHBOARD_QUERY_STALE_TIME,
+    }),
+  ]);
+
   return (
-    <>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-3">
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-        </div>
-        <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min" />
-      </div>
-    </>
-  )
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <DashboardView />
+    </HydrationBoundary>
+  );
 }
