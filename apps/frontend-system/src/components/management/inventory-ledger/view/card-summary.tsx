@@ -32,13 +32,6 @@ const getDataCard = (dataSummary: SummaryDataResponse) => [
     value: dataSummary?.historyByType?.productVariant ?? 0,
     description: "All stores",
   },
-  {
-    id: "RAW-MATERIAL",
-    title: "raw material",
-    icon: <CirclePile />,
-    value: dataSummary?.historyByType?.rawMaterial ?? 0,
-    description: "All stores",
-  },
 ];
 
 export default function CardSummary({

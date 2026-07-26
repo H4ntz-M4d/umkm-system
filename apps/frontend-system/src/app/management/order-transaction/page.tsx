@@ -9,6 +9,7 @@ import { PosTransactionFilters } from "@/lib/queries/pos-transaction/pos-transac
 import { OrderFilters } from "@/lib/queries/order/order.query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
+import SummaryTransactionPosAndOrder from "@/components/management/order-transaction/summary-transaction-pos-and-order";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -75,11 +76,7 @@ export default function Page() {
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-5 mb-5">
-        <Skeleton className="h-40" />
-        <Skeleton className="h-40" />
-        <Skeleton className="h-40" />
-      </div>
+      <SummaryTransactionPosAndOrder />
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         <TabsList className="mb-5">
           <TabsTrigger value="pos-transaction">Transaksi Kasir</TabsTrigger>
