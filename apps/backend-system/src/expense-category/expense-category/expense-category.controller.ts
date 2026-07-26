@@ -7,10 +7,17 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ExpenseCategoryService } from './expense-category.service';
 import { ExpenseCategoryDto } from 'expense-category/dto/expense-category.dto';
+import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
+import { RolesGuard } from 'common/guards/guard.roles';
+import { Roles } from 'common/decorator/roles.decorator';
+import { UserRole } from '@repo/db';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.OWNER, UserRole.ADMIN)
 @Controller('api/v1/expense-category')
 export class ExpenseCategoryController {
   constructor(

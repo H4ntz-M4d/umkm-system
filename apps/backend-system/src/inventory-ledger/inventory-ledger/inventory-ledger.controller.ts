@@ -1,7 +1,13 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { InventoryLedgerService } from './inventory-ledger.service';
 import { Pagination } from 'common/paginate/pagination';
+import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
+import { RolesGuard } from 'common/guards/guard.roles';
+import { Roles } from 'common/decorator/roles.decorator';
+import { UserRole } from '@repo/db';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
 @Controller('api/v1/inventory-ledger')
 export class InventoryLedgerController {
   constructor(private ledgerService: InventoryLedgerService) {}

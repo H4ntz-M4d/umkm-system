@@ -51,6 +51,8 @@ export class ProductsController {
     return await this.productsService.productById(BigInt(id));
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
   @Get('/point-of-sales/list')
   async getProductList(
     @Query('search') search?: string,
