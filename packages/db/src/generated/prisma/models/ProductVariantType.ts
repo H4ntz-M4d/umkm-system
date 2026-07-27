@@ -40,18 +40,21 @@ export type ProductVariantTypeMinAggregateOutputType = {
   id: bigint | null
   productMasterId: bigint | null
   name: string | null
+  isHaveVisual: boolean | null
 }
 
 export type ProductVariantTypeMaxAggregateOutputType = {
   id: bigint | null
   productMasterId: bigint | null
   name: string | null
+  isHaveVisual: boolean | null
 }
 
 export type ProductVariantTypeCountAggregateOutputType = {
   id: number
   productMasterId: number
   name: number
+  isHaveVisual: number
   _all: number
 }
 
@@ -70,18 +73,21 @@ export type ProductVariantTypeMinAggregateInputType = {
   id?: true
   productMasterId?: true
   name?: true
+  isHaveVisual?: true
 }
 
 export type ProductVariantTypeMaxAggregateInputType = {
   id?: true
   productMasterId?: true
   name?: true
+  isHaveVisual?: true
 }
 
 export type ProductVariantTypeCountAggregateInputType = {
   id?: true
   productMasterId?: true
   name?: true
+  isHaveVisual?: true
   _all?: true
 }
 
@@ -175,6 +181,7 @@ export type ProductVariantTypeGroupByOutputType = {
   id: bigint
   productMasterId: bigint
   name: string
+  isHaveVisual: boolean
   _count: ProductVariantTypeCountAggregateOutputType | null
   _avg: ProductVariantTypeAvgAggregateOutputType | null
   _sum: ProductVariantTypeSumAggregateOutputType | null
@@ -204,6 +211,7 @@ export type ProductVariantTypeWhereInput = {
   id?: Prisma.BigIntFilter<"ProductVariantType"> | bigint | number
   productMasterId?: Prisma.BigIntFilter<"ProductVariantType"> | bigint | number
   name?: Prisma.StringFilter<"ProductVariantType"> | string
+  isHaveVisual?: Prisma.BoolFilter<"ProductVariantType"> | boolean
   productMaster?: Prisma.XOR<Prisma.ProductMasterScalarRelationFilter, Prisma.ProductMasterWhereInput>
   values?: Prisma.ProductVariantValueListRelationFilter
 }
@@ -212,6 +220,7 @@ export type ProductVariantTypeOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   productMasterId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  isHaveVisual?: Prisma.SortOrder
   productMaster?: Prisma.ProductMasterOrderByWithRelationInput
   values?: Prisma.ProductVariantValueOrderByRelationAggregateInput
 }
@@ -224,6 +233,7 @@ export type ProductVariantTypeWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProductVariantTypeWhereInput | Prisma.ProductVariantTypeWhereInput[]
   productMasterId?: Prisma.BigIntFilter<"ProductVariantType"> | bigint | number
   name?: Prisma.StringFilter<"ProductVariantType"> | string
+  isHaveVisual?: Prisma.BoolFilter<"ProductVariantType"> | boolean
   productMaster?: Prisma.XOR<Prisma.ProductMasterScalarRelationFilter, Prisma.ProductMasterWhereInput>
   values?: Prisma.ProductVariantValueListRelationFilter
 }, "id" | "productMasterId_name">
@@ -232,6 +242,7 @@ export type ProductVariantTypeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   productMasterId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  isHaveVisual?: Prisma.SortOrder
   _count?: Prisma.ProductVariantTypeCountOrderByAggregateInput
   _avg?: Prisma.ProductVariantTypeAvgOrderByAggregateInput
   _max?: Prisma.ProductVariantTypeMaxOrderByAggregateInput
@@ -246,11 +257,13 @@ export type ProductVariantTypeScalarWhereWithAggregatesInput = {
   id?: Prisma.BigIntWithAggregatesFilter<"ProductVariantType"> | bigint | number
   productMasterId?: Prisma.BigIntWithAggregatesFilter<"ProductVariantType"> | bigint | number
   name?: Prisma.StringWithAggregatesFilter<"ProductVariantType"> | string
+  isHaveVisual?: Prisma.BoolWithAggregatesFilter<"ProductVariantType"> | boolean
 }
 
 export type ProductVariantTypeCreateInput = {
   id?: bigint | number
   name: string
+  isHaveVisual?: boolean
   productMaster: Prisma.ProductMasterCreateNestedOneWithoutVariantTypesInput
   values?: Prisma.ProductVariantValueCreateNestedManyWithoutVariantTypeInput
 }
@@ -259,12 +272,14 @@ export type ProductVariantTypeUncheckedCreateInput = {
   id?: bigint | number
   productMasterId: bigint | number
   name: string
+  isHaveVisual?: boolean
   values?: Prisma.ProductVariantValueUncheckedCreateNestedManyWithoutVariantTypeInput
 }
 
 export type ProductVariantTypeUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   productMaster?: Prisma.ProductMasterUpdateOneRequiredWithoutVariantTypesNestedInput
   values?: Prisma.ProductVariantValueUpdateManyWithoutVariantTypeNestedInput
 }
@@ -273,6 +288,7 @@ export type ProductVariantTypeUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   productMasterId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   values?: Prisma.ProductVariantValueUncheckedUpdateManyWithoutVariantTypeNestedInput
 }
 
@@ -280,17 +296,20 @@ export type ProductVariantTypeCreateManyInput = {
   id?: bigint | number
   productMasterId: bigint | number
   name: string
+  isHaveVisual?: boolean
 }
 
 export type ProductVariantTypeUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ProductVariantTypeUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   productMasterId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ProductVariantTypeListRelationFilter = {
@@ -312,6 +331,7 @@ export type ProductVariantTypeCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productMasterId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  isHaveVisual?: Prisma.SortOrder
 }
 
 export type ProductVariantTypeAvgOrderByAggregateInput = {
@@ -323,12 +343,14 @@ export type ProductVariantTypeMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productMasterId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  isHaveVisual?: Prisma.SortOrder
 }
 
 export type ProductVariantTypeMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productMasterId?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  isHaveVisual?: Prisma.SortOrder
 }
 
 export type ProductVariantTypeSumOrderByAggregateInput = {
@@ -400,12 +422,14 @@ export type ProductVariantTypeUpdateOneRequiredWithoutValuesNestedInput = {
 export type ProductVariantTypeCreateWithoutProductMasterInput = {
   id?: bigint | number
   name: string
+  isHaveVisual?: boolean
   values?: Prisma.ProductVariantValueCreateNestedManyWithoutVariantTypeInput
 }
 
 export type ProductVariantTypeUncheckedCreateWithoutProductMasterInput = {
   id?: bigint | number
   name: string
+  isHaveVisual?: boolean
   values?: Prisma.ProductVariantValueUncheckedCreateNestedManyWithoutVariantTypeInput
 }
 
@@ -442,11 +466,13 @@ export type ProductVariantTypeScalarWhereInput = {
   id?: Prisma.BigIntFilter<"ProductVariantType"> | bigint | number
   productMasterId?: Prisma.BigIntFilter<"ProductVariantType"> | bigint | number
   name?: Prisma.StringFilter<"ProductVariantType"> | string
+  isHaveVisual?: Prisma.BoolFilter<"ProductVariantType"> | boolean
 }
 
 export type ProductVariantTypeCreateWithoutValuesInput = {
   id?: bigint | number
   name: string
+  isHaveVisual?: boolean
   productMaster: Prisma.ProductMasterCreateNestedOneWithoutVariantTypesInput
 }
 
@@ -454,6 +480,7 @@ export type ProductVariantTypeUncheckedCreateWithoutValuesInput = {
   id?: bigint | number
   productMasterId: bigint | number
   name: string
+  isHaveVisual?: boolean
 }
 
 export type ProductVariantTypeCreateOrConnectWithoutValuesInput = {
@@ -475,6 +502,7 @@ export type ProductVariantTypeUpdateToOneWithWhereWithoutValuesInput = {
 export type ProductVariantTypeUpdateWithoutValuesInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   productMaster?: Prisma.ProductMasterUpdateOneRequiredWithoutVariantTypesNestedInput
 }
 
@@ -482,28 +510,33 @@ export type ProductVariantTypeUncheckedUpdateWithoutValuesInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   productMasterId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ProductVariantTypeCreateManyProductMasterInput = {
   id?: bigint | number
   name: string
+  isHaveVisual?: boolean
 }
 
 export type ProductVariantTypeUpdateWithoutProductMasterInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   values?: Prisma.ProductVariantValueUpdateManyWithoutVariantTypeNestedInput
 }
 
 export type ProductVariantTypeUncheckedUpdateWithoutProductMasterInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
   values?: Prisma.ProductVariantValueUncheckedUpdateManyWithoutVariantTypeNestedInput
 }
 
 export type ProductVariantTypeUncheckedUpdateManyWithoutProductMasterInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  isHaveVisual?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -541,6 +574,7 @@ export type ProductVariantTypeSelect<ExtArgs extends runtime.Types.Extensions.In
   id?: boolean
   productMasterId?: boolean
   name?: boolean
+  isHaveVisual?: boolean
   productMaster?: boolean | Prisma.ProductMasterDefaultArgs<ExtArgs>
   values?: boolean | Prisma.ProductVariantType$valuesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariantTypeCountOutputTypeDefaultArgs<ExtArgs>
@@ -550,6 +584,7 @@ export type ProductVariantTypeSelectCreateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   productMasterId?: boolean
   name?: boolean
+  isHaveVisual?: boolean
   productMaster?: boolean | Prisma.ProductMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantType"]>
 
@@ -557,6 +592,7 @@ export type ProductVariantTypeSelectUpdateManyAndReturn<ExtArgs extends runtime.
   id?: boolean
   productMasterId?: boolean
   name?: boolean
+  isHaveVisual?: boolean
   productMaster?: boolean | Prisma.ProductMasterDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantType"]>
 
@@ -564,9 +600,10 @@ export type ProductVariantTypeSelectScalar = {
   id?: boolean
   productMasterId?: boolean
   name?: boolean
+  isHaveVisual?: boolean
 }
 
-export type ProductVariantTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productMasterId" | "name", ExtArgs["result"]["productVariantType"]>
+export type ProductVariantTypeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productMasterId" | "name" | "isHaveVisual", ExtArgs["result"]["productVariantType"]>
 export type ProductVariantTypeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productMaster?: boolean | Prisma.ProductMasterDefaultArgs<ExtArgs>
   values?: boolean | Prisma.ProductVariantType$valuesArgs<ExtArgs>
@@ -589,6 +626,11 @@ export type $ProductVariantTypePayload<ExtArgs extends runtime.Types.Extensions.
     id: bigint
     productMasterId: bigint
     name: string
+    /**
+     * Tipe yang mengubah tampilan produk (Warna, Motif). Hanya tipe visual
+     * yang ikut membentuk signature Image Group.
+     */
+    isHaveVisual: boolean
   }, ExtArgs["result"]["productVariantType"]>
   composites: {}
 }
@@ -1017,6 +1059,7 @@ export interface ProductVariantTypeFieldRefs {
   readonly id: Prisma.FieldRef<"ProductVariantType", 'BigInt'>
   readonly productMasterId: Prisma.FieldRef<"ProductVariantType", 'BigInt'>
   readonly name: Prisma.FieldRef<"ProductVariantType", 'String'>
+  readonly isHaveVisual: Prisma.FieldRef<"ProductVariantType", 'Boolean'>
 }
     
 

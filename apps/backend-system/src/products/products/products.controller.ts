@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -91,11 +92,31 @@ export class ProductsController {
   @UseInterceptors(FilesInterceptor('images', 10))
   async uploadImages(
     @Param('id') productId: string,
-    @Body('variantIds') variantIds: string,
+    @Body('imageGroupIds') rawGroupIds: string,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     validateImageFiles(files, 10);
-    const ids: string[] = JSON.parse(variantIds) as string[];
-    return await this.productsService.uploadImages(ids, files);
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(rawGroupIds ?? '[]');
+    } catch {
+      throw new BadRequestException('Format imageGroupIds tidak valid');
+    }
+
+    if (
+      !Array.isArray(parsed) ||
+      parsed.some((id) => typeof id !== 'string' || !/^\d+$/.test(id))
+    ) {
+      throw new BadRequestException(
+        'imageGroupIds harus berupa array berisi id bertipe string',
+      );
+    }
+
+    return await this.productsService.uploadGroupImages(
+      BigInt(productId),
+      parsed as string[],
+      files,
+    );
   }
 }

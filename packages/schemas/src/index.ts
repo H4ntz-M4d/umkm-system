@@ -11,6 +11,7 @@ export * from "./schema/categories/categories.schema";
 export * from "./schema/categories/categories.response";
 export * from "./schema/products/products.schema";
 export * from "./schema/products/products.response";
+export * from "./schema/products/image-group.signature";
 export * from "./schema/production/production.schema";
 export * from "./schema/production/production.response";
 export * from "./schema/be-spoke/be-spoke.schema";

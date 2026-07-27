@@ -1,5 +1,30 @@
 import { Prisma } from '@repo/db';
 
+/**
+ * Fragmen select untuk meratakan gambar grup menjadi satu field `image` pada
+ * variant. Dipakai di semua query baca supaya sisi pembaca tidak perlu menyusuri
+ * imageGroup.images sendiri.
+ */
+export const variantImageGroupSelect = {
+  select: {
+    id: true,
+    images: {
+      select: { image: true },
+      orderBy: { sortOrder: 'asc' },
+      take: 1,
+    },
+  },
+} satisfies Prisma.ProductVariant$imageGroupArgs;
+
+type VariantWithImageGroup = {
+  imageGroupId: bigint | null;
+  imageGroup: { images: { image: string }[] } | null;
+};
+
+function flattenImage(variant: VariantWithImageGroup) {
+  return variant.imageGroup?.images[0]?.image ?? null;
+}
+
 type ProductTableEntity = Prisma.ProductMasterGetPayload<{
   select: {
     id: true;
@@ -17,7 +42,8 @@ type ProductTableEntity = Prisma.ProductMasterGetPayload<{
         sku: true;
         price: true;
         cost: true;
-        image: true;
+        imageGroupId: true;
+        imageGroup: typeof variantImageGroupSelect;
         productVariantStocks: {
           select: {
             id: true;
@@ -45,7 +71,8 @@ export function toAllProductsResponse(entity: ProductTableEntity) {
       sku: variant.sku,
       price: variant.price,
       cost: variant.cost,
-      image: variant.image,
+      image: flattenImage(variant),
+      imageGroupId: variant.imageGroupId,
       productVariantStocks: variant.productVariantStocks?.stock,
     })),
   };
@@ -65,7 +92,8 @@ type ProductEntityById = Prisma.ProductMasterGetPayload<{
         sku: true;
         price: true;
         cost: true;
-        image: true;
+        imageGroupId: true;
+        imageGroup: typeof variantImageGroupSelect;
         options: {
           select: {
             variantValue: {
@@ -86,11 +114,32 @@ type ProductEntityById = Prisma.ProductMasterGetPayload<{
       select: {
         id: true;
         name: true;
+        isHaveVisual: true;
         values: {
           select: {
             id: true;
             value: true;
           };
+        };
+      };
+    };
+    imageGroups: {
+      select: {
+        id: true;
+        signature: true;
+        values: {
+          select: {
+            variantValue: {
+              select: {
+                id: true;
+                value: true;
+                variantType: { select: { name: true } };
+              };
+            };
+          };
+        };
+        images: {
+          select: { id: true; image: true; sortOrder: true };
         };
       };
     };
@@ -110,7 +159,8 @@ export function toProductResponseById(entity: ProductEntityById) {
       sku: variant.sku,
       price: variant.price,
       cost: variant.cost,
-      image: variant.image,
+      image: flattenImage(variant),
+      imageGroupId: variant.imageGroupId,
       options: Object.fromEntries(
         variant.options.map((opt) => [
           opt.variantValue.variantType.name,
@@ -121,58 +171,25 @@ export function toProductResponseById(entity: ProductEntityById) {
     variantTypes: entity.variantTypes.map((varTypes) => ({
       id: varTypes.id,
       name: varTypes.name,
+      isHaveVisual: varTypes.isHaveVisual,
       values: varTypes.values.map((val) => ({
         id: val.id,
         value: val.value,
       })),
     })),
-  };
-}
-
-type ListProductEntity = Prisma.ProductMasterGetPayload<{
-  select: {
-    name: true;
-    description: true;
-    useVariant: true;
-    variants: {
-      select: {
-        id: true;
-        sku: true;
-        price: true;
-        options: {
-          select: {
-            variantValue: {
-              select: {
-                value: true;
-                variantType: {
-                  select: {
-                    name: true;
-                  };
-                };
-              };
-            };
-          };
-        };
-      };
-    };
-  };
-}>;
-
-export function toListProductResponse(entity: ListProductEntity) {
-  return {
-    name: entity.name,
-    description: entity.description,
-    useVariant: entity.useVariant,
-    variants: entity.variants.map((v) => ({
-      id: v.id,
-      sku: v.sku,
-      price: v.price,
-      options: Object.fromEntries(
-        v.options.map((opt) => [
-          opt.variantValue.variantType.name,
-          opt.variantValue.value,
-        ]),
-      ),
+    imageGroups: entity.imageGroups.map((group) => ({
+      id: group.id,
+      signature: group.signature,
+      values: group.values.map((groupValue) => ({
+        id: groupValue.variantValue.id,
+        value: groupValue.variantValue.value,
+        typeName: groupValue.variantValue.variantType.name,
+      })),
+      images: group.images.map((image) => ({
+        id: image.id,
+        image: image.image,
+        sortOrder: image.sortOrder,
+      })),
     })),
   };
 }
@@ -194,6 +211,12 @@ type ProductEntity = Prisma.ProductMasterGetPayload<{
         cost: true;
       };
     };
+    imageGroups: {
+      select: {
+        id: true;
+        signature: true;
+      };
+    };
   };
 }>;
 
@@ -205,12 +228,18 @@ export function toProductResponse(entity: ProductEntity) {
     categoryId: entity.categoryId,
     type: entity.type,
     status: entity.status,
-    useVariant: true,
+    useVariant: entity.useVariant,
     variants: entity.variants.map((variant) => ({
       id: variant.id,
       sku: variant.sku,
       price: variant.price,
       cost: variant.cost,
+    })),
+    // Dipakai form untuk memetakan file yang dipegangnya ke id grup, tanpa
+    // bergantung pada urutan indeks variant.
+    imageGroups: entity.imageGroups.map((group) => ({
+      id: group.id,
+      signature: group.signature,
     })),
   };
 }
@@ -251,7 +280,8 @@ type ProductListEntity = Prisma.ProductMasterGetPayload<{
         id: true;
         sku: true;
         price: true;
-        image: true;
+        imageGroupId: true;
+        imageGroup: typeof variantImageGroupSelect;
         productVariantStocks: {
           select: {
             stock: true;
@@ -284,7 +314,7 @@ export function toProductListResponse(entity: ProductListEntity) {
       id: variant.id,
       sku: variant.sku,
       price: variant.price,
-      image: variant.image,
+      image: flattenImage(variant),
       stock: variant.productVariantStocks?.stock ?? 0,
       options: variant.options,
     })),

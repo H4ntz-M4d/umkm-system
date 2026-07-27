@@ -11,7 +11,33 @@ export const VariantValuesData = z.object({
 export const VariantTypesData = z.object({
   id: z.string(),
   name: z.string(),
+  isHaveVisual: z.boolean(),
   values: z.array(VariantValuesData),
+});
+
+export const ProductImageData = z.object({
+  id: z.string(),
+  image: z.string(),
+  sortOrder: z.number(),
+});
+
+export const ImageGroupValueData = z.object({
+  id: z.string(),
+  value: z.string(),
+  typeName: z.string(),
+});
+
+export const ImageGroupData = z.object({
+  id: z.string(),
+  signature: z.string(),
+  values: z.array(ImageGroupValueData),
+  images: z.array(ProductImageData),
+});
+
+/// Cukup untuk memetakan file yang dipegang form ke id grup setelah simpan.
+export const ImageGroupRefData = ImageGroupData.pick({
+  id: true,
+  signature: true,
 });
 
 export const VariantData = z.object({
@@ -19,7 +45,9 @@ export const VariantData = z.object({
   sku: z.string(),
   price: z.string(),
   cost: z.string(),
+  /// Diratakan dari imageGroup.images[0] oleh mapper backend.
   image: z.string().optional().nullable(),
+  imageGroupId: z.string().optional().nullable(),
   productVariantStocks: z.number().optional(),
 });
 
@@ -50,6 +78,7 @@ export const ProductDataById = ProductsData.pick({
     }),
   ),
   variantTypes: z.array(VariantTypesData),
+  imageGroups: z.array(ImageGroupData),
 });
 
 export const CreateUpdateProductData = ProductsData.pick({
@@ -69,6 +98,7 @@ export const CreateUpdateProductData = ProductsData.pick({
       cost: true,
     }),
   ),
+  imageGroups: z.array(ImageGroupRefData),
 });
 
 export const ProductVariantListData = ProductsData.pick({
@@ -121,4 +151,13 @@ export const ProductVariantResponse = ApiSuccessResponse(
 
 export const ProductListDataResponse = ApiSuccessResponse(
   z.array(ProductListData),
+);
+
+export const UploadProductImagesResponse = ApiSuccessResponse(
+  z.array(
+    z.object({
+      imageGroupId: z.string(),
+      image: z.string(),
+    }),
+  ),
 );

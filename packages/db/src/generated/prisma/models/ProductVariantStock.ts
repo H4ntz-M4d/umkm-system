@@ -406,14 +406,6 @@ export type ProductVariantStockUncheckedUpdateOneWithoutProductVariantNestedInpu
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantStockUpdateToOneWithWhereWithoutProductVariantInput, Prisma.ProductVariantStockUpdateWithoutProductVariantInput>, Prisma.ProductVariantStockUncheckedUpdateWithoutProductVariantInput>
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type ProductVariantStockCreateWithoutProductVariantInput = {
   id?: bigint | number
   stock: number

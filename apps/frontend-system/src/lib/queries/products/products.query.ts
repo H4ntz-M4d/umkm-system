@@ -6,6 +6,7 @@ import {
   ProductsResponse,
   ProductVariantResponse,
   ProductListDataResponse,
+  UploadProductImagesResponse,
 } from "@repo/schemas";
 import { apiFetcher } from "@/lib/api/api.fetcher";
 
@@ -80,19 +81,20 @@ export const updateProduct = async (
 
 export const uploadImage = async ({
   productId,
-  variantIds,
+  imageGroupIds,
   files,
 }: {
   productId: string;
-  variantIds: string[];
+  imageGroupIds: string[];
   files: File[];
 }) => {
   const data = new FormData();
-  data.append("variantIds", JSON.stringify(variantIds));
+  data.append("imageGroupIds", JSON.stringify(imageGroupIds));
   files.forEach((file) => data.append("images", file));
-  const res = await managementApi
-    .patch(`v1/products/${productId}/upload`, { body: data })
-    .json<any>();
+  const res = await apiFetcher(
+    managementApi.patch(`v1/products/${productId}/upload`, { body: data }),
+    UploadProductImagesResponse,
+  );
   return res;
 };
 

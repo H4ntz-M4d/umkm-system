@@ -55,6 +55,8 @@ export const ModelName = {
   Users: 'Users',
   Categories: 'Categories',
   ProductMaster: 'ProductMaster',
+  ProductImageGroup: 'ProductImageGroup',
+  ProductImageGroupValue: 'ProductImageGroupValue',
   ProductImage: 'ProductImage',
   ProductVariant: 'ProductVariant',
   ProductVariantStock: 'ProductVariantStock',
@@ -148,10 +150,30 @@ export const ProductMasterScalarFieldEnum = {
 export type ProductMasterScalarFieldEnum = (typeof ProductMasterScalarFieldEnum)[keyof typeof ProductMasterScalarFieldEnum]
 
 
-export const ProductImageScalarFieldEnum = {
+export const ProductImageGroupScalarFieldEnum = {
   id: 'id',
   productMasterId: 'productMasterId',
-  image: 'image'
+  signature: 'signature',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductImageGroupScalarFieldEnum = (typeof ProductImageGroupScalarFieldEnum)[keyof typeof ProductImageGroupScalarFieldEnum]
+
+
+export const ProductImageGroupValueScalarFieldEnum = {
+  imageGroupId: 'imageGroupId',
+  variantValueId: 'variantValueId'
+} as const
+
+export type ProductImageGroupValueScalarFieldEnum = (typeof ProductImageGroupValueScalarFieldEnum)[keyof typeof ProductImageGroupValueScalarFieldEnum]
+
+
+export const ProductImageScalarFieldEnum = {
+  id: 'id',
+  imageGroupId: 'imageGroupId',
+  image: 'image',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
 } as const
 
 export type ProductImageScalarFieldEnum = (typeof ProductImageScalarFieldEnum)[keyof typeof ProductImageScalarFieldEnum]
@@ -164,7 +186,7 @@ export const ProductVariantScalarFieldEnum = {
   price: 'price',
   cost: 'cost',
   isActive: 'isActive',
-  image: 'image',
+  imageGroupId: 'imageGroupId',
   createdAt: 'createdAt'
 } as const
 
@@ -185,7 +207,8 @@ export type ProductVariantStockScalarFieldEnum = (typeof ProductVariantStockScal
 export const ProductVariantTypeScalarFieldEnum = {
   id: 'id',
   productMasterId: 'productMasterId',
-  name: 'name'
+  name: 'name',
+  isHaveVisual: 'isHaveVisual'
 } as const
 
 export type ProductVariantTypeScalarFieldEnum = (typeof ProductVariantTypeScalarFieldEnum)[keyof typeof ProductVariantTypeScalarFieldEnum]
