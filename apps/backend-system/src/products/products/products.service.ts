@@ -16,11 +16,44 @@ import {
   toProductResponse,
   toProductResponseById,
   toProductVariantListResponse,
+  variantImageGroupSelect,
 } from 'products/products/products.response';
+import {
+  ProductImageGroupService,
+  SyncVariantInput,
+} from 'products/products/product-image-group.service';
+
+/** Select penutup create/update: yang dibutuhkan toProductResponse. */
+const mutationResultSelect = {
+  id: true,
+  name: true,
+  description: true,
+  useVariant: true,
+  categoryId: true,
+  type: true,
+  status: true,
+  variants: {
+    select: {
+      id: true,
+      sku: true,
+      price: true,
+      cost: true,
+    },
+  },
+  imageGroups: {
+    select: {
+      id: true,
+      signature: true,
+    },
+  },
+} satisfies Prisma.ProductMasterSelect;
 
 @Injectable()
 export class ProductsService {
-  constructor(private cloudinaryService: CloudinaryService) {}
+  constructor(
+    private cloudinaryService: CloudinaryService,
+    private imageGroups: ProductImageGroupService,
+  ) {}
 
   generateSlug(name: string): string {
     return name
@@ -29,20 +62,115 @@ export class ProductsService {
       .replace(/[^a-z0-9-]/g, '');
   }
 
+  /**
+   * Menyeragamkan spasi pada nama tipe, nilai variant, dan key options.
+   *
+   * canonicalSignature melakukan trim saat membentuk signature. Kalau sumbernya
+   * tidak ikut di-trim, typeValueMap akan dikunci "Warna " sementara signature
+   * berisi "Warna", lookup meleset, dan junction terisi kosong tanpa error apa
+   * pun. Dinormalkan sekali di sini supaya baris database, typeValueMap, options,
+   * dan signature semuanya berangkat dari nilai yang sama.
+   */
+  private normalizeVariantInput(data: CreateProductDto): CreateProductDto {
+    return {
+      ...data,
+      variantsTypes: data.variantsTypes?.map((type) => ({
+        ...type,
+        name: type.name.trim(),
+        values: type.values.map((value) => value.trim()),
+      })),
+      variants: data.variants?.map((variant) => ({
+        ...variant,
+        options: Object.fromEntries(
+          Object.entries(variant.options ?? {}).map(([typeName, valueName]) => [
+            typeName.trim(),
+            valueName.trim(),
+          ]),
+        ),
+      })),
+    };
+  }
+
+  /**
+   * Fitur yang memegang referensi ke sebuah variant, beserta sebutannya untuk
+   * admin. orderItems dan posTransactionItems memakai FK Restrict, jadi
+   * penghapusan ditolak database dengan P2003 yang tidak berarti apa-apa bagi
+   * admin. productions memakai SetNull, tidak menolak, tapi riwayat produksinya
+   * akan kehilangan tautan ke variant, jadi tetap harus ditahan.
+   */
+  private static readonly VARIANT_USAGE_LABELS = {
+    orderItems: 'pesanan online',
+    posTransactionItems: 'transaksi kasir',
+    productions: 'produksi',
+  } as const;
+
+  /**
+   * Menolak operasi yang akan menghapus variant yang masih dipakai fitur lain,
+   * dengan pesan yang menyebutkan SKU dan fitur pemakainya.
+   */
+  private async assertVariantsNotInUse(
+    variantIds: bigint[],
+    reason: string,
+  ): Promise<void> {
+    if (variantIds.length === 0) return;
+
+    const variants = await prisma.productVariant.findMany({
+      where: { id: { in: variantIds } },
+      select: {
+        sku: true,
+        _count: {
+          select: {
+            orderItems: true,
+            posTransactionItems: true,
+            productions: true,
+          },
+        },
+      },
+    });
+
+    const labels = ProductsService.VARIANT_USAGE_LABELS;
+    const inUse = variants
+      .map((variant) => ({
+        sku: variant.sku,
+        usedIn: (Object.keys(labels) as (keyof typeof labels)[])
+          .filter((feature) => variant._count[feature] > 0)
+          .map((feature) => labels[feature]),
+      }))
+      .filter((variant) => variant.usedIn.length > 0);
+
+    if (inUse.length === 0) return;
+
+    const detail = inUse
+      .map(
+        (variant) =>
+          `${variant.sku} (dipakai di ${variant.usedIn.join(' dan ')})`,
+      )
+      .join('; ');
+
+    throw new BadRequestException(
+      `${reason} Variant yang terkunci: ${detail}. ` +
+        'Riwayat transaksi dan produksi akan rusak bila variant ini dihapus. ' +
+        'Bila variant tersebut sudah tidak dijual, nonaktifkan saja dari halaman daftar produk.',
+    );
+  }
+
   // =============================== Function Get Data =======================================
 
   async findAll(pagination: Pagination, search?: string) {
     const skip = pagination.skip ?? 0;
     const limit = pagination.limit ?? 10;
+
+    const where: Prisma.ProductMasterWhereInput = {
+      name: {
+        contains: search,
+        mode: 'insensitive',
+      },
+    };
+
     const data = await prisma.productMaster.findMany({
       skip: skip,
       take: limit ?? 10,
-      where: {
-        name: {
-          contains: search,
-          mode: 'insensitive',
-        },
-      },
+      where,
       select: {
         id: true,
         name: true,
@@ -59,7 +187,8 @@ export class ProductsService {
             sku: true,
             price: true,
             cost: true,
-            image: true,
+            imageGroupId: true,
+            imageGroup: variantImageGroupSelect,
             productVariantStocks: {
               select: {
                 stock: true,
@@ -70,7 +199,8 @@ export class ProductsService {
       },
     });
 
-    const total = await prisma.productMaster.count();
+    // Filter yang sama dengan findMany, kalau tidak meta.total salah saat search.
+    const total = await prisma.productMaster.count({ where });
 
     const result = data.map(toAllProductsResponse);
     return {
@@ -101,7 +231,8 @@ export class ProductsService {
             sku: true,
             price: true,
             cost: true,
-            image: true,
+            imageGroupId: true,
+            imageGroup: variantImageGroupSelect,
             options: {
               select: {
                 variantValue: {
@@ -122,6 +253,7 @@ export class ProductsService {
           select: {
             id: true,
             name: true,
+            isHaveVisual: true,
             values: {
               select: {
                 id: true,
@@ -129,6 +261,28 @@ export class ProductsService {
               },
             },
           },
+        },
+        imageGroups: {
+          select: {
+            id: true,
+            signature: true,
+            values: {
+              select: {
+                variantValue: {
+                  select: {
+                    id: true,
+                    value: true,
+                    variantType: { select: { name: true } },
+                  },
+                },
+              },
+            },
+            images: {
+              select: { id: true, image: true, sortOrder: true },
+              orderBy: { sortOrder: 'asc' },
+            },
+          },
+          orderBy: { id: 'asc' },
         },
       },
     });
@@ -191,7 +345,8 @@ export class ProductsService {
             id: true,
             sku: true,
             price: true,
-            image: true,
+            imageGroupId: true,
+            imageGroup: variantImageGroupSelect,
             productVariantStocks: {
               select: {
                 stock: true,
@@ -229,8 +384,14 @@ export class ProductsService {
 
   // =============================== Function Mutation Data =======================================
 
-  async create(data: CreateProductDto) {
+  async create(rawData: CreateProductDto) {
+    const data = this.normalizeVariantInput(rawData);
+
     const transaction = await prisma.$transaction(async (tx) => {
+      // Dikumpulkan sepanjang kedua cabang, lalu diserahkan ke resolver grup.
+      const syncVariants: SyncVariantInput[] = [];
+      const typeValueMap = new Map<string, Map<string, bigint>>();
+
       // 1. Prepare Status
       const statusMap: Record<string, ProductStatus> = {
         ACTIVE: ProductStatus.ACTIVE,
@@ -278,14 +439,13 @@ export class ProductsService {
 
         // 3a. Create Variant Types and Values, and map them
         // Structure: Map<TypeName, Map<ValueName, ValueId>>
-        const typeValueMap = new Map<string, Map<string, bigint>>();
-
         for (const type of data.variantsTypes) {
           // Create Type (e.g., "Color")
           const createdType = await tx.productVariantType.create({
             data: {
               productMasterId: product.id,
               name: type.name,
+              isHaveVisual: type.isHaveVisual ?? false,
             },
           });
 
@@ -362,6 +522,11 @@ export class ProductsService {
               reserved_stock: 0,
             },
           });
+
+          syncVariants.push({
+            id: createdVariant.id,
+            options: variant.options,
+          });
         }
       } else {
         if (!data.variants || data.variants.length === 0) {
@@ -396,28 +561,22 @@ export class ProductsService {
               reserved_stock: 0,
             },
           });
+
+          syncVariants.push({ id: pv.id, options: {} });
         }
       }
 
+      // Bentuk Image Group dan tautkan tiap variant ke grupnya. Saat create tidak
+      // pernah ada grup yatim, jadi orphanedImageUrls selalu kosong.
+      await this.imageGroups.sync(tx, product.id, {
+        variantsTypes: data.variantsTypes ?? [],
+        variants: syncVariants,
+        typeValueMap,
+      });
+
       const result = await tx.productMaster.findUnique({
         where: { id: product.id },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          useVariant: true,
-          categoryId: true,
-          type: true,
-          status: true,
-          variants: {
-            select: {
-              id: true,
-              sku: true,
-              price: true,
-              cost: true,
-            },
-          },
-        },
+        select: mutationResultSelect,
       });
 
       return toProductResponse(result!);
@@ -425,7 +584,9 @@ export class ProductsService {
     return transaction;
   }
 
-  async update(id: bigint, data: CreateProductDto) {
+  async update(id: bigint, rawData: CreateProductDto) {
+    const data = this.normalizeVariantInput(rawData);
+
     const existingProduct = await prisma.productMaster.findUnique({
       where: { id: id },
       include: {
@@ -450,25 +611,35 @@ export class ProductsService {
       JSON.stringify(existingTypesNames) !== JSON.stringify(incomingTypesNames);
 
     if (isStructuralChange && data.useVariant) {
-      const variantInUse = await prisma.productVariant.findFirst({
-        where: {
-          productMasterId: id,
-          OR: [
-            { productions: { some: {} } },
-            { posTransactionItems: { some: {} } },
-          ],
-        },
-      });
-
-      if (variantInUse) {
-        throw new BadRequestException(
-          'Tidak dapat mengubah tipe variant karena produk ini sudah digunakan ' +
-            'dalam produksi atau transaksi. Hanya dapat mengubah harga, biaya, dan sku',
-        );
-      }
+      // Mengubah tipe variant membuat SELURUH variant dibuat ulang, jadi semuanya
+      // harus bebas referensi, bukan hanya yang hilang dari form.
+      await this.assertVariantsNotInUse(
+        existingProduct.variants.map((variant) => variant.id),
+        'Tipe variant tidak dapat diubah karena produk ini sudah digunakan di fitur lain. ' +
+          'Untuk saat ini hanya harga, biaya, dan SKU yang dapat diubah.',
+      );
     }
 
+    const incomingVariantIds = (data.variants ?? [])
+      .filter((variant) => variant.id)
+      .map((variant) => BigInt(variant.id!));
+
+    const removedVariants = existingProduct.variants.filter(
+      (variant) => !incomingVariantIds.includes(variant.id),
+    );
+
+    // Diperiksa sebelum transaksi dibuka supaya gagal cepat, dan supaya admin
+    // dapat pesan yang jelas alih-alih P2003 mentah dari database.
+    await this.assertVariantsNotInUse(
+      removedVariants.map((variant) => variant.id),
+      'Variant tidak dapat dihapus karena sudah digunakan di fitur lain.',
+    );
+
     const transaction = await prisma.$transaction(async (tx) => {
+      // Dikumpulkan sepanjang kedua cabang, lalu diserahkan ke resolver grup.
+      const syncVariants: SyncVariantInput[] = [];
+      const typeValueMap = new Map<string, Map<string, bigint>>();
+
       const slugData = this.generateSlug(data.name);
 
       const statusMap: Record<string, ProductStatus> = {
@@ -500,17 +671,6 @@ export class ProductsService {
         },
       });
 
-      const incomingVariants = (data.variants ?? [])
-        .filter((v) => v.id)
-        .map((v) => BigInt(v.id!));
-
-      const removedVariants = existingProduct.variants.filter(
-        (v) => !incomingVariants.includes(v.id),
-      );
-
-      console.log(incomingVariants);
-      console.log(removedVariants);
-
       if (removedVariants.length > 0) {
         const removedId = removedVariants.map((v) => v.id);
 
@@ -528,13 +688,12 @@ export class ProductsService {
           where: { productMasterId: id },
         });
 
-        const typeValueMap = new Map<string, Map<string, bigint>>();
-
         for (const type of data.variantsTypes ?? []) {
           const createType = await tx.productVariantType.create({
             data: {
               productMasterId: id,
               name: type.name,
+              isHaveVisual: type.isHaveVisual ?? false,
             },
           });
 
@@ -621,11 +780,18 @@ export class ProductsService {
           await tx.productVariantOption.createMany({
             data: optionsToCreate,
           });
+
+          syncVariants.push({
+            id: variantRecord.id,
+            options: variant.options ?? {},
+          });
         }
       } else {
         for (const variant of data.variants ?? []) {
+          let variantRecord: ProductVariant;
+
           if (variant.id) {
-            await tx.productVariant.update({
+            variantRecord = await tx.productVariant.update({
               where: { id: BigInt(variant.id) },
               data: {
                 sku: variant.sku,
@@ -635,7 +801,7 @@ export class ProductsService {
               },
             });
           } else {
-            await tx.productVariant.create({
+            variantRecord = await tx.productVariant.create({
               data: {
                 productMasterId: id,
                 sku: variant.sku,
@@ -645,99 +811,132 @@ export class ProductsService {
               },
             });
           }
+
+          syncVariants.push({ id: variantRecord.id, options: {} });
         }
       }
+
+      // Rekonsiliasi grup berjalan terlepas dari isStructuralChange, sehingga
+      // perubahan toggle isHaveVisual pun ikut tertangani. Grup dengan signature
+      // yang sama di-upsert, jadi edit harga tidak menyentuh gambar.
+      const { orphanedImageUrls } = await this.imageGroups.sync(tx, id, {
+        variantsTypes: data.variantsTypes ?? [],
+        variants: syncVariants,
+        typeValueMap,
+      });
 
       return {
         success: true,
         removedVariants: removedVariants,
+        orphanedImageUrls,
       };
     });
 
-    if (transaction.removedVariants && transaction.removedVariants.length > 0) {
-      for (const rv of transaction.removedVariants) {
-        if (rv.image) {
-          try {
-            await this.cloudinaryService.deleteImage(rv.image);
-          } catch (error) {
-            console.error(
-              `Gagal menghapus gambar ${rv.image} di Cloudinary:`,
-              error,
-            );
-          }
-        }
+    // Aset grup yatim dibersihkan setelah commit, bukan di dalam transaksi.
+    const deletedImages = await Promise.allSettled(
+      transaction.orphanedImageUrls.map((url) =>
+        this.cloudinaryService.deleteImage(url),
+      ),
+    );
+
+    deletedImages.forEach((deleted) => {
+      if (deleted.status === 'rejected') {
+        console.error(
+          'Gagal menghapus gambar grup yatim di Cloudinary:',
+          deleted.reason,
+        );
       }
-    }
+    });
 
     const result = await prisma.productMaster.findUnique({
       where: { id: id },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        useVariant: true,
-        categoryId: true,
-        type: true,
-        status: true,
-        variants: {
-          select: {
-            id: true,
-            sku: true,
-            price: true,
-            cost: true,
-          },
-        },
-      },
+      select: mutationResultSelect,
     });
 
     return toProductResponse(result!);
   }
 
-  async uploadImages(variantId: string[], file: Express.Multer.File[]) {
-    if (variantId.length !== file.length) {
+  async uploadGroupImages(
+    productMasterId: bigint,
+    groupIds: string[],
+    files: Express.Multer.File[],
+  ) {
+    if (groupIds.length !== files.length) {
       throw new BadRequestException(
-        'Jumlah variant harus sama dengan jumlah file',
+        'Jumlah image group harus sama dengan jumlah file',
       );
     }
 
-    const result = await Promise.all(
-      variantId.map(async (id, index) => {
-        const existing = await prisma.productVariant.findUnique({
-          where: { id: BigInt(id) },
-          select: { image: true },
-        });
+    if (groupIds.length === 0) {
+      return { success: true, data: [] };
+    }
 
-        if (existing?.image) {
-          await this.cloudinaryService.deleteImage(existing.image);
-        }
+    const ids = groupIds.map((groupId) => BigInt(groupId));
 
-        const imageUrl = await this.cloudinaryService.uploadImage(
-          file[index],
+    if (new Set(groupIds).size !== ids.length) {
+      throw new BadRequestException('Terdapat image group yang duplikat');
+    }
+
+    // Grup wajib milik produk di path. Endpoint lama menerima :id tapi tidak
+    // pernah memakainya, sehingga gambar produk lain bisa ditimpa.
+    const owned = await prisma.productImageGroup.findMany({
+      where: { id: { in: ids }, productMasterId },
+      select: { id: true, images: { select: { image: true } } },
+    });
+
+    if (owned.length !== ids.length) {
+      throw new BadRequestException('Image group tidak valid untuk produk ini');
+    }
+
+    const staleUrlsByGroup = new Map(
+      owned.map((group) => [group.id, group.images.map((img) => img.image)]),
+    );
+
+    const staleUrls: string[] = [];
+    const data = await Promise.all(
+      ids.map(async (imageGroupId, index) => {
+        // Upload dulu, baru sentuh database. Kalau upload gagal, gambar lama
+        // yang masih baik tidak ikut hancur.
+        const image = await this.cloudinaryService.uploadImage(
+          files[index],
           CloudinaryFolder.PRODUCTS,
         );
 
-        return await prisma.productVariant.update({
-          where: {
-            id: BigInt(id),
-          },
-          data: {
-            image: imageUrl,
-          },
+        await prisma.$transaction(async (tx) => {
+          await tx.productImage.deleteMany({ where: { imageGroupId } });
+          await tx.productImage.create({
+            data: { imageGroupId, image, sortOrder: 0 },
+          });
         });
+
+        staleUrls.push(...(staleUrlsByGroup.get(imageGroupId) ?? []));
+        return { imageGroupId, image };
       }),
     );
 
-    return { success: true, data: result };
+    const deletedImages = await Promise.allSettled(
+      staleUrls.map((url) => this.cloudinaryService.deleteImage(url)),
+    );
+
+    deletedImages.forEach((deleted) => {
+      if (deleted.status === 'rejected') {
+        console.error(
+          'Gagal menghapus gambar lama di Cloudinary:',
+          deleted.reason,
+        );
+      }
+    });
+
+    return { success: true, data };
   }
 
   async remove(id: bigint) {
     const productIsExist = await prisma.productMaster.findUnique({
       where: { id: id },
       select: {
-        variants: {
+        imageGroups: {
           select: {
-            id: true,
-            image: true,
+            images: { select: { image: true } },
           },
         },
       },
@@ -745,11 +944,12 @@ export class ProductsService {
 
     if (!productIsExist) return null;
 
+    const imageUrls = productIsExist.imageGroups.flatMap((group) =>
+      group.images.map((image) => image.image),
+    );
+
     const deleteImage = await Promise.allSettled(
-      productIsExist.variants.map(async (variant) => {
-        if (variant.image === null) return;
-        await this.cloudinaryService.deleteImage(variant.image);
-      }),
+      imageUrls.map((url) => this.cloudinaryService.deleteImage(url)),
     );
 
     deleteImage.forEach((result) => {
@@ -760,23 +960,7 @@ export class ProductsService {
 
     const result = await prisma.productMaster.delete({
       where: { id: id },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        useVariant: true,
-        categoryId: true,
-        type: true,
-        status: true,
-        variants: {
-          select: {
-            id: true,
-            sku: true,
-            price: true,
-            cost: true,
-          },
-        },
-      },
+      select: mutationResultSelect,
     });
 
     return toProductResponse(result);

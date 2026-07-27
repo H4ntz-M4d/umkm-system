@@ -38,6 +38,20 @@ export type Categories = Prisma.CategoriesModel
  */
 export type ProductMaster = Prisma.ProductMasterModel
 /**
+ * Model ProductImageGroup
+ * Satu grup gambar per kombinasi nilai variant yang bersifat visual.
+ * Signature adalah JSON kanonik pasangan [namaTipe, namaNilai] tipe visual,
+ * terurut menurut nama tipe. '[]' berarti grup level produk: produk tanpa
+ * tipe visual, atau useVariant = false.
+ */
+export type ProductImageGroup = Prisma.ProductImageGroupModel
+/**
+ * Model ProductImageGroupValue
+ * Turunan dari signature, disimpan supaya grup bisa di-join dan diberi label
+ * tanpa mem-parse signature.
+ */
+export type ProductImageGroupValue = Prisma.ProductImageGroupValueModel
+/**
  * Model ProductImage
  * 
  */

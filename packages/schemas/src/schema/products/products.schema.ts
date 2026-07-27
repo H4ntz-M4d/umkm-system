@@ -14,6 +14,13 @@ export const VariantValueSchema = z
 export const VariantTypeSchema = z.object({
   name: z.string().min(3, "Nama variant minimal memiliki panjang 3 karakter"),
   values: z.array(VariantValueSchema).min(1),
+  /// Tipe yang mengubah tampilan produk (Warna, Motif). Hanya tipe visual yang
+  /// ikut membentuk Image Group. Biarkan false untuk Ukuran dan sejenisnya.
+  ///
+  /// optional, bukan default(false), supaya tipe input dan output z.infer tetap
+  /// sama. default() membuat keduanya berbeda dan zodResolver menolaknya.
+  /// Backend memperlakukan undefined sebagai false.
+  isHaveVisual: z.boolean().optional(),
 });
 
 export const VariantSchema = z.object({
@@ -21,7 +28,6 @@ export const VariantSchema = z.object({
   sku: z.string().min(3, "SKU wajib diisi dan tidak boleh ada yang sama"),
   price: z.number(),
   cost: z.number(),
-  image: z.string().optional(),
   options: z.record(z.string(), z.string()),
 });
 

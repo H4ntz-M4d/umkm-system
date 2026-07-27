@@ -81,10 +81,10 @@ model ProductMaster {
   status      ProductStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
 
-  variants      ProductVariant[]
-  variantTypes  ProductVariantType[]
-  categories    Categories?          @relation(fields: [categoryId], references: [id])
-  productImages ProductImage[]
+  variants     ProductVariant[]
+  variantTypes ProductVariantType[]
+  categories   Categories?          @relation(fields: [categoryId], references: [id])
+  imageGroups  ProductImageGroup[]
 
   @@map("product_master")
 }
@@ -101,13 +101,50 @@ enum ProductType {
   READY_STOCK
 }
 
-model ProductImage {
-  id              BigInt @id @default(autoincrement())
+/// Satu grup gambar per kombinasi nilai variant yang bersifat visual.
+/// Signature adalah JSON kanonik pasangan [namaTipe, namaNilai] tipe visual,
+/// terurut menurut nama tipe. '[]' berarti grup level produk: produk tanpa
+/// tipe visual, atau useVariant = false.
+model ProductImageGroup {
+  id              BigInt   @id @default(autoincrement())
   productMasterId BigInt
-  image           String
+  signature       String   @db.VarChar(1000)
+  createdAt       DateTime @default(now())
 
-  productMaster ProductMaster @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
+  productMaster ProductMaster            @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
+  values        ProductImageGroupValue[]
+  images        ProductImage[]
+  variants      ProductVariant[]
 
+  @@unique([productMasterId, signature])
+  @@index([productMasterId])
+  @@map("product_image_group")
+}
+
+/// Turunan dari signature, disimpan supaya grup bisa di-join dan diberi label
+/// tanpa mem-parse signature.
+model ProductImageGroupValue {
+  imageGroupId   BigInt
+  variantValueId BigInt
+
+  imageGroup   ProductImageGroup   @relation(fields: [imageGroupId], references: [id], onDelete: Cascade)
+  variantValue ProductVariantValue @relation(fields: [variantValueId], references: [id], onDelete: Cascade)
+
+  @@id([imageGroupId, variantValueId])
+  @@index([variantValueId])
+  @@map("product_image_group_value")
+}
+
+model ProductImage {
+  id           BigInt   @id @default(autoincrement())
+  imageGroupId BigInt
+  image        String   @db.VarChar(500)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  imageGroup ProductImageGroup @relation(fields: [imageGroupId], references: [id], onDelete: Cascade)
+
+  @@index([imageGroupId, sortOrder])
   @@map("product_image")
 }
 
@@ -118,10 +155,11 @@ model ProductVariant {
   price           Decimal  @db.Decimal(18, 2)
   cost            Decimal? @db.Decimal(18, 2)
   isActive        Boolean  @default(true)
-  image           String?  @db.VarChar(255)
+  imageGroupId    BigInt?
   createdAt       DateTime @default(now())
 
   productMaster        ProductMaster          @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
+  imageGroup           ProductImageGroup?     @relation(fields: [imageGroupId], references: [id], onDelete: SetNull)
   options              ProductVariantOption[]
   productVariantStocks ProductVariantStock?
   productions          Production[]
@@ -129,6 +167,7 @@ model ProductVariant {
   posTransactionItems  PosTransactionItem[]
 
   @@index([productMasterId])
+  @@index([imageGroupId])
   @@map("product_variant")
 }
 
@@ -145,9 +184,12 @@ model ProductVariantStock {
 }
 
 model ProductVariantType {
-  id              BigInt @id @default(autoincrement())
+  id              BigInt  @id @default(autoincrement())
   productMasterId BigInt
-  name            String @db.VarChar(255)
+  name            String  @db.VarChar(255)
+  /// Tipe yang mengubah tampilan produk (Warna, Motif). Hanya tipe visual
+  /// yang ikut membentuk signature Image Group.
+  isHaveVisual    Boolean @default(false)
 
   productMaster ProductMaster         @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
   values        ProductVariantValue[]
@@ -162,8 +204,9 @@ model ProductVariantValue {
   variantTypeId BigInt
   value         String @db.VarChar(100)
 
-  variantType ProductVariantType     @relation(fields: [variantTypeId], references: [id], onDelete: Cascade)
-  options     ProductVariantOption[]
+  variantType      ProductVariantType       @relation(fields: [variantTypeId], references: [id], onDelete: Cascade)
+  options          ProductVariantOption[]
+  imageGroupValues ProductImageGroupValue[]
 
   @@unique([variantTypeId, value])
   @@index([variantTypeId])

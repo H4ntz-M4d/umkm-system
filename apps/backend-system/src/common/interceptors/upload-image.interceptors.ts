@@ -1,6 +1,6 @@
 import {
+  BadRequestException,
   MaxFileSizeValidator,
-  FileTypeValidator,
   ParseFilePipe,
   FileValidator,
 } from '@nestjs/common';
@@ -40,16 +40,22 @@ export const validateImageFiles = (
 ) => {
   if (!files || files.length === 0) return;
 
+  // BadRequestException, bukan Error biasa: file tidak valid adalah kesalahan
+  // klien, jadi harus balas 400 dan bukan 500.
   if (files.length > maxCount) {
-    throw new Error(`Maksimal ${maxCount} file.`);
+    throw new BadRequestException(`Maksimal ${maxCount} file.`);
   }
 
   for (const file of files) {
     if (file.size > MAX_SIZE) {
-      throw new Error(`File ${file.originalname} terlalu besar. Maksimal 2MB.`);
+      throw new BadRequestException(
+        `File ${file.originalname} terlalu besar. Maksimal 2MB.`,
+      );
     }
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype.trim())) {
-      throw new Error(`File ${file.originalname} tipe tidak didukung.`);
+      throw new BadRequestException(
+        `File ${file.originalname} tipe tidak didukung.`,
+      );
     }
   }
 };

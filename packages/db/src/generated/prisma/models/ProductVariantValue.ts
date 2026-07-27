@@ -206,6 +206,7 @@ export type ProductVariantValueWhereInput = {
   value?: Prisma.StringFilter<"ProductVariantValue"> | string
   variantType?: Prisma.XOR<Prisma.ProductVariantTypeScalarRelationFilter, Prisma.ProductVariantTypeWhereInput>
   options?: Prisma.ProductVariantOptionListRelationFilter
+  imageGroupValues?: Prisma.ProductImageGroupValueListRelationFilter
 }
 
 export type ProductVariantValueOrderByWithRelationInput = {
@@ -214,6 +215,7 @@ export type ProductVariantValueOrderByWithRelationInput = {
   value?: Prisma.SortOrder
   variantType?: Prisma.ProductVariantTypeOrderByWithRelationInput
   options?: Prisma.ProductVariantOptionOrderByRelationAggregateInput
+  imageGroupValues?: Prisma.ProductImageGroupValueOrderByRelationAggregateInput
 }
 
 export type ProductVariantValueWhereUniqueInput = Prisma.AtLeast<{
@@ -226,6 +228,7 @@ export type ProductVariantValueWhereUniqueInput = Prisma.AtLeast<{
   value?: Prisma.StringFilter<"ProductVariantValue"> | string
   variantType?: Prisma.XOR<Prisma.ProductVariantTypeScalarRelationFilter, Prisma.ProductVariantTypeWhereInput>
   options?: Prisma.ProductVariantOptionListRelationFilter
+  imageGroupValues?: Prisma.ProductImageGroupValueListRelationFilter
 }, "id" | "variantTypeId_value">
 
 export type ProductVariantValueOrderByWithAggregationInput = {
@@ -253,6 +256,7 @@ export type ProductVariantValueCreateInput = {
   value: string
   variantType: Prisma.ProductVariantTypeCreateNestedOneWithoutValuesInput
   options?: Prisma.ProductVariantOptionCreateNestedManyWithoutVariantValueInput
+  imageGroupValues?: Prisma.ProductImageGroupValueCreateNestedManyWithoutVariantValueInput
 }
 
 export type ProductVariantValueUncheckedCreateInput = {
@@ -260,6 +264,7 @@ export type ProductVariantValueUncheckedCreateInput = {
   variantTypeId: bigint | number
   value: string
   options?: Prisma.ProductVariantOptionUncheckedCreateNestedManyWithoutVariantValueInput
+  imageGroupValues?: Prisma.ProductImageGroupValueUncheckedCreateNestedManyWithoutVariantValueInput
 }
 
 export type ProductVariantValueUpdateInput = {
@@ -267,6 +272,7 @@ export type ProductVariantValueUpdateInput = {
   value?: Prisma.StringFieldUpdateOperationsInput | string
   variantType?: Prisma.ProductVariantTypeUpdateOneRequiredWithoutValuesNestedInput
   options?: Prisma.ProductVariantOptionUpdateManyWithoutVariantValueNestedInput
+  imageGroupValues?: Prisma.ProductImageGroupValueUpdateManyWithoutVariantValueNestedInput
 }
 
 export type ProductVariantValueUncheckedUpdateInput = {
@@ -274,6 +280,7 @@ export type ProductVariantValueUncheckedUpdateInput = {
   variantTypeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
   options?: Prisma.ProductVariantOptionUncheckedUpdateManyWithoutVariantValueNestedInput
+  imageGroupValues?: Prisma.ProductImageGroupValueUncheckedUpdateManyWithoutVariantValueNestedInput
 }
 
 export type ProductVariantValueCreateManyInput = {
@@ -291,6 +298,11 @@ export type ProductVariantValueUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   variantTypeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type ProductVariantValueScalarRelationFilter = {
+  is?: Prisma.ProductVariantValueWhereInput
+  isNot?: Prisma.ProductVariantValueWhereInput
 }
 
 export type ProductVariantValueListRelationFilter = {
@@ -336,9 +348,18 @@ export type ProductVariantValueSumOrderByAggregateInput = {
   variantTypeId?: Prisma.SortOrder
 }
 
-export type ProductVariantValueScalarRelationFilter = {
-  is?: Prisma.ProductVariantValueWhereInput
-  isNot?: Prisma.ProductVariantValueWhereInput
+export type ProductVariantValueCreateNestedOneWithoutImageGroupValuesInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantValueCreateWithoutImageGroupValuesInput, Prisma.ProductVariantValueUncheckedCreateWithoutImageGroupValuesInput>
+  connectOrCreate?: Prisma.ProductVariantValueCreateOrConnectWithoutImageGroupValuesInput
+  connect?: Prisma.ProductVariantValueWhereUniqueInput
+}
+
+export type ProductVariantValueUpdateOneRequiredWithoutImageGroupValuesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantValueCreateWithoutImageGroupValuesInput, Prisma.ProductVariantValueUncheckedCreateWithoutImageGroupValuesInput>
+  connectOrCreate?: Prisma.ProductVariantValueCreateOrConnectWithoutImageGroupValuesInput
+  upsert?: Prisma.ProductVariantValueUpsertWithoutImageGroupValuesInput
+  connect?: Prisma.ProductVariantValueWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantValueUpdateToOneWithWhereWithoutImageGroupValuesInput, Prisma.ProductVariantValueUpdateWithoutImageGroupValuesInput>, Prisma.ProductVariantValueUncheckedUpdateWithoutImageGroupValuesInput>
 }
 
 export type ProductVariantValueCreateNestedManyWithoutVariantTypeInput = {
@@ -397,16 +418,62 @@ export type ProductVariantValueUpdateOneRequiredWithoutOptionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantValueUpdateToOneWithWhereWithoutOptionsInput, Prisma.ProductVariantValueUpdateWithoutOptionsInput>, Prisma.ProductVariantValueUncheckedUpdateWithoutOptionsInput>
 }
 
+export type ProductVariantValueCreateWithoutImageGroupValuesInput = {
+  id?: bigint | number
+  value: string
+  variantType: Prisma.ProductVariantTypeCreateNestedOneWithoutValuesInput
+  options?: Prisma.ProductVariantOptionCreateNestedManyWithoutVariantValueInput
+}
+
+export type ProductVariantValueUncheckedCreateWithoutImageGroupValuesInput = {
+  id?: bigint | number
+  variantTypeId: bigint | number
+  value: string
+  options?: Prisma.ProductVariantOptionUncheckedCreateNestedManyWithoutVariantValueInput
+}
+
+export type ProductVariantValueCreateOrConnectWithoutImageGroupValuesInput = {
+  where: Prisma.ProductVariantValueWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductVariantValueCreateWithoutImageGroupValuesInput, Prisma.ProductVariantValueUncheckedCreateWithoutImageGroupValuesInput>
+}
+
+export type ProductVariantValueUpsertWithoutImageGroupValuesInput = {
+  update: Prisma.XOR<Prisma.ProductVariantValueUpdateWithoutImageGroupValuesInput, Prisma.ProductVariantValueUncheckedUpdateWithoutImageGroupValuesInput>
+  create: Prisma.XOR<Prisma.ProductVariantValueCreateWithoutImageGroupValuesInput, Prisma.ProductVariantValueUncheckedCreateWithoutImageGroupValuesInput>
+  where?: Prisma.ProductVariantValueWhereInput
+}
+
+export type ProductVariantValueUpdateToOneWithWhereWithoutImageGroupValuesInput = {
+  where?: Prisma.ProductVariantValueWhereInput
+  data: Prisma.XOR<Prisma.ProductVariantValueUpdateWithoutImageGroupValuesInput, Prisma.ProductVariantValueUncheckedUpdateWithoutImageGroupValuesInput>
+}
+
+export type ProductVariantValueUpdateWithoutImageGroupValuesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  variantType?: Prisma.ProductVariantTypeUpdateOneRequiredWithoutValuesNestedInput
+  options?: Prisma.ProductVariantOptionUpdateManyWithoutVariantValueNestedInput
+}
+
+export type ProductVariantValueUncheckedUpdateWithoutImageGroupValuesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  variantTypeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.ProductVariantOptionUncheckedUpdateManyWithoutVariantValueNestedInput
+}
+
 export type ProductVariantValueCreateWithoutVariantTypeInput = {
   id?: bigint | number
   value: string
   options?: Prisma.ProductVariantOptionCreateNestedManyWithoutVariantValueInput
+  imageGroupValues?: Prisma.ProductImageGroupValueCreateNestedManyWithoutVariantValueInput
 }
 
 export type ProductVariantValueUncheckedCreateWithoutVariantTypeInput = {
   id?: bigint | number
   value: string
   options?: Prisma.ProductVariantOptionUncheckedCreateNestedManyWithoutVariantValueInput
+  imageGroupValues?: Prisma.ProductImageGroupValueUncheckedCreateNestedManyWithoutVariantValueInput
 }
 
 export type ProductVariantValueCreateOrConnectWithoutVariantTypeInput = {
@@ -448,12 +515,14 @@ export type ProductVariantValueCreateWithoutOptionsInput = {
   id?: bigint | number
   value: string
   variantType: Prisma.ProductVariantTypeCreateNestedOneWithoutValuesInput
+  imageGroupValues?: Prisma.ProductImageGroupValueCreateNestedManyWithoutVariantValueInput
 }
 
 export type ProductVariantValueUncheckedCreateWithoutOptionsInput = {
   id?: bigint | number
   variantTypeId: bigint | number
   value: string
+  imageGroupValues?: Prisma.ProductImageGroupValueUncheckedCreateNestedManyWithoutVariantValueInput
 }
 
 export type ProductVariantValueCreateOrConnectWithoutOptionsInput = {
@@ -476,12 +545,14 @@ export type ProductVariantValueUpdateWithoutOptionsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
   variantType?: Prisma.ProductVariantTypeUpdateOneRequiredWithoutValuesNestedInput
+  imageGroupValues?: Prisma.ProductImageGroupValueUpdateManyWithoutVariantValueNestedInput
 }
 
 export type ProductVariantValueUncheckedUpdateWithoutOptionsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   variantTypeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
+  imageGroupValues?: Prisma.ProductImageGroupValueUncheckedUpdateManyWithoutVariantValueNestedInput
 }
 
 export type ProductVariantValueCreateManyVariantTypeInput = {
@@ -493,12 +564,14 @@ export type ProductVariantValueUpdateWithoutVariantTypeInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
   options?: Prisma.ProductVariantOptionUpdateManyWithoutVariantValueNestedInput
+  imageGroupValues?: Prisma.ProductImageGroupValueUpdateManyWithoutVariantValueNestedInput
 }
 
 export type ProductVariantValueUncheckedUpdateWithoutVariantTypeInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   value?: Prisma.StringFieldUpdateOperationsInput | string
   options?: Prisma.ProductVariantOptionUncheckedUpdateManyWithoutVariantValueNestedInput
+  imageGroupValues?: Prisma.ProductImageGroupValueUncheckedUpdateManyWithoutVariantValueNestedInput
 }
 
 export type ProductVariantValueUncheckedUpdateManyWithoutVariantTypeInput = {
@@ -513,10 +586,12 @@ export type ProductVariantValueUncheckedUpdateManyWithoutVariantTypeInput = {
 
 export type ProductVariantValueCountOutputType = {
   options: number
+  imageGroupValues: number
 }
 
 export type ProductVariantValueCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   options?: boolean | ProductVariantValueCountOutputTypeCountOptionsArgs
+  imageGroupValues?: boolean | ProductVariantValueCountOutputTypeCountImageGroupValuesArgs
 }
 
 /**
@@ -536,6 +611,13 @@ export type ProductVariantValueCountOutputTypeCountOptionsArgs<ExtArgs extends r
   where?: Prisma.ProductVariantOptionWhereInput
 }
 
+/**
+ * ProductVariantValueCountOutputType without action
+ */
+export type ProductVariantValueCountOutputTypeCountImageGroupValuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductImageGroupValueWhereInput
+}
+
 
 export type ProductVariantValueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -543,6 +625,7 @@ export type ProductVariantValueSelect<ExtArgs extends runtime.Types.Extensions.I
   value?: boolean
   variantType?: boolean | Prisma.ProductVariantTypeDefaultArgs<ExtArgs>
   options?: boolean | Prisma.ProductVariantValue$optionsArgs<ExtArgs>
+  imageGroupValues?: boolean | Prisma.ProductVariantValue$imageGroupValuesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariantValueCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantValue"]>
 
@@ -570,6 +653,7 @@ export type ProductVariantValueOmit<ExtArgs extends runtime.Types.Extensions.Int
 export type ProductVariantValueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   variantType?: boolean | Prisma.ProductVariantTypeDefaultArgs<ExtArgs>
   options?: boolean | Prisma.ProductVariantValue$optionsArgs<ExtArgs>
+  imageGroupValues?: boolean | Prisma.ProductVariantValue$imageGroupValuesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductVariantValueCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductVariantValueIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -584,6 +668,7 @@ export type $ProductVariantValuePayload<ExtArgs extends runtime.Types.Extensions
   objects: {
     variantType: Prisma.$ProductVariantTypePayload<ExtArgs>
     options: Prisma.$ProductVariantOptionPayload<ExtArgs>[]
+    imageGroupValues: Prisma.$ProductImageGroupValuePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -985,6 +1070,7 @@ export interface Prisma__ProductVariantValueClient<T, Null = never, ExtArgs exte
   readonly [Symbol.toStringTag]: "PrismaPromise"
   variantType<T extends Prisma.ProductVariantTypeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantTypeDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantTypeClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   options<T extends Prisma.ProductVariantValue$optionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantValue$optionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVariantOptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  imageGroupValues<T extends Prisma.ProductVariantValue$imageGroupValuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantValue$imageGroupValuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductImageGroupValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1434,6 +1520,30 @@ export type ProductVariantValue$optionsArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.ProductVariantOptionScalarFieldEnum | Prisma.ProductVariantOptionScalarFieldEnum[]
+}
+
+/**
+ * ProductVariantValue.imageGroupValues
+ */
+export type ProductVariantValue$imageGroupValuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductImageGroupValue
+   */
+  select?: Prisma.ProductImageGroupValueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductImageGroupValue
+   */
+  omit?: Prisma.ProductImageGroupValueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductImageGroupValueInclude<ExtArgs> | null
+  where?: Prisma.ProductImageGroupValueWhereInput
+  orderBy?: Prisma.ProductImageGroupValueOrderByWithRelationInput | Prisma.ProductImageGroupValueOrderByWithRelationInput[]
+  cursor?: Prisma.ProductImageGroupValueWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductImageGroupValueScalarFieldEnum | Prisma.ProductImageGroupValueScalarFieldEnum[]
 }
 
 /**
