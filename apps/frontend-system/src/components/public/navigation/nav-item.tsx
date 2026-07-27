@@ -15,14 +15,14 @@ export const NavItem = (): navLink[] => [
     label: "Products",
     path: "/products",
   },
-  {
-    label: "Blog",
-    path: "/blog",
-  },
-  {
-    label: "About",
-    path: "/about",
-  },
+  // {
+  //   label: "Blog",
+  //   path: "/blog",
+  // },
+  // {
+  //   label: "About",
+  //   path: "/about",
+  // },
 ];
 
 export const NavItemProfile = (): navLink[] => [

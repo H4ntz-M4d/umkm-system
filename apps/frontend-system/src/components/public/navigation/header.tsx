@@ -7,8 +7,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import MobileHeader from "./mobile-header";
 import { NavItem, NavItemProfile } from "./nav-item";
-import { useCustomerAuth } from "@/stores/userCustomerAuth";
-import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
 import { Separator } from "@/components/ui/separator";
 
 const Header = ({user}: {user?: any}) => {
@@ -20,7 +18,7 @@ const Header = ({user}: {user?: any}) => {
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto px-4 md:px-8 flex items-center justify-between h-16 md:h-20">
+      <div className="mx-auto px-4 md:px-8 flex items-center justify-between h-16 md:h-20">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <span className="font-display text-xl md:text-2xl font-bold text-foreground tracking-tight">
@@ -34,7 +32,7 @@ const Header = ({user}: {user?: any}) => {
             <Link
               key={link.path}
               href={link.path}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors hover:text-white ${
+              className={`px-4 py-2 rounded-lg text-sm transition-colors hover:text-white ${
                 location === link.path
                   ? "bg-primary text-primary-foreground"
                   : "text-foreground/70 hover:text-foreground hover:bg-secondary"
