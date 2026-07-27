@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { cookies, headers } from "next/headers";
 import { getCustomerProfile } from "@/lib/queries/auth/auth.api";
 import { redirect } from "next/navigation";
+import Footer from "@/components/public/navigation/footer";
 
 interface PublicLayoutProps {
   children: ReactNode;
@@ -31,6 +32,7 @@ export default async function PublicLayout({ children }: PublicLayoutProps) {
       <CustomerProvider>
         <Header user={user} />
         {children}
+        <Footer />
       </CustomerProvider>
     </>
   );

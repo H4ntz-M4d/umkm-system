@@ -1,21 +1,20 @@
-"use client"
-
-import { products } from "@/lib/queries/data/products";
-import { motion } from "framer-motion";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { fetchPublicProducts } from "@/lib/queries/public/products.query";
 import ProductCard from "../products/products-card";
 
-export default function FeaturedCollection() {
-  const featured = products.slice(0, 4);
+/// Server Component — koleksi pilihan ikut ter-render di HTML awal.
+export default async function FeaturedCollection() {
+  const featured = await fetchPublicProducts({ limit: 4, sort: "newest" }).catch(
+    () => null,
+  );
+
+  if (!featured || featured.data.length === 0) return null;
 
   return (
     <section className="py-16 md:py-24">
       <div className="container mx-auto px-4 md:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12">
           <span className="text-xs font-medium uppercase tracking-widest text-secondary">
             Koleksi Pilihan
           </span>
@@ -26,12 +25,22 @@ export default function FeaturedCollection() {
             Setiap produk dikerjakan tangan dengan penuh ketelitian oleh
             pengrajin lokal Indonesia.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featured.map((product, i) => (
-            <ProductCard key={product.id} product={product} index={i} />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {featured.data.map((product, index) => (
+            <ProductCard key={product.id} product={product} index={index} />
           ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link
+            href="/products"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+          >
+            Lihat Semua Koleksi
+            <ArrowRight size={16} />
+          </Link>
         </div>
       </div>
     </section>
