@@ -18,17 +18,19 @@ export class ExpenseService {
     const limit = pagination.limit ?? 10;
 
     const whereClause: Prisma.ExpenseWhereInput = {
-      expenseCategory: category
-        ? {
-            name: { contains: category, mode: 'insensitive' },
-          }
-        : undefined,
-      description: search
-        ? {
-            contains: search,
-            mode: 'insensitive',
-          }
-        : undefined,
+      ...(category && {
+        expenseCategory: {
+          name: { contains: category, mode: 'insensitive' },
+        },
+      }),
+
+      ...(search && {
+        description: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      }),
+
       date: {
         gte: dateFrom ? toStartOfDay(dateFrom) : undefined,
         lte: dateTo ? toEndOfDay(dateTo) : undefined,
