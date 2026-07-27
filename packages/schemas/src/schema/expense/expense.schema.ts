@@ -12,7 +12,7 @@ export const ExpenseItemSchema = z.object({
 export const ExpenseSchema = z.object({
   storeId: z.string(),
   categoryId: z.string(),
-  description: z.string().min(3).optional(),
+  description: z.string().optional(),
   totalAmount: z.number(),
   date: z.coerce.date(),
   expenseItem: z.array(ExpenseItemSchema),
