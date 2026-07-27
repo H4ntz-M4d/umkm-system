@@ -63,12 +63,18 @@ export function useProductsOperation({
     throwOnError: true,
   });
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const createProductMutation = useMutation({
     mutationFn: createProduct,
     onSuccess: () => {
       invalidate();
       toast.success("Berhasil menyimpan data produk");
     },
+    onError: showError("Gagal menyimpan data produk"),
   });
 
   const updateProductMutation = useMutation({
@@ -80,11 +86,10 @@ export function useProductsOperation({
       data: CreateProductSchemaInput;
     }) => updateProduct(id, data),
     onSuccess: () => {
+      invalidate();
       toast.success("Berhasil menyimpan data produk");
     },
-    onError: (err) => {
-      console.log(err);
-    },
+    onError: showError("Gagal menyimpan data produk"),
   });
 
   const deleteProductMutation = useMutation({
@@ -93,21 +98,25 @@ export function useProductsOperation({
       invalidate();
       toast.success("Berhasil menghapus data produk");
     },
+    onError: showError("Gagal menghapus data produk"),
   });
 
   const uploadImageMutation = useMutation({
     mutationFn: ({
       productId,
-      variantIds,
+      imageGroupIds,
       files,
     }: {
       productId: string;
-      variantIds: string[];
+      imageGroupIds: string[];
       files: File[];
-    }) => uploadImage({ productId, variantIds, files }),
+    }) => uploadImage({ productId, imageGroupIds, files }),
     onSuccess: () => {
       invalidate();
+      // Grid POS membaca gambar yang sama, cache-nya ikut basi.
+      void qc.invalidateQueries({ queryKey: ["pos-products"] });
     },
+    onError: showError("Gagal mengunggah gambar"),
   });
 
   return {
@@ -119,7 +128,7 @@ export function useProductsOperation({
     isLoadingProduct: getProducts.isLoading,
     createProductData: createProductMutation.mutateAsync,
     updateProductData: updateProductMutation.mutateAsync,
-    uploadImageData: uploadImageMutation.mutate,
+    uploadImageData: uploadImageMutation.mutateAsync,
     deleteProductData: deleteProductMutation.mutate,
   };
 }

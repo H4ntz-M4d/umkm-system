@@ -1,17 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Heart, Eye, ShoppingBag, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { motion } from "framer-motion";
-import { Product, formatPrice } from "@/lib/queries/data/products";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { toIDR } from "../../../utils/format-money";
-import { ProductList } from "@/app/point-of-sale/system/page";
+import NoImage from "@/assets/no-picture.jpg";
+import type { ProductList } from "@/components/pos/pos-view";
 
 interface ProductCardProps {
-  product: any;
+  product: ProductList;
   index?: number;
   handleProductClick: (product: ProductList) => void;
   setIdPm: (idPm: string) => void;
@@ -23,12 +20,10 @@ const ProductCard = ({
   handleProductClick,
   setIdPm,
 }: ProductCardProps) => {
-  const [liked, setLiked] = useState(false);
-  const image = product?.variants.find((v) => v.image !== null);
-  const totalVariant = product?.variants.length;
-  const totalStock = product?.variants
-    ?.map((v) => v.stock)
-    .reduce((a, b) => a + b, 0);
+  // Produk yang belum punya foto sama sekali tetap harus tampil, bukan crash.
+  const image = product.variants.find((v) => v.image)?.image ?? NoImage;
+  const totalVariant = product.variants.length;
+  const totalStock = product.variants.reduce((a, v) => a + v.stock, 0);
 
   return (
     <motion.div
@@ -47,13 +42,13 @@ const ProductCard = ({
         <Image
           width={100}
           height={100}
-          src={image.image}
+          src={image}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
         />
 
-        {product?.variants?.length > 1 && (
+        {totalVariant > 1 && (
           <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary/70 text-primary-foreground text-[10px] font-bold rounded-md">
             {totalVariant} Varian
           </span>
@@ -85,10 +80,10 @@ const ProductCard = ({
           {product.name}
         </h3>
         <p className="text-sm font-semibold text-primary">
-          {product.variants.length > 1 ? (
-            <>Mulai dari {toIDR(product.variants[0].price)} </>
+          {totalVariant > 1 ? (
+            <>Mulai dari {toIDR(product.variants[0]!.price)} </>
           ) : (
-            <>{toIDR(product.variants[0].price)}</>
+            <>{toIDR(product.variants[0]!.price)}</>
           )}
         </p>
       </div>
