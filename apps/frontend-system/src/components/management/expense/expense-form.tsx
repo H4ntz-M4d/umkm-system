@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,24 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  FieldGroup,
-  Field,
-  FieldLabel,
-  FieldSet,
-  FieldLegend,
-} from "@/components/ui/field";
-import { cn } from "@/lib/utils";
-import {
-  Plus,
-  Trash2,
-  Upload,
-  Package,
-  Banknote,
-  CreditCard,
-  QrCode,
-  Boxes,
-} from "lucide-react";
+import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import { Plus, Trash2, Boxes } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { useExpenseCategoriesOperation } from "@/hooks/management/expense/use-expense-categories-operations";
@@ -47,22 +31,11 @@ import { DatePickerSimple } from "@/components/ui/date-picker-simple";
 import { CreatableCombobox } from "@/components/ui/creatable-combobox";
 import { useImmer } from "use-immer";
 import { toIDR } from "../../../../utils/format-money";
-import { Label } from "@/components/ui/label";
 import { useExpenseOperation } from "@/hooks/management/expense/use-expense-operations";
-import { ExpenseFilters } from "@/lib/queries/expense/expense.query";
-import { Switch } from "@/components/ui/switch";
 
 interface AddExpenseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-interface ExpenseItem {
-  id: string;
-  name: string;
-  quantity: string;
-  unit: string;
-  price: string;
 }
 
 const units = [
@@ -96,7 +69,6 @@ export function AddExpenseDialog({
   open,
   onOpenChange,
 }: AddExpenseDialogProps) {
-  const [paymentMethod, setPaymentMethod] = useState("cash");
   const [unitOptions, setUnitOptions] = useImmer(units);
 
   const {
@@ -106,7 +78,6 @@ export function AddExpenseDialog({
     watch,
     setValue,
     getValues,
-    resetField,
   } = useForm<ExpenseSchemaInput>({
     resolver: zodResolver(ExpenseSchema),
     defaultValues: initialData,
@@ -121,7 +92,6 @@ export function AddExpenseDialog({
   const { dataExpenseCategories } = useExpenseCategoriesOperation({});
   const { createExpenseData } = useExpenseOperation({});
 
-  const selectedCategory = watch("categoryId");
   const items = watch("expenseItem");
 
   const addItem = () => {
@@ -229,7 +199,7 @@ export function AddExpenseDialog({
                           <SelectContent position="popper">
                             {dataExpenseCategories?.data?.map((cat) => (
                               <SelectItem key={cat.id} value={cat.id}>
-                                  {cat.name}
+                                {cat.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -413,36 +383,6 @@ export function AddExpenseDialog({
                 </div>
               </div>
 
-              {/* Payment Method */}
-              <FieldSet>
-                <FieldLegend>Payment Method</FieldLegend>
-                <div className="flex flex-wrap gap-3">
-                  {[
-                    { value: "cash", label: "Cash", icon: Banknote },
-                    { value: "bank", label: "Bank Transfer", icon: CreditCard },
-                    { value: "qris", label: "QRIS", icon: QrCode },
-                  ].map((method) => (
-                    <Button
-                      key={method.value}
-                      type="button"
-                      variant={
-                        paymentMethod === method.value ? "default" : "outline"
-                      }
-                      onClick={() => setPaymentMethod(method.value)}
-                      className={cn(
-                        "gap-2",
-                        paymentMethod === method.value
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-background",
-                      )}
-                    >
-                      <method.icon className="h-4 w-4" />
-                      {method.label}
-                    </Button>
-                  ))}
-                </div>
-              </FieldSet>
-
               {/* Notes */}
               <Controller
                 name="description"
@@ -458,23 +398,6 @@ export function AddExpenseDialog({
                   </Field>
                 )}
               />
-
-              {/* Receipt Upload */}
-              <Field>
-                <FieldLabel>Attach Receipt</FieldLabel>
-                <Label className="flex items-center justify-center rounded-lg border-2 border-dashed border-border bg-background p-8 transition-colors hover:border-primary/50 hover:bg-accent/50">
-                  <div className="text-center">
-                    <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
-                    <p className="mt-2 text-sm font-medium text-card-foreground">
-                      Drop files here or click to upload
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      PNG, JPG, PDF up to 10MB
-                    </p>
-                  </div>
-                  <Input type="file" className="hidden" />
-                </Label>
-              </Field>
             </div>
           </ScrollArea>
 
