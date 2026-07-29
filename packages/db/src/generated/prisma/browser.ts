@@ -38,6 +38,11 @@ export type Categories = Prisma.CategoriesModel
  */
 export type ProductMaster = Prisma.ProductMasterModel
 /**
+ * Model ProductPreOrderDetails
+ * 
+ */
+export type ProductPreOrderDetails = Prisma.ProductPreOrderDetailsModel
+/**
  * Model ProductImageGroup
  * Satu grup gambar per kombinasi nilai variant yang bersifat visual.
  * Signature adalah JSON kanonik pasangan [namaTipe, namaNilai] tipe visual,
@@ -63,7 +68,12 @@ export type ProductImage = Prisma.ProductImageModel
 export type ProductVariant = Prisma.ProductVariantModel
 /**
  * Model ProductVariantStock
+ * Stok dipegang per toko: satu baris untuk tiap pasangan varian dan toko.
  * 
+ * Sebelumnya `productVariantId` bertanda `@unique`, sehingga satu varian hanya
+ * punya satu angka stok untuk seluruh perusahaan — kasir cabang yang menjual
+ * akan mengurangi stok yang sama dengan toko utama. Keunikan gabungan di bawah
+ * yang membuat tiap toko memegang stoknya sendiri.
  */
 export type ProductVariantStock = Prisma.ProductVariantStockModel
 /**
@@ -87,6 +97,11 @@ export type ProductVariantOption = Prisma.ProductVariantOptionModel
  */
 export type Customer = Prisma.CustomerModel
 /**
+ * Model PasswordResetCode
+ * 
+ */
+export type PasswordResetCode = Prisma.PasswordResetCodeModel
+/**
  * Model Employee
  * 
  */
@@ -96,6 +111,22 @@ export type Employee = Prisma.EmployeeModel
  * 
  */
 export type InventoryLedger = Prisma.InventoryLedgerModel
+/**
+ * Model StockTransfer
+ * Perpindahan stok antar lokasi.
+ * 
+ * Dicatat dua tahap, bukan sekali pindah: stok keluar dari asal saat dikirim,
+ * dan baru masuk ke tujuan saat penerimaan dikonfirmasi. Selisih di antaranya
+ * adalah barang yang sedang di jalan. Tanpa pemisahan ini, kasir cabang bisa
+ * menjual barang yang secara fisik masih dalam perjalanan — dan pengiriman ke
+ * luar kota bisa memakan waktu lama.
+ */
+export type StockTransfer = Prisma.StockTransferModel
+/**
+ * Model StockTransferItem
+ * 
+ */
+export type StockTransferItem = Prisma.StockTransferItemModel
 /**
  * Model Production
  * 
@@ -127,10 +158,30 @@ export type Order = Prisma.OrderModel
  */
 export type OrderItem = Prisma.OrderItemModel
 /**
+ * Model Cart
+ * 
+ */
+export type Cart = Prisma.CartModel
+/**
+ * Model CartItem
+ * 
+ */
+export type CartItem = Prisma.CartItemModel
+/**
+ * Model Wishlist
+ * 
+ */
+export type Wishlist = Prisma.WishlistModel
+/**
  * Model BeSpokeDetails
  * 
  */
 export type BeSpokeDetails = Prisma.BeSpokeDetailsModel
+/**
+ * Model CustomerAddress
+ * 
+ */
+export type CustomerAddress = Prisma.CustomerAddressModel
 /**
  * Model Shipment
  * 

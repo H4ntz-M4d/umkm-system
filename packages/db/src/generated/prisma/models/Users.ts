@@ -224,7 +224,7 @@ export type UsersGroupByOutputType = {
   _max: UsersMaxAggregateOutputType | null
 }
 
-type GetUsersGroupByPayload<T extends UsersGroupByArgs> = Prisma.PrismaPromise<
+export type GetUsersGroupByPayload<T extends UsersGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UsersGroupByOutputType, T['by']> &
       {
@@ -256,6 +256,7 @@ export type UsersWhereInput = {
   employees?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   posTransactions?: Prisma.PosTransactionListRelationFilter
+  passwordResetCodes?: Prisma.PasswordResetCodeListRelationFilter
 }
 
 export type UsersOrderByWithRelationInput = {
@@ -272,6 +273,7 @@ export type UsersOrderByWithRelationInput = {
   employees?: Prisma.EmployeeOrderByWithRelationInput
   customer?: Prisma.CustomerOrderByWithRelationInput
   posTransactions?: Prisma.PosTransactionOrderByRelationAggregateInput
+  passwordResetCodes?: Prisma.PasswordResetCodeOrderByRelationAggregateInput
 }
 
 export type UsersWhereUniqueInput = Prisma.AtLeast<{
@@ -291,6 +293,7 @@ export type UsersWhereUniqueInput = Prisma.AtLeast<{
   employees?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   posTransactions?: Prisma.PosTransactionListRelationFilter
+  passwordResetCodes?: Prisma.PasswordResetCodeListRelationFilter
 }, "id" | "email">
 
 export type UsersOrderByWithAggregationInput = {
@@ -338,6 +341,7 @@ export type UsersCreateInput = {
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateInput = {
@@ -353,6 +357,7 @@ export type UsersUncheckedCreateInput = {
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersUpdateInput = {
@@ -368,6 +373,7 @@ export type UsersUpdateInput = {
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateInput = {
@@ -383,6 +389,7 @@ export type UsersUncheckedUpdateInput = {
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UsersCreateManyInput = {
@@ -560,6 +567,20 @@ export type UsersUpdateOneWithoutCustomerNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutCustomerInput, Prisma.UsersUpdateWithoutCustomerInput>, Prisma.UsersUncheckedUpdateWithoutCustomerInput>
 }
 
+export type UsersCreateNestedOneWithoutPasswordResetCodesInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutPasswordResetCodesInput, Prisma.UsersUncheckedCreateWithoutPasswordResetCodesInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutPasswordResetCodesInput
+  connect?: Prisma.UsersWhereUniqueInput
+}
+
+export type UsersUpdateOneRequiredWithoutPasswordResetCodesNestedInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutPasswordResetCodesInput, Prisma.UsersUncheckedCreateWithoutPasswordResetCodesInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutPasswordResetCodesInput
+  upsert?: Prisma.UsersUpsertWithoutPasswordResetCodesInput
+  connect?: Prisma.UsersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutPasswordResetCodesInput, Prisma.UsersUpdateWithoutPasswordResetCodesInput>, Prisma.UsersUncheckedUpdateWithoutPasswordResetCodesInput>
+}
+
 export type UsersCreateNestedOneWithoutEmployeesInput = {
   create?: Prisma.XOR<Prisma.UsersCreateWithoutEmployeesInput, Prisma.UsersUncheckedCreateWithoutEmployeesInput>
   connectOrCreate?: Prisma.UsersCreateOrConnectWithoutEmployeesInput
@@ -600,6 +621,7 @@ export type UsersCreateWithoutStoreInput = {
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateWithoutStoreInput = {
@@ -614,6 +636,7 @@ export type UsersUncheckedCreateWithoutStoreInput = {
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersCreateOrConnectWithoutStoreInput = {
@@ -669,6 +692,7 @@ export type UsersCreateWithoutCustomerInput = {
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateWithoutCustomerInput = {
@@ -683,6 +707,7 @@ export type UsersUncheckedCreateWithoutCustomerInput = {
   slug?: string | null
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersCreateOrConnectWithoutCustomerInput = {
@@ -713,6 +738,7 @@ export type UsersUpdateWithoutCustomerInput = {
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutCustomerInput = {
@@ -726,6 +752,83 @@ export type UsersUncheckedUpdateWithoutCustomerInput = {
   refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UsersCreateWithoutPasswordResetCodesInput = {
+  id?: bigint | number
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
+  employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+}
+
+export type UsersUncheckedCreateWithoutPasswordResetCodesInput = {
+  id?: bigint | number
+  storeId?: bigint | number | null
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+}
+
+export type UsersCreateOrConnectWithoutPasswordResetCodesInput = {
+  where: Prisma.UsersWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsersCreateWithoutPasswordResetCodesInput, Prisma.UsersUncheckedCreateWithoutPasswordResetCodesInput>
+}
+
+export type UsersUpsertWithoutPasswordResetCodesInput = {
+  update: Prisma.XOR<Prisma.UsersUpdateWithoutPasswordResetCodesInput, Prisma.UsersUncheckedUpdateWithoutPasswordResetCodesInput>
+  create: Prisma.XOR<Prisma.UsersCreateWithoutPasswordResetCodesInput, Prisma.UsersUncheckedCreateWithoutPasswordResetCodesInput>
+  where?: Prisma.UsersWhereInput
+}
+
+export type UsersUpdateToOneWithWhereWithoutPasswordResetCodesInput = {
+  where?: Prisma.UsersWhereInput
+  data: Prisma.XOR<Prisma.UsersUpdateWithoutPasswordResetCodesInput, Prisma.UsersUncheckedUpdateWithoutPasswordResetCodesInput>
+}
+
+export type UsersUpdateWithoutPasswordResetCodesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
+  employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+}
+
+export type UsersUncheckedUpdateWithoutPasswordResetCodesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
 }
 
@@ -741,6 +844,7 @@ export type UsersCreateWithoutEmployeesInput = {
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateWithoutEmployeesInput = {
@@ -755,6 +859,7 @@ export type UsersUncheckedCreateWithoutEmployeesInput = {
   slug?: string | null
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersCreateOrConnectWithoutEmployeesInput = {
@@ -785,6 +890,7 @@ export type UsersUpdateWithoutEmployeesInput = {
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutEmployeesInput = {
@@ -799,6 +905,7 @@ export type UsersUncheckedUpdateWithoutEmployeesInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UsersCreateWithoutPosTransactionsInput = {
@@ -813,6 +920,7 @@ export type UsersCreateWithoutPosTransactionsInput = {
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateWithoutPosTransactionsInput = {
@@ -827,6 +935,7 @@ export type UsersUncheckedCreateWithoutPosTransactionsInput = {
   slug?: string | null
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersCreateOrConnectWithoutPosTransactionsInput = {
@@ -857,6 +966,7 @@ export type UsersUpdateWithoutPosTransactionsInput = {
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutPosTransactionsInput = {
@@ -871,6 +981,7 @@ export type UsersUncheckedUpdateWithoutPosTransactionsInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UsersCreateManyStoreInput = {
@@ -896,6 +1007,7 @@ export type UsersUpdateWithoutStoreInput = {
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutStoreInput = {
@@ -910,6 +1022,7 @@ export type UsersUncheckedUpdateWithoutStoreInput = {
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateManyWithoutStoreInput = {
@@ -930,10 +1043,12 @@ export type UsersUncheckedUpdateManyWithoutStoreInput = {
 
 export type UsersCountOutputType = {
   posTransactions: number
+  passwordResetCodes: number
 }
 
 export type UsersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   posTransactions?: boolean | UsersCountOutputTypeCountPosTransactionsArgs
+  passwordResetCodes?: boolean | UsersCountOutputTypeCountPasswordResetCodesArgs
 }
 
 /**
@@ -953,6 +1068,13 @@ export type UsersCountOutputTypeCountPosTransactionsArgs<ExtArgs extends runtime
   where?: Prisma.PosTransactionWhereInput
 }
 
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountPasswordResetCodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PasswordResetCodeWhereInput
+}
+
 
 export type UsersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -968,6 +1090,7 @@ export type UsersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   employees?: boolean | Prisma.Users$employeesArgs<ExtArgs>
   customer?: boolean | Prisma.Users$customerArgs<ExtArgs>
   posTransactions?: boolean | Prisma.Users$posTransactionsArgs<ExtArgs>
+  passwordResetCodes?: boolean | Prisma.Users$passwordResetCodesArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
 
@@ -1015,6 +1138,7 @@ export type UsersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   employees?: boolean | Prisma.Users$employeesArgs<ExtArgs>
   customer?: boolean | Prisma.Users$customerArgs<ExtArgs>
   posTransactions?: boolean | Prisma.Users$posTransactionsArgs<ExtArgs>
+  passwordResetCodes?: boolean | Prisma.Users$passwordResetCodesArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UsersIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1031,6 +1155,7 @@ export type $UsersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     employees: Prisma.$EmployeePayload<ExtArgs> | null
     customer: Prisma.$CustomerPayload<ExtArgs> | null
     posTransactions: Prisma.$PosTransactionPayload<ExtArgs>[]
+    passwordResetCodes: Prisma.$PasswordResetCodePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -1440,6 +1565,7 @@ export interface Prisma__UsersClient<T, Null = never, ExtArgs extends runtime.Ty
   employees<T extends Prisma.Users$employeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$employeesArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.Users$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   posTransactions<T extends Prisma.Users$posTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$posTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  passwordResetCodes<T extends Prisma.Users$passwordResetCodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$passwordResetCodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1674,6 +1800,11 @@ export type UsersFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Skip the first `n` Users.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Users.
+   */
   distinct?: Prisma.UsersScalarFieldEnum | Prisma.UsersScalarFieldEnum[]
 }
 
@@ -1952,6 +2083,30 @@ export type Users$posTransactionsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.PosTransactionScalarFieldEnum | Prisma.PosTransactionScalarFieldEnum[]
+}
+
+/**
+ * Users.passwordResetCodes
+ */
+export type Users$passwordResetCodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PasswordResetCode
+   */
+  select?: Prisma.PasswordResetCodeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PasswordResetCode
+   */
+  omit?: Prisma.PasswordResetCodeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PasswordResetCodeInclude<ExtArgs> | null
+  where?: Prisma.PasswordResetCodeWhereInput
+  orderBy?: Prisma.PasswordResetCodeOrderByWithRelationInput | Prisma.PasswordResetCodeOrderByWithRelationInput[]
+  cursor?: Prisma.PasswordResetCodeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PasswordResetCodeScalarFieldEnum | Prisma.PasswordResetCodeScalarFieldEnum[]
 }
 
 /**

@@ -189,7 +189,7 @@ export type ProductVariantTypeGroupByOutputType = {
   _max: ProductVariantTypeMaxAggregateOutputType | null
 }
 
-type GetProductVariantTypeGroupByPayload<T extends ProductVariantTypeGroupByArgs> = Prisma.PrismaPromise<
+export type GetProductVariantTypeGroupByPayload<T extends ProductVariantTypeGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProductVariantTypeGroupByOutputType, T['by']> &
       {
@@ -626,10 +626,6 @@ export type $ProductVariantTypePayload<ExtArgs extends runtime.Types.Extensions.
     id: bigint
     productMasterId: bigint
     name: string
-    /**
-     * Tipe yang mengubah tampilan produk (Warna, Motif). Hanya tipe visual
-     * yang ikut membentuk signature Image Group.
-     */
     isHaveVisual: boolean
   }, ExtArgs["result"]["productVariantType"]>
   composites: {}
@@ -1256,6 +1252,11 @@ export type ProductVariantTypeFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Skip the first `n` ProductVariantTypes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ProductVariantTypes.
+   */
   distinct?: Prisma.ProductVariantTypeScalarFieldEnum | Prisma.ProductVariantTypeScalarFieldEnum[]
 }
 

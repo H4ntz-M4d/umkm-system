@@ -200,7 +200,7 @@ export type TransferPaymentDetailGroupByOutputType = {
   _max: TransferPaymentDetailMaxAggregateOutputType | null
 }
 
-type GetTransferPaymentDetailGroupByPayload<T extends TransferPaymentDetailGroupByArgs> = Prisma.PrismaPromise<
+export type GetTransferPaymentDetailGroupByPayload<T extends TransferPaymentDetailGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TransferPaymentDetailGroupByOutputType, T['by']> &
       {
@@ -420,10 +420,6 @@ export type TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedIn
   update?: Prisma.TransferPaymentDetailUpdateWithWhereUniqueWithoutPaymentMethodInput | Prisma.TransferPaymentDetailUpdateWithWhereUniqueWithoutPaymentMethodInput[]
   updateMany?: Prisma.TransferPaymentDetailUpdateManyWithWhereWithoutPaymentMethodInput | Prisma.TransferPaymentDetailUpdateManyWithWhereWithoutPaymentMethodInput[]
   deleteMany?: Prisma.TransferPaymentDetailScalarWhereInput | Prisma.TransferPaymentDetailScalarWhereInput[]
-}
-
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
 }
 
 export type TransferPaymentDetailCreateNestedOneWithoutTransactionInput = {
@@ -1273,6 +1269,11 @@ export type TransferPaymentDetailFindManyArgs<ExtArgs extends runtime.Types.Exte
    * Skip the first `n` TransferPaymentDetails.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of TransferPaymentDetails.
+   */
   distinct?: Prisma.TransferPaymentDetailScalarFieldEnum | Prisma.TransferPaymentDetailScalarFieldEnum[]
 }
 

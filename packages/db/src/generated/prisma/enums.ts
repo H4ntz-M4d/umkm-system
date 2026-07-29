@@ -57,10 +57,21 @@ export const LedgerSource = {
   PRODUCTION: 'PRODUCTION',
   POS: 'POS',
   ONLINE_ORDER: 'ONLINE_ORDER',
-  ADJUSTMENT: 'ADJUSTMENT'
+  ADJUSTMENT: 'ADJUSTMENT',
+  TRANSFER: 'TRANSFER'
 } as const
 
 export type LedgerSource = (typeof LedgerSource)[keyof typeof LedgerSource]
+
+
+export const TransferStatus = {
+  READY: 'READY',
+  SENT: 'SENT',
+  RECEIVED: 'RECEIVED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type TransferStatus = (typeof TransferStatus)[keyof typeof TransferStatus]
 
 
 export const ProductionType = {
@@ -86,10 +97,23 @@ export type ProductionStatus = (typeof ProductionStatus)[keyof typeof Production
 export const OrderStatus = {
   PENDING: 'PENDING',
   PAID: 'PAID',
-  CANCELLED: 'CANCELLED'
+  CANCELLED: 'CANCELLED',
+  SHIPPED: 'SHIPPED',
+  COMPLETED: 'COMPLETED',
+  REFUNDED: 'REFUNDED'
 } as const
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
+export const ShipmentStatus = {
+  PACKAGING: 'PACKAGING',
+  SHIPPED: 'SHIPPED',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ShipmentStatus = (typeof ShipmentStatus)[keyof typeof ShipmentStatus]
 
 
 export const PaymentChannel = {
