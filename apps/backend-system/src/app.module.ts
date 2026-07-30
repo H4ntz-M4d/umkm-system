@@ -16,6 +16,9 @@ import { ConfigModule } from '@nestjs/config';
 import { TransactionFlowModule } from './transaction-flow/transaction-flow.module';
 import { OrderModule } from './order/order.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { CartModule } from './cart/cart.module';
+import { AddressModule } from './address/address.module';
+import { WishlistModule } from './wishlist/wishlist.module';
 
 @Module({
   imports: [
@@ -38,6 +41,9 @@ import { DashboardModule } from './dashboard/dashboard.module';
     TransactionFlowModule,
     OrderModule,
     DashboardModule,
+    CartModule,
+    AddressModule,
+    WishlistModule,
   ],
 })
 export class AppModule {}
