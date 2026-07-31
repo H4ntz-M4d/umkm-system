@@ -22,6 +22,7 @@ export async function proxy(request: NextRequest) {
   ) {
     const accessToken = request.cookies.get("access_token_admin")?.value;
     const refreshToken = request.cookies.get("refresh_token_admin")?.value;
+
     if ((!accessToken || isTokenExpired(accessToken)) && refreshToken) {
       try {
         const refreshRes = await fetch(
@@ -64,7 +65,13 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/wishlist") || pathname.startsWith("/cart")) {
+  // /cart sengaja TIDAK dijaga: keranjang guest hidup di localStorage, jadi
+  // pengunjung harus bisa membukanya sebelum login.
+  if (
+    pathname.startsWith("/wishlist") ||
+    pathname.startsWith("/checkout") ||
+    pathname.startsWith("/orders")
+  ) {
     const accessToken = request.cookies.get("access_token_customer")?.value;
     const refreshToken = request.cookies.get("refresh_token_customer")?.value;
     if ((!accessToken || isTokenExpired(accessToken)) && refreshToken) {

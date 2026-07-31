@@ -5,6 +5,8 @@ import {
   fetchPublicProductBySlug,
   fetchPublicProducts,
 } from "@/lib/queries/public/products.query";
+import { getCustomerToken } from "@/lib/api/server-token";
+import { fetchWishlistIds } from "@/lib/queries/public/wishlist.query";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -35,14 +37,21 @@ export default async function Page({ params }: PageProps) {
   const product = await fetchPublicProductBySlug(slug).catch(() => null);
   if (!product) notFound();
 
+  const token = await getCustomerToken();
+
   // Ambil satu lebih banyak dari yang ditampilkan, karena produk ini sendiri
   // ikut terbawa lalu disaring.
-  const related = product.data.categoryId
-    ? await fetchPublicProducts({
-        categoryId: product.data.categoryId,
-        limit: 5,
-      }).catch(() => null)
-    : null;
+  const [related, wishlistIds] = await Promise.all([
+    product.data.categoryId
+      ? fetchPublicProducts({
+          categoryId: product.data.categoryId,
+          limit: 5,
+        }).catch(() => null)
+      : null,
+    token ? fetchWishlistIds(token).catch(() => null) : null,
+  ]);
+
+  const wishlisted = new Set(wishlistIds?.data ?? []);
 
   return (
     <ProductDetail
@@ -51,6 +60,9 @@ export default async function Page({ params }: PageProps) {
         related?.data.filter((item) => item.id !== product.data.id).slice(0, 4) ??
         []
       }
+      inWishlist={wishlisted.has(product.data.id)}
+      isLoggedIn={Boolean(token)}
+      wishlistedIds={[...wishlisted]}
     />
   );
 }

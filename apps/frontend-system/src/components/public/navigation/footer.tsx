@@ -8,42 +8,81 @@ const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-1">
             <span className="font-display text-xl font-bold text-background">
-              Rajutan<span className="text-primary">Nusa</span>
+              Nurfa<span className="text-primary">Craft</span>
             </span>
             <p className="text-sm mt-3 leading-relaxed text-background/60">
-              Karya rajutan tangan Indonesia yang autentik. Setiap helai dibuat dengan cinta dan ketelitian oleh pengrajin lokal.
+              Karya rajutan tangan Indonesia yang autentik. Setiap helai dibuat
+              dengan cinta dan ketelitian oleh pengrajin lokal.
             </p>
           </div>
 
           {/* Links */}
           <div>
-            <h4 className="font-display font-semibold text-background text-sm mb-4">Belanja</h4>
+            <h4 className="font-display font-semibold text-background text-sm mb-4">
+              Belanja
+            </h4>
             <ul className="space-y-2.5 text-sm">
-              {["Semua Produk", "Cardigan", "Syal & Scarf", "Aksesoris", "Limited Edition"].map((item) => (
-                <li key={item}>
-                  <Link href={"/products"} className="hover:text-primary transition-colors">{item}</Link>
+              {[
+                { label: "Semua Produk", path: "/products" },
+                { label: "Keranjang", path: "/cart" },
+                { label: "Wishlist", path: "/wishlist" },
+                { label: "Riwayat Pesanan", path: "/orders" },
+              ].map((item) => (
+                <li key={item.path}>
+                  <Link
+                    href={item.path}
+                    className="hover:text-primary transition-colors"
+                  >
+                    {item.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="font-display font-semibold text-background text-sm mb-4">Bantuan</h4>
+            <h4 className="font-display font-semibold text-background text-sm mb-4">
+              Bantuan
+            </h4>
             <ul className="space-y-2.5 text-sm">
-              {["FAQ", "Cara Pesan", "Hubungi Kami"].map((item) => (
-                <li key={item}>
-                  <span className="hover:text-primary transition-colors cursor-pointer">{item}</span>
+              {[
+                { label: "FAQ", path: "/" },
+                { label: "Cara Pesan", path: "/" },
+                { label: "Hubungi Kami", path: "https://wa.me/6288232000188" },
+              ].map((item, index) => (
+                <li key={index}>
+                  <Link
+                    href={item.path}
+                    className="hover:text-primary transition-colors"
+                  >
+                    <span className="text-background/60">{item.label}</span>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
           <div>
-            <h4 className="font-display font-semibold text-background text-sm mb-4">Ikuti Kami</h4>
+            <h4 className="font-display font-semibold text-background text-sm mb-4">
+              Ikuti Kami
+            </h4>
             <ul className="space-y-2.5 text-sm">
-              {["Instagram", "TikTok", "Facebook", "WhatsApp"].map((item) => (
-                <li key={item}>
-                  <span className="hover:text-primary transition-colors cursor-pointer">{item}</span>
+              {[
+                {
+                  label: "Instagram",
+                  path: "https://www.instagram.com/nurfacraft_jogja?igsh=MTdncGxudGIzbDQzMA==",
+                },
+                { label: "TikTok", path: "https://www.tiktok.com/@tasrajutjogjanurfa" },
+                { label: "Facebook", path: "https://www.facebook.com/tasrajutjogjanurfa" },
+                { label: "WhatsApp", path: "https://wa.me/6288232000188" },
+              ].map((item) => (
+                <li key={item.path}>
+                  <Link
+                    href={item.path}
+                    className="hover:text-primary transition-colors"
+                  >
+                    <span className="text-background/60">{item.label}</span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -65,8 +104,8 @@ const Footer = () => {
             <span>SiCepat</span>
           </div>
           <div className="flex items-center gap-4 text-xs text-background/50">
-            <span className="cursor-pointer hover:text-background/80">Kebijakan Privasi</span>
-            <span className="cursor-pointer hover:text-background/80">Syarat & Ketentuan</span>
+            <span>Kebijakan Privasi</span>
+            <span>Syarat & Ketentuan</span>
           </div>
         </div>
       </div>

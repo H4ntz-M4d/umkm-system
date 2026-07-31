@@ -1,19 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ShoppingBag, Bell, User, Menu, X, Heart } from "lucide-react";
+import { useState } from "react";
+import { Bell, User, Menu, X, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { CartDataType } from "@repo/schemas";
 import MobileHeader from "./mobile-header";
 import { NavItem, NavItemProfile } from "./nav-item";
 import { Separator } from "@/components/ui/separator";
+import CartBadge from "../cart/cart-badge";
+import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
 
-const Header = ({user}: {user?: any}) => {
+const Header = ({ user, cart }: { user?: any; cart?: CartDataType | null }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const navLinks = NavItem();
-  const navLinksProfile = NavItemProfile()
+  const { signOutCustomer } = useAuthOperations();
+  const navLinksProfile = NavItemProfile(signOutCustomer);
   const location = usePathname();
 
   return (
@@ -45,19 +49,18 @@ const Header = ({user}: {user?: any}) => {
 
         {/* Right icons */}
         <div className="flex items-center gap-2 md:gap-3">
-          <button className="relative p-2 rounded-lg text-foreground/70 hover:text-white hover:bg-secondary transition-colors">
+          {/* <button className="relative p-2 rounded-lg text-foreground/70 hover:text-white hover:bg-secondary transition-colors">
             <Bell size={20} />
             <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
-          </button>
-          <button className="hidden md:flex relative p-2 rounded-lg text-foreground/70 hover:text-white hover:bg-secondary transition-colors">
+          </button> */}
+          <Link
+            href="/wishlist"
+            aria-label="Wishlist"
+            className="hidden md:flex relative p-2 rounded-lg text-foreground/70 hover:text-white hover:bg-secondary transition-colors"
+          >
             <Heart size={20} />
-          </button>
-          <button className="relative p-2 rounded-lg text-foreground/70 hover:text-white hover:bg-secondary transition-colors">
-            <ShoppingBag size={20} />
-            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
-              3
-            </span>
-          </button>
+          </Link>
+          <CartBadge serverCart={cart ?? null} isLoggedIn={Boolean(user)} />
 
           {/* Profile dropdown */}
           <div className="relative hidden md:block">
@@ -83,23 +86,36 @@ const Header = ({user}: {user?: any}) => {
                   exit={{ opacity: 0, y: 8 }}
                   className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-xl shadow-warm-lg overflow-hidden"
                 >
-                  <div className={"flex flex-col justify-center px-4 pt-4 pb-3"}>
+                  <div
+                    className={"flex flex-col justify-center px-4 pt-4 pb-3"}
+                  >
                     <p className={"text-sm"}>{user?.name}</p>
                     <p className={"text-xs"}>{user?.email}</p>
                   </div>
                   <Separator />
-                  {navLinksProfile.map((item) => (
-                    <button
-                      key={item.label}
-                      className="w-full text-left px-4 py-3 text-sm text-card-foreground hover:bg-secondary transition-colors"
-                      onClick={() => {
-                        item.fn?.(),
-                        setProfileOpen(false)
-                      }}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+                  {navLinksProfile.map((item) =>
+                    item.fn ? (
+                      <button
+                        key={item.label}
+                        className="w-full text-left px-4 py-3 text-sm text-card-foreground hover:bg-secondary transition-colors"
+                        onClick={() => {
+                          item.fn?.();
+                          setProfileOpen(false);
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    ) : (
+                      <Link
+                        key={item.label}
+                        href={item.path}
+                        className="block w-full px-4 py-3 text-sm text-card-foreground hover:bg-secondary transition-colors"
+                        onClick={() => setProfileOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    ),
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -120,6 +136,7 @@ const Header = ({user}: {user?: any}) => {
         mobileOpen={mobileOpen}
         location={location}
         setMobileOpen={setMobileOpen}
+        isLoggedIn={Boolean(user)}
       />
     </nav>
   );

@@ -1,15 +1,21 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { fetchPublicProducts } from "@/lib/queries/public/products.query";
+import { fetchWishlistIds } from "@/lib/queries/public/wishlist.query";
+import { getCustomerToken } from "@/lib/api/server-token";
 import ProductCard from "../products/products-card";
 
 /// Server Component — koleksi pilihan ikut ter-render di HTML awal.
 export default async function FeaturedCollection() {
-  const featured = await fetchPublicProducts({ limit: 4, sort: "newest" }).catch(
-    () => null,
-  );
+  const token = await getCustomerToken();
+  const [featured, wishlistIds] = await Promise.all([
+    fetchPublicProducts({ limit: 4, sort: "newest" }).catch(() => null),
+    token ? fetchWishlistIds(token).catch(() => null) : null,
+  ]);
 
   if (!featured || featured.data.length === 0) return null;
+
+  const wishlisted = new Set(wishlistIds?.data ?? []);
 
   return (
     <section className="py-16 md:py-24">
@@ -29,7 +35,13 @@ export default async function FeaturedCollection() {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {featured.data.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={index}
+              inWishlist={wishlisted.has(product.id)}
+              isLoggedIn={Boolean(token)}
+            />
           ))}
         </div>
 

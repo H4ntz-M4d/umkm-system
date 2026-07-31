@@ -4,6 +4,8 @@ import {
   fetchPublicCategories,
   fetchPublicProducts,
 } from "@/lib/queries/public/products.query";
+import { getCustomerToken } from "@/lib/api/server-token";
+import { fetchWishlistIds } from "@/lib/queries/public/wishlist.query";
 import ProductCard from "@/components/public/products/products-card";
 import ProductsFilter from "@/components/public/products/products-filter";
 import ProductsActiveFilters from "@/components/public/products/products-active-filters";
@@ -41,10 +43,15 @@ export default async function Page({
     sort: readParam(params, "sort") as PublicProductQueryInput["sort"],
   };
 
-  const [products, categories] = await Promise.all([
+  const token = await getCustomerToken();
+  const [products, categories, wishlistIds] = await Promise.all([
     fetchPublicProducts(query),
     fetchPublicCategories(),
+    // Guest tidak punya wishlist; kegagalan di sini tidak boleh menjatuhkan katalog.
+    token ? fetchWishlistIds(token).catch(() => null) : null,
   ]);
+
+  const wishlisted = new Set(wishlistIds?.data ?? []);
 
   const total = products.meta.total ?? products.data.length;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -79,9 +86,15 @@ export default async function Page({
           </p>
 
           {products.data.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {products.data.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  index={index}
+                  inWishlist={wishlisted.has(product.id)}
+                  isLoggedIn={Boolean(token)}
+                />
               ))}
             </div>
           ) : (
