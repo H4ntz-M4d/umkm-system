@@ -1,48 +1,46 @@
 import { Prisma } from '@repo/db';
 
-interface OrderAllEntity
-  extends Prisma.OrderGetPayload<{
-    select: {
-      id: true;
-      storeId: true;
-      orderId: true;
-      status: true;
-      totalAmount: true;
-      createdAt: true;
-      store: {
-        select: {
-          name: true;
-        };
+interface OrderAllEntity extends Prisma.OrderGetPayload<{
+  select: {
+    id: true;
+    storeId: true;
+    orderId: true;
+    status: true;
+    totalAmount: true;
+    createdAt: true;
+    store: {
+      select: {
+        name: true;
       };
-      customer: {
-        select: {
-          name: true;
-        };
+    };
+    customer: {
+      select: {
+        name: true;
       };
-      payment: {
-        select: {
-          name: true;
-        };
+    };
+    payment: {
+      select: {
+        name: true;
       };
-      items: {
-        select: {
-          id: true;
-          quantity: true;
-          price: true;
-          subtotal: true;
-          variant: {
-            select: {
-              productMaster: {
-                select: {
-                  name: true;
-                };
+    };
+    items: {
+      select: {
+        id: true;
+        quantity: true;
+        price: true;
+        subtotal: true;
+        variant: {
+          select: {
+            productMaster: {
+              select: {
+                name: true;
               };
-              options: {
-                select: {
-                  variantValue: {
-                    select: {
-                      value: true;
-                    };
+            };
+            options: {
+              select: {
+                variantValue: {
+                  select: {
+                    value: true;
                   };
                 };
               };
@@ -50,21 +48,24 @@ interface OrderAllEntity
           };
         };
       };
-      shipment: {
-        select: {
-          id: true;
-          recipientName: true;
-          phone: true;
-          addressLine: true;
-          city: true;
-          province: true;
-          courier: true;
-          shippingCost: true;
-          createdAt: true;
-        };
+    };
+    shipment: {
+      select: {
+        id: true;
+        recipientName: true;
+        phone: true;
+        addressLine: true;
+        city: true;
+        province: true;
+        courier: true;
+        trackingNumber: true;
+        status: true;
+        shippingCost: true;
+        createdAt: true;
       };
     };
-  }> {}
+  };
+}> {}
 
 export function toOrderResponse(entity: OrderAllEntity) {
   return {
@@ -100,6 +101,8 @@ export function toOrderResponse(entity: OrderAllEntity) {
           city: entity.shipment.city,
           province: entity.shipment.province,
           courier: entity.shipment.courier,
+          trackingNumber: entity.shipment.trackingNumber,
+          status: entity.shipment.status,
           shippingCost: entity.shipment.shippingCost,
           createdAt: entity.shipment.createdAt,
         }

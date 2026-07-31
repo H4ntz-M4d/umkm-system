@@ -2,30 +2,109 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { UserRole } from '@repo/db';
 import { OrderService } from './order.service';
-import { OrderQueryDto } from 'order/dto/order.dto';
+import { CustomerOrderService } from './customer-order.service';
+import {
+  CheckoutDto,
+  MyOrderQueryDto,
+  OrderQueryDto,
+  UpdateShipmentDto,
+} from 'order/dto/order.dto';
 import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
 import { RolesGuard } from 'common/guards/guard.roles';
 import { Roles } from 'common/decorator/roles.decorator';
-import { UserRole } from '@repo/db';
+import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
+/**
+ * Guard dipasang per-method, bukan di level class: controller ini melayani tiga
+ * penonton sekaligus — admin, customer, dan webhook Midtrans yang harus publik.
+ */
 @Controller('api/v1/orders')
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly customerOrderService: CustomerOrderService,
+  ) {}
 
+  // ============================== Admin ======================================
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
   @Get()
   findAll(@Query() query: OrderQueryDto) {
     return this.orderService.findAll(query);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
   @Patch('/cancelled')
   cancel(@Body() orderId: string[]) {
     return this.orderService.cancel(orderId);
+  }
+
+  /// Pengiriman masih ditangani manual, jadi status dan nomor resi diperbarui
+  /// admin/gudang lewat endpoint ini.
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
+  @Patch(':orderId/shipment')
+  updateShipment(
+    @Param('orderId') orderId: string,
+    @Body() dto: UpdateShipmentDto,
+  ) {
+    return this.orderService.updateShipment(orderId, dto);
+  }
+
+  // ============================ Customer =====================================
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.CUSTOMER)
+  @Post('checkout')
+  checkout(@AuthUser() user: JwtPayload, @Body() dto: CheckoutDto) {
+    return this.customerOrderService.checkout(user.sub, dto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.CUSTOMER)
+  @Get('me')
+  findMyOrders(@AuthUser() user: JwtPayload, @Query() query: MyOrderQueryDto) {
+    return this.customerOrderService.findMyOrders(user.sub, query);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.CUSTOMER)
+  @Get('me/:orderId')
+  findMyOrderDetail(
+    @AuthUser() user: JwtPayload,
+    @Param('orderId') orderId: string,
+  ) {
+    return this.customerOrderService.findMyOrderDetail(user.sub, orderId);
+  }
+
+  /// Menanyakan status sebenarnya ke Midtrans lalu menyelaraskan pesanan.
+  /// Jaring pengaman untuk notifikasi webhook yang tidak pernah sampai.
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.CUSTOMER)
+  @Post('me/:orderId/sync')
+  syncPaymentStatus(
+    @AuthUser() user: JwtPayload,
+    @Param('orderId') orderId: string,
+  ) {
+    return this.customerOrderService.syncPaymentStatus(user.sub, orderId);
+  }
+
+  // ============================== Webhook ====================================
+
+  /// Publik — Midtrans memanggilnya tanpa sesi. Keasliannya diverifikasi lewat
+  /// tanda tangan SHA-512 di dalam service.
+  @Post('/webhook/midtrans')
+  handleWebhook(@Body() body: any) {
+    return this.customerOrderService.handleMidtransWebHook(body);
   }
 }

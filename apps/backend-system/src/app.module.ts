@@ -19,6 +19,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { CartModule } from './cart/cart.module';
 import { AddressModule } from './address/address.module';
 import { WishlistModule } from './wishlist/wishlist.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     CartModule,
     AddressModule,
     WishlistModule,
+    WebhooksModule,
   ],
 })
 export class AppModule {}
