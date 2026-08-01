@@ -1,8 +1,10 @@
-import { logoutCustomer } from "@/lib/queries/auth/auth.api";
+import { UseMutateFunction } from "@tanstack/react-query";
 
 interface navLink {
   label: string;
   path: string;
+  /// Item yang menjalankan aksi, bukan berpindah halaman. Kalau ada, `path`
+  /// diabaikan dan item dirender sebagai tombol.
   fn?: () => void;
 }
 
@@ -25,20 +27,26 @@ export const NavItem = (): navLink[] => [
   // },
 ];
 
-export const NavItemProfile = (): navLink[] => [
+export const NavItemProfile = (
+  signOutCustomer: UseMutateFunction,
+): navLink[] => [
   {
-    label: "Settings",
-    path: "#",
+    label: "Profil",
+    path: "/profile",
+  },
+  {
+    label: "Wishlist",
+    path: "/wishlist",
   },
   {
     label: "Shopping History",
-    path: "#",
+    path: "/orders",
   },
   {
     label: "Logout",
     path: "#",
     fn: () => {
-      logoutCustomer();
+      signOutCustomer();
     },
   },
 ];

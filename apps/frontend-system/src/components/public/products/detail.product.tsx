@@ -4,16 +4,7 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ShoppingBag,
-  Heart,
-  Minus,
-  Plus,
-  Truck,
-  ShieldCheck,
-  Package,
-} from "lucide-react";
-import { toast } from "sonner";
+import { Minus, Plus, Truck, ShieldCheck, Package } from "lucide-react";
 import {
   signatureForOptions,
   type PublicProductCardDataType,
@@ -22,10 +13,18 @@ import {
 import { toIDR } from "../../../../utils/format-money";
 import ProductCard from "./products-card";
 import { isOutOfStock, productTypeBadge } from "./product-display";
+import WishlistButton from "../wishlist/wishlist-button";
+import AddToCartButton from "../cart/add-to-cart-button";
+import type { GuestCartItem } from "@/stores/cart.store";
+import { Toaster } from "@/components/ui/sonner";
 
 interface ProductDetailProps {
   product: PublicProductDetailDataType;
   related: PublicProductCardDataType[];
+  inWishlist?: boolean;
+  isLoggedIn?: boolean;
+  /// Id produk yang ada di wishlist, dipakai kartu "Kamu Mungkin Suka".
+  wishlistedIds?: string[];
 }
 
 /// Pilihan awal: variant pertama yang masih ada stoknya, kalau semua habis pakai
@@ -36,13 +35,19 @@ function initialOptions(product: PublicProductDetailDataType) {
   return preferred?.options ?? {};
 }
 
-const ProductDetail = ({ product, related }: ProductDetailProps) => {
+const ProductDetail = ({
+  product,
+  related,
+  inWishlist = false,
+  isLoggedIn = false,
+  wishlistedIds = [],
+}: ProductDetailProps) => {
   const [selected, setSelected] = useState<Record<string, string>>(() =>
     initialOptions(product),
   );
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
-  const [liked, setLiked] = useState(false);
+  const wishlisted = new Set(wishlistedIds);
 
   const visualTypeNames = useMemo(
     () =>
@@ -90,22 +95,24 @@ const ProductDetail = ({ product, related }: ProductDetailProps) => {
     setQuantity(1);
   };
 
-  const handleAddToCart = () => {
-    if (!selectedVariant) {
-      toast.error("Kombinasi varian ini tidak tersedia");
-      return;
-    }
-
-    // Keranjang aslinya menyusul; untuk sekarang cukup konfirmasi pilihan.
-    toast.success(`${product.name} ditambahkan ke keranjang`, {
-      description: `${Object.values(selected).join(" · ")} · ${quantity}x`,
-    });
-  };
-
-  const handleWishlist = () => {
-    setLiked(!liked);
-    toast.success(liked ? "Dihapus dari wishlist" : "Ditambahkan ke wishlist");
-  };
+  // Snapshot dipakai keranjang guest untuk merender item tanpa memanggil API.
+  // Harga finalnya tetap dihitung ulang server saat checkout.
+  const cartItem: GuestCartItem | null = selectedVariant
+    ? {
+        productVariantId: selectedVariant.id,
+        quantity,
+        snapshot: {
+          productMasterId: product.id,
+          slug: product.slug,
+          productName: product.name,
+          sku: selectedVariant.sku,
+          price: selectedVariant.price,
+          image: images[0]?.image ?? product.image,
+          options: selectedVariant.options,
+          stock: selectedVariant.stock,
+        },
+      }
+    : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -287,31 +294,20 @@ const ProductDetail = ({ product, related }: ProductDetailProps) => {
 
             {/* Aksi */}
             <div className="flex flex-col sm:flex-row gap-3 mt-7">
-              <button
-                type="button"
-                onClick={handleAddToCart}
+              <AddToCartButton
+                item={cartItem}
+                isLoggedIn={isLoggedIn}
                 disabled={outOfStock || !selectedVariant}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-terracotta-dark transition-colors shadow-warm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ShoppingBag size={18} />
-                {outOfStock
-                  ? "Stok Habis"
-                  : !selectedVariant
-                    ? "Varian Tidak Tersedia"
-                    : "Tambah ke Keranjang"}
-              </button>
-              <button
-                type="button"
-                onClick={handleWishlist}
-                className={`flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border text-sm font-semibold transition-colors ${
-                  liked
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border text-foreground hover:bg-secondary"
-                }`}
-              >
-                <Heart size={18} fill={liked ? "currentColor" : "none"} />
-                {liked ? "Tersimpan" : "Wishlist"}
-              </button>
+                disabledLabel={
+                  outOfStock ? "Stok Habis" : "Varian Tidak Tersedia"
+                }
+              />
+              <WishlistButton
+                productMasterId={product.id}
+                initialInWishlist={inWishlist}
+                isLoggedIn={isLoggedIn}
+                variant="full"
+              />
             </div>
 
             {/* Perks */}
@@ -343,12 +339,19 @@ const ProductDetail = ({ product, related }: ProductDetailProps) => {
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {related.map((item, index) => (
-                <ProductCard key={item.id} product={item} index={index} />
+                <ProductCard
+                  key={item.id}
+                  product={item}
+                  index={index}
+                  inWishlist={wishlisted.has(item.id)}
+                  isLoggedIn={isLoggedIn}
+                />
               ))}
             </div>
           </section>
         )}
       </main>
+      <Toaster />
     </div>
   );
 };

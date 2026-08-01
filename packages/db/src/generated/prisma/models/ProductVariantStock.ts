@@ -14,7 +14,12 @@ import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model ProductVariantStock
+ * Stok dipegang per toko: satu baris untuk tiap pasangan varian dan toko.
  * 
+ * Sebelumnya `productVariantId` bertanda `@unique`, sehingga satu varian hanya
+ * punya satu angka stok untuk seluruh perusahaan — kasir cabang yang menjual
+ * akan mengurangi stok yang sama dengan toko utama. Keunikan gabungan di bawah
+ * yang membuat tiap toko memegang stoknya sendiri.
  */
 export type ProductVariantStockModel = runtime.Types.Result.DefaultSelection<Prisma.$ProductVariantStockPayload>
 
@@ -29,6 +34,7 @@ export type AggregateProductVariantStock = {
 export type ProductVariantStockAvgAggregateOutputType = {
   id: number | null
   productVariantId: number | null
+  storeId: number | null
   stock: number | null
   reserved_stock: number | null
 }
@@ -36,6 +42,7 @@ export type ProductVariantStockAvgAggregateOutputType = {
 export type ProductVariantStockSumAggregateOutputType = {
   id: bigint | null
   productVariantId: bigint | null
+  storeId: bigint | null
   stock: number | null
   reserved_stock: number | null
 }
@@ -43,6 +50,7 @@ export type ProductVariantStockSumAggregateOutputType = {
 export type ProductVariantStockMinAggregateOutputType = {
   id: bigint | null
   productVariantId: bigint | null
+  storeId: bigint | null
   stock: number | null
   reserved_stock: number | null
   updated_at: Date | null
@@ -51,6 +59,7 @@ export type ProductVariantStockMinAggregateOutputType = {
 export type ProductVariantStockMaxAggregateOutputType = {
   id: bigint | null
   productVariantId: bigint | null
+  storeId: bigint | null
   stock: number | null
   reserved_stock: number | null
   updated_at: Date | null
@@ -59,6 +68,7 @@ export type ProductVariantStockMaxAggregateOutputType = {
 export type ProductVariantStockCountAggregateOutputType = {
   id: number
   productVariantId: number
+  storeId: number
   stock: number
   reserved_stock: number
   updated_at: number
@@ -69,6 +79,7 @@ export type ProductVariantStockCountAggregateOutputType = {
 export type ProductVariantStockAvgAggregateInputType = {
   id?: true
   productVariantId?: true
+  storeId?: true
   stock?: true
   reserved_stock?: true
 }
@@ -76,6 +87,7 @@ export type ProductVariantStockAvgAggregateInputType = {
 export type ProductVariantStockSumAggregateInputType = {
   id?: true
   productVariantId?: true
+  storeId?: true
   stock?: true
   reserved_stock?: true
 }
@@ -83,6 +95,7 @@ export type ProductVariantStockSumAggregateInputType = {
 export type ProductVariantStockMinAggregateInputType = {
   id?: true
   productVariantId?: true
+  storeId?: true
   stock?: true
   reserved_stock?: true
   updated_at?: true
@@ -91,6 +104,7 @@ export type ProductVariantStockMinAggregateInputType = {
 export type ProductVariantStockMaxAggregateInputType = {
   id?: true
   productVariantId?: true
+  storeId?: true
   stock?: true
   reserved_stock?: true
   updated_at?: true
@@ -99,6 +113,7 @@ export type ProductVariantStockMaxAggregateInputType = {
 export type ProductVariantStockCountAggregateInputType = {
   id?: true
   productVariantId?: true
+  storeId?: true
   stock?: true
   reserved_stock?: true
   updated_at?: true
@@ -194,6 +209,7 @@ export type ProductVariantStockGroupByArgs<ExtArgs extends runtime.Types.Extensi
 export type ProductVariantStockGroupByOutputType = {
   id: bigint
   productVariantId: bigint
+  storeId: bigint
   stock: number
   reserved_stock: number
   updated_at: Date
@@ -204,7 +220,7 @@ export type ProductVariantStockGroupByOutputType = {
   _max: ProductVariantStockMaxAggregateOutputType | null
 }
 
-type GetProductVariantStockGroupByPayload<T extends ProductVariantStockGroupByArgs> = Prisma.PrismaPromise<
+export type GetProductVariantStockGroupByPayload<T extends ProductVariantStockGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProductVariantStockGroupByOutputType, T['by']> &
       {
@@ -225,36 +241,44 @@ export type ProductVariantStockWhereInput = {
   NOT?: Prisma.ProductVariantStockWhereInput | Prisma.ProductVariantStockWhereInput[]
   id?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
   productVariantId?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
+  storeId?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
   stock?: Prisma.IntFilter<"ProductVariantStock"> | number
   reserved_stock?: Prisma.IntFilter<"ProductVariantStock"> | number
   updated_at?: Prisma.DateTimeFilter<"ProductVariantStock"> | Date | string
   productVariant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
+  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
 }
 
 export type ProductVariantStockOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   productVariantId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   productVariant?: Prisma.ProductVariantOrderByWithRelationInput
+  store?: Prisma.StoreOrderByWithRelationInput
 }
 
 export type ProductVariantStockWhereUniqueInput = Prisma.AtLeast<{
   id?: bigint | number
-  productVariantId?: bigint | number
+  productVariantId_storeId?: Prisma.ProductVariantStockProductVariantIdStoreIdCompoundUniqueInput
   AND?: Prisma.ProductVariantStockWhereInput | Prisma.ProductVariantStockWhereInput[]
   OR?: Prisma.ProductVariantStockWhereInput[]
   NOT?: Prisma.ProductVariantStockWhereInput | Prisma.ProductVariantStockWhereInput[]
+  productVariantId?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
+  storeId?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
   stock?: Prisma.IntFilter<"ProductVariantStock"> | number
   reserved_stock?: Prisma.IntFilter<"ProductVariantStock"> | number
   updated_at?: Prisma.DateTimeFilter<"ProductVariantStock"> | Date | string
   productVariant?: Prisma.XOR<Prisma.ProductVariantScalarRelationFilter, Prisma.ProductVariantWhereInput>
-}, "id" | "productVariantId">
+  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
+}, "id" | "productVariantId_storeId">
 
 export type ProductVariantStockOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   productVariantId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -271,6 +295,7 @@ export type ProductVariantStockScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProductVariantStockScalarWhereWithAggregatesInput | Prisma.ProductVariantStockScalarWhereWithAggregatesInput[]
   id?: Prisma.BigIntWithAggregatesFilter<"ProductVariantStock"> | bigint | number
   productVariantId?: Prisma.BigIntWithAggregatesFilter<"ProductVariantStock"> | bigint | number
+  storeId?: Prisma.BigIntWithAggregatesFilter<"ProductVariantStock"> | bigint | number
   stock?: Prisma.IntWithAggregatesFilter<"ProductVariantStock"> | number
   reserved_stock?: Prisma.IntWithAggregatesFilter<"ProductVariantStock"> | number
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"ProductVariantStock"> | Date | string
@@ -282,11 +307,13 @@ export type ProductVariantStockCreateInput = {
   reserved_stock: number
   updated_at?: Date | string
   productVariant: Prisma.ProductVariantCreateNestedOneWithoutProductVariantStocksInput
+  store: Prisma.StoreCreateNestedOneWithoutProductVariantStocksInput
 }
 
 export type ProductVariantStockUncheckedCreateInput = {
   id?: bigint | number
   productVariantId: bigint | number
+  storeId: bigint | number
   stock: number
   reserved_stock: number
   updated_at?: Date | string
@@ -298,11 +325,13 @@ export type ProductVariantStockUpdateInput = {
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   productVariant?: Prisma.ProductVariantUpdateOneRequiredWithoutProductVariantStocksNestedInput
+  store?: Prisma.StoreUpdateOneRequiredWithoutProductVariantStocksNestedInput
 }
 
 export type ProductVariantStockUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   productVariantId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -311,6 +340,7 @@ export type ProductVariantStockUncheckedUpdateInput = {
 export type ProductVariantStockCreateManyInput = {
   id?: bigint | number
   productVariantId: bigint | number
+  storeId: bigint | number
   stock: number
   reserved_stock: number
   updated_at?: Date | string
@@ -326,19 +356,31 @@ export type ProductVariantStockUpdateManyMutationInput = {
 export type ProductVariantStockUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   productVariantId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type ProductVariantStockNullableScalarRelationFilter = {
-  is?: Prisma.ProductVariantStockWhereInput | null
-  isNot?: Prisma.ProductVariantStockWhereInput | null
+export type ProductVariantStockListRelationFilter = {
+  every?: Prisma.ProductVariantStockWhereInput
+  some?: Prisma.ProductVariantStockWhereInput
+  none?: Prisma.ProductVariantStockWhereInput
+}
+
+export type ProductVariantStockOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
+export type ProductVariantStockProductVariantIdStoreIdCompoundUniqueInput = {
+  productVariantId: bigint | number
+  storeId: bigint | number
 }
 
 export type ProductVariantStockCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productVariantId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -347,6 +389,7 @@ export type ProductVariantStockCountOrderByAggregateInput = {
 export type ProductVariantStockAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productVariantId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
 }
@@ -354,6 +397,7 @@ export type ProductVariantStockAvgOrderByAggregateInput = {
 export type ProductVariantStockMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productVariantId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -362,6 +406,7 @@ export type ProductVariantStockMaxOrderByAggregateInput = {
 export type ProductVariantStockMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productVariantId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -370,40 +415,147 @@ export type ProductVariantStockMinOrderByAggregateInput = {
 export type ProductVariantStockSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productVariantId?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   reserved_stock?: Prisma.SortOrder
 }
 
-export type ProductVariantStockCreateNestedOneWithoutProductVariantInput = {
-  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput>
-  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput
-  connect?: Prisma.ProductVariantStockWhereUniqueInput
+export type ProductVariantStockCreateNestedManyWithoutStoreInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutStoreInput, Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput> | Prisma.ProductVariantStockCreateWithoutStoreInput[] | Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutStoreInput | Prisma.ProductVariantStockCreateOrConnectWithoutStoreInput[]
+  createMany?: Prisma.ProductVariantStockCreateManyStoreInputEnvelope
+  connect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
 }
 
-export type ProductVariantStockUncheckedCreateNestedOneWithoutProductVariantInput = {
-  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput>
-  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput
-  connect?: Prisma.ProductVariantStockWhereUniqueInput
+export type ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutStoreInput, Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput> | Prisma.ProductVariantStockCreateWithoutStoreInput[] | Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutStoreInput | Prisma.ProductVariantStockCreateOrConnectWithoutStoreInput[]
+  createMany?: Prisma.ProductVariantStockCreateManyStoreInputEnvelope
+  connect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
 }
 
-export type ProductVariantStockUpdateOneWithoutProductVariantNestedInput = {
-  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput>
-  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput
-  upsert?: Prisma.ProductVariantStockUpsertWithoutProductVariantInput
-  disconnect?: Prisma.ProductVariantStockWhereInput | boolean
-  delete?: Prisma.ProductVariantStockWhereInput | boolean
-  connect?: Prisma.ProductVariantStockWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantStockUpdateToOneWithWhereWithoutProductVariantInput, Prisma.ProductVariantStockUpdateWithoutProductVariantInput>, Prisma.ProductVariantStockUncheckedUpdateWithoutProductVariantInput>
+export type ProductVariantStockUpdateManyWithoutStoreNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutStoreInput, Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput> | Prisma.ProductVariantStockCreateWithoutStoreInput[] | Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutStoreInput | Prisma.ProductVariantStockCreateOrConnectWithoutStoreInput[]
+  upsert?: Prisma.ProductVariantStockUpsertWithWhereUniqueWithoutStoreInput | Prisma.ProductVariantStockUpsertWithWhereUniqueWithoutStoreInput[]
+  createMany?: Prisma.ProductVariantStockCreateManyStoreInputEnvelope
+  set?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  disconnect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  delete?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  connect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  update?: Prisma.ProductVariantStockUpdateWithWhereUniqueWithoutStoreInput | Prisma.ProductVariantStockUpdateWithWhereUniqueWithoutStoreInput[]
+  updateMany?: Prisma.ProductVariantStockUpdateManyWithWhereWithoutStoreInput | Prisma.ProductVariantStockUpdateManyWithWhereWithoutStoreInput[]
+  deleteMany?: Prisma.ProductVariantStockScalarWhereInput | Prisma.ProductVariantStockScalarWhereInput[]
 }
 
-export type ProductVariantStockUncheckedUpdateOneWithoutProductVariantNestedInput = {
-  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput>
-  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput
-  upsert?: Prisma.ProductVariantStockUpsertWithoutProductVariantInput
-  disconnect?: Prisma.ProductVariantStockWhereInput | boolean
-  delete?: Prisma.ProductVariantStockWhereInput | boolean
-  connect?: Prisma.ProductVariantStockWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantStockUpdateToOneWithWhereWithoutProductVariantInput, Prisma.ProductVariantStockUpdateWithoutProductVariantInput>, Prisma.ProductVariantStockUncheckedUpdateWithoutProductVariantInput>
+export type ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutStoreInput, Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput> | Prisma.ProductVariantStockCreateWithoutStoreInput[] | Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutStoreInput | Prisma.ProductVariantStockCreateOrConnectWithoutStoreInput[]
+  upsert?: Prisma.ProductVariantStockUpsertWithWhereUniqueWithoutStoreInput | Prisma.ProductVariantStockUpsertWithWhereUniqueWithoutStoreInput[]
+  createMany?: Prisma.ProductVariantStockCreateManyStoreInputEnvelope
+  set?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  disconnect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  delete?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  connect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  update?: Prisma.ProductVariantStockUpdateWithWhereUniqueWithoutStoreInput | Prisma.ProductVariantStockUpdateWithWhereUniqueWithoutStoreInput[]
+  updateMany?: Prisma.ProductVariantStockUpdateManyWithWhereWithoutStoreInput | Prisma.ProductVariantStockUpdateManyWithWhereWithoutStoreInput[]
+  deleteMany?: Prisma.ProductVariantStockScalarWhereInput | Prisma.ProductVariantStockScalarWhereInput[]
+}
+
+export type ProductVariantStockCreateNestedManyWithoutProductVariantInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput> | Prisma.ProductVariantStockCreateWithoutProductVariantInput[] | Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput[]
+  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput | Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput[]
+  createMany?: Prisma.ProductVariantStockCreateManyProductVariantInputEnvelope
+  connect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+}
+
+export type ProductVariantStockUncheckedCreateNestedManyWithoutProductVariantInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput> | Prisma.ProductVariantStockCreateWithoutProductVariantInput[] | Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput[]
+  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput | Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput[]
+  createMany?: Prisma.ProductVariantStockCreateManyProductVariantInputEnvelope
+  connect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+}
+
+export type ProductVariantStockUpdateManyWithoutProductVariantNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput> | Prisma.ProductVariantStockCreateWithoutProductVariantInput[] | Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput[]
+  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput | Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput[]
+  upsert?: Prisma.ProductVariantStockUpsertWithWhereUniqueWithoutProductVariantInput | Prisma.ProductVariantStockUpsertWithWhereUniqueWithoutProductVariantInput[]
+  createMany?: Prisma.ProductVariantStockCreateManyProductVariantInputEnvelope
+  set?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  disconnect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  delete?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  connect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  update?: Prisma.ProductVariantStockUpdateWithWhereUniqueWithoutProductVariantInput | Prisma.ProductVariantStockUpdateWithWhereUniqueWithoutProductVariantInput[]
+  updateMany?: Prisma.ProductVariantStockUpdateManyWithWhereWithoutProductVariantInput | Prisma.ProductVariantStockUpdateManyWithWhereWithoutProductVariantInput[]
+  deleteMany?: Prisma.ProductVariantStockScalarWhereInput | Prisma.ProductVariantStockScalarWhereInput[]
+}
+
+export type ProductVariantStockUncheckedUpdateManyWithoutProductVariantNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput> | Prisma.ProductVariantStockCreateWithoutProductVariantInput[] | Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput[]
+  connectOrCreate?: Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput | Prisma.ProductVariantStockCreateOrConnectWithoutProductVariantInput[]
+  upsert?: Prisma.ProductVariantStockUpsertWithWhereUniqueWithoutProductVariantInput | Prisma.ProductVariantStockUpsertWithWhereUniqueWithoutProductVariantInput[]
+  createMany?: Prisma.ProductVariantStockCreateManyProductVariantInputEnvelope
+  set?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  disconnect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  delete?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  connect?: Prisma.ProductVariantStockWhereUniqueInput | Prisma.ProductVariantStockWhereUniqueInput[]
+  update?: Prisma.ProductVariantStockUpdateWithWhereUniqueWithoutProductVariantInput | Prisma.ProductVariantStockUpdateWithWhereUniqueWithoutProductVariantInput[]
+  updateMany?: Prisma.ProductVariantStockUpdateManyWithWhereWithoutProductVariantInput | Prisma.ProductVariantStockUpdateManyWithWhereWithoutProductVariantInput[]
+  deleteMany?: Prisma.ProductVariantStockScalarWhereInput | Prisma.ProductVariantStockScalarWhereInput[]
+}
+
+export type ProductVariantStockCreateWithoutStoreInput = {
+  id?: bigint | number
+  stock: number
+  reserved_stock: number
+  updated_at?: Date | string
+  productVariant: Prisma.ProductVariantCreateNestedOneWithoutProductVariantStocksInput
+}
+
+export type ProductVariantStockUncheckedCreateWithoutStoreInput = {
+  id?: bigint | number
+  productVariantId: bigint | number
+  stock: number
+  reserved_stock: number
+  updated_at?: Date | string
+}
+
+export type ProductVariantStockCreateOrConnectWithoutStoreInput = {
+  where: Prisma.ProductVariantStockWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutStoreInput, Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput>
+}
+
+export type ProductVariantStockCreateManyStoreInputEnvelope = {
+  data: Prisma.ProductVariantStockCreateManyStoreInput | Prisma.ProductVariantStockCreateManyStoreInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductVariantStockUpsertWithWhereUniqueWithoutStoreInput = {
+  where: Prisma.ProductVariantStockWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductVariantStockUpdateWithoutStoreInput, Prisma.ProductVariantStockUncheckedUpdateWithoutStoreInput>
+  create: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutStoreInput, Prisma.ProductVariantStockUncheckedCreateWithoutStoreInput>
+}
+
+export type ProductVariantStockUpdateWithWhereUniqueWithoutStoreInput = {
+  where: Prisma.ProductVariantStockWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductVariantStockUpdateWithoutStoreInput, Prisma.ProductVariantStockUncheckedUpdateWithoutStoreInput>
+}
+
+export type ProductVariantStockUpdateManyWithWhereWithoutStoreInput = {
+  where: Prisma.ProductVariantStockScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductVariantStockUpdateManyMutationInput, Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreInput>
+}
+
+export type ProductVariantStockScalarWhereInput = {
+  AND?: Prisma.ProductVariantStockScalarWhereInput | Prisma.ProductVariantStockScalarWhereInput[]
+  OR?: Prisma.ProductVariantStockScalarWhereInput[]
+  NOT?: Prisma.ProductVariantStockScalarWhereInput | Prisma.ProductVariantStockScalarWhereInput[]
+  id?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
+  productVariantId?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
+  storeId?: Prisma.BigIntFilter<"ProductVariantStock"> | bigint | number
+  stock?: Prisma.IntFilter<"ProductVariantStock"> | number
+  reserved_stock?: Prisma.IntFilter<"ProductVariantStock"> | number
+  updated_at?: Prisma.DateTimeFilter<"ProductVariantStock"> | Date | string
 }
 
 export type ProductVariantStockCreateWithoutProductVariantInput = {
@@ -411,10 +563,12 @@ export type ProductVariantStockCreateWithoutProductVariantInput = {
   stock: number
   reserved_stock: number
   updated_at?: Date | string
+  store: Prisma.StoreCreateNestedOneWithoutProductVariantStocksInput
 }
 
 export type ProductVariantStockUncheckedCreateWithoutProductVariantInput = {
   id?: bigint | number
+  storeId: bigint | number
   stock: number
   reserved_stock: number
   updated_at?: Date | string
@@ -425,15 +579,65 @@ export type ProductVariantStockCreateOrConnectWithoutProductVariantInput = {
   create: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput>
 }
 
-export type ProductVariantStockUpsertWithoutProductVariantInput = {
-  update: Prisma.XOR<Prisma.ProductVariantStockUpdateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedUpdateWithoutProductVariantInput>
-  create: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput>
-  where?: Prisma.ProductVariantStockWhereInput
+export type ProductVariantStockCreateManyProductVariantInputEnvelope = {
+  data: Prisma.ProductVariantStockCreateManyProductVariantInput | Prisma.ProductVariantStockCreateManyProductVariantInput[]
+  skipDuplicates?: boolean
 }
 
-export type ProductVariantStockUpdateToOneWithWhereWithoutProductVariantInput = {
-  where?: Prisma.ProductVariantStockWhereInput
+export type ProductVariantStockUpsertWithWhereUniqueWithoutProductVariantInput = {
+  where: Prisma.ProductVariantStockWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductVariantStockUpdateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedUpdateWithoutProductVariantInput>
+  create: Prisma.XOR<Prisma.ProductVariantStockCreateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedCreateWithoutProductVariantInput>
+}
+
+export type ProductVariantStockUpdateWithWhereUniqueWithoutProductVariantInput = {
+  where: Prisma.ProductVariantStockWhereUniqueInput
   data: Prisma.XOR<Prisma.ProductVariantStockUpdateWithoutProductVariantInput, Prisma.ProductVariantStockUncheckedUpdateWithoutProductVariantInput>
+}
+
+export type ProductVariantStockUpdateManyWithWhereWithoutProductVariantInput = {
+  where: Prisma.ProductVariantStockScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductVariantStockUpdateManyMutationInput, Prisma.ProductVariantStockUncheckedUpdateManyWithoutProductVariantInput>
+}
+
+export type ProductVariantStockCreateManyStoreInput = {
+  id?: bigint | number
+  productVariantId: bigint | number
+  stock: number
+  reserved_stock: number
+  updated_at?: Date | string
+}
+
+export type ProductVariantStockUpdateWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  productVariant?: Prisma.ProductVariantUpdateOneRequiredWithoutProductVariantStocksNestedInput
+}
+
+export type ProductVariantStockUncheckedUpdateWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  productVariantId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductVariantStockUncheckedUpdateManyWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  productVariantId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductVariantStockCreateManyProductVariantInput = {
+  id?: bigint | number
+  storeId: bigint | number
+  stock: number
+  reserved_stock: number
+  updated_at?: Date | string
 }
 
 export type ProductVariantStockUpdateWithoutProductVariantInput = {
@@ -441,10 +645,20 @@ export type ProductVariantStockUpdateWithoutProductVariantInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  store?: Prisma.StoreUpdateOneRequiredWithoutProductVariantStocksNestedInput
 }
 
 export type ProductVariantStockUncheckedUpdateWithoutProductVariantInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductVariantStockUncheckedUpdateManyWithoutProductVariantInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   reserved_stock?: Prisma.IntFieldUpdateOperationsInput | number
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -455,57 +669,69 @@ export type ProductVariantStockUncheckedUpdateWithoutProductVariantInput = {
 export type ProductVariantStockSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   productVariantId?: boolean
+  storeId?: boolean
   stock?: boolean
   reserved_stock?: boolean
   updated_at?: boolean
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantStock"]>
 
 export type ProductVariantStockSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   productVariantId?: boolean
+  storeId?: boolean
   stock?: boolean
   reserved_stock?: boolean
   updated_at?: boolean
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantStock"]>
 
 export type ProductVariantStockSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   productVariantId?: boolean
+  storeId?: boolean
   stock?: boolean
   reserved_stock?: boolean
   updated_at?: boolean
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariantStock"]>
 
 export type ProductVariantStockSelectScalar = {
   id?: boolean
   productVariantId?: boolean
+  storeId?: boolean
   stock?: boolean
   reserved_stock?: boolean
   updated_at?: boolean
 }
 
-export type ProductVariantStockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productVariantId" | "stock" | "reserved_stock" | "updated_at", ExtArgs["result"]["productVariantStock"]>
+export type ProductVariantStockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productVariantId" | "storeId" | "stock" | "reserved_stock" | "updated_at", ExtArgs["result"]["productVariantStock"]>
 export type ProductVariantStockInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }
 export type ProductVariantStockIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }
 export type ProductVariantStockIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productVariant?: boolean | Prisma.ProductVariantDefaultArgs<ExtArgs>
+  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
 }
 
 export type $ProductVariantStockPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ProductVariantStock"
   objects: {
     productVariant: Prisma.$ProductVariantPayload<ExtArgs>
+    store: Prisma.$StorePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
     productVariantId: bigint
+    storeId: bigint
     stock: number
     reserved_stock: number
     updated_at: Date
@@ -904,6 +1130,7 @@ readonly fields: ProductVariantStockFieldRefs;
 export interface Prisma__ProductVariantStockClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   productVariant<T extends Prisma.ProductVariantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariantDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  store<T extends Prisma.StoreDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StoreDefaultArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -935,6 +1162,7 @@ export interface Prisma__ProductVariantStockClient<T, Null = never, ExtArgs exte
 export interface ProductVariantStockFieldRefs {
   readonly id: Prisma.FieldRef<"ProductVariantStock", 'BigInt'>
   readonly productVariantId: Prisma.FieldRef<"ProductVariantStock", 'BigInt'>
+  readonly storeId: Prisma.FieldRef<"ProductVariantStock", 'BigInt'>
   readonly stock: Prisma.FieldRef<"ProductVariantStock", 'Int'>
   readonly reserved_stock: Prisma.FieldRef<"ProductVariantStock", 'Int'>
   readonly updated_at: Prisma.FieldRef<"ProductVariantStock", 'DateTime'>
@@ -1134,6 +1362,11 @@ export type ProductVariantStockFindManyArgs<ExtArgs extends runtime.Types.Extens
    * Skip the first `n` ProductVariantStocks.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ProductVariantStocks.
+   */
   distinct?: Prisma.ProductVariantStockScalarFieldEnum | Prisma.ProductVariantStockScalarFieldEnum[]
 }
 

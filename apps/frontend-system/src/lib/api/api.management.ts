@@ -1,5 +1,4 @@
 import ky from "ky";
-import { useAuth } from "@/stores/useAuth";
 
 const baseURL = typeof window === "undefined"
   ? process.env.SERVER_API_URL              // server → http://localhost:5000/api
@@ -8,6 +7,9 @@ const baseURL = typeof window === "undefined"
 export const managementApi = ky.create({
   prefixUrl: baseURL,
   credentials: "include",
+  // Lihat catatan di api.customer.ts: penanda sesi supaya backend tidak salah
+  // memilih cookie ketika sesi admin dan customer sama-sama ada.
+  headers: { "x-auth-scope": "admin" },
   hooks: {
     afterResponse: [
       async (_req, _opt, res) => {

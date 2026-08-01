@@ -218,7 +218,7 @@ export type BeSpokeDetailsGroupByOutputType = {
   _max: BeSpokeDetailsMaxAggregateOutputType | null
 }
 
-type GetBeSpokeDetailsGroupByPayload<T extends BeSpokeDetailsGroupByArgs> = Prisma.PrismaPromise<
+export type GetBeSpokeDetailsGroupByPayload<T extends BeSpokeDetailsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BeSpokeDetailsGroupByOutputType, T['by']> &
       {
@@ -1444,6 +1444,11 @@ export type BeSpokeDetailsFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Skip the first `n` BeSpokeDetails.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BeSpokeDetails.
+   */
   distinct?: Prisma.BeSpokeDetailsScalarFieldEnum | Prisma.BeSpokeDetailsScalarFieldEnum[]
 }
 

@@ -81,10 +81,11 @@ model ProductMaster {
   status      ProductStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
 
-  variants     ProductVariant[]
-  variantTypes ProductVariantType[]
-  categories   Categories?          @relation(fields: [categoryId], references: [id])
-  imageGroups  ProductImageGroup[]
+  variants              ProductVariant[]
+  variantTypes          ProductVariantType[]
+  categories            Categories?             @relation(fields: [categoryId], references: [id])
+  imageGroups           ProductImageGroup[]
+  wishlists             Wishlist[]
 
   @@map("product_master")
 }
@@ -165,6 +166,7 @@ model ProductVariant {
   productions          Production[]
   orderItems           OrderItem[]
   posTransactionItems  PosTransactionItem[]
+  cartItems            CartItem[]
 
   @@index([productMasterId])
   @@index([imageGroupId])
@@ -235,10 +237,13 @@ model Customer {
   image     String?  @db.VarChar(255)
   createdAt DateTime @default(now())
 
-  userId         BigInt?          @unique
-  users          Users?           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders         Order[]
-  beSpokeDetails BeSpokeDetails[]
+  userId            BigInt?           @unique
+  users             Users?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders            Order[]
+  beSpokeDetails    BeSpokeDetails[]
+  cart              Cart?
+  customerAddresses CustomerAddress[]
+  wishlists         Wishlist[]
 
   @@map("customer")
 }
@@ -405,6 +410,9 @@ enum OrderStatus {
   PENDING
   PAID
   CANCELLED
+  SHIPPED
+  COMPLETED
+  REFUNDED
 }
 
 model OrderItem {
@@ -419,6 +427,43 @@ model OrderItem {
   variant ProductVariant @relation(fields: [productVariantId], references: [id])
 
   @@map("order_item")
+}
+
+model Cart {
+  id         BigInt   @id @default(autoincrement())
+  customerId BigInt   @unique
+  updateAt   DateTime @updatedAt
+
+  customer  Customer   @relation(fields: [customerId], references: [id])
+  cartItems CartItem[]
+
+  @@map("cart")
+}
+
+model CartItem {
+  id               BigInt @id @default(autoincrement())
+  cartId           BigInt
+  productVariantId BigInt
+  quantity         Int
+
+  cart    Cart           @relation(fields: [cartId], references: [id])
+  variant ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  @@unique([cartId, productVariantId])
+  @@map("cart_item")
+}
+
+model Wishlist {
+  id              BigInt   @id @default(autoincrement())
+  customerId      BigInt
+  productMasterId BigInt
+  createdAt       DateTime @default(now())
+
+  customer Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product  ProductMaster @relation(fields: [productMasterId], references: [id])
+
+  @@unique([customerId, productMasterId])
+  @@map("wishlist")
 }
 
 model BeSpokeDetails {
@@ -437,23 +482,47 @@ model BeSpokeDetails {
   @@map("be_spoke_details")
 }
 
+model CustomerAddress {
+  id            BigInt  @id @default(autoincrement())
+  customerId    BigInt
+  recipientName String  @db.VarChar(100)
+  phone         String  @db.VarChar(15)
+  addressLine   String
+  city          String  @db.VarChar(100)
+  province      String  @db.VarChar(100)
+  isDefault     Boolean @default(false)
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("customer_address")
+}
+
 model Shipment {
-  id               BigInt   @id @default(autoincrement())
-  orderId          BigInt?  @unique
-  beSpokeDetailsId BigInt?  @unique
-  recipientName    String   @db.VarChar(255)
-  phone            String   @db.VarChar(15)
+  id               BigInt          @id @default(autoincrement())
+  orderId          BigInt?         @unique
+  beSpokeDetailsId BigInt?         @unique
+  recipientName    String          @db.VarChar(255)
+  phone            String          @db.VarChar(15)
   addressLine      String
-  city             String   @db.VarChar(100)
-  province         String   @db.VarChar(100)
-  courier          String   @db.VarChar(100)
+  city             String          @db.VarChar(100)
+  province         String          @db.VarChar(100)
+  courier          String          @db.VarChar(100)
+  trackingNumber   String?         @db.VarChar(100)
+  status           ShipmentStatus? @default(PACKAGING)
   shippingCost     Decimal
-  createdAt        DateTime @default(now())
+  createdAt        DateTime        @default(now())
 
   order          Order?          @relation(fields: [orderId], references: [id])
   beSpokeDetails BeSpokeDetails? @relation(fields: [beSpokeDetailsId], references: [id])
 
   @@map("shipment")
+}
+
+enum ShipmentStatus {
+  PACKAGING
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }
 
 // ==================

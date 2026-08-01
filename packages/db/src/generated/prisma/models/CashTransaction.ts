@@ -225,7 +225,7 @@ export type CashTransactionGroupByOutputType = {
   _max: CashTransactionMaxAggregateOutputType | null
 }
 
-type GetCashTransactionGroupByPayload<T extends CashTransactionGroupByArgs> = Prisma.PrismaPromise<
+export type GetCashTransactionGroupByPayload<T extends CashTransactionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CashTransactionGroupByOutputType, T['by']> &
       {
@@ -1303,6 +1303,11 @@ export type CashTransactionFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` CashTransactions.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of CashTransactions.
+   */
   distinct?: Prisma.CashTransactionScalarFieldEnum | Prisma.CashTransactionScalarFieldEnum[]
 }
 

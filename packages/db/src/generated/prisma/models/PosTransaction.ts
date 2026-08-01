@@ -229,7 +229,7 @@ export type PosTransactionGroupByOutputType = {
   _max: PosTransactionMaxAggregateOutputType | null
 }
 
-type GetPosTransactionGroupByPayload<T extends PosTransactionGroupByArgs> = Prisma.PrismaPromise<
+export type GetPosTransactionGroupByPayload<T extends PosTransactionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PosTransactionGroupByOutputType, T['by']> &
       {
@@ -1813,6 +1813,11 @@ export type PosTransactionFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Skip the first `n` PosTransactions.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PosTransactions.
+   */
   distinct?: Prisma.PosTransactionScalarFieldEnum | Prisma.PosTransactionScalarFieldEnum[]
 }
 

@@ -236,7 +236,7 @@ export type InventoryLedgerGroupByOutputType = {
   _max: InventoryLedgerMaxAggregateOutputType | null
 }
 
-type GetInventoryLedgerGroupByPayload<T extends InventoryLedgerGroupByArgs> = Prisma.PrismaPromise<
+export type GetInventoryLedgerGroupByPayload<T extends InventoryLedgerGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<InventoryLedgerGroupByOutputType, T['by']> &
       {
@@ -1342,6 +1342,11 @@ export type InventoryLedgerFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` InventoryLedgers.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of InventoryLedgers.
+   */
   distinct?: Prisma.InventoryLedgerScalarFieldEnum | Prisma.InventoryLedgerScalarFieldEnum[]
 }
 

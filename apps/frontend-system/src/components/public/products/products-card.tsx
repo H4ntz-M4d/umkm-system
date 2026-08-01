@@ -6,13 +6,21 @@ import Link from "next/link";
 import type { PublicProductCardDataType } from "@repo/schemas";
 import { toIDR } from "../../../../utils/format-money";
 import { isOutOfStock, productTypeBadge } from "./product-display";
+import WishlistButton from "../wishlist/wishlist-button";
 
 interface ProductCardProps {
   product: PublicProductCardDataType;
   index?: number;
+  inWishlist?: boolean;
+  isLoggedIn?: boolean;
 }
 
-const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
+const ProductCard = ({
+  product,
+  index = 0,
+  inWishlist = false,
+  isLoggedIn = false,
+}: ProductCardProps) => {
   const badge = productTypeBadge(product.type);
   const outOfStock = isOutOfStock(product.type, product.totalStock);
   const priceLabel =
@@ -20,6 +28,51 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       ? toIDR(product.priceMin)
       : `${toIDR(product.priceMin)} - ${toIDR(product.priceMax)}`;
 
+  const renderStockBadge = () => {
+    // 1. Tipe READY_STOCK (Mengandalkan Stok Fisik)
+    if (product.type === "READY_STOCK") {
+      if (product.totalStock <= 0) {
+        return (
+          <span className="absolute top-3 right-3 px-2.5 py-1 bg-foreground/80 text-background text-[10px] font-bold uppercase tracking-wider rounded-md">
+            Stok Habis
+          </span>
+        );
+      }
+
+      if (product.totalStock <= 5) {
+        return (
+          <span className="absolute top-3 right-3 px-2.5 py-1 bg-amber-500/90 text-white text-[10px] font-bold rounded-md">
+            Sisa {product.totalStock}
+          </span>
+        );
+      }
+
+      return null; // Tidak tampilkan badge jika stok masih aman (> 5)
+    }
+
+    // 2. Tipe PRE_ORDER (Menampilkan Kuota Maksimal)
+    if (product.type === "PRE_ORDER") {
+      const maxQuota =
+        product.productPreOrderDetail?.maxQuota;
+
+      return (
+        <span className="absolute top-3 right-3 px-2.5 py-1 bg-blue-600/90 text-white text-[10px] font-bold rounded-md">
+          PO (Sisa: {maxQuota ?? 0} Pcs)
+        </span>
+      );
+    }
+
+    // 3. Tipe MADE_TO_ORDER (Selalu Tersedia)
+    if (product.type === "MADE_TO_ORDER") {
+      return (
+        <span className="absolute top-3 right-3 px-2.5 py-1 bg-emerald-600/90 text-white text-[10px] font-bold rounded-md">
+          Tersedia
+        </span>
+      );
+    }
+
+    return null;
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -55,17 +108,13 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           )}
 
           {/* Produk habis tetap tampil — hanya ditandai, tidak disembunyikan. */}
-          {outOfStock ? (
-            <span className="absolute top-3 right-3 px-2.5 py-1 bg-foreground/80 text-background text-[10px] font-bold uppercase tracking-wider rounded-md">
-              Stok Habis
-            </span>
-          ) : (
-            product.totalStock <= 5 && (
-              <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary/90 text-primary-foreground text-[10px] font-bold rounded-md">
-                Sisa {product.totalStock}
-              </span>
-            )
-          )}
+          {renderStockBadge()}
+
+          <WishlistButton
+            productMasterId={product.id}
+            initialInWishlist={inWishlist}
+            isLoggedIn={isLoggedIn}
+          />
         </div>
 
         {/* Info */}

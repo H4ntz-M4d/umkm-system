@@ -50,6 +50,8 @@ export type ShipmentMinAggregateOutputType = {
   city: string | null
   province: string | null
   courier: string | null
+  trackingNumber: string | null
+  status: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | null
   createdAt: Date | null
 }
@@ -64,6 +66,8 @@ export type ShipmentMaxAggregateOutputType = {
   city: string | null
   province: string | null
   courier: string | null
+  trackingNumber: string | null
+  status: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | null
   createdAt: Date | null
 }
@@ -78,6 +82,8 @@ export type ShipmentCountAggregateOutputType = {
   city: number
   province: number
   courier: number
+  trackingNumber: number
+  status: number
   shippingCost: number
   createdAt: number
   _all: number
@@ -108,6 +114,8 @@ export type ShipmentMinAggregateInputType = {
   city?: true
   province?: true
   courier?: true
+  trackingNumber?: true
+  status?: true
   shippingCost?: true
   createdAt?: true
 }
@@ -122,6 +130,8 @@ export type ShipmentMaxAggregateInputType = {
   city?: true
   province?: true
   courier?: true
+  trackingNumber?: true
+  status?: true
   shippingCost?: true
   createdAt?: true
 }
@@ -136,6 +146,8 @@ export type ShipmentCountAggregateInputType = {
   city?: true
   province?: true
   courier?: true
+  trackingNumber?: true
+  status?: true
   shippingCost?: true
   createdAt?: true
   _all?: true
@@ -237,6 +249,8 @@ export type ShipmentGroupByOutputType = {
   city: string
   province: string
   courier: string
+  trackingNumber: string | null
+  status: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal
   createdAt: Date
   _count: ShipmentCountAggregateOutputType | null
@@ -246,7 +260,7 @@ export type ShipmentGroupByOutputType = {
   _max: ShipmentMaxAggregateOutputType | null
 }
 
-type GetShipmentGroupByPayload<T extends ShipmentGroupByArgs> = Prisma.PrismaPromise<
+export type GetShipmentGroupByPayload<T extends ShipmentGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ShipmentGroupByOutputType, T['by']> &
       {
@@ -274,6 +288,8 @@ export type ShipmentWhereInput = {
   city?: Prisma.StringFilter<"Shipment"> | string
   province?: Prisma.StringFilter<"Shipment"> | string
   courier?: Prisma.StringFilter<"Shipment"> | string
+  trackingNumber?: Prisma.StringNullableFilter<"Shipment"> | string | null
+  status?: Prisma.EnumShipmentStatusNullableFilter<"Shipment"> | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
@@ -290,6 +306,8 @@ export type ShipmentOrderByWithRelationInput = {
   city?: Prisma.SortOrder
   province?: Prisma.SortOrder
   courier?: Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrderInput | Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
@@ -309,6 +327,8 @@ export type ShipmentWhereUniqueInput = Prisma.AtLeast<{
   city?: Prisma.StringFilter<"Shipment"> | string
   province?: Prisma.StringFilter<"Shipment"> | string
   courier?: Prisma.StringFilter<"Shipment"> | string
+  trackingNumber?: Prisma.StringNullableFilter<"Shipment"> | string | null
+  status?: Prisma.EnumShipmentStatusNullableFilter<"Shipment"> | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
@@ -325,6 +345,8 @@ export type ShipmentOrderByWithAggregationInput = {
   city?: Prisma.SortOrder
   province?: Prisma.SortOrder
   courier?: Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrderInput | Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ShipmentCountOrderByAggregateInput
@@ -347,6 +369,8 @@ export type ShipmentScalarWhereWithAggregatesInput = {
   city?: Prisma.StringWithAggregatesFilter<"Shipment"> | string
   province?: Prisma.StringWithAggregatesFilter<"Shipment"> | string
   courier?: Prisma.StringWithAggregatesFilter<"Shipment"> | string
+  trackingNumber?: Prisma.StringNullableWithAggregatesFilter<"Shipment"> | string | null
+  status?: Prisma.EnumShipmentStatusNullableWithAggregatesFilter<"Shipment"> | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalWithAggregatesFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Shipment"> | Date | string
 }
@@ -359,6 +383,8 @@ export type ShipmentCreateInput = {
   city: string
   province: string
   courier: string
+  trackingNumber?: string | null
+  status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutShipmentInput
@@ -375,6 +401,8 @@ export type ShipmentUncheckedCreateInput = {
   city: string
   province: string
   courier: string
+  trackingNumber?: string | null
+  status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
@@ -387,6 +415,8 @@ export type ShipmentUpdateInput = {
   city?: Prisma.StringFieldUpdateOperationsInput | string
   province?: Prisma.StringFieldUpdateOperationsInput | string
   courier?: Prisma.StringFieldUpdateOperationsInput | string
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneWithoutShipmentNestedInput
@@ -403,6 +433,8 @@ export type ShipmentUncheckedUpdateInput = {
   city?: Prisma.StringFieldUpdateOperationsInput | string
   province?: Prisma.StringFieldUpdateOperationsInput | string
   courier?: Prisma.StringFieldUpdateOperationsInput | string
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -417,6 +449,8 @@ export type ShipmentCreateManyInput = {
   city: string
   province: string
   courier: string
+  trackingNumber?: string | null
+  status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
@@ -429,6 +463,8 @@ export type ShipmentUpdateManyMutationInput = {
   city?: Prisma.StringFieldUpdateOperationsInput | string
   province?: Prisma.StringFieldUpdateOperationsInput | string
   courier?: Prisma.StringFieldUpdateOperationsInput | string
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -443,6 +479,8 @@ export type ShipmentUncheckedUpdateManyInput = {
   city?: Prisma.StringFieldUpdateOperationsInput | string
   province?: Prisma.StringFieldUpdateOperationsInput | string
   courier?: Prisma.StringFieldUpdateOperationsInput | string
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -462,6 +500,8 @@ export type ShipmentCountOrderByAggregateInput = {
   city?: Prisma.SortOrder
   province?: Prisma.SortOrder
   courier?: Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -483,6 +523,8 @@ export type ShipmentMaxOrderByAggregateInput = {
   city?: Prisma.SortOrder
   province?: Prisma.SortOrder
   courier?: Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -497,6 +539,8 @@ export type ShipmentMinOrderByAggregateInput = {
   city?: Prisma.SortOrder
   province?: Prisma.SortOrder
   courier?: Prisma.SortOrder
+  trackingNumber?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -572,6 +616,10 @@ export type ShipmentUncheckedUpdateOneWithoutBeSpokeDetailsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ShipmentUpdateToOneWithWhereWithoutBeSpokeDetailsInput, Prisma.ShipmentUpdateWithoutBeSpokeDetailsInput>, Prisma.ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput>
 }
 
+export type NullableEnumShipmentStatusFieldUpdateOperationsInput = {
+  set?: $Enums.ShipmentStatus | null
+}
+
 export type ShipmentCreateWithoutOrderInput = {
   id?: bigint | number
   recipientName: string
@@ -580,6 +628,8 @@ export type ShipmentCreateWithoutOrderInput = {
   city: string
   province: string
   courier: string
+  trackingNumber?: string | null
+  status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   beSpokeDetails?: Prisma.BeSpokeDetailsCreateNestedOneWithoutShipmentsInput
@@ -594,6 +644,8 @@ export type ShipmentUncheckedCreateWithoutOrderInput = {
   city: string
   province: string
   courier: string
+  trackingNumber?: string | null
+  status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
@@ -622,6 +674,8 @@ export type ShipmentUpdateWithoutOrderInput = {
   city?: Prisma.StringFieldUpdateOperationsInput | string
   province?: Prisma.StringFieldUpdateOperationsInput | string
   courier?: Prisma.StringFieldUpdateOperationsInput | string
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   beSpokeDetails?: Prisma.BeSpokeDetailsUpdateOneWithoutShipmentsNestedInput
@@ -636,6 +690,8 @@ export type ShipmentUncheckedUpdateWithoutOrderInput = {
   city?: Prisma.StringFieldUpdateOperationsInput | string
   province?: Prisma.StringFieldUpdateOperationsInput | string
   courier?: Prisma.StringFieldUpdateOperationsInput | string
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -648,6 +704,8 @@ export type ShipmentCreateWithoutBeSpokeDetailsInput = {
   city: string
   province: string
   courier: string
+  trackingNumber?: string | null
+  status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutShipmentInput
@@ -662,6 +720,8 @@ export type ShipmentUncheckedCreateWithoutBeSpokeDetailsInput = {
   city: string
   province: string
   courier: string
+  trackingNumber?: string | null
+  status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
@@ -690,6 +750,8 @@ export type ShipmentUpdateWithoutBeSpokeDetailsInput = {
   city?: Prisma.StringFieldUpdateOperationsInput | string
   province?: Prisma.StringFieldUpdateOperationsInput | string
   courier?: Prisma.StringFieldUpdateOperationsInput | string
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneWithoutShipmentNestedInput
@@ -704,6 +766,8 @@ export type ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput = {
   city?: Prisma.StringFieldUpdateOperationsInput | string
   province?: Prisma.StringFieldUpdateOperationsInput | string
   courier?: Prisma.StringFieldUpdateOperationsInput | string
+  trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -720,6 +784,8 @@ export type ShipmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   city?: boolean
   province?: boolean
   courier?: boolean
+  trackingNumber?: boolean
+  status?: boolean
   shippingCost?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
@@ -736,6 +802,8 @@ export type ShipmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   city?: boolean
   province?: boolean
   courier?: boolean
+  trackingNumber?: boolean
+  status?: boolean
   shippingCost?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
@@ -752,6 +820,8 @@ export type ShipmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   city?: boolean
   province?: boolean
   courier?: boolean
+  trackingNumber?: boolean
+  status?: boolean
   shippingCost?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
@@ -768,11 +838,13 @@ export type ShipmentSelectScalar = {
   city?: boolean
   province?: boolean
   courier?: boolean
+  trackingNumber?: boolean
+  status?: boolean
   shippingCost?: boolean
   createdAt?: boolean
 }
 
-export type ShipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "beSpokeDetailsId" | "recipientName" | "phone" | "addressLine" | "city" | "province" | "courier" | "shippingCost" | "createdAt", ExtArgs["result"]["shipment"]>
+export type ShipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "beSpokeDetailsId" | "recipientName" | "phone" | "addressLine" | "city" | "province" | "courier" | "trackingNumber" | "status" | "shippingCost" | "createdAt", ExtArgs["result"]["shipment"]>
 export type ShipmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
   beSpokeDetails?: boolean | Prisma.Shipment$beSpokeDetailsArgs<ExtArgs>
@@ -802,6 +874,8 @@ export type $ShipmentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     city: string
     province: string
     courier: string
+    trackingNumber: string | null
+    status: $Enums.ShipmentStatus | null
     shippingCost: runtime.Decimal
     createdAt: Date
   }, ExtArgs["result"]["shipment"]>
@@ -1238,6 +1312,8 @@ export interface ShipmentFieldRefs {
   readonly city: Prisma.FieldRef<"Shipment", 'String'>
   readonly province: Prisma.FieldRef<"Shipment", 'String'>
   readonly courier: Prisma.FieldRef<"Shipment", 'String'>
+  readonly trackingNumber: Prisma.FieldRef<"Shipment", 'String'>
+  readonly status: Prisma.FieldRef<"Shipment", 'ShipmentStatus'>
   readonly shippingCost: Prisma.FieldRef<"Shipment", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Shipment", 'DateTime'>
 }
@@ -1436,6 +1512,11 @@ export type ShipmentFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Skip the first `n` Shipments.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Shipments.
+   */
   distinct?: Prisma.ShipmentScalarFieldEnum | Prisma.ShipmentScalarFieldEnum[]
 }
 
