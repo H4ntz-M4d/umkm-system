@@ -8,7 +8,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { PasswordResetService } from './password-reset.service';
 import { CustomerRegisterDto, LoginDto } from './dto/dto.login';
+import {
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  VerifyResetCodeDto,
+} from './dto/dto.password-reset';
 import { Roles } from '../common/decorator/roles.decorator';
 import { JwtAuthGuard } from '../common/guards/guard.jwt-auth';
 import { RolesGuard } from '../common/guards/guard.roles';
@@ -18,7 +24,10 @@ import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
 
 @Controller('api/auth/')
 export class AuthController {
-  constructor(private service: AuthService) {}
+  constructor(
+    private service: AuthService,
+    private passwordResetService: PasswordResetService,
+  ) {}
 
   @Post('management/ref')
   async refreshAdmin(
@@ -88,5 +97,22 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     return this.service.refreshCustomerToken(req, res);
+  }
+
+  // ====================== Lupa / Ganti Kata Sandi ==============================
+
+  @Post('forgot-password')
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.passwordResetService.forgotPassword(dto);
+  }
+
+  @Post('verify-reset-code')
+  verifyResetCode(@Body() dto: VerifyResetCodeDto) {
+    return this.passwordResetService.verifyResetCode(dto);
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.passwordResetService.resetPassword(dto);
   }
 }

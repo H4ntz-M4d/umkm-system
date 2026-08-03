@@ -13,12 +13,14 @@ export const BaseProfile = z.object({
 export const UsersProfile = z.discriminatedUnion("role", [
   BaseProfile.extend({
     role: z.enum(["ADMIN", "GUDANG", "KASIR", "OWNER"]),
-    storeId: z.string().optional(),
+    storeId: z.string().optional().nullable(),
     storeName: z.string().optional(),
   }),
 
   BaseProfile.extend({
     role: z.enum(["CUSTOMER"]),
+    phone: z.string(),
+    image: z.string().optional().nullable(),
   }),
 ]);
 
@@ -35,3 +37,23 @@ export const LoginResponse = ApiSuccessResponse(z.object({ message: message }));
 export const UserProfileResponse = ApiSuccessResponse(UsersProfile);
 
 export const RegisterCustomerResponse = ApiSuccessResponse(RegisterResponse);
+
+// ========================= Lupa / Ganti Kata Sandi ==========================
+
+export const ForgotPasswordData = z.object({
+  message: message,
+  /// Email disamarkan sebagian ("bu**@gmail.com") supaya pengguna yakin kode
+  /// dikirim ke alamat yang benar tanpa menampilkannya utuh.
+  maskedEmail: z.string(),
+  expiresInMinutes: z.number(),
+});
+
+export const ForgotPasswordResponse = ApiSuccessResponse(ForgotPasswordData);
+
+export const VerifyResetCodeResponse = ApiSuccessResponse(
+  z.object({ valid: z.literal(true), message: message }),
+);
+
+export const ResetPasswordResponse = ApiSuccessResponse(
+  z.object({ message: message }),
+);
