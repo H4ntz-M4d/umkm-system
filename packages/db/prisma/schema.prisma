@@ -87,8 +87,21 @@ model ProductMaster {
   categories            Categories?             @relation(fields: [categoryId], references: [id])
   imageGroups           ProductImageGroup[]
   wishlists             Wishlist[]
+  productPreOrderDetail ProductPreOrderDetails?
 
   @@map("product_master")
+}
+
+model ProductPreOrderDetails {
+  id              BigInt   @id @default(autoincrement())
+  productMasterId BigInt   @unique
+  quotaTarget     Int
+  maxQuota        Int
+  endDate         DateTime @default(now())
+
+  productMaster ProductMaster @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
+
+  @@map("product_pre_order_details")
 }
 
 enum ProductStatus {
