@@ -31,7 +31,30 @@ export const VariantSchema = z.object({
   options: z.record(z.string(), z.string()),
 });
 
-export const ProductSchema = z.object({
+export const ProductPreOrderDetailSchema = z
+  .object({
+    quotaTarget: z
+      .number({ error: "Target kuota wajib diisi" })
+      .int("Target kuota harus berupa bilangan bulat")
+      .min(1, "Target minimum setidaknya 1 pcs"),
+
+    maxQuota: z
+      .number({ error: "Maksimum kuota wajib diisi" })
+      .int("Maksimum kuota harus berupa bilangan bulat")
+      .min(1, "Maksimum kuota setidaknya 1 pcs"),
+
+    endDate: z.coerce
+      .date({ error: "Format tanggal tidak valid" })
+      .refine((date) => date > new Date(), {
+        message: "Tanggal berakhir PO harus di masa mendatang",
+      }),
+  })
+  .refine((val) => val.quotaTarget <= val.maxQuota, {
+    message: "Target minimum tidak boleh lebih besar dari batas maksimum kuota",
+    path: ["maxQuota"],
+  });
+
+export const BaseProductSchema = z.object({
   name: z.string().min(3, "Nama produk minimal memiliki panjang 3 karakter"),
   description: z
     .string()
@@ -42,9 +65,35 @@ export const ProductSchema = z.object({
   status: ProductStatusEnum,
   variants: z.array(VariantSchema).optional(),
   variantsTypes: z.array(VariantTypeSchema).optional(),
+  productPreOrderDetail: ProductPreOrderDetailSchema.optional(),
 });
 
-export type CreateProductSchemaInput = z.infer<typeof ProductSchema>;
+export const ProductSchema = BaseProductSchema.superRefine((val, ctx) => {
+  if (val.type === "PRE_ORDER") {
+    if (!val.productPreOrderDetail) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Detail Pre-Order wajib diisi jika tipe produk merupakan Pre-Order",
+        path: ["productPreOrderDetail"],
+      });
+      return;
+    }
+    const result = ProductPreOrderDetailSchema.safeParse(
+      val.productPreOrderDetail,
+    );
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        ctx.addIssue({
+          ...issue,
+          path: ["productPreOrderDetail", ...issue.path],
+        });
+      });
+    }
+  }
+});
 
-export const UpdateProductSchema = ProductSchema.partial();
+export type CreateProductSchemaInput = z.input<typeof ProductSchema>;
+
+export const UpdateProductSchema = ProductSchema;
 export type UpdateProductSchemaInput = z.infer<typeof UpdateProductSchema>;

@@ -22,6 +22,7 @@ import {
   ProductImageGroupService,
   SyncVariantInput,
 } from 'products/products/product-image-group.service';
+import { ProductPreOrderDetailSchema } from '@repo/schemas';
 
 /** Select penutup create/update: yang dibutuhkan toProductResponse. */
 const mutationResultSelect = {
@@ -284,6 +285,7 @@ export class ProductsService {
           },
           orderBy: { id: 'asc' },
         },
+        productPreOrderDetail: true,
       },
     });
 
@@ -423,6 +425,20 @@ export class ProductsService {
           slug: slugData,
         },
       });
+
+      if (typeData === 'PRE_ORDER') {
+        const productPreOrderDetailSchema = ProductPreOrderDetailSchema.parse(
+          data.productPreOrderDetail,
+        );
+        await tx.productPreOrderDetails.create({
+          data: {
+            productMasterId: product.id,
+            quotaTarget: productPreOrderDetailSchema.quotaTarget,
+            maxQuota: productPreOrderDetailSchema.maxQuota,
+            endDate: productPreOrderDetailSchema.endDate,
+          },
+        });
+      }
 
       // 3. Handle Variants
       if (data.useVariant) {
@@ -670,6 +686,26 @@ export class ProductsService {
           slug: slugData,
         },
       });
+
+      if (typeData === 'PRE_ORDER') {
+        const preOrderProductSchema = ProductPreOrderDetailSchema.parse(
+          data.productPreOrderDetail,
+        );
+        await tx.productPreOrderDetails.upsert({
+          where: { productMasterId: id },
+          create: {
+            productMasterId: id,
+            quotaTarget: preOrderProductSchema.quotaTarget,
+            maxQuota: preOrderProductSchema.maxQuota,
+            endDate: preOrderProductSchema.endDate,
+          },
+          update: {
+            quotaTarget: preOrderProductSchema.quotaTarget,
+            maxQuota: preOrderProductSchema.maxQuota,
+            endDate: preOrderProductSchema.endDate,
+          },
+        });
+      }
 
       if (removedVariants.length > 0) {
         const removedId = removedVariants.map((v) => v.id);

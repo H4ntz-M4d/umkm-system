@@ -51,6 +51,13 @@ export const VariantData = z.object({
   productVariantStocks: z.number().optional(),
 });
 
+export const ProductPreOrderDetailData = z.object({
+  id: z.string(),
+  quotaTarget: z.number(),
+  maxQuota: z.number(),
+  endDate: z.coerce.date(),
+});
+
 export const ProductsData = z.object({
   id: z.string(),
   name: z.string(),
@@ -79,6 +86,7 @@ export const ProductDataById = ProductsData.pick({
   ),
   variantTypes: z.array(VariantTypesData),
   imageGroups: z.array(ImageGroupData),
+  productPreOrderDetail: ProductPreOrderDetailData.optional().nullable(),
 });
 
 export const CreateUpdateProductData = ProductsData.pick({

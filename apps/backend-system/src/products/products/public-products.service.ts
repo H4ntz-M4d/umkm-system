@@ -17,6 +17,7 @@ const cardSelect = {
   description: true,
   type: true,
   categoryId: true,
+  productPreOrderDetail: { select: { maxQuota: true, endDate: true } },
   categories: { select: { name: true } },
   variants: publicCardVariantSelect,
 } satisfies Prisma.ProductMasterSelect;
@@ -103,6 +104,7 @@ export class PublicProductsService {
         type: true,
         useVariant: true,
         categoryId: true,
+        productPreOrderDetail: { select: { maxQuota: true, endDate: true } },
         categories: { select: { name: true } },
         variants: publicDetailVariantSelect,
         variantTypes: publicVariantTypeSelect,
