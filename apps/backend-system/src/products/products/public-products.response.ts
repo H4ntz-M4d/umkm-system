@@ -52,6 +52,7 @@ type PublicProductCardEntity = Prisma.ProductMasterGetPayload<{
     type: true;
     categoryId: true;
     categories: { select: { name: true } };
+    productPreOrderDetail: { select: { maxQuota: true; endDate: true } };
     variants: typeof publicCardVariantSelect;
   };
 }>;
@@ -73,6 +74,7 @@ export function toPublicProductCardResponse(entity: PublicProductCardEntity) {
       (total, variant) => total + (variant.productVariantStocks?.stock ?? 0),
       0,
     ),
+    productPreOrderDetail: entity.productPreOrderDetail ?? null,
   };
 }
 
@@ -142,6 +144,7 @@ type PublicProductDetailEntity = Prisma.ProductMasterGetPayload<{
     type: true;
     useVariant: true;
     categoryId: true;
+    productPreOrderDetail: { select: { maxQuota: true; endDate: true } };
     categories: { select: { name: true } };
     variants: typeof publicDetailVariantSelect;
     variantTypes: typeof publicVariantTypeSelect;
@@ -160,6 +163,7 @@ export function toPublicProductDetailResponse(
     type: entity.type,
     categoryId: entity.categoryId ? String(entity.categoryId) : null,
     categoryName: entity.categories?.name ?? null,
+    productPreOrderDetail: entity.productPreOrderDetail ?? null,
     image: entity.variants.map(flattenImage).find((image) => image) ?? null,
     ...priceRange(entity.variants),
     totalStock: entity.variants.reduce(

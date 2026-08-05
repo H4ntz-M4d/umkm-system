@@ -143,6 +143,7 @@ type ProductEntityById = Prisma.ProductMasterGetPayload<{
         };
       };
     };
+    productPreOrderDetail: true;
   };
 }>;
 
@@ -191,6 +192,7 @@ export function toProductResponseById(entity: ProductEntityById) {
         sortOrder: image.sortOrder,
       })),
     })),
+    productPreOrderDetail: entity.productPreOrderDetail,
   };
 }
 
