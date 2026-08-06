@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrderStatus, Prisma, prisma } from '@repo/db';
 import { OrderData, z } from '@repo/schemas';
-import { OrderQueryDto } from 'order/dto/order.dto';
+import { OrderQueryDto, UpdateShipmentDto } from 'order/dto/order.dto';
 import { toOrderResponse } from './order.response';
 
 @Injectable()
@@ -111,6 +115,62 @@ export class OrderService {
         status: 'CANCELLED',
       },
     });
+  }
+
+  async updateShipment(orderId: string, data: UpdateShipmentDto) {
+    const order = await prisma.order.findUnique({
+      where: { orderId },
+      include: { shipment: true },
+    });
+
+    if (!order) throw new NotFoundException('Pesanan tidak ditemukan');
+    if (!order.shipment) {
+      throw new BadRequestException(
+        'Pesanan ini tidak memiliki data pengiriman',
+      );
+    }
+
+    // Pesanan yang belum dibayar atau sudah dibatalkan tidak seharusnya dikirim.
+    if (order.status === OrderStatus.PENDING) {
+      throw new BadRequestException(
+        'Pesanan belum dibayar, pengiriman belum bisa diproses',
+      );
+    }
+    if (order.status === OrderStatus.CANCELLED) {
+      throw new BadRequestException('Pesanan sudah dibatalkan');
+    }
+
+    const nextOrderStatus =
+      data.status === 'SHIPPED'
+        ? OrderStatus.SHIPPED
+        : data.status === 'DELIVERED'
+          ? OrderStatus.COMPLETED
+          : undefined;
+
+    const [shipment] = await prisma.$transaction([
+      prisma.shipment.update({
+        where: { id: order.shipment.id },
+        data: {
+          status: data.status,
+          trackingNumber: data.trackingNumber ?? null,
+        },
+      }),
+      ...(nextOrderStatus
+        ? [
+            prisma.order.update({
+              where: { id: order.id },
+              data: { status: nextOrderStatus },
+            }),
+          ]
+        : []),
+    ]);
+
+    return {
+      orderId: order.orderId,
+      shipmentStatus: shipment.status,
+      trackingNumber: shipment.trackingNumber,
+      orderStatus: nextOrderStatus ?? order.status,
+    };
   }
 
   async getTotalAmount() {
