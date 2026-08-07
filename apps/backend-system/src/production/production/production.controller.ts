@@ -34,8 +34,17 @@ export class ProductionController {
     @Query('search') search?: string,
     @Query('type') type?: ProductionType,
     @Query('status') status?: ProductionStatus,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
   ) {
-    return this.productionService.findAll(pagination, search, type, status);
+    return this.productionService.findAll(
+      pagination,
+      search,
+      type,
+      status,
+      dateFrom,
+      dateTo,
+    );
   }
 
   @Get('/summary')

@@ -19,12 +19,16 @@ export class InventoryLedgerController {
     @Query('itemType') itemType?: string,
     @Query('direction') direction?: string,
     @Query('source') source?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
   ) {
     return this.ledgerService.findAll(pagination, {
       search,
       itemType,
       direction,
       source,
+      dateFrom,
+      dateTo,
     });
   }
 

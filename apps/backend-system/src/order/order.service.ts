@@ -7,14 +7,14 @@ import { OrderStatus, Prisma, prisma } from '@repo/db';
 import { OrderData, z } from '@repo/schemas';
 import { OrderQueryDto, UpdateShipmentDto } from 'order/dto/order.dto';
 import { toOrderResponse } from './order.response';
+import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
 
 @Injectable()
 export class OrderService {
-  async findAll(query: OrderQueryDto) {
-    const skip = query.skip ?? 0;
-    const limit = query.limit ?? 10;
-
-    const whereClause: Prisma.OrderWhereInput = {
+  /// Dipakai bersama listing dan ekspor, supaya berkas Excel menyaring persis
+  /// sama dengan yang tampil di layar.
+  private buildWhere(query: OrderQueryDto): Prisma.OrderWhereInput {
+    return {
       ...(query.store && {
         storeId: BigInt(query.store),
       }),
@@ -39,7 +39,20 @@ export class OrderService {
           },
         ],
       }),
+      ...((query.dateFrom || query.dateTo) && {
+        createdAt: {
+          gte: query.dateFrom ? toStartOfDay(query.dateFrom) : undefined,
+          lte: query.dateTo ? toEndOfDay(query.dateTo) : undefined,
+        },
+      }),
     };
+  }
+
+  async findAll(query: OrderQueryDto) {
+    const skip = query.skip ?? 0;
+    const limit = query.limit ?? 10;
+
+    const whereClause = this.buildWhere(query);
 
     const data = await prisma.order.findMany({
       where: whereClause,
@@ -106,17 +119,6 @@ export class OrderService {
     };
   }
 
-  async cancel(orderId: string[]) {
-    return prisma.order.updateMany({
-      where: {
-        orderId: { in: orderId },
-      },
-      data: {
-        status: 'CANCELLED',
-      },
-    });
-  }
-
   async updateShipment(orderId: string, data: UpdateShipmentDto) {
     const order = await prisma.order.findUnique({
       where: { orderId },
@@ -171,6 +173,17 @@ export class OrderService {
       trackingNumber: shipment.trackingNumber,
       orderStatus: nextOrderStatus ?? order.status,
     };
+  }
+
+  async cancel(orderId: string[]) {
+    return prisma.order.updateMany({
+      where: {
+        orderId: { in: orderId },
+      },
+      data: {
+        status: 'CANCELLED',
+      },
+    });
   }
 
   async getTotalAmount() {
