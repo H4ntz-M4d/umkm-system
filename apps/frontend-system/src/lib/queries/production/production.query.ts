@@ -14,6 +14,8 @@ export interface ProductionFilters {
   search?: string;
   type?: string;
   status?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export const fetchProductionData = async (filter: ProductionFilters) => {
