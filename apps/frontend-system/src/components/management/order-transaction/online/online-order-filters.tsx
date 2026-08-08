@@ -10,11 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePickerWithRange } from "@/components/ui/date-picker-range";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { useDebounce } from "@/hooks/use-debounce";
 import { OrderFilters } from "@/lib/queries/order/order.query";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 interface OrderListFiltersProps {
   handleUpdateParams: (key: string, val: string | number | undefined) => void;
@@ -35,6 +38,24 @@ export default function OrderListFilters({
       handleUpdateParams("orderSearch", debouncedSearch);
     }
   }, [debouncedSearch, handleUpdateParams, currentSearch]);
+
+  const dateRange: DateRange | undefined = useMemo(() => {
+    if (!filters?.dateFrom) return undefined;
+
+    return {
+      from: new Date(filters.dateFrom),
+      to: filters.dateTo ? new Date(filters.dateTo) : undefined,
+    };
+  }, [filters?.dateFrom, filters?.dateTo]);
+
+  const handleDateChange = (range: DateRange | undefined) => {
+    handleUpdateParams(
+      "orderDate",
+      range?.from
+        ? `${format(range.from, "yyyy-MM-dd")},${range.to ? format(range.to, "yyyy-MM-dd") : ""}`
+        : undefined,
+    );
+  };
 
   return (
     <div className="flex flex-wrap gap-3 py-2 px-3 rounded-md bg-background shadow">
@@ -66,6 +87,7 @@ export default function OrderListFilters({
           ))}
         </SelectContent>
       </Select>
+      <DatePickerWithRange value={dateRange} onValueChange={handleDateChange} />
       <Select
         value={filters?.status}
         onValueChange={(val) => handleUpdateParams("orderStatus", val)}

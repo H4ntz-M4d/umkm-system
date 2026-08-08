@@ -7,16 +7,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePickerWithRange } from "@/components/ui/date-picker-range";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductionData, z } from "@repo/schemas";
 import { columnsProduction } from "./column";
 import { DataTableProduction } from "./data-table";
 import { ProductionFilters } from "@/lib/queries/production/production.query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePaginationParams } from "@/hooks/use-paginations-params";
 import { useProductionOperation } from "@/hooks/management/production/use-production-operation";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 type ProductionTypeData = z.infer<typeof ProductionData>;
 
@@ -52,10 +55,10 @@ export default function ProductionView({
   ) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(newParams).forEach(([key, value]) => {
-      if (value !== undefined) {
-        params.set(key, value.toString());
-      } else {
+      if (value === undefined || value === "") {
         params.delete(key);
+      } else {
+        params.set(key, value.toString());
       }
     });
 
@@ -70,6 +73,24 @@ export default function ProductionView({
       });
     }
   }, [debouncedSearch, filters.search, updateUrl]);
+
+  const dateRange: DateRange | undefined = useMemo(() => {
+    if (!filters.dateFrom) return undefined;
+
+    return {
+      from: new Date(filters.dateFrom),
+      to: filters.dateTo ? new Date(filters.dateTo) : undefined,
+    };
+  }, [filters.dateFrom, filters.dateTo]);
+
+  const handleDateChange = (range: DateRange | undefined) => {
+    updateUrl({
+      dateFrom: range?.from ? format(range.from, "yyyy-MM-dd") : undefined,
+      dateTo: range?.to ? format(range.to, "yyyy-MM-dd") : undefined,
+      skip: 0,
+    });
+  };
+
   return (
     <>
       <div>
@@ -152,6 +173,7 @@ export default function ProductionView({
             </SelectGroup>
           </SelectContent>
         </Select>
+        <DatePickerWithRange value={dateRange} onValueChange={handleDateChange} />
       </div>
       <div className={"bg-muted/50 rounded-xl md:min-h-min"}>
         {isLoadingDataProduction ? (

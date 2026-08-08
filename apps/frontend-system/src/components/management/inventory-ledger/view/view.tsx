@@ -23,6 +23,8 @@ export default function LedgerView() {
     itemType: searchParams.get("itemType") || "",
     direction: searchParams.get("direction") || "",
     source: searchParams.get("source") || "",
+    dateFrom: searchParams.get("dateFrom") || "",
+    dateTo: searchParams.get("dateTo") || "",
   };
   const { dataLedger, isLoadingLedger, dataSummary } =
     useLedgerOperation(filters);
