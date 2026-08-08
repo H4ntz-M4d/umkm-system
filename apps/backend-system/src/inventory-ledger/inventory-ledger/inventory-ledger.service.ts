@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, prisma } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
+import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
+import { LOW_STOCK_THRESHOLD } from '@repo/schemas';
 
 @Injectable()
 export class InventoryLedgerService {
@@ -11,6 +13,8 @@ export class InventoryLedgerService {
       itemType?: string;
       direction?: string;
       source?: string;
+      dateFrom?: string;
+      dateTo?: string;
     },
   ) {
     const conditions: Prisma.Sql[] = [];
@@ -28,6 +32,18 @@ export class InventoryLedgerService {
 
     if (params.source) {
       conditions.push(Prisma.sql` source = ${params.source} `);
+    }
+
+    if (params.dateFrom) {
+      conditions.push(
+        Prisma.sql` "createdAt" >= ${toStartOfDay(params.dateFrom)} `,
+      );
+    }
+
+    if (params.dateTo) {
+      conditions.push(
+        Prisma.sql` "createdAt" <= ${toEndOfDay(params.dateTo)} `,
+      );
     }
 
     const whereCondition =

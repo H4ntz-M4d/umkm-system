@@ -10,17 +10,20 @@ import {
   UpdateProductionDto,
 } from 'production/dto/production.dto';
 import { BeSpokeRequiredSchema } from '@repo/schemas';
+import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
+import { idFormat } from 'common/helpers/id-format';
 
 @Injectable()
 export class ProductionService {
-  async findAll(
-    pagination: Pagination,
+  /// Dipakai bersama listing dan ekspor, supaya berkas Excel tidak mungkin
+  /// menyaring berbeda dari yang tampil di layar.
+  private buildWhere(
     search?: string,
     type?: ProductionType,
     status?: ProductionStatus,
-  ) {
-    const skip = pagination.skip ?? 0;
-    const limit = pagination.limit ?? 10;
+    dateFrom?: string,
+    dateTo?: string,
+  ): Prisma.ProductionWhereInput {
     const whereClause: Prisma.ProductionWhereInput = {};
 
     if (status) {
@@ -29,6 +32,13 @@ export class ProductionService {
 
     if (type) {
       whereClause.type = type;
+    }
+
+    if (dateFrom || dateTo) {
+      whereClause.createdAt = {
+        gte: dateFrom ? toStartOfDay(dateFrom) : undefined,
+        lte: dateTo ? toEndOfDay(dateTo) : undefined,
+      };
     }
 
     if (search) {
@@ -53,6 +63,22 @@ export class ProductionService {
         },
       ];
     }
+
+    return whereClause;
+  }
+
+  async findAll(
+    pagination: Pagination,
+    search?: string,
+    type?: ProductionType,
+    status?: ProductionStatus,
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
+    const skip = pagination.skip ?? 0;
+    const limit = pagination.limit ?? 10;
+    const whereClause = this.buildWhere(search, type, status, dateFrom, dateTo);
+
     const data = await prisma.production.findMany({
       skip: skip,
       take: limit,
@@ -63,6 +89,7 @@ export class ProductionService {
       select: {
         id: true,
         storeId: true,
+        store: { select: { name: true } },
         producedVariantId: true,
         quantityProduced: true,
         type: true,
