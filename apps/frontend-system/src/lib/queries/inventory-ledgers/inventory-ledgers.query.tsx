@@ -9,6 +9,8 @@ export interface LedgerFilters {
   itemType?: string;
   direction?: string;
   source?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export const getSummary = async () => {

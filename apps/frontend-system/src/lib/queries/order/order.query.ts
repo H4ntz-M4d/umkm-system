@@ -6,6 +6,8 @@ export interface OrderFilters {
   store?: string;
   status?: string;
   search?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export const fetchOrders = async (
@@ -20,6 +22,8 @@ export const fetchOrders = async (
     ...(filters?.store && { store: filters.store }),
     ...(filters?.status && { status: filters.status }),
     ...(filters?.search && { search: filters.search }),
+    ...(filters?.dateFrom && { dateFrom: filters.dateFrom }),
+    ...(filters?.dateTo && { dateTo: filters.dateTo }),
   });
 
   return await apiFetcher(
