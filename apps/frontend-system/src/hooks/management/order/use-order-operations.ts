@@ -2,8 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   cancelOrder,
   fetchOrders,
+  updateShipment,
   OrderFilters,
 } from "@/lib/queries/order/order.query";
+import type { UpdateShipmentInput } from "@repo/schemas";
 import { toast } from "sonner";
 
 export function useOrderOperations({
@@ -38,9 +40,30 @@ export function useOrderOperations({
     },
   });
 
+  const updateShipmentMutation = useMutation({
+    mutationFn: ({
+      orderId,
+      data,
+    }: {
+      orderId: string;
+      data: UpdateShipmentInput;
+    }) => updateShipment(orderId, data),
+    onSuccess: () => {
+      invalidate();
+      toast.success("Status pengiriman diperbarui");
+    },
+    // Pesan dari backend sudah dibuka apiFetcher, jadi cukup err.message.
+    onError: (error: Error) =>
+      toast.error("Gagal memperbarui pengiriman", {
+        description: error.message,
+      }),
+  });
+
   return {
     fetchOrdersData: getOrders.data,
     isLoadingOrders: getOrders.isLoading,
     cancelOrderData: cancelOrderMutation.mutate,
+    updateShipmentData: updateShipmentMutation.mutateAsync,
+    isUpdatingShipment: updateShipmentMutation.isPending,
   };
 }

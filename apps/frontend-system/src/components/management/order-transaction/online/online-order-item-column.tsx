@@ -10,7 +10,7 @@ export const columnsOrderItem = (): ColumnDef<OrderItem>[] => [
   {
     accessorKey: "productName",
     header: "Produk",
-    cell: ({ row }) => <p className="text-start">{row.original.productName}</p>,
+    cell: ({ row }) => <p className="text-center">{row.original.productName}</p>,
   },
   {
     accessorKey: "quantity",
