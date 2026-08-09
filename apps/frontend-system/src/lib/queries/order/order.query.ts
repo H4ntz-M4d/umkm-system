@@ -1,6 +1,10 @@
 import { apiFetcher } from "@/lib/api/api.fetcher";
 import managementApi from "@/lib/api/api.management";
-import { OrderResponse } from "@repo/schemas";
+import {
+  OrderResponse,
+  UpdateShipmentResponse,
+  type UpdateShipmentInput,
+} from "@repo/schemas";
 
 export interface OrderFilters {
   store?: string;
@@ -36,4 +40,21 @@ export const cancelOrder = async (orderId: string[]) => {
   return await managementApi
     .patch("v1/orders/cancelled", { json: orderId })
     .json();
+};
+
+/**
+ * Pengiriman ditangani manual; status & nomor resi diperbarui admin sendiri.
+ *
+ * Dibungkus apiFetcher supaya pesan galat dari backend ("Pesanan belum dibayar,
+ * pengiriman belum bisa diproses") sampai utuh ke pemanggil. Tanpa itu ky hanya
+ * melempar HTTPError dengan pesan generik dan admin tidak tahu apa masalahnya.
+ */
+export const updateShipment = async (
+  orderId: string,
+  data: UpdateShipmentInput,
+) => {
+  return await apiFetcher(
+    managementApi.patch(`v1/orders/${orderId}/shipment`, { json: data }),
+    UpdateShipmentResponse,
+  );
 };

@@ -8,6 +8,7 @@ import { OrderListDataTable } from "./online-order-data-table";
 import { columnsOrder } from "./online-order-column";
 import { OrderShipmentSheet } from "./online-order-shipment-sheet";
 import OrderListFilters from "./online-order-filters";
+import { Toaster } from "@/components/ui/sonner";
 
 type OrderResponse = z.infer<typeof OrderData>;
 type OrderShipment = z.infer<typeof OrderShipmentData>;
@@ -30,16 +31,25 @@ export default function OrderListView({
 }: OrderListViewProps) {
   const [selectedShipment, setSelectedShipment] =
     useState<OrderShipment | null>(null);
+  // Nomor pesanan disimpan terpisah karena sheet memerlukannya untuk menyimpan
+  // perubahan, sementara OrderShipmentData sendiri tidak membawanya.
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  const { fetchOrdersData, isLoadingOrders, cancelOrderData } =
-    useOrderOperations({
-      pagination,
-      filters: orderFilters,
-    });
+  const {
+    fetchOrdersData,
+    isLoadingOrders,
+    cancelOrderData,
+    updateShipmentData,
+    isUpdatingShipment,
+  } = useOrderOperations({
+    pagination,
+    filters: orderFilters,
+  });
 
   const handleView = (order: OrderResponse) => {
     setSelectedShipment(order.shipment);
+    setSelectedOrderId(order.orderId);
     setIsSheetOpen(true);
   };
 
@@ -74,7 +84,13 @@ export default function OrderListView({
         open={isSheetOpen}
         onOpenChange={setIsSheetOpen}
         shipment={selectedShipment}
+        orderId={selectedOrderId}
+        isSaving={isUpdatingShipment}
+        onSave={(data) =>
+          updateShipmentData({ orderId: selectedOrderId!, data })
+        }
       />
+      <Toaster />
     </div>
   );
 }

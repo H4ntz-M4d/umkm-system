@@ -14,7 +14,10 @@ type StatusType = z.infer<typeof OrderStatus>;
 const statusMap: Record<StatusType, string> = {
   PENDING: "Menunggu",
   PAID: "Dibayar",
+  SHIPPED: "Dikirim",
+  COMPLETED: "Selesai",
   CANCELLED: "Batal",
+  REFUNDED: "Dana Dikembalikan",
 };
 
 export const columnsOrder = (
