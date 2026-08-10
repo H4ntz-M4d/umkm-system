@@ -29,7 +29,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
   @Get()
   async findAll(
     @Query() pagination: Pagination,
@@ -39,14 +39,14 @@ export class ProductsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
   @Get('/list')
   async findProductVariant() {
     return this.productsService.findProductVariantsList();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
   @Get(':id/details')
   async findById(@Param('id') id: string) {
     return await this.productsService.productById(BigInt(id));
@@ -63,14 +63,14 @@ export class ProductsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
   @Post()
   async create(@Body() data: CreateProductDto) {
     return await this.productsService.create(data);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: bigint,
@@ -80,14 +80,14 @@ export class ProductsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: bigint) {
     return await this.productsService.remove(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
   @Patch('/:id/upload')
   @UseInterceptors(FilesInterceptor('images', 10))
   async uploadImages(

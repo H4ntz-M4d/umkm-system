@@ -39,6 +39,9 @@ export class TransactionFlowController {
     return this.transactionFlowService.summaryTransaction();
   }
 
+  /// Ikut tampil sebagai kartu ringkasan di halaman pesanan, yang juga diakses
+  /// Kasir — karena itu rolenya lebih luas dari endpoint lain di controller ini.
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
   @Get('/summary-amount-pos-and-order-transaction')
   summaryPosAndOrderTransaction() {
     return this.transactionFlowService.summaryAmountPosAndOrderTransaction();

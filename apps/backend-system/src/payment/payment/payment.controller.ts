@@ -22,6 +22,7 @@ import { UserRole } from '@repo/db';
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
   @Get()
   findAll() {
     return this.paymentService.findAll();
