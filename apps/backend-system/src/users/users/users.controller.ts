@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import {
+  CustomerProfileDto,
   CreateEmployeeDto,
   UpdateUsersDto,
 } from 'users/dto/dto.users';
@@ -24,6 +25,7 @@ import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
 import { RolesGuard } from 'common/guards/guard.roles';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IMAGE_VALIDATOR } from 'common/interceptors/upload-image.interceptors';
+import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
 
 @Controller('api/v1/users')
 export class UsersController {
@@ -81,5 +83,19 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.services.remove(BigInt(id));
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.CUSTOMER)
+  @Post('/profile-customer')
+  @UseInterceptors(FileInterceptor('image'))
+  createProfileCustomer(
+    @AuthUser() user: JwtPayload,
+    @Body() dto: CustomerProfileDto,
+    // Tanpa @UploadedFile() parameter ini selalu undefined, sehingga foto yang
+    // diunggah diam-diam terbuang.
+    @UploadedFile(IMAGE_VALIDATOR(false)) file?: Express.Multer.File,
+  ) {
+    return this.services.createProfileCustomer(user.sub, dto, file);
   }
 }
