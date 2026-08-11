@@ -1,11 +1,16 @@
 import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { prisma, UserRole } from '@repo/db';
-import { CreateEmployeeDto, UpdateUsersDto } from 'users/dto/dto.users';
+import {
+  CustomerProfileDto,
+  CreateEmployeeDto,
+  UpdateUsersDto,
+} from 'users/dto/dto.users';
 import * as bcrypt from 'bcrypt';
 import { Pagination } from 'common/paginate/pagination';
 import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
 import {
+  toCustomerResponse,
   toEmployeeResponse,
   toUsersCustomersResponse,
   toUsersEmployeeResponse,
@@ -294,5 +299,73 @@ export class UsersService {
         timeStamp: new Date().toISOString(),
       },
     };
+  }
+
+  /**
+   * Customer memperbarui profilnya sendiri.
+   *
+   * Email tidak ikut diubah: alamat login ada di tabel Users, sedangkan fungsi
+   * ini hanya menyentuh tabel Customer. Kalau keduanya boleh berbeda, pengguna
+   * akan melihat email baru di profil tapi tetap harus login dengan yang lama.
+   * Karena itu email selalu disalin dari Users.
+   */
+  async createProfileCustomer(
+    userId: bigint,
+    customerDto: CustomerProfileDto,
+    file?: Express.Multer.File,
+  ) {
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+      include: {
+        customer: true,
+      },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+
+    if (user.role !== UserRole.CUSTOMER)
+      throw new HttpException('Invalid request Role User', 400);
+
+    let image: string | undefined;
+    if (file) {
+      image = await this.cloudinaryService.uploadImage(
+        file,
+        CloudinaryFolder.PROFILES,
+      );
+
+      // Foto lama dihapus SETELAH yang baru berhasil diunggah, supaya kegagalan
+      // unggah tidak membuat pengguna kehilangan foto lamanya.
+      if (user.customer?.image)
+        await this.cloudinaryService.deleteImage(user.customer.image);
+    }
+
+    const customer = await prisma.customer.upsert({
+      where: { userId },
+      create: {
+        name: customerDto.name,
+        email: user.email,
+        phone: customerDto.phone,
+        userId,
+        image,
+      },
+      update: {
+        name: customerDto.name,
+        phone: customerDto.phone,
+        // undefined membuat Prisma melewati kolom ini, jadi foto lama tetap
+        // dipakai saat pengguna hanya mengubah nama atau telepon.
+        image,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        image: true,
+      },
+    });
+
+    return toCustomerResponse(customer);
   }
 }

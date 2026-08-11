@@ -1,8 +1,15 @@
-import { createZodDto } from "nestjs-zod";
-import { EmployeeSchema, EmployeeUpdateSchema, UsersSchema } from '@repo/schemas';
+import { createZodDto } from 'nestjs-zod';
+import {
+  CustomerProfileSchema,
+  EmployeeSchema,
+  EmployeeUpdateSchema,
+  UsersSchema,
+} from '@repo/schemas';
 
-export class CreateUsersDto extends createZodDto(UsersSchema){}
+export class CreateUsersDto extends createZodDto(UsersSchema) {}
 
-export class CreateEmployeeDto extends createZodDto(EmployeeSchema){}
+export class CreateEmployeeDto extends createZodDto(EmployeeSchema) {}
 
-export class UpdateUsersDto extends createZodDto(EmployeeUpdateSchema){}
+export class UpdateUsersDto extends createZodDto(EmployeeUpdateSchema) {}
+
+export class CustomerProfileDto extends createZodDto(CustomerProfileSchema) {}

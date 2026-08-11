@@ -117,3 +117,25 @@ export function toEmployeeResponse(entity: EmployeeEntity) {
     userId: entity.userId,
   };
 }
+
+/// Sebelumnya tertulis EmployeeGetPayload — kebetulan lolos karena bentuk
+/// kolomnya mirip, padahal yang dipetakan adalah baris Customer.
+type CustomerEntity = Prisma.CustomerGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    email: true;
+    phone: true;
+    image: true;
+  };
+}>;
+
+export function toCustomerResponse(entity: CustomerEntity) {
+  return {
+    id: String(entity.id),
+    name: entity.name,
+    email: entity.email,
+    phone: entity.phone,
+    image: entity.image,
+  };
+}
