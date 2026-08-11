@@ -6,8 +6,6 @@ import {
   BanknoteArrowDown,
   Boxes,
   ChartLine,
-  CirclePileIcon,
-  Grid2X2,
   Grid2X2Plus,
   Handbag,
   Landmark,
@@ -16,12 +14,18 @@ import {
   ScrollText,
   ShoppingBasketIcon,
   Store,
+  TriangleAlert,
+  Truck,
   Users,
 } from "lucide-react";
 
-import { NavMain } from "@/components/management/sidebar/nav-main";
+import {
+  NavMain,
+  type NavItem,
+} from "@/components/management/sidebar/nav-main";
 import { NavUser } from "@/components/management/sidebar/nav-user";
 import { Logo } from "@/components/management/sidebar/logo";
+import { canAccessPath } from "@/lib/auth/route-access.config";
 import {
   Sidebar,
   SidebarContent,
@@ -36,10 +40,21 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/stores/useAuth";
 
-// This is sample data.
 const data = {
+  /// Dashboard dan POS berdiri di luar grup mana pun, di bagian paling atas.
+  quickAccessItems: [
+    {
+      title: "Dashboard",
+      url: "/management/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "POS",
+      url: "/point-of-sale/system",
+      icon: ScrollText,
+    },
+  ],
   masterItems: [
     {
       title: "Toko",
@@ -115,10 +130,47 @@ const data = {
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user?: any;
+  /// Diambil dari token oleh layout, bukan dari `user`, supaya menu tetap utuh
+  /// meski pemuatan profil gagal.
+  role?: string;
 }
 
-export function AppSidebar({ user, ...props }: AppSidebarProps) {
+/**
+ * Menyembunyikan menu yang tidak boleh dibuka role ini. Aturannya diambil dari
+ * `route-access.config`, sumber yang sama dengan penjagaan URL di `proxy.ts`,
+ * supaya menu yang tampil tidak pernah berbeda dari yang benar-benar bisa
+ * dibuka.
+ *
+ * Menu bertingkat disaring pada anaknya; induknya ikut hilang begitu semua
+ * anaknya tersaring, karena induk seperti "User" hanya wadah tanpa halaman
+ * sendiri.
+ */
+function filterByRole(items: NavItem[], role?: string): NavItem[] {
+  return items.flatMap((item) => {
+    if (!item.items?.length) {
+      return canAccessPath(item.url, role) ? [item] : [];
+    }
+
+    const subItems = item.items.filter((sub) => canAccessPath(sub.url, role));
+    return subItems.length > 0 ? [{ ...item, items: subItems }] : [];
+  });
+}
+
+export function AppSidebar({ user, role, ...props }: AppSidebarProps) {
   const pathname = usePathname();
+
+  const menu = React.useMemo(
+    () => ({
+      quickAccess: filterByRole(data.quickAccessItems, role),
+      master: filterByRole(data.masterItems, role),
+      inventoryAndProduction: filterByRole(
+        data.inventoryAndProductionItems,
+        role,
+      ),
+      reportAndFinance: filterByRole(data.reportAndFinanceItems, role),
+    }),
+    [role],
+  );
 
   return (
     <Sidebar collapsible="icon" {...props} variant="sidebar">
@@ -126,39 +178,35 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         <Logo />
       </SidebarHeader>
       <SidebarContent className="gap-0">
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem className="flex justify-center items-center">
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === "/management/dashboard"}
-                  tooltip={"Dashboard"}
-                >
-                  <Link href={"/management/dashboard"}>
-                    <LayoutDashboard /> <span>Dashboard</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem className="flex justify-center items-center">
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === "/point-of-sale/system"}
-                  tooltip={"Point of Sale"}
-                >
-                  <Link href={"/point-of-sale/system"}>
-                    <ScrollText /> <span>POS</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {menu.quickAccess.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {menu.quickAccess.map((item) => (
+                  <SidebarMenuItem
+                    key={item.title}
+                    className="flex justify-center items-center"
+                  >
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === item.url}
+                      tooltip={item.title}
+                    >
+                      <Link href={item.url}>
+                        {item.icon && <item.icon />} <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         <NavMain
-          masterItems={data.masterItems}
-          inventoryAndProductionItems={data.inventoryAndProductionItems}
-          reportAndFinanceItems={data.reportAndFinanceItems}
+          masterItems={menu.master}
+          inventoryAndProductionItems={menu.inventoryAndProduction}
+          reportAndFinanceItems={menu.reportAndFinance}
           pathname={pathname}
         />
       </SidebarContent>

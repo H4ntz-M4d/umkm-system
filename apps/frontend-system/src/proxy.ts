@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { canAccessPath } from "@/lib/auth/route-access.config";
+import { getRoleFromToken } from "@/lib/auth/token-role";
+
 function isTokenExpired(token?: string) {
   if (!token) return true;
   try {
@@ -22,6 +25,26 @@ export async function proxy(request: NextRequest) {
   ) {
     const accessToken = request.cookies.get("access_token_admin")?.value;
     const refreshToken = request.cookies.get("refresh_token_admin")?.value;
+
+    const role = getRoleFromToken(accessToken ?? refreshToken);
+
+    /**
+     * Tidak ada sesi, atau tokennya tidak bisa dibaca sama sekali. Keduanya
+     * berarti sesi perlu dibangun ulang, jadi arahkan ke login — bukan ke 404,
+     * yang akan menyesatkan karena masalahnya bukan soal hak akses.
+     */
+    if ((!accessToken && !refreshToken) || !role) {
+      return NextResponse.redirect(new URL("/auth/management", request.url));
+    }
+
+    /**
+     * Sesinya sah, tapi rolenya tidak berhak atas halaman ini. Diperiksa sebelum
+     * penyegaran token karena hasilnya tidak akan berubah: role melekat pada
+     * pengguna, bukan pada umur tokennya.
+     */
+    if (!canAccessPath(pathname, role)) {
+      return NextResponse.rewrite(new URL("/access-denied", request.url));
+    }
 
     if ((!accessToken || isTokenExpired(accessToken)) && refreshToken) {
       try {
@@ -58,10 +81,6 @@ export async function proxy(request: NextRequest) {
       } catch (error) {
         return NextResponse.redirect(new URL("/auth/management", request.url));
       }
-    }
-
-    if (!accessToken && !refreshToken) {
-      return NextResponse.redirect(new URL("/auth/management", request.url));
     }
   }
 

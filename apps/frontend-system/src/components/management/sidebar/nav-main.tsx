@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 
-interface NavItem {
+export interface NavItem {
   title: string
   url: string
   icon?: LucideIcon
@@ -35,6 +35,10 @@ function NavGroup({label, items, pathName}: {
   items: NavItem[],
   pathName: string
 }) {
+  /// Seluruh isi grup bisa tersaring habis untuk role tertentu — labelnya
+  /// jangan ikut tampil kalau begitu, karena akan terlihat sebagai grup kosong.
+  if (items.length === 0) return null;
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">{label}</SidebarGroupLabel>
