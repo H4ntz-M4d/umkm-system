@@ -15,10 +15,8 @@ import {
 import { UsersService } from './users.service';
 import {
   CreateEmployeeDto,
-  CreateUsersDto,
   UpdateUsersDto,
 } from 'users/dto/dto.users';
-import { UpdateStoreDto } from 'stores/dto/dto.store';
 import { Pagination } from 'common/paginate/pagination';
 import { Roles } from 'common/decorator/roles.decorator';
 import { UserRole } from '@repo/db';
@@ -27,12 +25,12 @@ import { RolesGuard } from 'common/guards/guard.roles';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IMAGE_VALIDATOR } from 'common/interceptors/upload-image.interceptors';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.OWNER, UserRole.ADMIN)
 @Controller('api/v1/users')
 export class UsersController {
   constructor(private services: UsersService) {}
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Get('/employees')
   findAllAdmin(
     @Query() pagination: Pagination,
@@ -41,16 +39,22 @@ export class UsersController {
     return this.services.findAllAdmin(pagination, search);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Get('/customers')
   findAllCustomer(@Query() pagination: Pagination) {
     return this.services.findAllCustomer(pagination);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Get(':id')
   findById(@Param('id', ParseIntPipe) id: bigint) {
     return this.services.findById(id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   create(
@@ -60,6 +64,8 @@ export class UsersController {
     return this.services.createAdmin(dto, file);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   update(
@@ -70,6 +76,8 @@ export class UsersController {
     return this.services.update(BigInt(id), dto, file);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.services.remove(BigInt(id));
