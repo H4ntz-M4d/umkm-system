@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
 import { InventoryLedgerService } from './inventory-ledger.service';
 import { Pagination } from 'common/paginate/pagination';
 import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
@@ -35,5 +35,23 @@ export class InventoryLedgerController {
   @Get('/summary')
   getSummary() {
     return this.ledgerService.getSummary();
+  }
+
+  /**
+   * Melayani halaman stok rendah sekaligus kartu ringkasnya di dashboard —
+   * kartu itu cukup memakai `limit` kecil lalu membaca `meta.total`.
+   *
+   * Kasir ikut diizinkan meski tidak boleh membuka halaman Stok Rendah, karena
+   * kartu di dashboard memang ditujukan untuk semua role manajemen. Yang
+   * dibatasi hanyalah halamannya, bukan datanya.
+   */
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG, UserRole.KASIR)
+  @Get('/low-stock')
+  findLowStock(
+    @Query() pagination: Pagination,
+    @Query('search') search?: string,
+    @Query('storeId') storeId?: string,
+  ) {
+    return this.ledgerService.findLowStock(pagination, search, storeId);
   }
 }

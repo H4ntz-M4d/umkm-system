@@ -19,6 +19,7 @@ export * from "./schema/be-spoke/be-spoke.schema";
 export * from "./schema/be-spoke/be-spoke.response";
 export * from "./schema/inventory-ledgers/inventory-ledger.schema";
 export * from "./schema/inventory-ledgers/inventory-ledger.response";
+export * from "./schema/inventory-ledgers/low-stock.response";
 export * from "./schema/expense-category/expense-category.schema";
 export * from "./schema/expense-category/expense-category.response";
 export * from "./schema/expense/expense.schema";

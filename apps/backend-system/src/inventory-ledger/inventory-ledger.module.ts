@@ -4,6 +4,6 @@ import { InventoryLedgerController } from './inventory-ledger/inventory-ledger.c
 
 @Module({
   providers: [InventoryLedgerService],
-  controllers: [InventoryLedgerController]
+  controllers: [InventoryLedgerController],
 })
 export class InventoryLedgerModule {}

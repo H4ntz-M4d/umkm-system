@@ -4,6 +4,7 @@ import ExpenseCategoryChart from "@/components/management/dashboard/expense-cate
 import OmzetChart from "@/components/management/dashboard/omzet-chart";
 import OrderTrendChart from "@/components/management/dashboard/order-trend-chart";
 import ProductionStatusChart from "@/components/management/dashboard/production-status-chart";
+import LowStockCard from "@/components/management/dashboard/low-stock-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardOperation } from "@/hooks/management/dashboard/use-dashboard-operations";
 import {
@@ -11,8 +12,9 @@ import {
   DashboardTrendPeriodType,
 } from "@repo/schemas";
 import { useState } from "react";
-
-export default function DashboardView() {
+/// `role` diteruskan ke kartu stok rendah, yang memakainya untuk memutuskan
+/// tautan ke halaman Stok Rendah — datanya sendiri boleh dilihat semua role.
+export default function DashboardView({ role }: { role?: string }) {
   const [orderTrendPeriod, setOrderTrendPeriod] =
     useState<DashboardTrendPeriodType>("daily");
   const [omzetTrendPeriod, setOmzetTrendPeriod] =
@@ -61,21 +63,22 @@ export default function DashboardView() {
           )}
         </div>
       </div>
+      {isLoadingOrderTrend || !orderTrendData ? (
+        <Skeleton className="aspect-video w-full rounded-xl" />
+      ) : (
+        <OrderTrendChart
+          data={orderTrendData}
+          period={orderTrendPeriod}
+          onPeriodChange={setOrderTrendPeriod}
+        />
+      )}
       <div className="grid gap-6 lg:grid-cols-2">
         {isLoadingProductionStatus || !productionStatusData ? (
           <Skeleton className="aspect-video w-full rounded-xl" />
         ) : (
           <ProductionStatusChart data={productionStatusData} />
         )}
-        {isLoadingOrderTrend || !orderTrendData ? (
-          <Skeleton className="col-span-8 aspect-video rounded-xl" />
-        ) : (
-          <OrderTrendChart
-            data={orderTrendData}
-            period={orderTrendPeriod}
-            onPeriodChange={setOrderTrendPeriod}
-          />
-        )}
+        <LowStockCard role={role} />
       </div>
     </div>
   );
