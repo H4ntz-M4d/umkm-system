@@ -15,7 +15,6 @@ import {
   ShoppingBasketIcon,
   Store,
   TriangleAlert,
-  Truck,
   Users,
 } from "lucide-react";
 
@@ -97,6 +96,11 @@ const data = {
       title: "Produksi",
       url: "/management/production",
       icon: PackageOpen,
+    },
+    {
+      title: "Stok Rendah",
+      url: "/management/low-stock",
+      icon: TriangleAlert,
     },
   ],
   reportAndFinanceItems: [
