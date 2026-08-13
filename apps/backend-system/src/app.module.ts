@@ -20,6 +20,7 @@ import { CartModule } from './cart/cart.module';
 import { AddressModule } from './address/address.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     AddressModule,
     WishlistModule,
     WebhooksModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

@@ -43,3 +43,5 @@ export * from "./schema/wishlist/wishlist.schema";
 export * from "./schema/wishlist/wishlist.response";
 import z from "zod";
 export { z };
+export * from "./schema/reports/reports.schema";
+export * from "./schema/reports/reports.response";
