@@ -11,6 +11,7 @@ import {
 } from 'production/dto/production.dto';
 import { BeSpokeRequiredSchema } from '@repo/schemas';
 import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
+import { buildExportFilename, buildWorkbook } from 'common/helpers/excel';
 import { idFormat } from 'common/helpers/id-format';
 
 @Injectable()
@@ -552,5 +553,69 @@ export class ProductionService {
     });
 
     return toProductionOnlyResponse(data);
+  }
+
+  /// Tanpa paginasi: filternya sama dengan listing, seluruh baris ikut terbawa.
+  async exportWorkbook(
+    search?: string,
+    type?: ProductionType,
+    status?: ProductionStatus,
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
+    const rows = await prisma.production.findMany({
+      where: this.buildWhere(search, type, status, dateFrom, dateTo),
+      orderBy: { createdAt: 'desc' },
+      select: {
+        quantityProduced: true,
+        type: true,
+        status: true,
+        targetDate: true,
+        notes: true,
+        createdAt: true,
+        variant: {
+          select: { sku: true, productMaster: { select: { name: true } } },
+        },
+        beSpokeDetails: { select: { title: true } },
+        store: { select: { name: true } },
+      },
+    });
+
+    const buffer = await buildWorkbook([
+      {
+        name: 'Produksi',
+        columns: [
+          { header: 'Tanggal dibuat', key: 'createdAt', width: 16 },
+          { header: 'Produk', key: 'product', width: 34 },
+          { header: 'SKU', key: 'sku', width: 18 },
+          { header: 'Toko', key: 'store', width: 20 },
+          { header: 'Tipe', key: 'type', width: 18 },
+          { header: 'Status', key: 'status', width: 16 },
+          { header: 'Jumlah', key: 'quantity', width: 12 },
+          { header: 'Target selesai', key: 'targetDate', width: 16 },
+          { header: 'Catatan', key: 'notes', width: 34 },
+        ],
+        rows: rows.map((row) => ({
+          createdAt: row.createdAt.toISOString().slice(0, 10),
+          /// Produksi custom tidak punya varian, judulnyalah identitasnya.
+          product:
+            row.variant?.productMaster.name ?? row.beSpokeDetails?.title ?? '-',
+          sku: row.variant?.sku ?? '-',
+          store: row.store?.name ?? '-',
+          type: row.type,
+          status: row.status,
+          quantity: row.quantityProduced,
+          targetDate: row.targetDate
+            ? row.targetDate.toISOString().slice(0, 10)
+            : '-',
+          notes: row.notes ?? '-',
+        })),
+      },
+    ]);
+
+    return {
+      buffer,
+      filename: buildExportFilename('produksi', dateFrom, dateTo),
+    };
   }
 }

@@ -4,20 +4,24 @@ import { Pagination } from 'common/paginate/pagination';
 import { ExpenseDto } from 'expense/dto/expense.dto';
 import { toExponseResponse } from './expense.response';
 import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
+import { buildExportFilename, buildWorkbook } from 'common/helpers/excel';
 
 @Injectable()
 export class ExpenseService {
-  async findAll(
-    pagination: Pagination,
+  /**
+   * Dipakai bersama oleh listing dan ekspor.
+   *
+   * Diekstrak supaya berkas Excel tidak mungkin menyaring berbeda dari yang
+   * tampil di layar — kalau filternya diketik dua kali, cepat atau lambat
+   * keduanya menyimpang tanpa ada yang menyadari.
+   */
+  private buildWhere(
     search?: string,
     category?: string,
     dateFrom?: string,
     dateTo?: string,
-  ) {
-    const skip = pagination.skip ?? 0;
-    const limit = pagination.limit ?? 10;
-
-    const whereClause: Prisma.ExpenseWhereInput = {
+  ): Prisma.ExpenseWhereInput {
+    return {
       ...(category && {
         expenseCategory: {
           name: { contains: category, mode: 'insensitive' },
@@ -36,6 +40,19 @@ export class ExpenseService {
         lte: dateTo ? toEndOfDay(dateTo) : undefined,
       },
     };
+  }
+
+  async findAll(
+    pagination: Pagination,
+    search?: string,
+    category?: string,
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
+    const skip = pagination.skip ?? 0;
+    const limit = pagination.limit ?? 10;
+
+    const whereClause = this.buildWhere(search, category, dateFrom, dateTo);
 
     const [data, total] = await Promise.all([
       prisma.expense.findMany({
@@ -199,5 +216,51 @@ export class ExpenseService {
     });
 
     return result;
+  }
+
+  /// Tanpa `skip`/`take`: filternya sama dengan listing, tapi seluruh baris
+  /// ikut terbawa — inti dari ekspor yang tidak terpotong paginasi.
+  async exportWorkbook(
+    search?: string,
+    category?: string,
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
+    const rows = await prisma.expense.findMany({
+      where: this.buildWhere(search, category, dateFrom, dateTo),
+      orderBy: { date: 'desc' },
+      select: {
+        date: true,
+        description: true,
+        totalAmount: true,
+        expenseCategory: { select: { name: true } },
+        store: { select: { name: true } },
+      },
+    });
+
+    const buffer = await buildWorkbook([
+      {
+        name: 'Pengeluaran',
+        columns: [
+          { header: 'Tanggal', key: 'date', width: 14 },
+          { header: 'Kategori', key: 'category', width: 24 },
+          { header: 'Toko', key: 'store', width: 22 },
+          { header: 'Keterangan', key: 'description', width: 40 },
+          { header: 'Jumlah', key: 'total', money: true },
+        ],
+        rows: rows.map((row) => ({
+          date: row.date.toISOString().slice(0, 10),
+          category: row.expenseCategory?.name ?? '-',
+          store: row.store?.name ?? '-',
+          description: row.description ?? '-',
+          total: row.totalAmount.toString(),
+        })),
+      },
+    ]);
+
+    return {
+      buffer,
+      filename: buildExportFilename('pengeluaran', dateFrom, dateTo),
+    };
   }
 }

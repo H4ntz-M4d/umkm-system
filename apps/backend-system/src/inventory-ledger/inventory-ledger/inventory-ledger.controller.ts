@@ -1,4 +1,6 @@
 import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
+import { sendWorkbook } from 'common/helpers/excel';
 import { InventoryLedgerService } from './inventory-ledger.service';
 import { Pagination } from 'common/paginate/pagination';
 import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
@@ -53,5 +55,17 @@ export class InventoryLedgerController {
     @Query('storeId') storeId?: string,
   ) {
     return this.ledgerService.findLowStock(pagination, search, storeId);
+  }
+
+  @Get('/low-stock/export')
+  async exportLowStock(
+    @Res() res: Response,
+    @Query('search') search?: string,
+    @Query('storeId') storeId?: string,
+  ) {
+    const { buffer, filename } =
+      await this.ledgerService.exportLowStockWorkbook(search, storeId);
+
+    sendWorkbook(res, buffer, filename);
   }
 }

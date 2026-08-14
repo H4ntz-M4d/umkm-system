@@ -8,6 +8,7 @@ import { OrderData, z } from '@repo/schemas';
 import { OrderQueryDto, UpdateShipmentDto } from 'order/dto/order.dto';
 import { toOrderResponse } from './order.response';
 import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
+import { buildExportFilename, buildWorkbook } from 'common/helpers/excel';
 
 @Injectable()
 export class OrderService {
@@ -209,5 +210,60 @@ export class OrderService {
       totalOrder: total,
     };
     return result;
+  }
+
+  /// Tanpa paginasi: filternya sama dengan listing, seluruh baris ikut terbawa.
+  async exportWorkbook(query: OrderQueryDto) {
+    const rows = await prisma.order.findMany({
+      where: this.buildWhere(query),
+      orderBy: { createdAt: 'desc' },
+      select: {
+        orderId: true,
+        status: true,
+        totalAmount: true,
+        createdAt: true,
+        customer: { select: { name: true } },
+        store: { select: { name: true } },
+        payment: { select: { name: true } },
+        shipment: { select: { courier: true, trackingNumber: true } },
+      },
+    });
+
+    const buffer = await buildWorkbook([
+      {
+        name: 'Pesanan Online',
+        columns: [
+          { header: 'Tanggal', key: 'createdAt', width: 14 },
+          { header: 'Nomor pesanan', key: 'orderId', width: 22 },
+          { header: 'Pelanggan', key: 'customer', width: 26 },
+          { header: 'Toko', key: 'store', width: 20 },
+          { header: 'Status', key: 'status', width: 14 },
+          { header: 'Metode bayar', key: 'payment', width: 18 },
+          { header: 'Kurir', key: 'courier', width: 16 },
+          { header: 'No. resi', key: 'tracking', width: 22 },
+          { header: 'Total', key: 'total', money: true },
+        ],
+        rows: rows.map((row) => ({
+          createdAt: row.createdAt.toISOString().slice(0, 10),
+          orderId: row.orderId,
+          customer: row.customer?.name ?? '-',
+          store: row.store?.name ?? '-',
+          status: row.status,
+          payment: row.payment?.name ?? '-',
+          courier: row.shipment?.courier ?? '-',
+          tracking: row.shipment?.trackingNumber ?? '-',
+          total: row.totalAmount.toString(),
+        })),
+      },
+    ]);
+
+    return {
+      buffer,
+      filename: buildExportFilename(
+        'pesanan-online',
+        query.dateFrom,
+        query.dateTo,
+      ),
+    };
   }
 }
