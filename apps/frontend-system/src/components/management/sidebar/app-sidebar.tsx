@@ -125,8 +125,8 @@ const data = {
       icon: Handbag,
     },
     {
-      title: "Omzet",
-      url: "#",
+      title: "Laporan",
+      url: "/management/reports",
       icon: ChartLine,
     },
   ],

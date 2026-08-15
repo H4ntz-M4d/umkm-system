@@ -6,8 +6,11 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { sendWorkbook } from 'common/helpers/excel';
 import { UserRole } from '@repo/db';
 import { OrderService } from './order.service';
 import { CustomerOrderService } from './customer-order.service';
@@ -40,6 +43,17 @@ export class OrderController {
   @Get()
   findAll(@Query() query: OrderQueryDto) {
     return this.orderService.findAll(query);
+  }
+
+  /// Didaftarkan sebelum rute berparameter agar "/export" tidak tertangkap
+  /// sebagai sebuah orderId.
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
+  @Get('/export')
+  async exportExcel(@Query() query: OrderQueryDto, @Res() res: Response) {
+    const { buffer, filename } = await this.orderService.exportWorkbook(query);
+
+    sendWorkbook(res, buffer, filename);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

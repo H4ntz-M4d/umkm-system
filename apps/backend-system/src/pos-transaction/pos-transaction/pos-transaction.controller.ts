@@ -7,10 +7,13 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { sendWorkbook } from 'common/helpers/excel';
 import { PosTransactionService } from './pos-transaction.service';
 import { CreatePosTransactionDto } from 'pos-transaction/dto/pos-transaction.dto';
 import { Pagination } from 'common/paginate/pagination';
@@ -45,6 +48,31 @@ export class PosTransactionController {
       dateFrom,
       dateTo,
     );
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
+  @Get('/export')
+  async exportExcel(
+    @Res() res: Response,
+    @Query('search') search?: string,
+    @Query('paymentChannel') paymentChannel?: string,
+    @Query('storeId') storeId?: string,
+    @Query('status') status?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+  ) {
+    const { buffer, filename } =
+      await this.posTransactionService.exportWorkbook(
+        search,
+        paymentChannel,
+        storeId,
+        status,
+        dateFrom,
+        dateTo,
+      );
+
+    sendWorkbook(res, buffer, filename);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

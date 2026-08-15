@@ -9,8 +9,11 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { sendWorkbook } from 'common/helpers/excel';
 import { ProductionService } from 'production/production/production.service';
 import { Pagination } from 'common/paginate/pagination';
 import {
@@ -50,6 +53,27 @@ export class ProductionController {
   @Get('/summary')
   productionSummary() {
     return this.productionService.productionSummary();
+  }
+
+  /// Didaftarkan sebelum `@Get(':id')` agar "/export" tidak tertangkap sebagai id.
+  @Get('/export')
+  async exportExcel(
+    @Res() res: Response,
+    @Query('search') search?: string,
+    @Query('type') type?: ProductionType,
+    @Query('status') status?: ProductionStatus,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+  ) {
+    const { buffer, filename } = await this.productionService.exportWorkbook(
+      search,
+      type,
+      status,
+      dateFrom,
+      dateTo,
+    );
+
+    sendWorkbook(res, buffer, filename);
   }
 
   @Get(':id')

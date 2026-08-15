@@ -5,6 +5,7 @@ import ExpenseCategoriesForm from "@/components/management/expense/expense-categ
 import { AddExpenseDialog } from "@/components/management/expense/expense-form";
 import ExpenseSummary from "@/components/management/expense/expense-summary";
 import ExpenseView from "@/components/management/expense/expense-view";
+import ExportButtons from "@/components/management/export-buttons";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
@@ -18,7 +19,7 @@ export default function Page() {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [isExpenseCategoriesOpen, setIsExpenseCategoriesOpen] = useState(false);
   const searchParams = useSearchParams();
-  
+
   const page = Number(searchParams.get("page")) || 1;
   const limit = Number(searchParams.get("limit")) || 10;
   const startDate = searchParams.get("startDate") || "";
@@ -32,6 +33,16 @@ export default function Page() {
     dateTo: endDate,
   };
 
+  /// Filter yang sedang aktif ikut dibawa ke ekspor dan cetak, tanpa paginasi.
+  const activeParams = new URLSearchParams(
+    Object.entries({
+      search: filters.search,
+      category: filters.category,
+      dateFrom: filters.dateFrom,
+      dateTo: filters.dateTo,
+    }).filter(([, value]) => value) as [string, string][],
+  ).toString();
+
   return (
     <main className="flex flex-1 flex-col gap-4 py-4 px-6 pt-0">
       <div className="my-5 flex flex-row justify-between items-center">
@@ -42,15 +53,26 @@ export default function Page() {
             dengan mudah
           </p>
         </div>
-        {activeTab === "expenses" ? (
-          <Button onClick={() => setIsAddExpenseOpen(true)}>
-            Tambah Pengeluaran Baru
-          </Button>
-        ) : (
-          <Button onClick={() => setIsExpenseCategoriesOpen(true)}>
-            Tambah Kategori
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Ekspor hanya relevan untuk tab catatan pengeluaran; tab kategori
+              bukan daftar transaksi. */}
+          {activeTab === "expenses" && (
+            <ExportButtons
+              excelPath={`v1/expense/export?${activeParams}`}
+              fallbackName="pengeluaran"
+              printPath={`/management/expense/print?${activeParams}`}
+            />
+          )}
+          {activeTab === "expenses" ? (
+            <Button onClick={() => setIsAddExpenseOpen(true)}>
+              Tambah Pengeluaran Baru
+            </Button>
+          ) : (
+            <Button onClick={() => setIsExpenseCategoriesOpen(true)}>
+              Tambah Kategori
+            </Button>
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
         <ExpenseSummary />

@@ -9,6 +9,7 @@ import { CreatePosTransactionDto } from 'pos-transaction/dto/pos-transaction.dto
 import { toPosTransactionResponse } from './pos-transaction.response';
 import { Pagination } from 'common/paginate/pagination';
 import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
+import { buildExportFilename, buildWorkbook } from 'common/helpers/excel';
 import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
 import { MidtransService } from 'midtrans/midtrans.service';
@@ -19,19 +20,17 @@ export class PosTransactionService {
     private cloudinaryService: CloudinaryService,
     private midtransService: MidtransService,
   ) {}
-  async findMany(
-    pagination: Pagination,
+  /// Dipakai bersama listing dan ekspor, supaya berkas Excel menyaring persis
+  /// sama dengan yang tampil di layar.
+  private buildWhere(
     search?: string,
     paymentChannel?: string,
     storeId?: string,
     status?: string,
     dateFrom?: string,
     dateTo?: string,
-  ) {
-    const skip = pagination.skip ?? 0;
-    const limit = pagination.limit ?? 10;
-
-    const whereClause: Prisma.PosTransactionWhereInput = {
+  ): Prisma.PosTransactionWhereInput {
+    return {
       ...(paymentChannel && {
         paymentMethod: {
           name: {
@@ -71,6 +70,28 @@ export class PosTransactionService {
         lte: dateTo ? toEndOfDay(dateTo) : undefined,
       },
     };
+  }
+
+  async findMany(
+    pagination: Pagination,
+    search?: string,
+    paymentChannel?: string,
+    storeId?: string,
+    status?: string,
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
+    const skip = pagination.skip ?? 0;
+    const limit = pagination.limit ?? 10;
+
+    const whereClause = this.buildWhere(
+      search,
+      paymentChannel,
+      storeId,
+      status,
+      dateFrom,
+      dateTo,
+    );
 
     const data = await prisma.posTransaction.findMany({
       where: whereClause,
@@ -165,6 +186,69 @@ export class PosTransactionService {
     };
 
     return result;
+  }
+
+  /// Tanpa paginasi: filternya sama dengan listing, seluruh baris ikut terbawa.
+  async exportWorkbook(
+    search?: string,
+    paymentChannel?: string,
+    storeId?: string,
+    status?: string,
+    dateFrom?: string,
+    dateTo?: string,
+  ) {
+    const rows = await prisma.posTransaction.findMany({
+      where: this.buildWhere(
+        search,
+        paymentChannel,
+        storeId,
+        status,
+        dateFrom,
+        dateTo,
+      ),
+      orderBy: { createdAt: 'desc' },
+      select: {
+        transId: true,
+        status: true,
+        totalAmount: true,
+        createdAt: true,
+        store: { select: { name: true } },
+        paymentMethod: { select: { name: true } },
+        users: { select: { employees: { select: { name: true } } } },
+        _count: { select: { items: true } },
+      },
+    });
+
+    const buffer = await buildWorkbook([
+      {
+        name: 'Transaksi Kasir',
+        columns: [
+          { header: 'Tanggal', key: 'createdAt', width: 14 },
+          { header: 'Nomor transaksi', key: 'transId', width: 22 },
+          { header: 'Kasir', key: 'cashier', width: 24 },
+          { header: 'Toko', key: 'store', width: 20 },
+          { header: 'Status', key: 'status', width: 14 },
+          { header: 'Metode bayar', key: 'payment', width: 18 },
+          { header: 'Jumlah item', key: 'itemCount', width: 14 },
+          { header: 'Total', key: 'total', money: true },
+        ],
+        rows: rows.map((row) => ({
+          createdAt: row.createdAt.toISOString().slice(0, 10),
+          transId: row.transId,
+          cashier: row.users?.employees?.name ?? '-',
+          store: row.store?.name ?? '-',
+          status: row.status,
+          payment: row.paymentMethod?.name ?? '-',
+          itemCount: row._count.items,
+          total: row.totalAmount.toString(),
+        })),
+      },
+    ]);
+
+    return {
+      buffer,
+      filename: buildExportFilename('transaksi-kasir', dateFrom, dateTo),
+    };
   }
 
   async findManyByParked() {

@@ -3,6 +3,7 @@ import { Prisma, prisma } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
 import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
 import { LOW_STOCK_THRESHOLD } from '@repo/schemas';
+import { buildExportFilename, buildWorkbook } from 'common/helpers/excel';
 
 @Injectable()
 export class InventoryLedgerService {
@@ -226,6 +227,71 @@ export class InventoryLedgerService {
     };
   }
 
+  /**
+   * Ekspor untuk halaman **Stok Rendah** (bukan riwayat ledger), yang memang
+   * tinggal di modul ini karena sama-sama domain inventori.
+   *
+   * Tanpa LIMIT/OFFSET: seluruh varian berstok rendah ikut terbawa, bukan hanya
+   * halaman yang sedang tampil.
+   */
+  async exportLowStockWorkbook(search?: string, storeId?: string) {
+    const rows = await prisma.$queryRaw<
+      {
+        storeName: string;
+        productName: string;
+        type: string;
+        sku: string;
+        variantLabel: string;
+        stock: number;
+        updatedAt: Date;
+      }[]
+    >`
+      SELECT
+          s.name AS "storeName",
+          pm.name AS "productName",
+          pm.type,
+          pv.sku,
+          st.stock,
+          st.updated_at AS "updatedAt",
+          COALESCE(string_agg(vv.value, ' / ' ORDER BY vt.name), '') AS "variantLabel"
+      FROM product_variant_stock st
+      JOIN product_variant pv ON st."productVariantId" = pv.id
+      JOIN product_master pm ON pv."productMasterId" = pm.id
+      JOIN store s ON st."storeId" = s.id
+      LEFT JOIN product_variant_option po ON po."productVariantId" = pv.id
+      LEFT JOIN product_variant_value vv ON po."variantValueId" = vv.id
+      LEFT JOIN product_variant_type vt ON vv."variantTypeId" = vt.id
+      ${this.lowStockCondition(search, storeId)}
+      GROUP BY pv.id, s.id, s.name, pm.name, pm.type, pv.sku, st.stock, st.updated_at
+      ORDER BY st.stock ASC, s.name ASC, pm.name ASC
+    `;
+
+    const buffer = await buildWorkbook([
+      {
+        name: 'Stok Rendah',
+        columns: [
+          { header: 'Toko', key: 'storeName', width: 24 },
+          { header: 'Produk', key: 'productName', width: 34 },
+          { header: 'Varian', key: 'variantLabel', width: 22 },
+          { header: 'SKU', key: 'sku', width: 18 },
+          { header: 'Tipe produk', key: 'type', width: 18 },
+          { header: 'Sisa stok', key: 'stock', width: 12 },
+          { header: 'Terakhir berubah', key: 'updatedAt', width: 18 },
+        ],
+        rows: rows.map((row) => ({
+          storeName: row.storeName,
+          productName: row.productName,
+          variantLabel: row.variantLabel || '-',
+          sku: row.sku,
+          type: row.type,
+          stock: row.stock,
+          updatedAt: row.updatedAt.toISOString().slice(0, 10),
+        })),
+      },
+    ]);
+
+    return { buffer, filename: buildExportFilename('stok-rendah') };
+  }
 
   async getSummary() {
     const stockFlow = await prisma.inventoryLedger.groupBy({
