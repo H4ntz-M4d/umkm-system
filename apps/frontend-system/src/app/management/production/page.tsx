@@ -1,30 +1,15 @@
 "use client";
 
-import { InputGroupInlineStart } from "@/components/ui/search";
-import { DataTableProduction } from "@/components/management/production/data-table";
-import { usePaginationParams } from "@/hooks/use-paginations-params";
 import { useProductionOperation } from "@/hooks/management/production/use-production-operation";
-import { columnsProduction } from "@/components/management/production/column";
-import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { useDebounce } from "@/hooks/use-debounce";
 import { Toaster } from "@/components/ui/sonner";
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Clock, Timer, TimerIcon, XCircle } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ProductionFilters } from "@/lib/queries/production/production.query";
 import ProductionModalForm from "@/components/management/production/form-input";
 import CardSummaryProduction from "@/components/management/production/card-summary-production";
+import ExportButtons from "@/components/management/export-buttons";
 import ProductionView from "@/components/management/production/production-view";
+import { ProductionBeSpokeSchemaInput } from "@repo/schemas";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -36,7 +21,20 @@ export default function Page() {
     search: searchParams.get("search") || "",
     type: searchParams.get("type") || "",
     status: searchParams.get("status") || "",
+    dateFrom: searchParams.get("dateFrom") || "",
+    dateTo: searchParams.get("dateTo") || "",
   };
+
+  /// Filter yang sedang aktif ikut dibawa ke ekspor dan cetak, tanpa paginasi.
+  const activeParams = new URLSearchParams(
+    Object.entries({
+      search: filters.search,
+      type: filters.type,
+      status: filters.status,
+      dateFrom: filters.dateFrom,
+      dateTo: filters.dateTo,
+    }).filter(([, value]) => value) as [string, string][],
+  ).toString();
 
   const { dataProduction, isLoadingDataProduction } = useProductionOperation({
     filters,
@@ -58,11 +56,18 @@ export default function Page() {
               Rencanakan produksi produk anda
             </p>
           </div>
-          <ProductionModalForm
-            initalData={selectProductionData}
-            id={idData}
-            onOpenChange={(open) => !open && setIdData(undefined)}
-          />
+          <div className="flex items-center gap-2">
+            <ExportButtons
+              excelPath={`v1/production/export?${activeParams}`}
+              fallbackName="produksi"
+              printPath={`/management/production/print?${activeParams}`}
+            />
+            <ProductionModalForm
+              initalData={selectProductionData as ProductionBeSpokeSchemaInput}
+              id={idData}
+              onOpenChange={(open) => !open && setIdData(undefined)}
+            />
+          </div>
         </div>
         <div className="grid grid-cols-4 gap-4 mb-5">
           <CardSummaryProduction />
