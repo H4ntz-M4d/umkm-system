@@ -11,7 +11,17 @@ export const publicCardVariantSelect = {
     price: true,
     imageGroupId: true,
     imageGroup: variantImageGroupSelect,
+    /**
+     * Hanya stok dari toko sumber penjualan online.
+     *
+     * Disaring di sini, bukan di pemanggil, mengikuti alasan yang sama dengan
+     * `status: ACTIVE` di service: aturan yang menentukan apa yang boleh dilihat
+     * publik dipasang mati di kueri, supaya stok cabang tidak pernah bisa ikut
+     * terhitung lewat jalur mana pun. Hasilnya paling banyak satu baris karena
+     * sumber online dibatasi tepat satu toko.
+     */
     productVariantStocks: {
+      where: { store: { isOnlineSource: true } },
       select: { stock: true },
     },
   },
@@ -33,8 +43,8 @@ function flattenImage(variant: VariantWithImageGroup) {
 function priceRange(variants: { price: Prisma.Decimal }[]) {
   if (variants.length === 0) return { priceMin: '0', priceMax: '0' };
 
-  let min = variants[0]!;
-  let max = variants[0]!;
+  let min = variants[0];
+  let max = variants[0];
   for (const variant of variants) {
     if (Number(variant.price) < Number(min.price)) min = variant;
     if (Number(variant.price) > Number(max.price)) max = variant;
@@ -71,7 +81,7 @@ export function toPublicProductCardResponse(entity: PublicProductCardEntity) {
     image: entity.variants.map(flattenImage).find((image) => image) ?? null,
     ...priceRange(entity.variants),
     totalStock: entity.variants.reduce(
-      (total, variant) => total + (variant.productVariantStocks?.stock ?? 0),
+      (total, variant) => total + (variant.productVariantStocks[0]?.stock ?? 0),
       0,
     ),
     productPreOrderDetail: entity.productPreOrderDetail ?? null,
@@ -85,7 +95,17 @@ export const publicDetailVariantSelect = {
     price: true,
     imageGroupId: true,
     imageGroup: variantImageGroupSelect,
+    /**
+     * Hanya stok dari toko sumber penjualan online.
+     *
+     * Disaring di sini, bukan di pemanggil, mengikuti alasan yang sama dengan
+     * `status: ACTIVE` di service: aturan yang menentukan apa yang boleh dilihat
+     * publik dipasang mati di kueri, supaya stok cabang tidak pernah bisa ikut
+     * terhitung lewat jalur mana pun. Hasilnya paling banyak satu baris karena
+     * sumber online dibatasi tepat satu toko.
+     */
     productVariantStocks: {
+      where: { store: { isOnlineSource: true } },
       select: { stock: true },
     },
     options: {
@@ -167,7 +187,7 @@ export function toPublicProductDetailResponse(
     image: entity.variants.map(flattenImage).find((image) => image) ?? null,
     ...priceRange(entity.variants),
     totalStock: entity.variants.reduce(
-      (total, variant) => total + (variant.productVariantStocks?.stock ?? 0),
+      (total, variant) => total + (variant.productVariantStocks[0]?.stock ?? 0),
       0,
     ),
     useVariant: entity.useVariant,
@@ -176,10 +196,8 @@ export function toPublicProductDetailResponse(
       sku: variant.sku,
       price: String(variant.price),
       image: flattenImage(variant),
-      imageGroupId: variant.imageGroupId
-        ? String(variant.imageGroupId)
-        : null,
-      stock: variant.productVariantStocks?.stock ?? 0,
+      imageGroupId: variant.imageGroupId ? String(variant.imageGroupId) : null,
+      stock: variant.productVariantStocks[0]?.stock ?? 0,
       options: Object.fromEntries(
         variant.options.map((opt) => [
           opt.variantValue.variantType.name,

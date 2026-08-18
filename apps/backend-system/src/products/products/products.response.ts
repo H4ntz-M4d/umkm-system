@@ -1,6 +1,17 @@
 import { Prisma } from '@repo/db';
 
 /**
+ * Menjumlahkan stok sebuah varian dari seluruh toko yang memegangnya.
+ *
+ * Sejak stok dipegang per toko, relasinya menjadi jamak. Halaman manajemen
+ * produk melihat perusahaan secara keseluruhan, jadi yang ditampilkan adalah
+ * totalnya — bukan stok satu cabang yang kebetulan terambil pertama.
+ */
+function sumStock(stocks: { stock: number }[] | undefined): number {
+  return (stocks ?? []).reduce((total, row) => total + row.stock, 0);
+}
+
+/**
  * Fragmen select untuk meratakan gambar grup menjadi satu field `image` pada
  * variant. Dipakai di semua query baca supaya sisi pembaca tidak perlu menyusuri
  * imageGroup.images sendiri.
@@ -73,7 +84,10 @@ export function toAllProductsResponse(entity: ProductTableEntity) {
       cost: variant.cost,
       image: flattenImage(variant),
       imageGroupId: variant.imageGroupId,
-      productVariantStocks: variant.productVariantStocks?.stock,
+      /// Dijumlahkan lintas toko: halaman daftar produk melihat perusahaan
+      /// secara keseluruhan, bukan satu cabang. Rincian per toko menyusul
+      /// bersama pemilih toko di halaman manajemen.
+      productVariantStocks: sumStock(variant.productVariantStocks),
     })),
   };
 }
@@ -317,7 +331,7 @@ export function toProductListResponse(entity: ProductListEntity) {
       sku: variant.sku,
       price: variant.price,
       image: flattenImage(variant),
-      stock: variant.productVariantStocks?.stock ?? 0,
+      stock: sumStock(variant.productVariantStocks),
       options: variant.options,
     })),
   };

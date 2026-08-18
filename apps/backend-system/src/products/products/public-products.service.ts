@@ -29,7 +29,9 @@ const cardSelect = {
  */
 @Injectable()
 export class PublicProductsService {
-  private buildWhere(query: PublicProductQueryDto): Prisma.ProductMasterWhereInput {
+  private buildWhere(
+    query: PublicProductQueryDto,
+  ): Prisma.ProductMasterWhereInput {
     return {
       status: ProductStatus.ACTIVE,
       ...(query.search?.trim() && {

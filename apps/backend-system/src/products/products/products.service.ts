@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Pagination } from 'common/paginate/pagination';
+import { findOnlineSourceStore } from 'common/helpers/online-store';
 import {
   Prisma,
   prisma,
@@ -198,6 +199,9 @@ export class ProductsService {
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     // Filter yang sama dengan findMany, kalau tidak meta.total salah saat search.
@@ -314,7 +318,14 @@ export class ProductsService {
     return result;
   }
 
-  async getProductList(search?: string, categoryId?: string) {
+  /**
+   * Daftar produk untuk layar kasir.
+   *
+   * `storeId` wajib: yang boleh dijual di sebuah kasir hanyalah barang yang
+   * benar-benar ada di toko itu. Tanpa penyaringan ini kasir cabang akan melihat
+   * — dan bisa menjual — barang yang stoknya ada di toko lain.
+   */
+  async getProductList(storeId: bigint, search?: string, categoryId?: string) {
     const dynamicFilters = [
       search?.trim() && { name: { contains: search, mode: 'insensitive' } },
       categoryId?.trim() && {
@@ -328,8 +339,11 @@ export class ProductsService {
         variants: {
           some: {
             productVariantStocks: {
-              stock: {
-                gt: 0,
+              some: {
+                storeId,
+                stock: {
+                  gt: 0,
+                },
               },
             },
           },
@@ -349,7 +363,11 @@ export class ProductsService {
             price: true,
             imageGroupId: true,
             imageGroup: variantImageGroupSelect,
+            /// Angka stok yang tampil di layar kasir juga harus stok toko itu,
+            /// bukan gabungan semua toko — kalau tidak, kasir melihat sisa yang
+            /// tidak bisa ia jual.
             productVariantStocks: {
+              where: { storeId },
               select: {
                 stock: true,
               },
@@ -371,6 +389,9 @@ export class ProductsService {
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     const formattedData = data.map(toProductListResponse);
@@ -390,6 +411,16 @@ export class ProductsService {
     const data = this.normalizeVariantInput(rawData);
 
     const transaction = await prisma.$transaction(async (tx) => {
+      /**
+       * Baris stok awal dibuat untuk toko sumber online.
+       *
+       * Sementara ini produk baru selalu berpangkal di toko utama, karena form
+       * produk belum meminta admin memilih toko — itu bagian dari langkah UI.
+       * Toko lain memperoleh barisnya sendiri saat produksi pertama untuk varian
+       * tersebut selesai (lihat `upsert` di ProductionService).
+       */
+      const stockStore = await findOnlineSourceStore(tx);
+
       // Dikumpulkan sepanjang kedua cabang, lalu diserahkan ke resolver grup.
       const syncVariants: SyncVariantInput[] = [];
       const typeValueMap = new Map<string, Map<string, bigint>>();
@@ -534,6 +565,7 @@ export class ProductsService {
           await tx.productVariantStock.create({
             data: {
               productVariantId: createdVariant.id,
+              storeId: stockStore.id,
               stock: 0,
               reserved_stock: 0,
             },
@@ -573,6 +605,7 @@ export class ProductsService {
           await tx.productVariantStock.create({
             data: {
               productVariantId: pv.id,
+              storeId: stockStore.id,
               stock: 0,
               reserved_stock: 0,
             },
