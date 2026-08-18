@@ -303,10 +303,13 @@ export class PosTransactionService {
     return result;
   }
 
+  /// `storeId` diterima sebagai argumen, bukan dibaca dari `data`, karena toko
+  /// transaksi ditentukan server dari token kasir — bukan dari body request.
   async paidOperation(
     data: CreatePosTransactionDto,
     posTx: bigint,
     tx: Prisma.TransactionClient,
+    storeId: bigint,
   ) {
     await tx.inventoryLedger.createMany({
       data: data.itemTransaction.map((item) => ({
@@ -316,7 +319,7 @@ export class PosTransactionService {
         referenceId: BigInt(posTx),
         direction: 'OUT',
         quantity: item.quantity,
-        storeId: BigInt(data.storeId),
+        storeId: storeId,
       })),
     });
 
@@ -326,18 +329,24 @@ export class PosTransactionService {
 
     await tx.cashTransaction.create({
       data: {
-        type: 'OUT',
-        source: 'EXPENSE',
+        type: 'IN',
+        source: 'POS',
         referenceId: posTx,
         amount: totalAmount,
-        storeId: BigInt(data.storeId),
+        storeId: storeId,
       },
     });
 
     for (const items of data.itemTransaction) {
+      /// Stok yang dikurangi adalah stok toko tempat transaksi terjadi, bukan
+      /// stok bersama seperti sebelumnya — kasir cabang tidak lagi menggerus
+      /// stok toko utama.
       await tx.productVariantStock.update({
         where: {
-          productVariantId: BigInt(items.productVariantId),
+          productVariantId_storeId: {
+            productVariantId: BigInt(items.productVariantId),
+            storeId: storeId,
+          },
         },
         data: {
           stock: {
@@ -351,9 +360,17 @@ export class PosTransactionService {
     }
   }
 
-  async upsert(data: CreatePosTransactionDto) {
+  async upsert(
+    data: CreatePosTransactionDto,
+    storeId: bigint,
+    cashierId: bigint,
+  ) {
     const stocks = await prisma.productVariantStock.findMany({
       where: {
+        /// Disaring ke toko transaksi. Tanpa ini, sejak stok dipegang per toko,
+        /// pencocokan di bawah bisa mengambil baris milik cabang lain dan
+        /// meloloskan penjualan atas stok yang tidak dimiliki toko ini.
+        storeId,
         productVariantId: {
           in: data.itemTransaction.map((item) => BigInt(item.productVariantId)),
         },
@@ -425,8 +442,8 @@ export class PosTransactionService {
         const posTx = await tx.posTransaction.create({
           data: {
             transId: transId,
-            storeId: BigInt(data.storeId),
-            cashierId: BigInt(data.cashierId),
+            storeId: storeId,
+            cashierId: cashierId,
             paymentMethodId: data.paymentMethodId
               ? BigInt(data.paymentMethodId)
               : null,
@@ -463,7 +480,8 @@ export class PosTransactionService {
           };
         }
 
-        if (status === 'PAID') await this.paidOperation(data, posTx.id, tx);
+        if (status === 'PAID')
+          await this.paidOperation(data, posTx.id, tx, storeId);
 
         return posTx;
       } else {
@@ -472,8 +490,8 @@ export class PosTransactionService {
             transId: data.transId,
           },
           data: {
-            storeId: BigInt(data.storeId),
-            cashierId: BigInt(data.cashierId),
+            storeId: storeId,
+            cashierId: cashierId,
             paymentMethodId: data.paymentMethodId
               ? BigInt(data.paymentMethodId)
               : null,
@@ -562,7 +580,8 @@ export class PosTransactionService {
           };
         }
 
-        if (status === 'PAID') await this.paidOperation(data, posTx.id, tx);
+        if (status === 'PAID')
+          await this.paidOperation(data, posTx.id, tx, storeId);
         return posTx;
       }
     });
@@ -616,7 +635,12 @@ export class PosTransactionService {
       const result = await this.completedTransaction(transPosId);
 
       if (result.status === 'PAID')
-        await this.paidOperation(dataPosTrans, existingTrans.id, tx);
+        await this.paidOperation(
+          dataPosTrans,
+          existingTrans.id,
+          tx,
+          existingTrans.storeId,
+        );
 
       return result;
     });
@@ -688,7 +712,12 @@ export class PosTransactionService {
       };
 
       if (dataStatus.status === 'PAID')
-        await this.paidOperation(dataPosTrans, transaction.id, tx);
+        await this.paidOperation(
+          dataPosTrans,
+          transaction.id,
+          tx,
+          transaction.storeId,
+        );
     });
 
     return { received: true };
