@@ -5,6 +5,7 @@ type StoresEntity = Prisma.StoreGetPayload<{
     id: true;
     name: true;
     isActive: true;
+    isOnlineSource: true;
     createdAt: true;
   };
 }>;
@@ -14,6 +15,7 @@ export function toStoresResponse(entity: StoresEntity) {
     id: entity.id,
     name: entity.name,
     isActive: entity.isActive,
+    isOnlineSource: entity.isOnlineSource,
     createdAt: entity.createdAt,
   };
 }

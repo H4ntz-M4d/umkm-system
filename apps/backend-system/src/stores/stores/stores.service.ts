@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { prisma } from '@repo/db';
+import { Prisma, prisma } from '@repo/db';
 import { Pagination } from 'common/paginate/pagination';
 import { CreateStoreDto, UpdateStoreDto } from 'stores/dto/dto.store';
 import {
@@ -36,20 +36,45 @@ export class StoresService {
     return data.map(toSimpleStoresResponse);
   }
 
+  /**
+   * Hanya boleh ada satu toko sumber penjualan online.
+   *
+   * Penandanya dipindahkan, bukan ditolak: menandai toko baru berarti mencabut
+   * tanda dari toko lama dalam satu transaksi. Kalau sekadar ditolak, admin
+   * harus mematikan yang lama dulu — dan di antara dua langkah itu sistem
+   * sempat tidak punya sumber online sama sekali, yang membuat checkout gagal.
+   *
+   * Database tetap menjaga aturannya lewat partial unique index; ini yang
+   * membuat jalur normal tidak pernah sampai menabraknya.
+   */
+  private async clearOtherOnlineSource(
+    tx: Prisma.TransactionClient,
+    exceptId?: bigint,
+  ) {
+    await tx.store.updateMany({
+      where: {
+        isOnlineSource: true,
+        ...(exceptId && { id: { not: exceptId } }),
+      },
+      data: { isOnlineSource: false },
+    });
+  }
+
   async create(data: CreateStoreDto) {
-    const store = await prisma.store.create({
-      data: data,
+    const store = await prisma.$transaction(async (tx) => {
+      if (data.isOnlineSource) await this.clearOtherOnlineSource(tx);
+
+      return tx.store.create({ data });
     });
 
     return toStoresResponse(store);
   }
 
   async update(id: bigint, data: UpdateStoreDto) {
-    const store = await prisma.store.update({
-      where: {
-        id: id,
-      },
-      data: data,
+    const store = await prisma.$transaction(async (tx) => {
+      if (data.isOnlineSource) await this.clearOtherOnlineSource(tx, id);
+
+      return tx.store.update({ where: { id }, data });
     });
 
     return toStoresResponse(store);
