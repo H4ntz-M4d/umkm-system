@@ -22,6 +22,8 @@ import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
 import { RolesGuard } from 'common/guards/guard.roles';
 import { Roles } from 'common/decorator/roles.decorator';
 import { UserRole } from '@repo/db';
+import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
+import { resolveTransactionStore } from 'common/helpers/resolve-store';
 
 @Controller('api/v1/pos-transactions')
 export class PosTransactionController {
@@ -89,11 +91,27 @@ export class PosTransactionController {
     return await this.posTransactionService.cekStatusTransaction(transPosId);
   }
 
+  /**
+   * Toko dan kasir diambil dari token, bukan dari body.
+   *
+   * Kasir terkunci ke tokonya sendiri; `storeId` di body hanya dilirik untuk
+   * Owner dan Admin yang memang tidak terikat satu toko. Dengan begitu tidak ada
+   * lagi jalan mencatat transaksi atas nama toko atau kasir orang lain.
+   */
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
   @Post()
-  async upsert(@Body() data: CreatePosTransactionDto) {
-    return await this.posTransactionService.upsert(data);
+  async upsert(
+    @Body() data: CreatePosTransactionDto,
+    @AuthUser() user: JwtPayload,
+  ) {
+    const storeId = await resolveTransactionStore(user, data.storeId);
+
+    return await this.posTransactionService.upsert(
+      data,
+      storeId,
+      BigInt(user.sub),
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

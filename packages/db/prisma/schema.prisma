@@ -14,18 +14,27 @@ datasource db {
 }
 
 model Store {
-  id        BigInt   @id @default(autoincrement())
-  name      String   @db.VarChar(100)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id       BigInt  @id @default(autoincrement())
+  name     String  @db.VarChar(100)
+  isActive Boolean @default(true)
+  /// Menandai toko yang stoknya dijual di storefront.
+  ///
+  /// Sengaja menyatakan kemampuan ("boleh dijual online"), bukan identitas
+  /// ("toko utama"), supaya menambah toko lain sebagai sumber online kelak
+  /// cukup dengan mengubah data — bukan menyisir kode yang terlanjur
+  /// mengasumsikan sumbernya tunggal. Untuk sekarang dibatasi tepat satu toko
+  /// lewat partial unique index di migrasi.
+  isOnlineSource Boolean  @default(false)
+  createdAt      DateTime @default(now())
 
-  users            Users[]
-  inventoryLedgers InventoryLedger[]
-  productions      Production[]
-  expenses         Expense[]
-  posTransactions  PosTransaction[]
-  cashTransactions CashTransaction[]
-  orders           Order[]
+  users                Users[]
+  inventoryLedgers     InventoryLedger[]
+  productions          Production[]
+  expenses             Expense[]
+  posTransactions      PosTransaction[]
+  cashTransactions     CashTransaction[]
+  orders               Order[]
+  productVariantStocks ProductVariantStock[]
 
   @@map("store")
 }
@@ -176,7 +185,9 @@ model ProductVariant {
   productMaster        ProductMaster          @relation(fields: [productMasterId], references: [id], onDelete: Cascade)
   imageGroup           ProductImageGroup?     @relation(fields: [imageGroupId], references: [id], onDelete: SetNull)
   options              ProductVariantOption[]
-  productVariantStocks ProductVariantStock?
+  /// Jamak sejak stok dipegang per toko: satu baris per toko yang memegang
+  /// varian ini.
+  productVariantStocks ProductVariantStock[]
   productions          Production[]
   orderItems           OrderItem[]
   posTransactionItems  PosTransactionItem[]
@@ -187,15 +198,25 @@ model ProductVariant {
   @@map("product_variant")
 }
 
+/// Stok dipegang per toko: satu baris untuk tiap pasangan varian dan toko.
+///
+/// Sebelumnya `productVariantId` bertanda `@unique`, sehingga satu varian hanya
+/// punya satu angka stok untuk seluruh perusahaan — kasir cabang yang menjual
+/// akan mengurangi stok yang sama dengan toko utama. Keunikan gabungan di bawah
+/// yang membuat tiap toko memegang stoknya sendiri.
 model ProductVariantStock {
   id               BigInt   @id @default(autoincrement())
-  productVariantId BigInt   @unique
+  productVariantId BigInt
+  storeId          BigInt
   stock            Int
   reserved_stock   Int
   updated_at       DateTime @default(now())
 
   productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  store          Store          @relation(fields: [storeId], references: [id])
 
+  @@unique([productVariantId, storeId])
+  @@index([storeId])
   @@map("product_variant_stock")
 }
 

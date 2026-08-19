@@ -8,9 +8,10 @@ import {
   PosFilters,
   useProductsOperation,
 } from "@/hooks/management/products/use-products-operation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PosTransactionSchemaInput, ProductListData, z } from "@repo/schemas";
 import { AdminUser, useAuth } from "@/stores/useAuth";
+import { useActivePosStore } from "@/hooks/pos/use-active-store";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { CameraScannerDialog } from "@/components/pos/camera-dialog";
 import { toast } from "sonner";
@@ -45,9 +46,13 @@ export default function PosView() {
     categoryId: "",
   });
 
+  const { storeId: activeStoreId } = useActivePosStore();
+
   const { fetchPosProductListData } = useProductsOperation({
-    enabledPosProductLists: true,
-    posFilters: filters,
+    /// Tanpa toko, endpointnya menolak — jadi jangan ditembak sama sekali
+    /// sampai Owner atau Admin memilih.
+    enabledPosProductLists: Boolean(activeStoreId),
+    posFilters: { ...filters, storeId: activeStoreId ?? undefined },
   });
 
   const [idPm, setIdPm] = useState<string | null>(null);
@@ -69,6 +74,26 @@ export default function PosView() {
   useEffect(() => {
     localStorage.setItem("pos_cart", JSON.stringify(cart));
   }, [cart]);
+
+  /**
+   * Keranjang dikosongkan setiap toko berganti.
+   *
+   * Stok dipegang per toko, jadi barang yang dipilih dari stok toko A belum
+   * tentu ada di toko B — membiarkannya hanya menunda kegagalan sampai tombol
+   * bayar ditekan, dengan pesan yang membingungkan. Peringatannya sudah
+   * ditampilkan lebih dulu di dialog pemilih toko.
+   *
+   * Perbandingan dengan nilai sebelumnya dipakai supaya pemuatan pertama tidak
+   * ikut menghapus keranjang yang baru saja dipulihkan dari localStorage.
+   */
+  const previousStoreId = useRef(activeStoreId);
+  useEffect(() => {
+    if (previousStoreId.current === activeStoreId) return;
+
+    previousStoreId.current = activeStoreId;
+    setCart([]);
+    localStorage.removeItem("pos_cart");
+  }, [activeStoreId]);
 
   const detailProduct = productsList?.find((product) => product.id === idPm);
 
@@ -143,11 +168,20 @@ export default function PosView() {
   const existOnParked = parkedData?.some((data) => data.transId === transPosId);
 
   const parkedCart = (cashier: AdminUser | null, transaction: CartItem[]) => {
-    if (!cashier?.storeId) return;
+    /**
+     * Dulu berhenti diam-diam ketika `cashier.storeId` kosong, sehingga Owner
+     * dan Admin menekan tombol dan tidak terjadi apa-apa. Sekarang toko diambil
+     * dari toko yang sedang berlaku — untuk Kasir dari akunnya, untuk yang lain
+     * dari pilihannya — dan kalau memang belum ada, alasannya dikatakan.
+     */
+    if (!activeStoreId) {
+      toast.error("Pilih toko terlebih dahulu", { position: "top-center" });
+      return;
+    }
+
     const payload: PosTransactionSchemaInput = {
       status: "PARKED",
-      storeId: cashier.storeId,
-      cashierId: cashier.id,
+      storeId: activeStoreId,
       transId: transPosId,
       paymentMethodId: null,
       itemTransaction: transaction.map((c) => {

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   ColumnDef,
@@ -6,8 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
   PaginationState,
-  OnChangeFn
-} from "@tanstack/react-table"
+  OnChangeFn,
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -16,24 +16,32 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { DataTablePagination } from "@/components/ui/pagination"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+} from "@/components/ui/table";
+import { DataTablePagination } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  pageCount: number
-  pagination: PaginationState
-  onPaginationChange: OnChangeFn<PaginationState>
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  pageCount: number;
+  pagination: PaginationState;
+  onPaginationChange: OnChangeFn<PaginationState>;
 }
 
 export function DataTableStore<TData, TValue>({
   columns,
   data,
-  pageCount, pagination, onPaginationChange
+  pageCount,
+  pagination,
+  onPaginationChange,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -45,8 +53,7 @@ export function DataTableStore<TData, TValue>({
     state: {
       pagination,
     },
-
-  })
+  });
 
   return (
     <div>
