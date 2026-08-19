@@ -9,7 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Field, FieldContent, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -23,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StoreData, StoreSchema, z } from "@repo/schemas";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 type FormData = z.infer<typeof StoreSchema>;
@@ -31,53 +30,47 @@ type FormData = z.infer<typeof StoreSchema>;
 interface StoreFormProps {
   onSubmit: (v: FormData) => void;
   initialData?: StoreData;
-  onOpenChange?: (open: boolean) => void;
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void;
 }
 
 export default function StoreForm({
   onSubmit,
   initialData,
+  isOpen,
   onOpenChange,
 }: StoreFormProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(StoreSchema),
   });
 
-  const [open, setOpen] = useState(false);
-  const isOpen = open || !!initialData
   useEffect(() => {
     if (initialData) {
       form.reset({
         name: initialData.name,
         isActive: initialData.isActive,
+        isOnlineSource: initialData.isOnlineSource,
       });
     } else {
-      form.reset({ name: "", isActive: true });
+      form.reset({ name: "", isActive: true, isOnlineSource: false });
     }
   }, [initialData, form]);
 
-  const handleOpenChange = (val: boolean) => {
-    setOpen(val);
-    onOpenChange?.(val);
-    if (!val) form.reset({ name: "", isActive: true }); // Reset form saat tutup
-  };
-
   const handleSubmit = (data: FormData) => {
     onSubmit(data);
-    handleOpenChange(false);
+    onOpenChange(false);
   };
 
   const isEditing = !!initialData;
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="w-30">Add Store</Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <DialogHeader className="py-4">
-            <DialogTitle className={"text-lg"}>{isEditing ? "Edit Toko" : "Tambah Toko"}</DialogTitle>
+            <DialogTitle className={"text-lg"}>
+              {isEditing ? "Edit Toko" : "Tambah Toko"}
+            </DialogTitle>
             <DialogDescription>
               Tambahkan atau edit nama toko disini. Kemudian klik save untuk
               menyimpan datanya
@@ -109,6 +102,32 @@ export default function StoreForm({
                     </Select>
                   )}
                 />
+              </FieldContent>
+              <FieldContent className="p-1">
+                <Label>Sumber penjualan online</Label>
+                <Controller
+                  control={form.control}
+                  name="isOnlineSource"
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={(val) => field.onChange(val === "true")}
+                      value={field.value ? "true" : "false"}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Pilih" />
+                      </SelectTrigger>
+                      <SelectContent className="py-2">
+                        <SelectItem value="false">Tidak</SelectItem>
+                        <SelectItem value="true">Ya</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Stok toko inilah yang dijual di halaman publik. Hanya satu
+                  toko yang bisa menjadi sumber online — menandai toko ini
+                  otomatis mencabut tanda dari toko sebelumnya.
+                </p>
               </FieldContent>
             </Field>
           </FieldGroup>

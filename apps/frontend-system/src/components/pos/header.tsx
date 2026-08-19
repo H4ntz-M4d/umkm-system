@@ -9,9 +9,14 @@ import NavPos from "./nav-pos";
 import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useAuth } from "@/stores/useAuth";
+import { useState } from "react";
+import { useActivePosStore } from "@/hooks/pos/use-active-store";
+import StorePickerDialog from "./store-picker-dialog";
 
 export default function HeaderPos() {
   const user = useAuth((s) => s.user);
+  const { storeName, isLocked, isReady, needsSelection } = useActivePosStore();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const initialName = user?.name
     .split(" ")
     .map((name) => name[0])
@@ -36,8 +41,20 @@ export default function HeaderPos() {
           </div>
           <div className="w-35 md:w-full flex flex-col text-left leading-tight">
             <h3 className="truncate font-bold text-lg">NurfaCraft POS</h3>
-            <span className="truncate text-xs text-black/40 dark:text-white/60">
-              {user ? `Toko ${user.storeName} -` : ""} UMKM Point of Sales
+            <span className="flex items-center gap-1.5 truncate text-xs text-black/40 dark:text-white/60">
+              {/* Sebelumnya selalu menulis `user.storeName`, yang terbaca
+                  "Toko undefined" bagi Owner dan Admin karena akun mereka
+                  memang tidak terikat toko. */}
+              {storeName ? `Toko ${storeName} -` : ""} UMKM Point of Sales
+              {isReady && !isLocked && (
+                <button
+                  type="button"
+                  onClick={() => setIsPickerOpen(true)}
+                  className="text-primary underline underline-offset-2 hover:no-underline"
+                >
+                  {storeName ? "Ganti" : "Pilih toko"}
+                </button>
+              )}
             </span>
           </div>
         </div>
@@ -97,6 +114,13 @@ export default function HeaderPos() {
           </Tooltip>
         </div>
       </div>
+
+      {/* Saat toko belum dipilih, dialog dibuka paksa dan tidak bisa ditutup —
+          karena itu `onOpenChange` sengaja tidak diberikan pada kondisi itu. */}
+      <StorePickerDialog
+        open={needsSelection || isPickerOpen}
+        onOpenChange={needsSelection ? undefined : setIsPickerOpen}
+      />
     </div>
   );
 }
