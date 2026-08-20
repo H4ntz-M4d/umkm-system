@@ -24,8 +24,15 @@ model Store {
   /// cukup dengan mengubah data — bukan menyisir kode yang terlanjur
   /// mengasumsikan sumbernya tunggal. Untuk sekarang dibatasi tepat satu toko
   /// lewat partial unique index di migrasi.
-  isOnlineSource Boolean  @default(false)
-  createdAt      DateTime @default(now())
+  isOnlineSource Boolean @default(false)
+  /// Menandai tempat hasil produksi mendarat dan titik sebar distribusi.
+  ///
+  /// Sengaja terpisah dari `isOnlineSource`: yang satu soal "stoknya dijual di
+  /// storefront", yang ini soal "produksi bermuara ke sini". Hari ini keduanya
+  /// kebetulan menempel pada toko yang sama, tapi itu kebetulan — bukan sifat
+  /// yang boleh diandalkan kode.
+  isProductionHouse Boolean  @default(false)
+  createdAt         DateTime @default(now())
 
   users                Users[]
   inventoryLedgers     InventoryLedger[]
@@ -35,6 +42,8 @@ model Store {
   cashTransactions     CashTransaction[]
   orders               Order[]
   productVariantStocks ProductVariantStock[]
+  transfersOut         StockTransfer[]       @relation("TransferFrom")
+  transfersIn          StockTransfer[]       @relation("TransferTo")
 
   @@map("store")
 }
@@ -191,6 +200,7 @@ model ProductVariant {
   productions          Production[]
   orderItems           OrderItem[]
   posTransactionItems  PosTransactionItem[]
+  stockTransferItems   StockTransferItem[]
   cartItems            CartItem[]
 
   @@index([productMasterId])
@@ -347,6 +357,66 @@ enum LedgerSource {
   POS
   ONLINE_ORDER
   ADJUSTMENT
+  TRANSFER
+}
+
+/// Perpindahan stok antar lokasi.
+///
+/// Dicatat dua tahap, bukan sekali pindah: stok keluar dari asal saat dikirim,
+/// dan baru masuk ke tujuan saat penerimaan dikonfirmasi. Selisih di antaranya
+/// adalah barang yang sedang di jalan. Tanpa pemisahan ini, kasir cabang bisa
+/// menjual barang yang secara fisik masih dalam perjalanan — dan pengiriman ke
+/// luar kota bisa memakan waktu lama.
+model StockTransfer {
+  id     BigInt @id @default(autoincrement())
+  code   String @unique @db.VarChar(100)
+  status TransferStatus @default(READY)
+
+  fromStoreId BigInt
+  toStoreId   BigInt
+
+  /// Terisi bila kiriman ini terbentuk otomatis dari produksi yang ditujukan
+  /// untuk toko lain. Unik supaya satu produksi tidak pernah melahirkan dua
+  /// kiriman meski penyelesaiannya terpanggil berulang.
+  productionId BigInt? @unique
+
+  notes      String?
+  createdAt  DateTime  @default(now())
+  sentAt     DateTime?
+  receivedAt DateTime?
+
+  fromStore  Store       @relation("TransferFrom", fields: [fromStoreId], references: [id])
+  toStore    Store       @relation("TransferTo", fields: [toStoreId], references: [id])
+  production Production? @relation(fields: [productionId], references: [id])
+
+  items StockTransferItem[]
+
+  @@index([status])
+  @@index([fromStoreId])
+  @@index([toStoreId])
+  @@map("stock_transfer")
+}
+
+model StockTransferItem {
+  id               BigInt @id @default(autoincrement())
+  transferId       BigInt
+  productVariantId BigInt
+  quantity         Int
+
+  transfer StockTransfer  @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  variant  ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  @@unique([transferId, productVariantId])
+  @@map("stock_transfer_item")
+}
+
+enum TransferStatus {
+  /// Sudah dicatat, barang masih di asal.
+  READY
+  /// Sudah berangkat: stok keluar dari asal, belum masuk ke tujuan.
+  SENT
+  RECEIVED
+  CANCELLED
 }
 
 // ==================
@@ -367,6 +437,9 @@ model Production {
   store          Store           @relation(fields: [storeId], references: [id])
   variant        ProductVariant? @relation(fields: [producedVariantId], references: [id])
   beSpokeDetails BeSpokeDetails?
+  /// Kiriman yang terbentuk otomatis saat produksi ini selesai, bila hasilnya
+  /// ditujukan untuk toko selain rumah produksi.
+  stockTransfer StockTransfer?
 
   @@map("production")
 }
