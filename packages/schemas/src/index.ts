@@ -45,3 +45,5 @@ import z from "zod";
 export { z };
 export * from "./schema/reports/reports.schema";
 export * from "./schema/reports/reports.response";
+export * from "./schema/stock-transfer/stock-transfer.schema";
+export * from "./schema/stock-transfer/stock-transfer.response";
