@@ -9,7 +9,7 @@ export const ProductionType = z.enum([
 ]);
 
 export const ProductionSchema = z.object({
-  storeId: z.number().positive("Pilih toko dari produk yang ingin diproduksi"),
+  storeId: z.string(),
   producedVariantId: z.string().optional(),
   quantityProduced: z.number(),
   type: ProductionType,
