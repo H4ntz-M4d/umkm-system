@@ -75,6 +75,17 @@ export const columnsProduction = (
     header: "Jumlah diproduksi",
   },
   {
+    /// Tujuan hasil produksi. Selama ini hanya muncul di ekspor Excel, padahal
+    /// inilah yang menentukan apakah kiriman otomatis akan terbentuk.
+    accessorKey: "storeName",
+    header: "Untuk toko",
+    cell: ({ row }) => (
+      <span className="text-muted-foreground">
+        {row.original.storeName ?? "-"}
+      </span>
+    ),
+  },
+  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
