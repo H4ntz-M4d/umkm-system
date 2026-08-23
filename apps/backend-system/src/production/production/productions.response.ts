@@ -2,6 +2,7 @@ import { Prisma } from '@repo/db';
 
 type ProductionEntity = Prisma.ProductionGetPayload<{
   include: {
+    store: { select: { name: true } };
     variant: {
       select: {
         sku: true;
@@ -31,6 +32,7 @@ export function toProductionResponse(entity: ProductionEntity) {
   return {
     id: entity.id,
     storeId: entity.storeId,
+    storeName: entity.store?.name,
     producedVariantId: entity.producedVariantId,
     productName: productName,
     sku: entity.variant?.sku ?? '-',

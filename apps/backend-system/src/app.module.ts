@@ -21,6 +21,7 @@ import { AddressModule } from './address/address.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { ReportsModule } from './reports/reports.module';
+import { StockTransferModule } from './stock-transfer/stock-transfer.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ReportsModule } from './reports/reports.module';
     WishlistModule,
     WebhooksModule,
     ReportsModule,
+    StockTransferModule,
   ],
 })
 export class AppModule {}

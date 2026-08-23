@@ -5,12 +5,16 @@ import { BeSpokeCustomer, BeSpokeData } from "../be-spoke/be-spoke.response";
 export const ProductionData = z.object({
   id: z.string(),
   storeId: z.string(),
+  /// Toko tujuan hasil produksi. Stoknya sendiri mendarat di rumah produksi
+  /// lebih dulu; bila tujuannya toko lain, kiriman dibuat otomatis.
+  storeName: z.string().optional(),
   producedVariantId: z.string().optional().nullable(),
   sku: z.string().optional(),
   productName: z.string(),
   quantityProduced: z.number(),
   type: z.string(),
   status: z.string(),
+  targetDate: z.coerce.date(),
   createdAt: z.string(),
   bespoke: BeSpokeData.extend({
     customer: BeSpokeCustomer.partial().optional(),

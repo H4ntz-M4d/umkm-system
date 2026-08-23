@@ -12,6 +12,7 @@ import {
 import { BeSpokeRequiredSchema } from '@repo/schemas';
 import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
 import { buildExportFilename, buildWorkbook } from 'common/helpers/excel';
+import { findProductionHouse } from 'common/helpers/online-store';
 import { idFormat } from 'common/helpers/id-format';
 
 @Injectable()
@@ -230,7 +231,7 @@ export class ProductionService {
     const transaction = await prisma.$transaction(async (tx) => {
       const production = await tx.production.create({
         data: {
-          storeId: data.storeId,
+          storeId: BigInt(data.storeId),
           producedVariantId: data.producedVariantId
             ? BigInt(data.producedVariantId)
             : null,
@@ -320,7 +321,7 @@ export class ProductionService {
       const production = await tx.production.update({
         where: { id: id },
         data: {
-          storeId: data.storeId,
+          storeId: BigInt(data.storeId),
           producedVariantId: data.producedVariantId
             ? BigInt(data.producedVariantId)
             : null,
@@ -480,10 +481,45 @@ export class ProductionService {
     }
 
     const transaksi = await prisma.$transaction(async (tx) => {
+      /**
+       * Perpindahan status dilakukan lebih dulu dan secara berkondisi.
+       *
+       * Pengecekan di atas dibaca sebelum transaksi dibuka, sehingga dua
+       * permintaan yang tiba bersamaan bisa sama-sama lolos dan menambah stok
+       * dua kali. `updateMany` berkondisi status menutup celah itu: yang kedua
+       * mendapati `count` nol dan seluruh transaksinya dibatalkan sebelum
+       * menyentuh stok.
+       */
+      const claimed = await tx.production.updateMany({
+        where: { id, status: { notIn: ['COMPLETED', 'CANCELLED'] } },
+        data: { status },
+      });
+
+      if (claimed.count === 0) {
+        throw new BadRequestException(
+          'Status produksi sudah berubah. Muat ulang halaman untuk melihat keadaan terbaru.',
+        );
+      }
+
       if (isExisting.producedVariantId) {
+        /**
+         * Hasil produksi mendarat di **rumah produksi**, bukan di toko yang
+         * tertulis pada produksinya.
+         *
+         * `Production.storeId` menyatakan produksi ini untuk toko mana —
+         * sebuah tujuan, bukan tempat barangnya berada. Barang yang baru
+         * selesai dirajut secara fisik ada di rumah produksi dan belum
+         * dikirim; menaruhnya langsung di stok cabang akan membuat kasir di
+         * sana bisa menjual barang yang belum tiba.
+         */
+        const productionHouse = await findProductionHouse(tx);
+
         await tx.productVariantStock.upsert({
           where: {
-            productVariantId: isExisting.producedVariantId,
+            productVariantId_storeId: {
+              productVariantId: isExisting.producedVariantId,
+              storeId: productionHouse.id,
+            },
           },
           update: {
             stock: {
@@ -492,6 +528,7 @@ export class ProductionService {
           },
           create: {
             productVariantId: isExisting.producedVariantId,
+            storeId: productionHouse.id,
             stock: isExisting.quantityProduced,
             reserved_stock: 0,
           },
@@ -504,7 +541,7 @@ export class ProductionService {
 
         await tx.inventoryLedger.create({
           data: {
-            storeId: isExisting.storeId,
+            storeId: productionHouse.id,
             itemType: 'PRODUCT_VARIANT',
             itemId: isExisting.producedVariantId,
             direction: 'IN',
@@ -513,13 +550,37 @@ export class ProductionService {
             referenceId: isExisting.id,
           },
         });
+
+        /**
+         * Produksi yang ditujukan untuk toko lain langsung melahirkan catatan
+         * kiriman berstatus siap kirim.
+         *
+         * Menyambungkan keduanya di sini, bukan menyerahkannya pada ingatan
+         * admin, supaya tidak ada produksi yang selesai lalu terlupa dikirim.
+         * `productionId` yang unik menjamin satu produksi tidak pernah
+         * melahirkan dua kiriman.
+         */
+        if (isExisting.storeId !== productionHouse.id) {
+          await tx.stockTransfer.create({
+            data: {
+              code: idFormat('TRF'),
+              fromStoreId: productionHouse.id,
+              toStoreId: isExisting.storeId,
+              productionId: isExisting.id,
+              notes: `Dibuat otomatis dari produksi #${isExisting.id}`,
+              items: {
+                create: {
+                  productVariantId: isExisting.producedVariantId,
+                  quantity: isExisting.quantityProduced,
+                },
+              },
+            },
+          });
+        }
       }
 
-      const result = await tx.production.update({
+      const result = await tx.production.findUniqueOrThrow({
         where: { id: id },
-        data: {
-          status: status,
-        },
         include: {
           beSpokeDetails: {
             select: {
