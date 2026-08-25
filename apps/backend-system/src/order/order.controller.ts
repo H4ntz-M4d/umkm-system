@@ -24,6 +24,7 @@ import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
 import { RolesGuard } from 'common/guards/guard.roles';
 import { Roles } from 'common/decorator/roles.decorator';
 import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 /**
  * Guard dipasang per-method, bukan di level class: controller ini melayani tiga
@@ -77,6 +78,10 @@ export class OrderController {
 
   // ============================ Customer =====================================
 
+  /// Checkout memesan stok dan membuat transaksi Midtrans. Sepuluh per menit
+  /// jauh di atas pemakaian wajar, tapi cukup untuk menahan klik ganda beruntun
+  /// dan percobaan membuat pesanan massal.
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.CUSTOMER)
   @Post('checkout')
@@ -117,6 +122,12 @@ export class OrderController {
 
   /// Publik — Midtrans memanggilnya tanpa sesi. Keasliannya diverifikasi lewat
   /// tanda tangan SHA-512 di dalam service.
+  ///
+  /// Dikecualikan dari rate limiting: Midtrans mengulang notifikasi secara
+  /// beruntun, dan semuanya datang dari kumpulan IP yang sama. Membalas 429
+  /// berarti status pembayaran bisa tidak pernah masuk — pelanggan sudah
+  /// membayar tapi pesanannya tetap PENDING.
+  @SkipThrottle()
   @Post('/webhook/midtrans')
   handleWebhook(@Body() body: any) {
     return this.customerOrderService.handleMidtransWebHook(body);

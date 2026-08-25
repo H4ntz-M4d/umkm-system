@@ -23,6 +23,7 @@ import { RolesGuard } from 'common/guards/guard.roles';
 import { Roles } from 'common/decorator/roles.decorator';
 import { UserRole } from '@repo/db';
 import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
 import { resolveTransactionStore } from 'common/helpers/resolve-store';
 
 @Controller('api/v1/pos-transactions')
@@ -129,6 +130,11 @@ export class PosTransactionController {
   }
 
   // Dipanggil server-to-server oleh Midtrans, sengaja tanpa guard (bukan request user login)
+  //
+  // Juga dikecualikan dari rate limiting — lihat alasannya di
+  // order.controller.ts: notifikasi yang ditolak 429 tidak pernah dikirim ulang
+  // selamanya, dan transaksi kasir yang sudah dibayar bisa tertinggal PENDING.
+  @SkipThrottle()
   @Post('/webhook/midtrans')
   async handleMidtransWebhook(@Body() body: any) {
     return await this.posTransactionService.handleMidtransWebHook(body);

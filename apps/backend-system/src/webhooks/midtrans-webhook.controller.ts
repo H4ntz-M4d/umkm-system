@@ -1,4 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { CustomerOrderService } from 'order/customer-order.service';
 import { PosTransactionService } from 'pos-transaction/pos-transaction/pos-transaction.service';
 
@@ -16,7 +17,13 @@ import { PosTransactionService } from 'pos-transaction/pos-transaction/pos-trans
  * Verifikasi tanda tangan sengaja TIDAK dilakukan di sini, melainkan tetap di
  * masing-masing service, supaya tidak ada jalur yang bisa lolos tanpa diperiksa
  * dan kedua service tetap bisa dipanggil mandiri.
+ *
+ * Rate limiting dilewati untuk seluruh controller: ini satu-satunya URL yang
+ * terdaftar di dashboard Midtrans, dan Midtrans mengulang notifikasi secara
+ * beruntun dari kumpulan IP yang sama. Notifikasi yang dibalas 429 berarti
+ * pembayaran yang sudah masuk tidak pernah tercatat.
  */
+@SkipThrottle()
 @Controller('api/v1/webhooks')
 export class MidtransWebhookController {
   constructor(
