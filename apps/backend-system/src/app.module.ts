@@ -13,6 +13,8 @@ import { CategoriesModule } from './categories/categories.module';
 import { PaymentModule } from './payment/payment.module';
 import { MidtransModule } from './midtrans/midtrans.module';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TransactionFlowModule } from './transaction-flow/transaction-flow.module';
 import { OrderModule } from './order/order.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -28,6 +30,16 @@ import { StockTransferModule } from './stock-transfer/stock-transfer.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    /**
+     * Batas dasar yang longgar — jaring pengaman, bukan alat pembatas fitur.
+     *
+     * Satu halaman manajemen bisa menembakkan belasan permintaan sekaligus
+     * (tabel, ringkasan, dropdown), dan kasir memakai POS bertubi-tubi. Batas
+     * yang ketat di sini akan mengganggu pemakaian normal sebelum sempat
+     * menahan penyalahgunaan. Titik yang benar-benar rawan diberi
+     * `@Throttle()` sendiri di controllernya.
+     */
+    ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 300 }]),
     StoresModule,
     UsersModule,
     AuthModule,
@@ -51,5 +63,6 @@ import { StockTransferModule } from './stock-transfer/stock-transfer.module';
     ReportsModule,
     StockTransferModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

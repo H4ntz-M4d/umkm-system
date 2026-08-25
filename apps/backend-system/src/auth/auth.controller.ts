@@ -21,6 +21,20 @@ import { RolesGuard } from '../common/guards/guard.roles';
 import { UserRole } from '@repo/db';
 import type { Request, Response } from 'express';
 import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
+import { Throttle } from '@nestjs/throttler';
+
+/**
+ * Batas untuk endpoint yang menebak-nebak rahasia: kata sandi dan kode reset.
+ *
+ * Lima percobaan per menit tidak akan terasa oleh orang yang salah ketik, tapi
+ * membuat penebakan sistematis tidak ada gunanya.
+ *
+ * Sengaja TIDAK dipasang pada `management/ref` dan `c/ref`: penyegaran token
+ * dijalankan otomatis oleh frontend saat 401, dan satu halaman yang memuat
+ * banyak permintaan sekaligus bisa memicunya beruntun. Membatasi di situ
+ * berarti mengeluarkan pengguna sah dari sesinya sendiri.
+ */
+const CREDENTIAL_THROTTLE = { default: { limit: 5, ttl: 60_000 } };
 
 @Controller('api/auth/')
 export class AuthController {
@@ -37,6 +51,7 @@ export class AuthController {
     return this.service.refreshAdminToken(req, res);
   }
 
+  @Throttle(CREDENTIAL_THROTTLE)
   @Post('management/login')
   async loginAdmin(
     @Body() dto: LoginDto,
@@ -77,11 +92,13 @@ export class AuthController {
     return this.service.getCustomerProfile(user.sub);
   }
 
+  @Throttle(CREDENTIAL_THROTTLE)
   @Post('customer/register')
   async registerCustomer(@Body() dto: CustomerRegisterDto) {
     return this.service.registerCustomerService(dto);
   }
 
+  @Throttle(CREDENTIAL_THROTTLE)
   @Post('customer/login')
   async loginCustomer(
     @Body() dto: LoginDto,
@@ -101,16 +118,21 @@ export class AuthController {
 
   // ====================== Lupa / Ganti Kata Sandi ==============================
 
+  /// Selain menahan penebakan kode, batas di sini mencegah kotak masuk seseorang
+  /// dibanjiri email reset oleh orang lain yang tahu alamatnya.
+  @Throttle(CREDENTIAL_THROTTLE)
   @Post('forgot-password')
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.passwordResetService.forgotPassword(dto);
   }
 
+  @Throttle(CREDENTIAL_THROTTLE)
   @Post('verify-reset-code')
   verifyResetCode(@Body() dto: VerifyResetCodeDto) {
     return this.passwordResetService.verifyResetCode(dto);
   }
 
+  @Throttle(CREDENTIAL_THROTTLE)
   @Post('reset-password')
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.passwordResetService.resetPassword(dto);
