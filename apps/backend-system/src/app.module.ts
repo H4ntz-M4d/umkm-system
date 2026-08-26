@@ -24,6 +24,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { ReportsModule } from './reports/reports.module';
 import { StockTransferModule } from './stock-transfer/stock-transfer.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { StockTransferModule } from './stock-transfer/stock-transfer.module';
     WebhooksModule,
     ReportsModule,
     StockTransferModule,
+    HealthModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
