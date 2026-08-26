@@ -25,6 +25,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
 import { ReportsModule } from './reports/reports.module';
 import { StockTransferModule } from './stock-transfer/stock-transfer.module';
 import { HealthModule } from './health/health.module';
+import { PrismaShutdownService } from './common/lifecycle/prisma-shutdown.service';
 
 @Module({
   imports: [
@@ -65,6 +66,9 @@ import { HealthModule } from './health/health.module';
     StockTransferModule,
     HealthModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    PrismaShutdownService,
+  ],
 })
 export class AppModule {}
