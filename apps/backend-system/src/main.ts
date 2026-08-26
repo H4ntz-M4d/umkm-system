@@ -34,6 +34,21 @@ async function bootstrap() {
     credentials: true,
   });
 
+  /**
+   * Berhenti dengan rapi saat SIGTERM — sinyal yang dikirim tiap kali container
+   * di-redeploy atau server di-restart.
+   *
+   * Perilaku bawaan Node adalah mati seketika: request yang sedang berjalan
+   * putus di tengah, dan pool koneksi database ditinggalkan menggantung.
+   * Dengan ini Nest berhenti menerima koneksi baru, menyelesaikan yang sedang
+   * jalan, lalu memanggil `onApplicationShutdown` di seluruh modul — termasuk
+   * `PrismaShutdownService` yang menutup pool.
+   *
+   * Bersama endpoint /health, inilah yang memungkinkan deploy tanpa downtime:
+   * health check menjaga pintu masuk, shutdown rapi menjaga pintu keluar.
+   */
+  app.enableShutdownHooks();
+
   await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
 }
 
