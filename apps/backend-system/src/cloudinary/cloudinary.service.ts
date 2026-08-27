@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   v2 as cloudinary,
   UploadApiErrorResponse,
@@ -15,6 +15,8 @@ cloudinary.config({
 
 @Injectable()
 export class CloudinaryService {
+  private readonly logger = new Logger(CloudinaryService.name);
+
   async uploadImage(
     file: Express.Multer.File,
     folders: CloudinaryFolder = CloudinaryFolder.PRODUCTS,
@@ -30,7 +32,9 @@ export class CloudinaryService {
           result?: UploadApiResponse,
         ) => {
           if (error) {
-            console.error('Cloudinary error:', error); // <-- tambah ini
+            this.logger.error(
+              `Unggahan Cloudinary gagal: ${error.message}`,
+            );
             return reject(
               new Error(error.message || 'Cloudinary upload failed'),
             );
@@ -44,7 +48,7 @@ export class CloudinaryService {
       );
 
       if (!file.buffer) {
-        console.error('File buffer kosong!'); // <-- tambah ini
+        this.logger.error('Berkas yang diunggah tidak punya isi (buffer kosong)');
         return reject(new Error('File buffer is empty'));
       }
 

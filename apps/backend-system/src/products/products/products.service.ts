@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Pagination } from 'common/paginate/pagination';
 import { findOnlineSourceStore } from 'common/helpers/online-store';
 import {
@@ -52,6 +52,8 @@ const mutationResultSelect = {
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new Logger(ProductsService.name);
+
   constructor(
     private cloudinaryService: CloudinaryService,
     private imageGroups: ProductImageGroupService,
@@ -910,9 +912,8 @@ export class ProductsService {
 
     deletedImages.forEach((deleted) => {
       if (deleted.status === 'rejected') {
-        console.error(
-          'Gagal menghapus gambar grup yatim di Cloudinary:',
-          deleted.reason,
+        this.logger.warn(
+          `Gagal menghapus gambar grup yatim di Cloudinary: ${deleted.reason}`,
         );
       }
     });
@@ -989,14 +990,17 @@ export class ProductsService {
 
     deletedImages.forEach((deleted) => {
       if (deleted.status === 'rejected') {
-        console.error(
-          'Gagal menghapus gambar lama di Cloudinary:',
-          deleted.reason,
+        this.logger.warn(
+          `Gagal menghapus gambar lama di Cloudinary: ${deleted.reason}`,
         );
       }
     });
 
-    return { success: true, data };
+    return {
+      success: true,
+      data,
+      meta: { timeStamp: new Date().toISOString() },
+    };
   }
 
   async remove(id: bigint) {
@@ -1023,7 +1027,9 @@ export class ProductsService {
 
     deleteImage.forEach((result) => {
       if (result.status === 'rejected') {
-        console.log('Gagal menghapus gambar di cloudinary:', result.reason);
+        this.logger.warn(
+          `Gagal menghapus gambar di Cloudinary: ${result.reason}`,
+        );
       }
     });
 
