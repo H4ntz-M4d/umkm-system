@@ -15,6 +15,8 @@ import { MidtransModule } from './midtrans/midtrans.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { LoggerModule } from 'nestjs-pino';
+import { loggerOptions } from './common/logger/logger.options';
 import { TransactionFlowModule } from './transaction-flow/transaction-flow.module';
 import { OrderModule } from './order/order.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -32,6 +34,7 @@ import { PrismaShutdownService } from './common/lifecycle/prisma-shutdown.servic
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    LoggerModule.forRoot(loggerOptions),
     /**
      * Batas dasar yang longgar — jaring pengaman, bukan alat pembatas fitur.
      *

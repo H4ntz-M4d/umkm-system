@@ -6,9 +6,21 @@ import { ResponseInterceptor } from 'common/interceptors/response.interceptors';
 import { GlobalExceptionFilter } from 'common/filters/global-exception.filter';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  /**
+   * `bufferLogs` menahan log yang terbit sebelum logger sungguhan siap, lalu
+   * mengeluarkannya lewat logger itu. Tanpa ini, semua yang terjadi selama
+   * bootstrap tercetak dengan format bawaan Nest dan luput dari redaksi.
+   */
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
+
+  /// Mengganti logger bawaan Nest, sehingga `new Logger()` dari '@nestjs/common'
+  /// di seluruh kode ikut menulis terstruktur tanpa perlu diubah satu per satu.
+  app.useLogger(app.get(Logger));
 
   /**
    * Jumlah proxy di depan backend — bukan sakelar nyala/mati.
