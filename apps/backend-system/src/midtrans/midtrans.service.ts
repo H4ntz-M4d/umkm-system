@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Midtrans from 'midtrans-client';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class MidtransService {
+  private readonly logger = new Logger(MidtransService.name);
   private snap: Midtrans.Snap;
   private core: Midtrans.CoreApi;
 
@@ -172,6 +173,26 @@ export class MidtransService {
       )
       .digest('hex');
 
-    return hash === params.signature;
+    const isValid = hash === params.signature;
+
+    /**
+     * Jejak audit uang — inilah baris yang pertama dicari kalau ada sengketa
+     * pembayaran: "notifikasinya pernah sampai atau tidak, dan diterima atau
+     * ditolak?"
+     *
+     * Tanda tangan dan server key sengaja tidak ikut dicatat; yang perlu
+     * diketahui hanya hasil pemeriksaannya. Tanda tangan yang ditolak dicatat
+     * sebagai `warn` karena artinya ada yang memanggil endpoint pembayaran
+     * tanpa bisa membuktikan diri sebagai Midtrans.
+     */
+    const jejak = `order=${params.orderId} status=${params.statusCode} jumlah=${params.grossAmount}`;
+
+    if (isValid) {
+      this.logger.log(`Webhook Midtrans diterima — ${jejak}`);
+    } else {
+      this.logger.warn(`Webhook Midtrans DITOLAK, tanda tangan tidak cocok — ${jejak}`);
+    }
+
+    return isValid;
   }
 }

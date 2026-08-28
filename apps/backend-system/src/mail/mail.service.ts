@@ -25,7 +25,9 @@ export class MailService {
       this.config.get<string>('SMTP_FROM') ??
       `"Nurfa Craft" <${user ?? 'no-reply@nurfacraft.local'}>`;
 
-    console.log(host, user, pass);
+    // Sengaja TIDAK mencetak host/user/pass. Baris sebelumnya di sini menulis
+    // kata sandi SMTP apa adanya ke stdout, yang berarti ikut tersimpan di
+    // berkas log server dan log viewer provider.
     if (host && user && pass) {
       this.transporter = nodemailer.createTransport({
         host,
