@@ -30,9 +30,7 @@ import {
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Fragment, useState } from "react";
-import { DataTableProductionMaterials } from "@/components/management/production/production-material-data-table";
 import { ProductionData, z } from "@repo/schemas";
-import { columnsProductionMaterials } from "@/components/management/production/variant-column";
 
 type ProductionResponse = z.infer<typeof ProductionData>;
 
