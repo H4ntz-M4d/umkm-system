@@ -41,6 +41,8 @@ type UserCustomerProfileEntity = Prisma.UsersGetPayload<{
     customer: {
       select: {
         name: true;
+        image: true;
+        phone: true;
       };
     };
   };
@@ -53,5 +55,7 @@ export function toCustomerProfileResponse(entity: UserCustomerProfileEntity) {
     role: entity.role,
     isActive: entity.isActive,
     name: entity.customer?.name,
+    image: entity.customer?.image,
+    phone: entity.customer?.phone,
   };
 }

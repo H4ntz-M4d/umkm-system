@@ -24,6 +24,7 @@ type SimpleStoresEntity = Prisma.StoreGetPayload<{
   select: {
     id: true;
     name: true;
+    isProductionHouse: true;
   };
 }>;
 
@@ -31,5 +32,6 @@ export function toSimpleStoresResponse(entity: SimpleStoresEntity) {
   return {
     id: entity.id,
     name: entity.name,
+    isProductionHouse: entity.isProductionHouse,
   };
 }
