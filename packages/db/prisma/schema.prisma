@@ -234,8 +234,6 @@ model ProductVariantType {
   id              BigInt  @id @default(autoincrement())
   productMasterId BigInt
   name            String  @db.VarChar(255)
-  /// Tipe yang mengubah tampilan produk (Warna, Motif). Hanya tipe visual
-  /// yang ikut membentuk signature Image Group.
   isHaveVisual    Boolean @default(false)
 
   productMaster ProductMaster         @relation(fields: [productMasterId], references: [id], onDelete: Cascade)

@@ -1,6 +1,7 @@
 
 import { ApiSuccessResponse } from "../../api.schema.response";
 import z from "zod";
+import { CustomerProfileData } from "./customer.schema";
 
 export const UsersSchemaResponse = z.object({
   id: z.string(),
@@ -49,4 +50,8 @@ export const SingleUsersWithEmployeeDataResponse = ApiSuccessResponse(
 
 export const SingleEmployeeDataResponse = ApiSuccessResponse(
   EmployeeSchemaResponse
+)
+
+export const SingleCustomerDataResponse = ApiSuccessResponse(
+  CustomerProfileData,
 )

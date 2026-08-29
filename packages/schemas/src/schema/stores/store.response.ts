@@ -6,6 +6,7 @@ export const StoreResponseSchema = z.object({
   name: z.string(),
   isActive: z.boolean(),
   isOnlineSource: z.boolean(),
+  isProductionHouse: z.boolean().optional(),
   createdAt: z.string(),
 });
 
@@ -20,6 +21,9 @@ export const StoreListResponse = ApiSuccessResponse(
     StoreResponseSchema.pick({
       id: true,
       name: true,
+      // Ikut dibawa supaya pemilih tujuan pengiriman bisa menyembunyikan rumah
+      // produksi itu sendiri — kiriman ke diri sendiri tidak berarti apa-apa.
+      isProductionHouse: true,
     }),
   ),
 );
