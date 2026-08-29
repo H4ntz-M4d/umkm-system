@@ -5,8 +5,10 @@ export type AdminUser = {
   name: string;
   email: string;
   role: string;
-  storeId?: string;
-  storeName?: string;
+  /// Kosong untuk Owner dan Admin, yang secara organisasi tidak terikat satu
+  /// toko — merekalah yang memilih toko sendiri saat memakai POS.
+  storeId?: string | null;
+  storeName?: string | null;
 };
 
 type AuthState = {

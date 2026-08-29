@@ -1,11 +1,8 @@
 "use client";
 
-import { columnsEmployee } from "@/components/management/users/employee/column";
-import { DataTableEmployee } from "@/components/management/users/employee/data-table";
 import { Button } from "@/components/ui/button";
 import { InputGroupInlineStart } from "@/components/ui/search";
 import { Toaster } from "@/components/ui/sonner";
-import { useUsersOperation } from "@/hooks/management/users/use-users-operation";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePaginationParams } from "@/hooks/use-paginations-params";
 import Link from "next/link";
@@ -13,7 +10,6 @@ import { useState } from "react";
 import {DataTableProducts} from "@/components/management/products/data-table";
 import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { columnsProducts } from "@/components/management/products/column";
-import { deleteProduct } from "@/lib/queries/products/products.query";
 
 export default function ProductManagementView() {
   const { pagination, onPaginationChange } = usePaginationParams();

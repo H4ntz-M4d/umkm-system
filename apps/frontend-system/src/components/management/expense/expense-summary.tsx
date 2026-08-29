@@ -11,7 +11,6 @@ import {
 export default function ExpenseSummary() {
   const { fetchExpenseSummaryData } = useExpenseOperation({});
   const summary = fetchExpenseSummaryData?.data;
-  console.log(summary);
 
   return (
     <>

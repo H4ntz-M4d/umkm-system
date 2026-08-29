@@ -10,7 +10,7 @@ export const PosTransactionData = PosTransactionSchema.omit({
   id: z.string(),
   status: z.string(),
   cashierName: z.string(),
-  paymentMethod: z.string(),
+  paymentMethod: z.string().nullable().optional(),
   storeName: z.string(),
   totalAmount: z.string(),
   createdAt: z.string(),
@@ -45,6 +45,10 @@ export const PosTransactionResponseMutation = ApiSuccessResponse(
   PosTransactionData.extend({
     qrString: z.string().optional().nullable(),
     qrUrl: z.string().optional().nullable(),
+  }).omit({
+    cashierName: true,
+    paymentMethod: true,
+    storeName: true,
   }),
 );
 

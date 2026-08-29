@@ -1,7 +1,10 @@
 import z from "zod";
 import { ApiSuccessResponse } from "../../api.schema.response";
 import { ProductTypeEnum } from "../products/products.schema";
-import { ImageGroupData, VariantTypesData } from "../products/products.response";
+import {
+  ImageGroupData,
+  VariantTypesData,
+} from "../products/products.response";
 
 /// Kartu produk di katalog. priceMin/priceMax diratakan backend dari variants
 /// supaya kartu tidak perlu membawa seluruh daftar variant.
@@ -17,6 +20,10 @@ export const PublicProductCardData = z.object({
   priceMin: z.string(),
   priceMax: z.string(),
   totalStock: z.number(),
+  productPreOrderDetail: z
+    .object({ maxQuota: z.number(), endDate: z.string() })
+    .nullable()
+    .optional(),
 });
 
 export const PublicProductVariantData = z.object({

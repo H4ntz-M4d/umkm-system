@@ -4,10 +4,14 @@ import {
   loginAdmin,
   loginCustomer,
   logoutAdmin,
+  logoutCustomer,
   registerCustomer,
 } from "@/lib/queries/auth/auth.api";
+import { mergeCart } from "@/lib/queries/public/cart.query";
 import { useAuth } from "@/stores/useAuth";
 import { useCustomerAuth } from "@/stores/userCustomerAuth";
+import { useGuestCart } from "@/stores/cart.store";
+import { usePosStoreSelection } from "@/stores/pos-store.store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -43,6 +47,26 @@ export const useAuthOperations = () => {
       localStorage.setItem("is_customer_logged_in", "true");
       qc.invalidateQueries({ queryKey: ["customer-profile"] });
 
+      // Pindahkan keranjang guest ke server, lalu kosongkan yang lokal supaya
+      // isinya tidak terhitung dua kali. Gagal menggabungkan tidak boleh
+      // menggagalkan login — keranjang lokal sengaja dibiarkan utuh bila gagal.
+      const guestItems = useGuestCart.getState().items;
+      if (guestItems.length > 0) {
+        try {
+          await mergeCart(
+            guestItems.map((item) => ({
+              productVariantId: item.productVariantId,
+              quantity: item.quantity,
+            })),
+          );
+          useGuestCart.getState().clear();
+        } catch (error) {
+          toast.error("Sebagian keranjang gagal dipindahkan", {
+            description: error instanceof Error ? error.message : undefined,
+          });
+        }
+      }
+
       router.push("/");
     },
   });
@@ -65,7 +89,35 @@ export const useAuthOperations = () => {
     onSuccess: () => {
       qc.clear();
       localStorage.removeItem("is_admin_logged_in");
+      /**
+       * Pilihan toko POS ikut dibuang.
+       *
+       * Kalau ditinggalkan, pengguna berikutnya di perangkat yang sama —
+       * misalnya kasir yang bergantian shift di komputer kasir — akan mewarisi
+       * toko pilihan orang sebelumnya. Untuk Kasir tidak berbahaya karena
+       * tokonya tetap diambil dari token, tapi bagi Owner dan Admin itu berarti
+       * bertransaksi di toko yang tidak pernah mereka pilih.
+       *
+       * Dibersihkan lewat API store-nya, bukan `removeItem` langsung: keluar
+       * dari akun hanya berpindah halaman tanpa memuat ulang, jadi menghapus
+       * localStorage saja akan menyisakan pilihan lama di memori Zustand.
+       */
+      usePosStoreSelection.getState().selectStore(null);
+      /// Keranjang POS juga milik sesi sebelumnya, bukan milik siapa pun yang
+      /// login berikutnya.
+      localStorage.removeItem("pos_cart");
       router.push("/auth/management");
+    },
+  });
+
+  const logOutMutationCustomer = useMutation({
+    mutationFn: async () => {
+      return await logoutCustomer();
+    },
+    onSuccess: () => {
+      qc.clear();
+      localStorage.removeItem("is_customer_logged_in");
+      router.refresh();
     },
   });
 
@@ -77,5 +129,6 @@ export const useAuthOperations = () => {
 
     registerCustomerData: registerMutation.mutate,
     signOutAdmin: logOutMutationAdmin.mutate,
+    signOutCustomer: logOutMutationCustomer.mutate,
   };
 };

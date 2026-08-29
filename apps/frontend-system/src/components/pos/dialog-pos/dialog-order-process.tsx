@@ -1,6 +1,12 @@
-"use client"
+"use client";
 
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import OrderProcess from "../order-process";
 import { AdminUser, useAuth } from "@/stores/useAuth";
 import { CartItem } from "../pos-view";
@@ -40,7 +46,7 @@ export default function DialogOrderProcess({
     <Dialog open={isOrderProcessOpen} onOpenChange={setOrderProcessOpen}>
       <DialogContent showCloseButton={false}>
         <VisuallyHidden.Root>
-            <DialogTitle></DialogTitle>
+          <DialogTitle></DialogTitle>
         </VisuallyHidden.Root>
         <OrderProcess
           cart={cart}
@@ -54,11 +60,11 @@ export default function DialogOrderProcess({
           user={user}
         />
         <DialogFooter className="items-center">
-            <DialogClose asChild>
-                <Button variant={"outline"} className="w-50">
-                    Tutup Dialog
-                </Button>
-            </DialogClose>
+          <DialogClose asChild>
+            <Button variant={"outline"} className="w-50">
+              Tutup Dialog
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

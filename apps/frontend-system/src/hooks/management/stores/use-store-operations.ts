@@ -41,6 +41,7 @@ export function useStoreOperations({
     queryFn: () => fetchStore(pagination!.pageIndex, pagination!.pageSize),
     placeholderData: keepPreviousData,
     enabled: isTableMode,
+    throwOnError: true
   });
 
   const getStoreList = useQuery({
@@ -74,6 +75,9 @@ export function useStoreOperations({
       invalidate();
       toast.success("Toko berhasil dihapus", { position: "top-center" });
     },
+    onError: (err: Error) => {
+      toast.error(err.message)
+    }
   });
 
   return {

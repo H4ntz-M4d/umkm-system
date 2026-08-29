@@ -9,7 +9,9 @@ describe('InventoryLedgerController', () => {
       controllers: [InventoryLedgerController],
     }).compile();
 
-    controller = module.get<InventoryLedgerController>(InventoryLedgerController);
+    controller = module.get<InventoryLedgerController>(
+      InventoryLedgerController,
+    );
   });
 
   it('should be defined', () => {

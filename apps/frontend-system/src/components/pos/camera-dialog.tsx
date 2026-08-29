@@ -25,59 +25,60 @@ export const CameraScannerDialog = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
 
-useEffect(() => {
-  if (!open) return;
-  let cancelled = false;
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
 
-  // 1. TETAP OPTIMALKAN ALGORITMA (TRY_HARDER)
-  // Ini aman karena dijalankan di dalam library, tidak mengatur hardware kamera ke browser
-  const hints = new Map();
-  hints.set(DecodeHintType.TRY_HARDER, true); 
-  hints.set(DecodeHintType.POSSIBLE_FORMATS, [
-    BarcodeFormat.QR_CODE,
-    BarcodeFormat.EAN_13,
-    BarcodeFormat.EAN_8,
-    BarcodeFormat.CODE_128,
-    BarcodeFormat.CODE_39,
-    BarcodeFormat.UPC_A
-  ]);
+    // 1. TETAP OPTIMALKAN ALGORITMA (TRY_HARDER)
+    // Ini aman karena dijalankan di dalam library, tidak mengatur hardware kamera ke browser
+    const hints = new Map();
+    hints.set(DecodeHintType.TRY_HARDER, true);
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+      BarcodeFormat.QR_CODE,
+      BarcodeFormat.EAN_13,
+      BarcodeFormat.EAN_8,
+      BarcodeFormat.CODE_128,
+      BarcodeFormat.CODE_39,
+      BarcodeFormat.UPC_A,
+    ]);
 
-  // Masukkan hints optimasi ke dalam reader
-  const reader = new BrowserMultiFormatReader(hints);
+    // Masukkan hints optimasi ke dalam reader
+    const reader = new BrowserMultiFormatReader(hints);
 
-  (async () => {
-    try {
-      // 2. KEMBALI KE CARA ASLI KAMU (100% Aman untuk Izin "Hanya kali ini")
-      const devices = await BrowserMultiFormatReader.listVideoInputDevices();
-      const rear = devices.find((d) => /back|rear|environment/i.test(d.label));
-      const deviceId = rear?.deviceId ?? devices[0]?.deviceId;
-      
-      if (!videoRef.current || cancelled) return;
+    (async () => {
+      try {
+        // 2. KEMBALI KE CARA ASLI KAMU (100% Aman untuk Izin "Hanya kali ini")
+        const devices = await BrowserMultiFormatReader.listVideoInputDevices();
+        const rear = devices.find((d) =>
+          /back|rear|environment/i.test(d.label),
+        );
+        const deviceId = rear?.deviceId ?? devices[0]?.deviceId;
 
-      // Gunakan fungsi aslimu kembali
-      controlsRef.current = await reader.decodeFromVideoDevice(
-        deviceId,
-        videoRef.current,
-        (result, _err, controls) => {
-          if (result && !cancelled) {
-            controls.stop();
-            onDetected(result.getText());
-            onOpenChange(false);
-          }
-        },
-      );
-    } catch (err) {
-      console.error("Camera scanner error:", err);
-    }
-  })();
+        if (!videoRef.current || cancelled) return;
 
-  return () => {
-    cancelled = true;
-    controlsRef.current?.stop();
-    controlsRef.current = null;
-  };
-}, [open, onDetected, onOpenChange]);
+        // Gunakan fungsi aslimu kembali
+        controlsRef.current = await reader.decodeFromVideoDevice(
+          deviceId,
+          videoRef.current,
+          (result, _err, controls) => {
+            if (result && !cancelled) {
+              controls.stop();
+              onDetected(result.getText());
+              onOpenChange(false);
+            }
+          },
+        );
+      } catch (err) {
+        console.error("Camera scanner error:", err);
+      }
+    })();
 
+    return () => {
+      cancelled = true;
+      controlsRef.current?.stop();
+      controlsRef.current = null;
+    };
+  }, [open, onDetected, onOpenChange]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

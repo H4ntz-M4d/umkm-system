@@ -2,12 +2,9 @@
 
 import {
   Field,
-  FieldContent,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldTitle,
 } from "@/components/ui/field";
 import { Control, Controller, FormState } from "react-hook-form";
 import {
@@ -21,8 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { CreateProductionSchemaInput } from "@repo/schemas";
 import { Textarea } from "@/components/ui/textarea";

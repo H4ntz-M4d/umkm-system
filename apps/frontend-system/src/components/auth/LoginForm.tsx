@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Eye, EyeOff, Lock, Mail, ShoppingBag } from "lucide-react";
 import {
   Control,
@@ -102,8 +103,8 @@ export const LoginForm = ({
             )}
           />
         </FieldGroup>
-        <Button variant={"link"} size={"xs"}>
-          Lupa Password?
+        <Button variant={"link"} size={"xs"} asChild>
+          <Link href="/forgot-password">Lupa Password?</Link>
         </Button>
       </div>
 

@@ -15,20 +15,20 @@ import { MidtransModule } from './midtrans/midtrans.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { LoggerModule } from 'nestjs-pino';
-import { loggerOptions } from './common/logger/logger.options';
-import { validateEnv } from './common/config/env.schema';
 import { TransactionFlowModule } from './transaction-flow/transaction-flow.module';
 import { OrderModule } from './order/order.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { ReportsModule } from './reports/reports.module';
+import { StockTransferModule } from './stock-transfer/stock-transfer.module';
 import { CartModule } from './cart/cart.module';
 import { AddressModule } from './address/address.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
-import { ReportsModule } from './reports/reports.module';
-import { StockTransferModule } from './stock-transfer/stock-transfer.module';
 import { HealthModule } from './health/health.module';
 import { PrismaShutdownService } from './common/lifecycle/prisma-shutdown.service';
+import { LoggerModule } from 'nestjs-pino';
+import { loggerOptions } from './common/logger/logger.options';
+import { validateEnv } from './common/config/env.schema';
 
 @Module({
   imports: [
@@ -63,12 +63,12 @@ import { PrismaShutdownService } from './common/lifecycle/prisma-shutdown.servic
     TransactionFlowModule,
     OrderModule,
     DashboardModule,
+    ReportsModule,
+    StockTransferModule,
     CartModule,
     AddressModule,
     WishlistModule,
     WebhooksModule,
-    ReportsModule,
-    StockTransferModule,
     HealthModule,
   ],
   providers: [

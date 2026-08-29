@@ -4,7 +4,6 @@ import {
   fetchCategories,
   fetchCategoriesSummary,
   fetchCategoryList,
-  summaryCategories,
   updateCategories,
 } from "@/lib/queries/categories/categories.query";
 import { CategoriesSchemaInput } from "@repo/schemas";

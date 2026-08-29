@@ -31,6 +31,7 @@ export class StoresService {
       select: {
         id: true,
         name: true,
+        isProductionHouse: true,
       },
     });
     return data.map(toSimpleStoresResponse);

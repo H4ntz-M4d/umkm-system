@@ -44,7 +44,7 @@ export default function PosPaymentDialog({
 
   const handleSuccess = () => {
     clearCart();
-    setOpenPayment(false)
+    setOpenPayment(false);
   };
 
   const handleOpenChange = (open: boolean) => {

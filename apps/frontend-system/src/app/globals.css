@@ -255,3 +255,52 @@ body {
     font-family: var(--font-instrument);
   }
 }
+
+/**
+ * Aturan cetak.
+ *
+ * Dipakai halaman /management/reports/print dan tombol cetak di halaman tabel.
+ * Prinsipnya: buang seluruh perabot aplikasi, sisakan isinya, dan pastikan satu
+ * kartu tidak terbelah menjadi dua halaman.
+ */
+@media print {
+  /* Perabot aplikasi tidak ikut tercetak. Sidebar dan header memakai elemen
+     semantiknya, jadi disasar langsung tanpa perlu menambah kelas di komponen. */
+  aside,
+  [data-slot="sidebar"],
+  [data-slot="sidebar-wrapper"] > header,
+  header[class*="sticky"] {
+    display: none !important;
+  }
+
+  /* Latar berwarna dan bayangan memboroskan tinta dan menurunkan kontras di
+     kertas; isi kartunya yang penting, bukan permukaannya. */
+  body {
+    background: #fff !important;
+  }
+
+  [data-slot="card"] {
+    box-shadow: none !important;
+    border-color: #d4d4d4 !important;
+    break-inside: avoid;
+  }
+
+  /* Recharts menggambar SVG, jadi grafiknya tercetak tajam — asalkan browser
+     tidak diminta membuang warna latarnya. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  table {
+    break-inside: auto;
+  }
+
+  tr {
+    break-inside: avoid;
+  }
+
+  @page {
+    margin: 14mm;
+  }
+}

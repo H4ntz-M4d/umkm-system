@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createProduct,
@@ -11,10 +13,14 @@ import {
 } from "@/lib/queries/products/products.query";
 import { toast } from "sonner";
 import { CreateProductSchemaInput } from "@repo/schemas";
+import { useRouter } from "next/navigation";
 
 export interface PosFilters {
   search?: string;
   categoryId?: string;
+  /// Wajib diisi Owner dan Admin yang akunnya tidak terikat toko; untuk Kasir
+  /// diabaikan server karena tokonya sudah melekat pada token.
+  storeId?: string;
 }
 
 export function useProductsOperation({
@@ -35,6 +41,12 @@ export function useProductsOperation({
   const qc = useQueryClient();
   const isTableMode = !!pagination;
   const invalidate = () => qc.invalidateQueries({ queryKey: ["products"] });
+  const router = useRouter();
+  function delay() {
+    setTimeout(() => {
+      router.push("/management/products");
+    }, 1000);
+  }
 
   const getProducts = useQuery({
     queryKey: ["products", pagination?.pageIndex, pagination?.pageSize, search],
@@ -73,6 +85,7 @@ export function useProductsOperation({
     onSuccess: () => {
       invalidate();
       toast.success("Berhasil menyimpan data produk");
+      delay();
     },
     onError: showError("Gagal menyimpan data produk"),
   });
@@ -88,6 +101,7 @@ export function useProductsOperation({
     onSuccess: () => {
       invalidate();
       toast.success("Berhasil menyimpan data produk");
+      delay();
     },
     onError: showError("Gagal menyimpan data produk"),
   });

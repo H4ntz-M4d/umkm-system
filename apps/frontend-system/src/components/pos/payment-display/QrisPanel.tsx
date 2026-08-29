@@ -5,6 +5,8 @@ import { CartItem } from "../pos-view";
 import { AlertCircle, CircleCheck, Clipboard, ClockAlert } from "lucide-react";
 import { toIDR } from "../../../../utils/format-money";
 import { useAuth } from "@/stores/useAuth";
+import { useActivePosStore } from "@/hooks/pos/use-active-store";
+import { toast } from "sonner";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { getStatusTransaction } from "@/lib/queries/pos-transaction/pos-transaction.query";
 import { setTimeout } from "timers";
@@ -45,6 +47,7 @@ export function QrisPanel({
   const { mutationPosTransactionData, isLoadingmutationPosTransactionData } =
     usePosTransactionOperations({});
   const cashier = useAuth((state) => state.user);
+  const { storeId: activeStoreId } = useActivePosStore();
 
   const startPolling = (transPosId: string) => {
     pollRef.current = setInterval(async () => {
@@ -83,12 +86,16 @@ export function QrisPanel({
   const generateQr = async () => {
     setError(null);
     setTimeLeft(QR_TIMEOUT / 1000);
-    setQrisState('loading')
+    setQrisState("loading");
     try {
-      if (!cashier || !cashier.storeId) return;
+      // Toko diambil dari yang sedang berlaku; Kasir dari akunnya, Owner dan
+      // Admin dari pilihannya. Kalau belum ada, katakan alasannya -- jangan diam.
+      if (!activeStoreId) {
+        toast.error("Pilih toko terlebih dahulu", { position: "top-center" });
+        return;
+      }
       const result = await mutationPosTransactionData({
-        storeId: cashier.storeId,
-        cashierId: cashier.id,
+        storeId: activeStoreId,
         status: "PENDING",
         transId: transPosId,
         paymentMethodId: paymentId,
@@ -109,10 +116,10 @@ export function QrisPanel({
     }
   };
 
-  const hasGenerated = useRef(false)
+  const hasGenerated = useRef(false);
 
   useEffect(() => {
-    if (hasGenerated.current) return
+    if (hasGenerated.current) return;
     hasGenerated.current = true;
     generateQr();
     return () => stopPolling();
