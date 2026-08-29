@@ -1,14 +1,18 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { StoreData } from "@repo/schemas";
+import { UsersSchemaResponse, z } from "@repo/schemas";
+
+/// Sebelumnya diketik `StoreData` -- sisa salin-tempel dari kolom toko yang
+/// kebetulan lolos karena bentuknya mirip. Yang benar adalah data pengguna.
+type UserRow = z.infer<typeof UsersSchemaResponse>;
 import { Button } from "@/components/ui/button";
 import { dayjs } from "@repo/utils";
 import { Badge } from "@/components/ui/badge";
 
 export const columnsCustomer = () //   setIdData: (id: string) => void,
 //   deleteById: (id: string) => void
-: ColumnDef<StoreData>[] => [
+: ColumnDef<UserRow>[] => [
   {
     accessorKey: "id",
     header: "No",
@@ -30,33 +34,22 @@ export const columnsCustomer = () //   setIdData: (id: string) => void,
     accessorKey: "isActive",
     header: "Status",
     cell: ({ row }) => (
-      <p>{row.original.isActive ? <Badge>Aktif</Badge> : <Badge>Non Aktif</Badge>}</p>
-    )
+      <p>
+        {row.original.isActive ? (
+          <Badge>Aktif</Badge>
+        ) : (
+          <Badge>Non Aktif</Badge>
+        )}
+      </p>
+    ),
   },
   {
     accessorKey: "createdAt",
     header: "Tanggal dibuat",
-    cell: ({row}) => (
+    cell: ({ row }) => (
       <p>
         {dayjs(row.original.createdAt).locale("id").format("MMMM DD, YYYY")}
       </p>
-    )
-  },
-  {
-    id: "actions",
-    header: "Action",
-    cell: ({ row }) => {
-      return (
-        <div className="flex gap-2 justify-center">
-          <Button
-            variant={
-              "outline"
-            } /*onClick={() => setIdData(row.original.id.toString())}*/
-          >
-            View
-          </Button>
-        </div>
-      );
-    },
+    ),
   },
 ];

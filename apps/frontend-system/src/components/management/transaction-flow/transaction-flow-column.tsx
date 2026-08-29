@@ -34,7 +34,7 @@ export const columnsTransactionFlow =
             <CircleArrowDown className="text-red-600" size={18} />
           )}
           <p>
-            {row.original.type === "IN" ? "Stok Masuk" : "Stok Keluar"}
+            {row.original.type === "IN" ? "Transaksi Masuk" : "Transaksi Keluar"}
           </p>
         </div>
       ),

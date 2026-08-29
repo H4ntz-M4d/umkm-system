@@ -8,7 +8,7 @@ type PaymentChannel = z.infer<typeof PaymentChannelEnum>;
 const channelMap: Record<PaymentChannel, string> = {
   CASH: "Tunai",
   BANK_TRANSFER: "Transfer Bank",
-  MIDTRANS: "QRIS",
+  MIDTRANS: "MIdtrans Payment Gateway",
 };
 
 export const columnsPaymentMethod = (

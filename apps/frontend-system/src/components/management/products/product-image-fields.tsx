@@ -16,7 +16,6 @@ import type { VisualGroup } from "@/hooks/management/products/use-product-image-
 
 interface ProductImageFieldsProps {
   groups: VisualGroup[];
-  /** URL yang sedang tampil untuk sebuah grup: blob lokal, atau gambar tersimpan. */
   previewFor: (signature: string) => string | undefined;
   onPick: (signature: string, file: File) => void;
   onClear: (signature: string) => void;
@@ -29,6 +28,7 @@ interface ProductImageFieldsProps {
  * diturunkan dari variant yang benar-benar ada, jadi kombinasi yang sudah
  * dihapus admin tidak menyisakan picker yang filenya akan terbuang.
  */
+
 export default function ProductImageFields({
   groups,
   previewFor,

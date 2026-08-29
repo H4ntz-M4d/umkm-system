@@ -1,7 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { StoreData } from "@repo/schemas";
+import { UsersSchemaResponse, z } from "@repo/schemas";
+
+/// Sebelumnya diketik `StoreData` -- sisa salin-tempel dari kolom toko yang
+/// kebetulan lolos karena bentuknya mirip. Yang benar adalah data pengguna.
+type UserRow = z.infer<typeof UsersSchemaResponse>;
 import { Button } from "@/components/ui/button";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { dayjs } from "@repo/utils";
@@ -10,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 export const columnsEmployee = (
   deleteStaffData: (id: string) => void,
   router: AppRouterInstance,
-): ColumnDef<StoreData>[] => [
+): ColumnDef<UserRow>[] => [
   {
     accessorKey: "id",
     header: "No",
@@ -49,7 +53,9 @@ export const columnsEmployee = (
     accessorKey: "createdAt",
     header: "Tanggal dibuat",
     cell: ({ row }) => (
-      <p>{dayjs(row.original.createdAt).locale('id').format("MMMM DD, YYYY")}</p>
+      <p>
+        {dayjs(row.original.createdAt).locale("id").format("MMMM DD, YYYY")}
+      </p>
     ),
   },
   {

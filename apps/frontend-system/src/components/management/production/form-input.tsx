@@ -9,28 +9,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import ProductionForm from "@/components/management/production/form-components/production-form";
-import {
-  Controller,
-  Resolver,
-  useFieldArray,
-  useForm,
-  useWatch,
-} from "react-hook-form";
+import { Controller, Resolver, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateProductionSchemaInput,
   ProductionBeSpokeSchema,
   ProductionBeSpokeSchemaInput,
-  ProductionData,
-  ProductionSchema,
   ProductionType,
-  z,
 } from "@repo/schemas";
-import ProductionMaterialsForm from "@/components/management/production/form-components/production-materials-form";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useProductionOperation } from "@/hooks/management/production/use-production-operation";
-import { Toaster } from "@/components/ui/sonner";
 import {
   Field,
   FieldError,
@@ -47,19 +36,15 @@ import {
 } from "@/components/ui/select";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { Label } from "@/components/ui/label";
-import { type } from "os";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import BeSpokeForm from "./form-components/be-spoke-form";
 
-type ProductionDataById = z.infer<typeof ProductionData>;
 interface FormProps {
   initalData?: ProductionBeSpokeSchemaInput;
   id?: string;
   onOpenChange?: (open: boolean) => void;
 }
-
-type ProductionTypeEnum = z.infer<typeof ProductionType>;
 const options = ProductionType.options;
 const typeOptions = options.map((item) => {
   return {
@@ -74,7 +59,7 @@ const typeOptions = options.map((item) => {
 });
 
 const defaultValue: ProductionBeSpokeSchemaInput = {
-  storeId: 0,
+  storeId: "",
   producedVariantId: "",
   status: "PLANNED",
   quantityProduced: 0,
@@ -91,37 +76,38 @@ const defaultValue: ProductionBeSpokeSchemaInput = {
   },
 };
 
+function formatFormValues(data: FormProps["initalData"]) {
+  if (!data) return defaultValue;
+  return {
+    storeId: data.storeId,
+    producedVariantId: data.producedVariantId,
+    status: data.status as
+      | "PLANNED"
+      | "IN_PROGRESS"
+      | "COMPLETED"
+      | "CANCELLED",
+    quantityProduced: data.quantityProduced,
+    type: data.type as "RESTOCK" | "MADE_TO_ORDER" | "PRE_ORDER" | "BE_SPOKE",
+    targetDate: new Date(data.targetDate),
+    notes: data.notes,
+    bespoke: {
+      title: data.bespoke?.title ?? "",
+      description: data.bespoke?.description ?? "",
+      name: data.bespoke?.name ?? "",
+      email: data.bespoke?.email ?? "",
+      phone: data.bespoke?.phone ?? "",
+      quotedPrice: Number(data.bespoke?.quotedPrice ?? 0),
+    },
+  };
+}
+
 export default function ProductionModalForm({
   initalData,
   id,
   onOpenChange,
 }: FormProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const formValues = useMemo(() => {
-    const data = initalData;
-    if (!data) return undefined;
-    return {
-      storeId: Number(data.storeId),
-      producedVariantId: data.producedVariantId,
-      status: data.status as
-        | "PLANNED"
-        | "IN_PROGRESS"
-        | "COMPLETED"
-        | "CANCELLED",
-      quantityProduced: data.quantityProduced,
-      type: data.type as "RESTOCK" | "MADE_TO_ORDER" | "PRE_ORDER" | "BE_SPOKE",
-      targetDate: new Date(),
-      notes: data.notes,
-      bespoke: {
-        title: data.bespoke?.title ?? "",
-        description: data.bespoke?.description ?? "",
-        name: data.bespoke?.name ?? "",
-        email: data.bespoke?.email ?? "",
-        phone: data.bespoke?.phone ?? "",
-        quotedPrice: Number(data.bespoke?.quotedPrice) ?? 0,
-      },
-    };
-  }, [initalData]);
+  const formValues = formatFormValues(initalData);
 
   const { control, handleSubmit, formState, reset, setValue } =
     useForm<ProductionBeSpokeSchemaInput>({
@@ -141,16 +127,7 @@ export default function ProductionModalForm({
   const handleOpenDialog = (val: boolean) => {
     setOpen(val);
     onOpenChange?.(val);
-    if (!val) reset(defaultValue);
   };
-
-  useEffect(() => {
-    if (initalData) {
-      reset(formValues);
-    } else {
-      reset(defaultValue);
-    }
-  }, [initalData, reset, formValues]);
 
   const { updateProductionData, isUpdating, createProductionData, isCreating } =
     useProductionOperation({});
@@ -175,7 +152,7 @@ export default function ProductionModalForm({
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl bg-primary-foreground max-h-[90vh] overflow-hidden flex flex-col p-0">
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit, (err) => console.log(err))}
           className="flex flex-1 flex-col overflow-hidden p-4"
         >
           <DialogHeader className="py-4">
@@ -226,15 +203,21 @@ export default function ProductionModalForm({
               control={control}
               render={({ field }) => (
                 <Field className="mb-5">
-                  <FieldLabel>Nama Toko</FieldLabel>
+                  {/* Label lama hanya "Nama Toko" tanpa keterangan, sehingga
+                      artinya bergantung tebakan. Yang dimaksud adalah tujuan
+                      hasil produksinya. */}
+                  <FieldLabel>Produksi untuk toko</FieldLabel>
+                  <p className="-mt-1 mb-1 text-xs text-muted-foreground">
+                    Hasil produksi selalu masuk ke stok rumah produksi lebih
+                    dulu. Bila tujuannya toko lain, kiriman ke sana dibuat
+                    otomatis begitu produksi ditandai selesai.
+                  </p>
                   <Select
-                    value={
-                      field.value === 0 ? undefined : field.value?.toString()
-                    }
-                    onValueChange={(val) => field.onChange(Number(val))}
+                    value={field.value ?? ""}
+                    onValueChange={(val) => field.onChange(val)}
                   >
                     <SelectTrigger className="rounded-md">
-                      <SelectValue placeholder={"Pilih Toko"} />
+                      <SelectValue placeholder={"Pilih toko tujuan"} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>

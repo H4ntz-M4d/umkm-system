@@ -6,6 +6,8 @@ import { CartItem } from "../pos-view";
 import { Button } from "@/components/ui/button";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { AdminUser, useAuth } from "@/stores/useAuth";
+import { useActivePosStore } from "@/hooks/pos/use-active-store";
+import { toast } from "sonner";
 import loading from "@/app/management/stores/loading";
 
 interface Props {
@@ -25,8 +27,10 @@ export function CashPanel({
 }: Props) {
   const [cashAmount, setCashAmount] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
-  const { mutationPosTransactionData, isLoadingmutationPosTransactionData } = usePosTransactionOperations({});
+  const { mutationPosTransactionData, isLoadingmutationPosTransactionData } =
+    usePosTransactionOperations({});
   const user = useAuth((state) => state.user);
+  const { storeId: activeStoreId } = useActivePosStore();
   const loading = isLoadingmutationPosTransactionData;
   const change = cashAmount - total;
   const isValid = cashAmount >= total;
@@ -44,10 +48,14 @@ export function CashPanel({
     if (!isValid) return;
     setError(null);
     try {
-      if (!cashier || !cashier.storeId) return;
+      // Toko diambil dari yang sedang berlaku; Kasir dari akunnya, Owner dan
+      // Admin dari pilihannya. Kalau belum ada, katakan alasannya -- jangan diam.
+      if (!activeStoreId) {
+        toast.error("Pilih toko terlebih dahulu", { position: "top-center" });
+        return;
+      }
       await mutationPosTransactionData({
-        storeId: cashier.storeId,
-        cashierId: cashier.id,
+        storeId: activeStoreId,
         status: "PAID",
         transId: transPosId,
         paymentMethodId: paymentId,

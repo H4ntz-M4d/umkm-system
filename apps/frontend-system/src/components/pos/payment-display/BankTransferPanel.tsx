@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { PaymentResponseData } from "@repo/schemas";
 import { toIDR } from "../../../../utils/format-money";
 import { AdminUser, useAuth } from "@/stores/useAuth";
+import { useActivePosStore } from "@/hooks/pos/use-active-store";
+import { toast } from "sonner";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { Input } from "@/components/ui/input";
 import loading from "@/app/management/stores/loading";
@@ -42,15 +44,20 @@ export function TransferPanel({
     isLoadingmutationPosTransactionData,
   } = usePosTransactionOperations({});
   const user = useAuth((state) => state.user);
+  const { storeId: activeStoreId } = useActivePosStore();
 
   // Step 1: buat transaksi, tampilkan info rekening
   const handleCreateTransaction = async (cashier: AdminUser | null) => {
     setError(null);
     try {
-      if (!cashier || !cashier.storeId) return;
+      // Toko diambil dari yang sedang berlaku; Kasir dari akunnya, Owner dan
+      // Admin dari pilihannya. Kalau belum ada, katakan alasannya -- jangan diam.
+      if (!activeStoreId) {
+        toast.error("Pilih toko terlebih dahulu", { position: "top-center" });
+        return;
+      }
       const result = await mutationPosTransactionData({
-        storeId: cashier.storeId,
-        cashierId: cashier.id,
+        storeId: activeStoreId,
         status: "PENDING",
         transId: transPosId,
         paymentMethodId: paymentId,
@@ -145,7 +152,9 @@ export function TransferPanel({
             onClick={() => handleCreateTransaction(user)}
             disabled={isLoadingmutationPosTransactionData}
           >
-            {isLoadingmutationPosTransactionData ? "Membuat transaksi..." : "Pelanggan sudah transfer →"}
+            {isLoadingmutationPosTransactionData
+              ? "Membuat transaksi..."
+              : "Pelanggan sudah transfer →"}
           </Button>
         </div>
       )}
@@ -192,7 +201,9 @@ export function TransferPanel({
             disabled={!proofFile || isLoadingUploadPaymentProofData}
             className="w-full bg-green-600 text-white rounded-xl py-3 font-medium disabled:opacity-50"
           >
-            {isLoadingUploadPaymentProofData ? "Mengkonfirmasi..." : "Konfirmasi Pembayaran"}
+            {isLoadingUploadPaymentProofData
+              ? "Mengkonfirmasi..."
+              : "Konfirmasi Pembayaran"}
           </button>
         </div>
       )}

@@ -22,8 +22,8 @@ import { Controller, useForm } from "react-hook-form";
 
 interface CategoriesFormProps {
   idData?: string;
-  isOpen?: boolean;
-  onOpenChange?: (isOpen: boolean) => void;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
   initialValues?: CategoriesSchemaInput;
 }
 
@@ -60,10 +60,11 @@ export default function CategoriesForm({
   const isSubmitting = isCreateCategoriesData || isUpdateCategoriesData;
 
   const onSubmitData = async (data: CategoriesSchemaInput) => {
+    const onSuccess = () => onOpenChange(false);
     if (idData) {
-      updateCategoriesData({ id: idData, data: data });
+      updateCategoriesData({ id: idData, data: data }, { onSuccess });
     } else {
-      createCategoriesData(data);
+      createCategoriesData(data, { onSuccess });
     }
   };
 

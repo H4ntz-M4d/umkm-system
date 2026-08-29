@@ -47,7 +47,7 @@ const paymentChannelData = paymentChannel.map((pc) => {
     name: pc
       .replaceAll("_", " ")
       .toLowerCase()
-      .replace("midtrans", "QRIS")
+      .replace("midtrans", "Midtrans")
       .split(" ")
       .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
       .join(" "),

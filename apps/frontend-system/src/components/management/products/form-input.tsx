@@ -11,12 +11,13 @@ import {
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
-import { useMemo } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import {
   CreateProductSchemaInput,
+  ProductDataById,
   ProductSchema,
   ProductStatusEnum,
+  z,
 } from "@repo/schemas";
 import {
   Select,
@@ -35,6 +36,8 @@ import { useProductsOperation } from "@/hooks/management/products/use-products-o
 import { useProductImageGroups } from "@/hooks/management/products/use-product-image-groups";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCategoriesOperation } from "@/hooks/management/categories/use-categories-operation";
+import { Input } from "@/components/ui/input";
+import { DatePickerSimple } from "@/components/ui/date-picker-simple";
 
 const initialData: CreateProductSchemaInput = {
   name: "",
@@ -45,6 +48,7 @@ const initialData: CreateProductSchemaInput = {
   categoryId: "",
   variants: [],
   variantsTypes: [],
+  productPreOrderDetail: undefined,
 };
 
 /** Perkalian kartesian nilai variant. Dipakai untuk kombinasi SKU maupun grup visual. */
@@ -74,6 +78,40 @@ function generateCombinations(
   return result.filter((r) => Object.keys(r).length > 0);
 }
 
+type ProductById = z.infer<typeof ProductDataById>;
+const productById = (data: ProductById | undefined) => {
+  if (!data) return undefined;
+  return {
+    name: data.name,
+    description: data.description ?? "",
+    useVariant: data.useVariant,
+    categoryId: data.categoryId ?? "",
+    type: data.type,
+    status: data.status,
+    variantsTypes:
+      data.variantTypes?.map((vt) => ({
+        name: vt.name,
+        values: vt.values.map((v) => v.value),
+        isHaveVisual: vt.isHaveVisual,
+      })) ?? [],
+    variants:
+      data.variants?.map((v) => ({
+        id: v.id,
+        sku: v.sku,
+        price: Number(v.price),
+        cost: Number(v.cost ?? 0),
+        options: v.options ?? {},
+      })) ?? [],
+    productPreOrderDetail: data.productPreOrderDetail
+      ? {
+          quotaTarget: data.productPreOrderDetail?.quotaTarget,
+          maxQuota: data.productPreOrderDetail?.maxQuota,
+          endDate: data.productPreOrderDetail?.endDate,
+        }
+      : undefined,
+  };
+};
+
 export default function FormProduct({ id }: { id?: string }) {
   const { getCategoriesListData } = useCategoriesOperation({
     enableGetCategoriesList: true,
@@ -86,32 +124,7 @@ export default function FormProduct({ id }: { id?: string }) {
     updateProductData,
   } = useProductsOperation({ idProduct: id });
 
-  const formValues = useMemo(() => {
-    const data = getProductsDataById?.data;
-    if (!data) return undefined;
-    return {
-      name: data.name,
-      description: data.description ?? "",
-      useVariant: data.useVariant,
-      categoryId: data.categoryId ?? "",
-      type: data.type,
-      status: data.status,
-      variantsTypes:
-        data.variantTypes?.map((vt) => ({
-          name: vt.name,
-          values: vt.values.map((v) => v.value),
-          isHaveVisual: vt.isHaveVisual,
-        })) ?? [],
-      variants:
-        data.variants?.map((v) => ({
-          id: v.id,
-          sku: v.sku,
-          price: Number(v.price),
-          cost: Number(v.cost ?? 0),
-          options: v.options ?? {},
-        })) ?? [],
-    };
-  }, [getProductsDataById]);
+  const formValues = productById(getProductsDataById?.data);
 
   const {
     handleSubmit,
@@ -140,6 +153,11 @@ export default function FormProduct({ id }: { id?: string }) {
     name: "variants",
   });
 
+  const typeProduct = useWatch({
+    control,
+    name: "type",
+  });
+
   const {
     visualGroups,
     groupFiles,
@@ -158,9 +176,7 @@ export default function FormProduct({ id }: { id?: string }) {
     // sini supaya tidak jadi unhandled rejection dan form tetap terbuka.
     try {
       await saveProduct(values);
-    } catch {
-      /* pesan sudah tampil lewat toast di onError */
-    }
+    } catch {}
   };
 
   const saveProduct = async (values: CreateProductSchemaInput) => {
@@ -379,7 +395,7 @@ export default function FormProduct({ id }: { id?: string }) {
           </section>
 
           {/*Right Side*/}
-          <section className={"space-y-6"}>
+          <section className={"flex flex-col-reverse lg:flex-col gap-6 "}>
             <Card
               className={
                 "shadow-sm bg-primary-foreground space-y-4 lg:sticky lg:top-10"
@@ -445,6 +461,86 @@ export default function FormProduct({ id }: { id?: string }) {
                 </FieldGroup>
               </CardContent>
             </Card>
+            {typeProduct === "PRE_ORDER" && (
+              <Card
+                className={
+                  "shadow-sm bg-primary-foreground space-y-4 lg:sticky lg:top-10"
+                }
+              >
+                <CardContent className={"py-2 px-5"}>
+                  <FieldGroup>
+                    <FieldSet>
+                      <FieldLegend
+                        className={
+                          "font-display data-[variant=legend]:text-lg mb-5"
+                        }
+                      >
+                        Detail Pre-Order
+                      </FieldLegend>
+                      <Controller
+                        control={control}
+                        name="productPreOrderDetail.maxQuota"
+                        render={({ field }) => (
+                          <Field>
+                            <FieldLabel>Kuota maksimal</FieldLabel>
+                            <Input
+                              value={field.value?.toString()}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ""
+                                    ? 0
+                                    : Number(e.target.value),
+                                )
+                              }
+                              type={"number"}
+                              onWheel={(e) =>
+                                (e.target as HTMLInputElement).blur()
+                              }
+                            />
+                          </Field>
+                        )}
+                      />
+                      <Controller
+                        control={control}
+                        name="productPreOrderDetail.quotaTarget"
+                        render={({ field }) => (
+                          <Field>
+                            <FieldLabel>Target kuota</FieldLabel>
+                            <Input
+                              value={field.value?.toString()}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ""
+                                    ? 0
+                                    : Number(e.target.value),
+                                )
+                              }
+                              type={"number"}
+                              onWheel={(e) =>
+                                (e.target as HTMLInputElement).blur()
+                              }
+                            />
+                          </Field>
+                        )}
+                      />
+                      <Controller
+                        control={control}
+                        name="productPreOrderDetail.endDate"
+                        render={({ field }) => (
+                          <Field>
+                            <FieldLabel>Tanggal berakhir Pre-Order</FieldLabel>
+                            <DatePickerSimple
+                              value={field.value as Date}
+                              onValueChange={(val) => field.onChange(val)}
+                            />
+                          </Field>
+                        )}
+                      />
+                    </FieldSet>
+                  </FieldGroup>
+                </CardContent>
+              </Card>
+            )}
           </section>
         </div>
       </form>
