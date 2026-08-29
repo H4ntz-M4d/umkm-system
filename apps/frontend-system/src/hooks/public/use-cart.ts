@@ -28,6 +28,7 @@ function guestToCartItem(item: GuestCartItem): CartItemDataType {
     slug: item.snapshot.slug,
     sku: item.snapshot.sku,
     productName: item.snapshot.productName,
+    productType: item.snapshot.productType,
     price: item.snapshot.price,
     image: item.snapshot.image,
     stock: item.snapshot.stock,

@@ -64,7 +64,6 @@ export default function ExpenseCategoriesForm({
       description: dataCategory?.description ?? "",
       color: dataCategory?.color ?? colorPalette[0].value,
       isActive: dataCategory?.isActive ?? false,
-      isMaterialsCategory: dataCategory?.isMaterialsCategory ?? false,
     };
   }, [dataCategory]);
 
@@ -76,7 +75,6 @@ export default function ExpenseCategoriesForm({
       description: "",
       color: colorPalette[0].value,
       isActive: false,
-      isMaterialsCategory: false,
     },
     values: initialData,
   });
