@@ -23,6 +23,8 @@ import { Roles } from 'common/decorator/roles.decorator';
 import { UserRole } from '@repo/db';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { validateImageFiles } from 'common/interceptors/upload-image.interceptors';
+import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
+import { resolveTransactionStore } from 'common/helpers/resolve-store';
 
 @Controller('api/v1/products')
 export class ProductsController {
@@ -54,12 +56,22 @@ export class ProductsController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
+  /// Toko ditentukan dari token kasir, sama seperti saat menyimpan transaksi —
+  /// supaya yang terlihat dan yang terjual selalu berasal dari toko yang sama.
   @Get('/point-of-sales/list')
   async getProductList(
+    @AuthUser() user: JwtPayload,
+    @Query('storeId') storeId?: string,
     @Query('search') search?: string,
     @Query('categoryId') categoryId?: string,
   ) {
-    return await this.productsService.getProductList(search, categoryId);
+    const resolvedStoreId = await resolveTransactionStore(user, storeId);
+
+    return await this.productsService.getProductList(
+      resolvedStoreId,
+      search,
+      categoryId,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
