@@ -306,7 +306,7 @@ export default function PosView() {
           onDetected={handleBarcodeScan}
         />
         <DialogProductCard
-          product={detailProduct}
+          product={detailProduct ?? null}
           open={!!pickerProduct}
           pickerVariantId={pickerVariantId}
           setPickerProduct={setPickerProduct}

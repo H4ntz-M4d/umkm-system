@@ -15,10 +15,15 @@ import {
 } from "../../ui/dialog";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { ProductList } from "@/app/point-of-sale/system/page";
+import { ProductListData, z } from "@repo/schemas";
+
+/// Diturunkan langsung dari schema, bukan diimpor dari komponen lain.
+/// Sebelumnya tipe ini diambil dari sebuah `page.tsx` — yang bahkan tidak
+/// mengekspornya — sehingga importnya tidak pernah benar-benar sah.
+type ProductList = z.infer<typeof ProductListData>;
 
 interface DialogProductCardProps {
-  product: any;
+  product: ProductList | null;
   open?: boolean;
   pickerVariantId?: string | null;
   setPickerProduct: (id: ProductList | null) => void;
@@ -57,9 +62,13 @@ export default function DialogProductCard({
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
             {product?.variants.map((variant) => {
-              const varOpt = variant.options
-                .map((opt) => opt.variantValue.value)
-                .join(" - ");
+              // Varian tanpa opsi memang mungkin — produk yang cuma punya satu
+              // bentuk. Sebelumnya `product: any` menyembunyikan ini, dan
+              // varian seperti itu akan melempar saat dirender.
+              const varOpt =
+                variant.options
+                  ?.map((opt) => opt.variantValue.value)
+                  .join(" - ") ?? "";
               const active = pickerVariantId === variant.id;
               const oos = variant?.stock === 0;
               return (
