@@ -45,6 +45,7 @@ export const fetchProductById = async (id: string) => {
 export const fetchPosProductList = async (posFilters: {
   search?: string;
   categoryId?: string;
+  storeId?: string;
 }) => {
   const cleanFilter = Object.fromEntries(
     Object.entries(posFilters).filter(

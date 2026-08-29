@@ -5,6 +5,8 @@ type CustomerUser = {
   name: string;
   email: string;
   role: string;
+  phone: string | null | undefined;
+  image: string | null | undefined;
 };
 
 type CustomerAuthState = {

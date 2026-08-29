@@ -8,6 +8,10 @@ import {
   LoginResponse,
   UserProfileResponse,
   RegisterCustomerResponse,
+  ForgotPasswordResponse,
+  VerifyResetCodeResponse,
+  ResetPasswordResponse,
+  type ResetPasswordInput,
 } from "@repo/schemas";
 
 export const loginAdmin = async (email: string, password: string) => {
@@ -76,4 +80,33 @@ export const logoutAdmin = async () => {
   useAuth.getState().logout();
   localStorage.removeItem("is_admin_logged_in");
   return managementApi.post("auth/logout").json<string>();
+};
+
+// ========================= Lupa / Ganti Kata Sandi ==========================
+// Dipakai bersama admin dan customer — keduanya berbagi tabel Users di backend.
+// Dikirim lewat customerApi karena ketiga endpoint ini publik (tanpa guard),
+// jadi tidak masalah lewat client mana pun.
+
+export const forgotPassword = async (email: string) => {
+  const response = await apiFetcher(
+    customerApi.post("auth/forgot-password", { json: { email } }),
+    ForgotPasswordResponse,
+  );
+  return response.data;
+};
+
+export const verifyResetCode = async (email: string, code: string) => {
+  const response = await apiFetcher(
+    customerApi.post("auth/verify-reset-code", { json: { email, code } }),
+    VerifyResetCodeResponse,
+  );
+  return response.data;
+};
+
+export const resetPassword = async (payload: ResetPasswordInput) => {
+  const response = await apiFetcher(
+    customerApi.post("auth/reset-password", { json: payload }),
+    ResetPasswordResponse,
+  );
+  return response.data;
 };
