@@ -9,6 +9,11 @@ import * as bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { CustomerRegisterDto, LoginDto } from './dto/dto.login';
 import {
+  authCookieOptions,
+  REFRESH_TOKEN_MAX_AGE,
+  REFRESH_TOKEN_RENEWAL_MAX_AGE,
+} from 'common/helpers/cookie-options';
+import {
   toCustomerProfileResponse,
   toEmployeeProfileResponse,
 } from 'auth/auth.response';
@@ -99,18 +104,9 @@ export class AuthService {
       },
     });
 
-    res.cookie('access_token_admin', token.accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
+    res.cookie('access_token_admin', token.accessToken, authCookieOptions());
 
-    res.cookie('refresh_token_admin', token.refreshToken, {
-      httpOnly: true,
-      secure: false, // jika production berikan true
-      sameSite: 'lax', //jika production berikan strict
-      maxAge: 7 * 60 * 60 * 1000,
-    });
+    res.cookie('refresh_token_admin', token.refreshToken, authCookieOptions(REFRESH_TOKEN_MAX_AGE));
 
     return {
       message: 'Login Success, selamat datang',
@@ -161,18 +157,9 @@ export class AuthService {
       data: { refreshToken: hashedRefresh },
     });
 
-    res.cookie('access_token_admin', tokens.accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
+    res.cookie('access_token_admin', tokens.accessToken, authCookieOptions());
 
-    res.cookie('refresh_token_admin', tokens.refreshToken, {
-      httpOnly: true,
-      secure: false, // jika production berikan true
-      sameSite: 'lax', //jika production berikan strict
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('refresh_token_admin', tokens.refreshToken, authCookieOptions(REFRESH_TOKEN_RENEWAL_MAX_AGE));
 
     return {
       message: 'Success',
@@ -192,12 +179,14 @@ export class AuthService {
       },
     });
 
-    console.log(role);
+    const cookieOptions = authCookieOptions();
 
     if (role === UserRole.CUSTOMER) {
-      res.clearCookie('refresh_token_customer');
+      res.clearCookie('access_token_customer', cookieOptions);
+      res.clearCookie('refresh_token_customer', cookieOptions);
     } else {
-      res.clearCookie('refresh_token_admin');
+      res.clearCookie('access_token_admin', cookieOptions);
+      res.clearCookie('refresh_token_admin', cookieOptions);
     }
 
     return { message: 'Logged Out' };
@@ -265,17 +254,9 @@ export class AuthService {
       },
     });
 
-    res.cookie('access_token_customer', token.accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
+    res.cookie('access_token_customer', token.accessToken, authCookieOptions());
 
-    res.cookie('refresh_token_customer', token.refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
+    res.cookie('refresh_token_customer', token.refreshToken, authCookieOptions());
 
     return {
       message: 'Login Success, selamat datang',
@@ -305,18 +286,9 @@ export class AuthService {
       data: { refreshToken: hashedRefresh },
     });
 
-    res.cookie('access_token_customer', tokens.accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
+    res.cookie('access_token_customer', tokens.accessToken, authCookieOptions());
 
-    res.cookie('refresh_token_customer', tokens.refreshToken, {
-      httpOnly: true,
-      secure: false, // jika production berikan true
-      sameSite: 'lax', //jika production berikan strict
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie('refresh_token_customer', tokens.refreshToken, authCookieOptions(REFRESH_TOKEN_RENEWAL_MAX_AGE));
 
     return {
       message: 'Success',
@@ -334,6 +306,8 @@ export class AuthService {
         customer: {
           select: {
             name: true,
+            image: true,
+            phone: true,
           },
         },
       },

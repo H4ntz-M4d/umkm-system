@@ -41,10 +41,28 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.use(cookieParser());
-  app.enableCors({
-    origin: ['http://localhost:3000', 'http://192.168.100.31:3000'],
-    credentials: true,
-  });
+  /**
+   * Daftar origin diambil dari env, bukan ditulis di sini.
+   *
+   * Sebelumnya berisi `localhost:3000` dan alamat LAN sebuah laptop — dua
+   * nilai yang tidak berarti apa-apa di server produksi, dan tidak memuat
+   * domain sungguhan. `CORS_ORIGINS` menerima beberapa origin dipisah koma;
+   * kalau kosong, `FRONTEND_URL` dipakai sendirian.
+   *
+   * Wildcard sengaja tidak didukung: API ini mengirim cookie sesi
+   * (`credentials: true`), dan origin terbuka berarti situs mana pun boleh
+   * memanggilnya atas nama pengguna yang sedang login.
+   */
+  const corsOrigins = (
+    process.env.CORS_ORIGINS ??
+    process.env.FRONTEND_URL ??
+    ''
+  )
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  app.enableCors({ origin: corsOrigins, credentials: true });
 
   /**
    * Berhenti dengan rapi saat SIGTERM — sinyal yang dikirim tiap kali container

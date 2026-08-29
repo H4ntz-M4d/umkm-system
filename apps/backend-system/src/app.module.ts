@@ -17,6 +17,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { loggerOptions } from './common/logger/logger.options';
+import { validateEnv } from './common/config/env.schema';
 import { TransactionFlowModule } from './transaction-flow/transaction-flow.module';
 import { OrderModule } from './order/order.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -33,6 +34,7 @@ import { PrismaShutdownService } from './common/lifecycle/prisma-shutdown.servic
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validateEnv,
     }),
     LoggerModule.forRoot(loggerOptions),
     /**
