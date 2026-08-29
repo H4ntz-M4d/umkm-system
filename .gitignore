@@ -5,6 +5,12 @@ node_modules
 .pnp
 .pnp.js
 
+# Repo ini memakai pnpm (lihat "packageManager" di package.json).
+# Lockfile manajer lain membuat Next.js salah menebak akar workspace, dan
+# berpotensi membangun image Docker dengan versi paket yang berbeda.
+package-lock.json
+yarn.lock
+
 # Local env files
 .env
 .env.local
