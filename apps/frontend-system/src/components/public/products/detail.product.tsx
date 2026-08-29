@@ -105,6 +105,7 @@ const ProductDetail = ({
           productMasterId: product.id,
           slug: product.slug,
           productName: product.name,
+          productType: product.type,
           sku: selectedVariant.sku,
           price: selectedVariant.price,
           image: images[0]?.image ?? product.image,

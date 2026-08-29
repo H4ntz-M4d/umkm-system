@@ -15,6 +15,10 @@ export type GuestCartItem = {
     productMasterId: string;
     slug: string;
     productName: string;
+    /// Ikut disimpan karena keranjang memakainya untuk mengunci jumlah pada
+    /// produk RESTOCK. Tanpa ini item guest tidak punya nilainya, dan
+    /// pembatasan stok diam-diam tidak berlaku bagi yang belum login.
+    productType: string;
     sku: string;
     price: string;
     image: string | null;
