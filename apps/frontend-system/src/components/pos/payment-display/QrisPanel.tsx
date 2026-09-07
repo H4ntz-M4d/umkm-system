@@ -92,6 +92,8 @@ export function QrisPanel({
       // Admin dari pilihannya. Kalau belum ada, katakan alasannya -- jangan diam.
       if (!activeStoreId) {
         toast.error("Pilih toko terlebih dahulu", { position: "top-center" });
+        setError("Pilih toko terlebih dahulu");
+        setQrisState("error");
         return;
       }
       const result = await mutationPosTransactionData({
@@ -112,7 +114,11 @@ export function QrisPanel({
       startPolling(result.data.id);
       startCountdown();
     } catch (err) {
+      // Sebelumnya hanya `error` yang di-set, sementara `qrisState` tetap
+      // "loading" — spinner "Membuat QR code..." berputar selamanya dan
+      // tombol "Coba lagi" (milik state "error") tidak pernah muncul.
       setError(err instanceof Error ? err.message : "Gagal membuat transaksi");
+      setQrisState("error");
     }
   };
 
@@ -210,8 +216,6 @@ export function QrisPanel({
             </div>
           )}
         </div>
-
-        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
       </div>
     </div>
   );
