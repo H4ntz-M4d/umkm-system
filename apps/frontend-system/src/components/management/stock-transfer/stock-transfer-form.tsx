@@ -197,13 +197,24 @@ export default function StockTransferForm({
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Batal
-          </Button>
-          <Button onClick={handleSubmit} disabled={!canSubmit || isSubmitting}>
-            {isSubmitting ? "Menyimpan..." : "Buat kiriman"}
-          </Button>
+        <DialogFooter className="flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+          {/* Tombol disabled tanpa keterangan bikin user mengira ada yang
+              rusak. Katakan langsung syarat yang belum terpenuhi. */}
+          {!canSubmit && (
+            <p className="text-xs text-muted-foreground sm:mr-auto">
+              {toStoreId === ""
+                ? "Pilih toko tujuan dulu"
+                : "Isi minimal 1 produk dengan jumlah lebih dari 0"}
+            </p>
+          )}
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Batal
+            </Button>
+            <Button onClick={handleSubmit} disabled={!canSubmit || isSubmitting}>
+              {isSubmitting ? "Menyimpan..." : "Buat kiriman"}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
