@@ -34,6 +34,11 @@ export function useUsersOperation({
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["employee"] });
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const getUsersEmployee = useQuery({
     queryKey: ["employee", pagination?.pageIndex, pagination?.pageSize, search],
     queryFn: () =>
@@ -65,9 +70,7 @@ export function useUsersOperation({
         router.push("/management/employee");
       }, 800);
     },
-    onError: (err) => {
-      console.log("Error:",err);
-    },
+    onError: showError("Gagal menyimpan data karyawan"),
   });
 
   const updateStaffMutate = useMutation({
@@ -79,6 +82,7 @@ export function useUsersOperation({
         router.push("/management/employee");
       }, 800);
     },
+    onError: showError("Gagal mengubah data karyawan"),
   });
 
   const deleteStaffMutate = useMutation({
@@ -87,6 +91,7 @@ export function useUsersOperation({
       invalidate();
       toast.success("Karyawan berhasil di hapus");
     },
+    onError: showError("Gagal menghapus karyawan"),
   });
 
   return {
