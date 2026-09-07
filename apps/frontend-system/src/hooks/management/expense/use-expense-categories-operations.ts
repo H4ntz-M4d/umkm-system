@@ -19,6 +19,11 @@ export const useExpenseCategoriesOperation = ({
     qc.invalidateQueries({ queryKey: ["expense-categories"] });
   };
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const fetchExpenseCategoriesQuery = useQuery({
     queryKey: ["expense-categories"],
     queryFn: () => fetchExpenseCategories(),
@@ -31,6 +36,7 @@ export const useExpenseCategoriesOperation = ({
       invalidate();
       toast.success("Catatan pengeluaran berhasil ditambahkan");
     },
+    onError: showError("Gagal menambahkan kategori pengeluaran"),
   });
 
   const updateExpenseCategoriesMutation = useMutation({
@@ -45,6 +51,7 @@ export const useExpenseCategoriesOperation = ({
       invalidate();
       toast.success("Catatan pengeluaran berhasil diperbarui");
     },
+    onError: showError("Gagal memperbarui kategori pengeluaran"),
   });
 
   const removeByStatusMutation = useMutation({
@@ -53,6 +60,7 @@ export const useExpenseCategoriesOperation = ({
       invalidate();
       toast.success("Catatan pengeluaran berhasil dinonaktifkan");
     },
+    onError: showError("Gagal menonaktifkan kategori pengeluaran"),
   });
 
   const removePermanentMutation = useMutation({
@@ -61,6 +69,7 @@ export const useExpenseCategoriesOperation = ({
       invalidate();
       toast.success("Catatan pengeluaran berhasil dihapus");
     },
+    onError: showError("Gagal menghapus kategori pengeluaran"),
   });
 
   return {

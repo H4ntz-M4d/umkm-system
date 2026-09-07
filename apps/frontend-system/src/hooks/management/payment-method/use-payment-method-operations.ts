@@ -13,6 +13,11 @@ export const usePaymentMethodOperations = () => {
   const invalidate = () =>
     qc.invalidateQueries({ queryKey: ["payment-method"] });
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const fetchPaymentQuery = useQuery({
     queryKey: ["payment-method"],
     queryFn: () => fetchPayment(),
@@ -24,6 +29,7 @@ export const usePaymentMethodOperations = () => {
       invalidate();
       toast.success("Metode pembayaran berhasil dibuat");
     },
+    onError: showError("Gagal membuat metode pembayaran"),
   });
 
   const updatePaymentMutation = useMutation({
@@ -38,6 +44,7 @@ export const usePaymentMethodOperations = () => {
       invalidate();
       toast.success("Metode pembayaran berhasil diubah");
     },
+    onError: showError("Gagal mengubah metode pembayaran"),
   });
 
   const removePaymentMutation = useMutation({
@@ -46,6 +53,7 @@ export const usePaymentMethodOperations = () => {
       invalidate();
       toast.success("Metode pembayaran berhasil dihapus");
     },
+    onError: showError("Gagal menghapus metode pembayaran"),
   });
 
   return {

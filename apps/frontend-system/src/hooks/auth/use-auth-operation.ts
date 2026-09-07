@@ -24,6 +24,11 @@ export const useAuthOperations = () => {
 
   const qc = useQueryClient();
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const loginAdminMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       loginAdmin(email, password),
@@ -34,14 +39,16 @@ export const useAuthOperations = () => {
 
       router.push("/management/dashboard");
     },
-    onError: (error) => {
-      console.log(error);
-    },
+    // Halaman login memasang pesan yang lebih spesifik ("Email atau password
+    // tidak valid") lewat opsi per-panggilan; ini jaring pengaman kalau
+    // pemanggil lain lupa memasangnya.
+    onError: showError("Gagal masuk"),
   });
 
   const loginCustomerMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       loginCustomer(email, password),
+    onError: showError("Email atau password tidak valid"),
     onSuccess: async (token) => {
       setTokenUser(token);
       localStorage.setItem("is_customer_logged_in", "true");
@@ -80,12 +87,14 @@ export const useAuthOperations = () => {
       );
       router.push("/login");
     },
+    onError: showError("Gagal mendaftar"),
   });
 
   const logOutMutationAdmin = useMutation({
     mutationFn: async () => {
       return await logoutAdmin();
     },
+    onError: showError("Gagal keluar"),
     onSuccess: () => {
       qc.clear();
       localStorage.removeItem("is_admin_logged_in");
@@ -114,6 +123,7 @@ export const useAuthOperations = () => {
     mutationFn: async () => {
       return await logoutCustomer();
     },
+    onError: showError("Gagal keluar"),
     onSuccess: () => {
       qc.clear();
       localStorage.removeItem("is_customer_logged_in");

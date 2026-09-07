@@ -21,6 +21,11 @@ export const useExpenseOperation = ({
   const qc = useQueryClient();
   const invalidate = () => qc.invalidateQueries({ queryKey: ["expense"] });
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const fetchExpenseQuery = useQuery({
     queryKey: ["expense", filters ?? {}],
     queryFn: () => fetchExpense(filters ?? {}),
@@ -40,9 +45,7 @@ export const useExpenseOperation = ({
       invalidate();
       toast.success("Catatan pengeluaran berhasil ditambahkan");
     },
-    onError: (err) => {
-      console.log(err);
-    },
+    onError: showError("Gagal menambahkan pengeluaran"),
   });
 
   const removeExpenseMutation = useMutation({
@@ -51,9 +54,7 @@ export const useExpenseOperation = ({
       invalidate();
       toast.success("Catatan pengeluaran berhasil dihapus");
     },
-    onError: (err) => {
-      console.log(err);
-    },
+    onError: showError("Gagal menghapus pengeluaran"),
   });
 
   return {

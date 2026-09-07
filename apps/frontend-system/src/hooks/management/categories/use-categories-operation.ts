@@ -22,6 +22,11 @@ export const useCategoriesOperation = ({
   const qc = useQueryClient();
   const invalidate = () => qc.invalidateQueries({ queryKey: ["categories"] });
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const getCategories = useQuery({
     queryKey: ["categories", search],
     queryFn: () => fetchCategories(search ?? ""),
@@ -46,6 +51,7 @@ export const useCategoriesOperation = ({
       invalidate();
       toast.success("Kategori berhasil ditambahkan");
     },
+    onError: showError("Gagal menambahkan kategori"),
   });
 
   const updateCategoryMutatation = useMutation({
@@ -55,6 +61,7 @@ export const useCategoriesOperation = ({
       invalidate();
       toast.success("Kategori berhasil diubah");
     },
+    onError: showError("Gagal mengubah kategori"),
   });
 
   const removeCategoryMutatation = useMutation({
@@ -63,6 +70,7 @@ export const useCategoriesOperation = ({
       invalidate();
       toast.success("Kategori berhasil telah berhasil dihapus");
     },
+    onError: showError("Gagal menghapus kategori"),
   });
 
   return {

@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldContent, FieldGroup } from "@/components/ui/field";
+import { Field, FieldContent, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -28,7 +28,10 @@ import { Controller, useForm } from "react-hook-form";
 type FormData = z.infer<typeof StoreSchema>;
 
 interface StoreFormProps {
-  onSubmit: (v: FormData) => void;
+  /// Dialog ditutup lewat `onSaved`, bukan langsung setelah dipanggil — supaya
+  /// kalau simpannya gagal, formulir tetap terbuka dan pesan galat terlihat
+  /// di tempat yang sama dengan data yang tadi diisi.
+  onSubmit: (v: FormData, onSaved: () => void) => void;
   initialData?: StoreData;
   isOpen: boolean
   onOpenChange: (open: boolean) => void;
@@ -57,8 +60,7 @@ export default function StoreForm({
   }, [initialData, form]);
 
   const handleSubmit = (data: FormData) => {
-    onSubmit(data);
-    onOpenChange(false);
+    onSubmit(data, () => onOpenChange(false));
   };
 
   const isEditing = !!initialData;
@@ -81,6 +83,9 @@ export default function StoreForm({
               <FieldContent className="p-1">
                 <Label>Nama</Label>
                 <Input {...form.register("name")} placeholder="Nama Toko" />
+                {form.formState.errors.name && (
+                  <FieldError>{form.formState.errors.name.message}</FieldError>
+                )}
               </FieldContent>
               <FieldContent className="p-1">
                 <Label>Status</Label>

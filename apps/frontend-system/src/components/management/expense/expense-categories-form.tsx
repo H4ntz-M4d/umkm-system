@@ -10,6 +10,7 @@ import {
   Field,
   FieldContent,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldTitle,
@@ -83,12 +84,14 @@ export default function ExpenseCategoriesForm({
     useExpenseCategoriesOperation({});
     
   const onSubmitData = (data: ExpenseCategorySchemaInput) => {
+    // Dialog ditutup hanya saat berhasil — kalau ditutup lebih dulu, pesan
+    // galat yang baru saja diperbaiki tampil ke layar yang sudah kosong, dan
+    // data yang sempat diisi hilang begitu saja.
+    const onSuccess = () => onOpenChange(false);
     if (idData) {
-      updateExpenseCategoriesData({ id: idData, data });
-      onOpenChange(false);
+      updateExpenseCategoriesData({ id: idData, data }, { onSuccess });
     } else {
-      createExpenseCategoryData(data);
-      onOpenChange(false);
+      createExpenseCategoryData(data, { onSuccess });
     }
   };
 
@@ -122,7 +125,7 @@ export default function ExpenseCategoriesForm({
                 <Controller
                   name="name"
                   control={form.control}
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <Field>
                       <FieldLabel>Nama Kategori</FieldLabel>
                       <Input
@@ -130,6 +133,9 @@ export default function ExpenseCategoriesForm({
                         value={field.value}
                         onChange={(e) => field.onChange(e.target.value)}
                       />
+                      {fieldState.error && (
+                        <FieldError>{fieldState.error.message}</FieldError>
+                      )}
                     </Field>
                   )}
                 />
@@ -137,7 +143,7 @@ export default function ExpenseCategoriesForm({
                 <Controller
                   name="description"
                   control={form.control}
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <Field>
                       <FieldLabel>Deskripsi (Opsional)</FieldLabel>
                       <Textarea
@@ -146,6 +152,9 @@ export default function ExpenseCategoriesForm({
                         value={field.value}
                         onChange={(e) => field.onChange(e.target.value)}
                       />
+                      {fieldState.error && (
+                        <FieldError>{fieldState.error.message}</FieldError>
+                      )}
                     </Field>
                   )}
                 />

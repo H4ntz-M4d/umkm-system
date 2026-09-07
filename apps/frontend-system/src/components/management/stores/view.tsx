@@ -75,11 +75,11 @@ export default function View() {
         </div>
         <StoreForm
           initialData={selectedStore}
-          onSubmit={(formData) => {
+          onSubmit={(formData, onSaved) => {
             if (idData) {
-              updateData({ id: idData, data: formData });
+              updateData({ id: idData, data: formData }, { onSuccess: onSaved });
             } else {
-              createData(formData);
+              createData(formData, { onSuccess: onSaved });
             }
           }}
           isOpen={openForm}
