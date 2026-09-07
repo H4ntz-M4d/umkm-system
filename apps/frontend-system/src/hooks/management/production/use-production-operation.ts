@@ -61,6 +61,9 @@ export const useProductionOperation = ({
       invalidate();
       toast.success("Berhasil mengubah data.");
     },
+    onError: (err) => {
+      toast.error(err.message, { position: "top-center" });
+    },
   });
 
   const updateProductionStatusMutation = useMutation({
@@ -74,6 +77,9 @@ export const useProductionOperation = ({
     onSuccess: () => {
       invalidate();
       toast.success("Berhasil mengubah status data.");
+    },
+    onError: (err) => {
+      toast.error(err.message, { position: "top-center" });
     },
   });
 

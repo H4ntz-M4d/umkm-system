@@ -2,7 +2,7 @@
 
 import { Control, Controller } from "react-hook-form";
 import { CreateProductSchemaInput } from "@repo/schemas";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
 interface ProductNumberFieldProps {
@@ -27,7 +27,7 @@ export default function ProductNumberField({
     <Controller
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <Field>
           <FieldLabel>{label}</FieldLabel>
           <Input
@@ -38,6 +38,9 @@ export default function ProductNumberField({
               field.onChange(e.target.value === "" ? 0 : Number(e.target.value))
             }
           />
+          {fieldState.error && (
+            <FieldError>{fieldState.error.message}</FieldError>
+          )}
         </Field>
       )}
     />

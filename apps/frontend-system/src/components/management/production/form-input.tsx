@@ -136,13 +136,17 @@ export default function ProductionModalForm({
 
   const isSubmitting = isUpdating || isCreating;
   const onSubmit = (data: CreateProductionSchemaInput) => {
+    // Dialog ditutup hanya saat berhasil — kalau ditutup lebih dulu, pesan
+    // galat tampil ke layar yang sudah kosong dan data yang diisi hilang.
+    const onSuccess = () => {
+      handleOpenDialog(false);
+      reset();
+    };
     if (id) {
-      updateProductionData({ id, data });
+      updateProductionData({ id, data }, { onSuccess });
     } else {
-      createProductionData(data);
+      createProductionData(data, { onSuccess });
     }
-    handleOpenDialog(false);
-    reset();
   };
 
   return (
