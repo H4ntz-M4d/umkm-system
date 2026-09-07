@@ -34,12 +34,12 @@ const ledgerSource = [
     label: "Transaksi Kasir",
   },
   {
-    value: "PURCHASE",
-    label: "Pembelian",
-  },
-  {
     value: "ADJUSTMENT",
     label: "Pengaturan",
+  },
+  {
+    value: "TRANSFER",
+    label: "Distribusi Stok",
   },
 ];
 
@@ -107,7 +107,6 @@ export default function InventoryLedgerFilter({
           <SelectContent>
             <SelectItem value="none">Semua Tipe</SelectItem>
             <SelectItem value="PRODUCT_VARIANT">Variant Produk</SelectItem>
-            <SelectItem value="RAW_MATERIAL">Bahan Baku</SelectItem>
           </SelectContent>
         </Select>
         <Select
