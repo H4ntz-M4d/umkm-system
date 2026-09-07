@@ -74,8 +74,8 @@ export const columnsLedgers = (): ColumnDef<InventoryLedgerData>[] => [
         PRODUCTION: "Produksi",
         ONLINE_ORDER: "Transaksi Online",
         POS: "Transaksi Kasir",
-        PURCHASE: "Pengeluaran",
         ADJUSTMENT: "Pengaturan",
+        TRANSFER: "Distribusi Stok",
       };
 
       const label = sourceLabels[ledgerSource] || ledgerSource;
