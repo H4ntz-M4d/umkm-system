@@ -6,6 +6,7 @@ import { CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldLegend,
@@ -58,10 +59,13 @@ export default function SimpleProductFields({
               <Controller
                 control={control}
                 name={`variants.${i}.sku`}
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <Field>
                     <FieldLabel>SKU</FieldLabel>
                     <Input {...field} />
+                    {fieldState.error && (
+                      <FieldError>{fieldState.error.message}</FieldError>
+                    )}
                   </Field>
                 )}
               />

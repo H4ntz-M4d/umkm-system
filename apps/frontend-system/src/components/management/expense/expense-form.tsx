@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FieldGroup, Field, FieldLabel } from "@/components/ui/field";
+import { FieldGroup, Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Plus, Trash2, Boxes } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
@@ -162,6 +162,9 @@ export function AddExpenseDialog({
                           ))}
                         </SelectContent>
                       </Select>
+                      {errors.storeId && (
+                        <FieldError>{errors.storeId.message}</FieldError>
+                      )}
                     </Field>
                   )}
                 />
@@ -204,6 +207,9 @@ export function AddExpenseDialog({
                             ))}
                           </SelectContent>
                         </Select>
+                        {errors.categoryId && (
+                          <FieldError>{errors.categoryId.message}</FieldError>
+                        )}
                       </Field>
                     )}
                   />

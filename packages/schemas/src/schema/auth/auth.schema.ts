@@ -17,6 +17,10 @@ export const CustomerRegisterSchema = z.object({
     return ctx.password === ctx.confirmPassword
 }, {
     message: 'Konfirmasi password tidak sama dengan password',
+    // Tanpa path, galat ini menempel di root form (path kosong) dan react-hook-form
+    // tidak menaruhnya di field mana pun — sehingga tidak pernah terlihat pengguna,
+    // sama seperti yang sudah diperbaiki di NewPasswordFormSchema.
+    path: ['confirmPassword'],
 })
 
 export type CustomerRegisterInput = z.infer<typeof CustomerRegisterSchema>

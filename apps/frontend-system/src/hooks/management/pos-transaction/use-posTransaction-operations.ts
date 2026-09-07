@@ -22,6 +22,11 @@ export const usePosTransactionOperations = ({
   const invalidate = () =>
     qc.invalidateQueries({ queryKey: ["pos_transactions"] });
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const fetchPosTransactionsQuery = useQuery({
     queryKey: ["pos_transactions", filters ?? {}],
     queryFn: () => fetchPosTransactions(filters ?? {}),
@@ -42,6 +47,10 @@ export const usePosTransactionOperations = ({
       invalidate();
       toast.success("Transaksi kasir berhasil dibuat");
     },
+    // Jaring pengaman: komponen pembayaran (Cash/Qris/Transfer) sudah
+    // menangkap galatnya sendiri lewat try/catch, tapi pemanggil lain
+    // (mis. simpan transaksi tertunda) mengandalkan ini satu-satunya.
+    onError: showError("Transaksi kasir gagal dibuat"),
   });
 
   const uploadPaymentProofMutation = useMutation({
@@ -56,14 +65,16 @@ export const usePosTransactionOperations = ({
       invalidate();
       toast.success("Bukti pembayaran telah berhasil diupload dan status transaksi sudah diubah ke Terbayar")
     },
+    onError: showError("Gagal mengunggah bukti pembayaran"),
   });
 
   const cancelPosTransactionMutation = useMutation({
     mutationFn: (transId: string[]) => cancelPosTransaction(transId),
     onSuccess: () => {
       invalidate();
-      console.log("Transaksi kasir berhasil dibuat");
+      toast.success("Transaksi kasir berhasil dibatalkan");
     },
+    onError: showError("Gagal membatalkan transaksi"),
   });
 
   return {

@@ -10,12 +10,14 @@ export const ExpenseItemSchema = z.object({
 });
 
 export const ExpenseSchema = z.object({
-  storeId: z.string(),
-  categoryId: z.string(),
+  // Sebelumnya string kosong ikut lolos ke sini, lalu berakhir sebagai
+  // BigInt("") di backend — crash yang tidak jelas asalnya bagi pengguna.
+  storeId: z.string().min(1, "Pilih toko"),
+  categoryId: z.string().min(1, "Pilih kategori"),
   description: z.string().optional(),
   totalAmount: z.number(),
   date: z.coerce.date(),
-  expenseItem: z.array(ExpenseItemSchema),
+  expenseItem: z.array(ExpenseItemSchema).min(1, "Tambahkan minimal 1 item"),
 });
 
 export type ExpenseSchemaInput = z.input<typeof ExpenseSchema>;

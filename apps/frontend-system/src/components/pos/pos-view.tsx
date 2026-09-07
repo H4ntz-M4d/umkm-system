@@ -167,7 +167,10 @@ export default function PosView() {
   const [openPayment, setOpenPayment] = useState(false);
   const existOnParked = parkedData?.some((data) => data.transId === transPosId);
 
-  const parkedCart = (cashier: AdminUser | null, transaction: CartItem[]) => {
+  const parkedCart = async (
+    cashier: AdminUser | null,
+    transaction: CartItem[],
+  ) => {
     /**
      * Dulu berhenti diam-diam ketika `cashier.storeId` kosong, sehingga Owner
      * dan Admin menekan tombol dan tidak terjadi apa-apa. Sekarang toko diambil
@@ -193,9 +196,17 @@ export default function PosView() {
       }),
     };
 
-    mutationPosTransactionData(payload);
-    localStorage.removeItem("pos_cart");
-    clearCart();
+    // Keranjang HANYA dikosongkan setelah tersimpan. Sebelumnya dihapus tanpa
+    // menunggu hasilnya sama sekali — kalau permintaan gagal (jaringan putus,
+    // stok berubah), isi keranjang kasir hilang tanpa pemberitahuan apa pun.
+    try {
+      await mutationPosTransactionData(payload);
+      clearCart();
+    } catch {
+      // Toast galatnya sudah ditampilkan oleh usePosTransactionOperations;
+      // di sini cukup membiarkan keranjang tetap utuh supaya kasir bisa
+      // mencoba menyimpan lagi.
+    }
   };
 
   const findVariantBySku = (codeSku: string) => {

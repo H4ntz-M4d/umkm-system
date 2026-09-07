@@ -20,7 +20,10 @@ export const VariantTypeSchema = z.object({
 export const VariantSchema = z.object({
   id: z.string().optional(),
   sku: z.string().min(3, "SKU wajib diisi dan tidak boleh ada yang sama"),
-  price: z.number(),
+  // Harga 0 sebelumnya lolos validasi — produk tersimpan tanpa harga tanpa
+  // ada yang memberi tahu. `cost` sengaja dibiarkan boleh 0: belum semua
+  // varian punya biaya modal tercatat.
+  price: z.number().positive("Harga harus lebih dari 0"),
   cost: z.number(),
   options: z.record(z.string(), z.string()),
 });

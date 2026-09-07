@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -96,7 +96,7 @@ export default function CategoriesForm({
               <Controller
                 name="name"
                 control={form.control}
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <Field>
                     <FieldLabel>Nama</FieldLabel>
                     <Input
@@ -111,23 +111,29 @@ export default function CategoriesForm({
                         });
                       }}
                     />
+                    {fieldState.error && (
+                      <FieldError>{fieldState.error.message}</FieldError>
+                    )}
                   </Field>
                 )}
               />
               <Controller
                 name="slug"
                 control={form.control}
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <Field>
                     <FieldLabel>Slug</FieldLabel>
                     <Input placeholder="sweater" {...field} />
+                    {fieldState.error && (
+                      <FieldError>{fieldState.error.message}</FieldError>
+                    )}
                   </Field>
                 )}
               />
               <Controller
                 name="description"
                 control={form.control}
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <Field>
                     <FieldLabel>Deskripsi</FieldLabel>
                     <Textarea
@@ -135,6 +141,9 @@ export default function CategoriesForm({
                       className="h-20"
                       {...field}
                     />
+                    {fieldState.error && (
+                      <FieldError>{fieldState.error.message}</FieldError>
+                    )}
                   </Field>
                 )}
               />

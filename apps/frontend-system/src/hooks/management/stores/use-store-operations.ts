@@ -52,12 +52,18 @@ export function useStoreOperations({
 
   const invalidate = () => qc.invalidateQueries({ queryKey: storeKeys.all });
 
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message. Ditampilkan
+  // sebagai description supaya peringatan panjang tetap terbaca utuh.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
   const createMutation = useMutation({
     mutationFn: createStore,
     onSuccess: () => {
       invalidate();
       toast.success("Toko berhasil ditambahkan", { position: "top-center" });
     },
+    onError: showError("Gagal menambahkan toko"),
   });
 
   const updateMutation = useMutation({
@@ -67,6 +73,7 @@ export function useStoreOperations({
       invalidate();
       toast.success("Toko berhasil diperbarui", { position: "top-center" });
     },
+    onError: showError("Gagal memperbarui toko"),
   });
 
   const deleteMutation = useMutation({

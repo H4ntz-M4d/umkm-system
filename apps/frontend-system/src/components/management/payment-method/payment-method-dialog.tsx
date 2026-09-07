@@ -14,6 +14,7 @@ import {
   Field,
   FieldContent,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldTitle,
@@ -78,7 +79,7 @@ export default function PaymentMethodDialog({
     },
   };
 
-  const { control, handleSubmit, formState, setValue, reset } =
+  const { control, handleSubmit, setValue, reset } =
     useForm<PaymentMethodSchemaInput>({
       resolver: zodResolver(PaymentMethodSchema),
       values: initialValues,
@@ -92,12 +93,14 @@ export default function PaymentMethodDialog({
   const { createPaymentData, updatePaymentData } = usePaymentMethodOperations();
 
   const onSubmit = (data: PaymentMethodSchemaInput) => {
+    // Dialog ditutup hanya saat berhasil — kalau ditutup lebih dulu, pesan
+    // galat tampil ke layar yang sudah kosong dan data yang diisi hilang.
+    const onSuccess = () => setOpen(false);
     if (idData) {
-      updatePaymentData({ id: idData, data });
+      updatePaymentData({ id: idData, data }, { onSuccess });
     } else {
-      createPaymentData(data);
+      createPaymentData(data, { onSuccess });
     }
-    setOpen(false);
   };
 
   const handleOpenDialog = (open: boolean) => {
@@ -141,7 +144,7 @@ export default function PaymentMethodDialog({
               <Controller
                 control={control}
                 name="name"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <Field>
                     <FieldTitle>Nama pembayaran</FieldTitle>
                     <Input
@@ -152,6 +155,9 @@ export default function PaymentMethodDialog({
                         setValue("bankAccount.bankName", val.target.value);
                       }}
                     />
+                    {fieldState.error && (
+                      <FieldError>{fieldState.error.message}</FieldError>
+                    )}
                   </Field>
                 )}
               />

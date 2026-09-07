@@ -17,7 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { CustomerRegisterSchema, LoginSchema } from "@repo/schemas";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
@@ -42,6 +42,7 @@ export default function CustomerAuth() {
     control: loginControl,
     handleSubmit: loginSubmit,
     formState: { errors: loginErrors },
+    setError: setLoginError,
   } = useForm<FormDataLogin>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -51,7 +52,13 @@ export default function CustomerAuth() {
   });
 
   const loginMutate = (data: FormDataLogin) => {
-    loginCustomer(data);
+    loginCustomer(data, {
+      // Toast dari hook sudah cukup, tapi pesan di bawah form (lewat
+      // errors.root) lebih mudah dilihat daripada toast yang bisa terlewat.
+      onError: () => {
+        setLoginError("root", { message: "Email atau password tidak valid" });
+      },
+    });
   };
 
   // Register state
@@ -184,7 +191,7 @@ export default function CustomerAuth() {
                     <Controller
                       name={"name"}
                       control={registerControl}
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <Field>
                           <FieldLabel>Nama Lengkap</FieldLabel>
                           <InputGroup className={"h-12"}>
@@ -198,6 +205,9 @@ export default function CustomerAuth() {
                               <User className="h-4 w-4" />
                             </InputGroupAddon>
                           </InputGroup>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
                         </Field>
                       )}
                     />
@@ -209,7 +219,7 @@ export default function CustomerAuth() {
                     <Controller
                       name={"email"}
                       control={registerControl}
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <Field>
                           <FieldLabel>Email</FieldLabel>
                           <InputGroup className={"h-12"}>
@@ -223,6 +233,9 @@ export default function CustomerAuth() {
                               <Mail className="h-4 w-4" />
                             </InputGroupAddon>
                           </InputGroup>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
                         </Field>
                       )}
                     />
@@ -234,7 +247,7 @@ export default function CustomerAuth() {
                     <Controller
                       name={"phone"}
                       control={registerControl}
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <Field>
                           <FieldLabel>No. Handphone</FieldLabel>
                           <InputGroup className={"h-12"}>
@@ -248,6 +261,9 @@ export default function CustomerAuth() {
                               <Phone className="h-4 w-4" />
                             </InputGroupAddon>
                           </InputGroup>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
                         </Field>
                       )}
                     />
@@ -259,7 +275,7 @@ export default function CustomerAuth() {
                     <Controller
                       name={"password"}
                       control={registerControl}
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <Field>
                           <FieldLabel>Password</FieldLabel>
                           <InputGroup className={"h-12"}>
@@ -283,6 +299,9 @@ export default function CustomerAuth() {
                               </Button>
                             </InputGroupAddon>
                           </InputGroup>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
                         </Field>
                       )}
                     />
@@ -294,7 +313,7 @@ export default function CustomerAuth() {
                     <Controller
                       name={"confirmPassword"}
                       control={registerControl}
-                      render={({ field }) => (
+                      render={({ field, fieldState }) => (
                         <Field>
                           <FieldLabel>Konfirmasi Password</FieldLabel>
                           <InputGroup className={"h-12"}>
@@ -318,6 +337,9 @@ export default function CustomerAuth() {
                               </Button>
                             </InputGroupAddon>
                           </InputGroup>
+                          {fieldState.error && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
                         </Field>
                       )}
                     />
