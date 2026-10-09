@@ -214,7 +214,7 @@ export type PasswordResetCodeGroupByOutputType = {
   _max: PasswordResetCodeMaxAggregateOutputType | null
 }
 
-export type GetPasswordResetCodeGroupByPayload<T extends PasswordResetCodeGroupByArgs> = Prisma.PrismaPromise<
+type GetPasswordResetCodeGroupByPayload<T extends PasswordResetCodeGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PasswordResetCodeGroupByOutputType, T['by']> &
       {
@@ -1252,11 +1252,6 @@ export type PasswordResetCodeFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Skip the first `n` PasswordResetCodes.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of PasswordResetCodes.
-   */
   distinct?: Prisma.PasswordResetCodeScalarFieldEnum | Prisma.PasswordResetCodeScalarFieldEnum[]
 }
 

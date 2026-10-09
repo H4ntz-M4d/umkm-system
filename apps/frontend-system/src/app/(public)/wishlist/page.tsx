@@ -6,7 +6,7 @@ import { fetchWishlist } from "@/lib/queries/public/wishlist.query";
 import ProductCard from "@/components/public/products/products-card";
 
 export const metadata: Metadata = {
-  title: "Wishlist | NurfaCraft",
+  title: "Favorit | NurfaCraft",
 };
 
 export default async function Page() {
@@ -20,7 +20,7 @@ export default async function Page() {
     <main className="mx-auto px-4 md:px-8 py-8 md:py-12">
       <div className="mb-8">
         <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-          Wishlist
+          Favorit
         </h1>
         <p className="text-sm text-muted-foreground mt-2">
           {items.length > 0
@@ -45,7 +45,7 @@ export default async function Page() {
         <div className="text-center py-20">
           <Heart size={40} className="mx-auto text-muted-foreground/40" />
           <p className="font-display text-lg text-muted-foreground mt-4">
-            Wishlist kamu masih kosong
+            Belum ada rajutan favorit
           </p>
           <p className="text-sm text-muted-foreground/70 mt-1">
             Tekan ikon hati pada produk untuk menyimpannya

@@ -114,7 +114,7 @@ export default function SummaryTiles({
         label="Pemasukan"
         hint={`Kasir ${toIDR(data.revenuePos.current)} · Online ${toIDR(
           data.revenueOnline.current,
-        )}`}
+        )} · Custom ${toIDR(data.revenueBespoke.current)}`}
         value={data.revenue.current}
         change={percentChange(data.revenue.current, data.revenue.previous)}
       />

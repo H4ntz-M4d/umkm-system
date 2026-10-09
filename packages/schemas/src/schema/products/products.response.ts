@@ -49,6 +49,9 @@ export const VariantData = z.object({
   image: z.string().optional().nullable(),
   imageGroupId: z.string().optional().nullable(),
   productVariantStocks: z.number().optional(),
+  /// Stok yang dikunci pesanan online Lunas dan menunggu Selesai. Tidak
+  /// termasuk di `productVariantStocks` (itu stok bebas).
+  reservedStock: z.number().optional(),
 });
 
 export const ProductPreOrderDetailData = z.object({
@@ -113,10 +116,17 @@ export const ProductVariantListData = ProductsData.pick({
   id: true,
   name: true,
 }).extend({
+  /// Opsional: dipakai isian pencarian varian untuk menandai produk draft
+  /// atau nonaktif. Dibuat opsional supaya pemakai lama (form transfer stok)
+  /// tidak perlu ikut diubah.
+  status: ProductStatusEnum.optional(),
   variants: z.array(
     VariantData.pick({
       id: true,
       sku: true,
+    }).extend({
+      isActive: z.boolean().default(true),
+      optionLabel: z.string().default(""),
     }),
   ),
 });
@@ -140,6 +150,7 @@ export const ProductListData = ProductsData.pick({
     VariantData.omit({
       cost: true,
       productVariantStocks: true,
+      reservedStock: true,
     }).extend({
       stock: z.number(),
       options: z.array(OptionsData).optional().nullable(),
@@ -169,3 +180,56 @@ export const UploadProductImagesResponse = ApiSuccessResponse(
     }),
   ),
 );
+
+// ============================ Label barcode ==================================
+
+/**
+ * Data untuk mencetak label barcode satu varian.
+ *
+ * Stok dikirim per toko, bukan dijumlahkan: jumlah label default mengikuti
+ * stok di toko yang dipilih, karena label dicetak di tempat barangnya berada.
+ * Toko yang belum pernah punya baris stok untuk varian ini tetap ikut dengan
+ * stok 0, supaya pilihan tokonya lengkap.
+ */
+export const VariantLabelData = z.object({
+  variantId: z.string(),
+  productName: z.string(),
+  /// Gabungan nilai varian, mis. "Biru / L". Kosong untuk produk tanpa varian.
+  variantLabel: z.string(),
+  sku: z.string(),
+  price: z.string(),
+  stocks: z.array(
+    z.object({
+      storeId: z.string(),
+      storeName: z.string(),
+      isProductionHouse: z.boolean(),
+      stock: z.number(),
+    }),
+  ),
+});
+
+export type VariantLabelDataType = z.infer<typeof VariantLabelData>;
+
+export const VariantLabelResponse = ApiSuccessResponse(VariantLabelData);
+
+/**
+ * Hasil pencarian SKU dari kasir, dipakai saat barcode yang discan tidak ada di
+ * daftar produk kasir.
+ *
+ * Daftar kasir hanya memuat produk aktif yang punya stok di toko itu dan yang
+ * lolos filter pencarian/kategori, jadi "tidak ada di daftar" bisa berarti
+ * banyak hal. `null` berarti SKU-nya memang tidak dikenal sama sekali.
+ */
+export const PosSkuLookupData = z
+  .object({
+    productName: z.string(),
+    variantLabel: z.string(),
+    isActive: z.boolean(),
+    /// Stok di toko tempat kasir bertransaksi.
+    stock: z.number(),
+  })
+  .nullable();
+
+export type PosSkuLookupDataType = z.infer<typeof PosSkuLookupData>;
+
+export const PosSkuLookupResponse = ApiSuccessResponse(PosSkuLookupData);

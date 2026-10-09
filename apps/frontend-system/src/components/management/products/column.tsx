@@ -15,8 +15,7 @@ import {
 
 type ProductResponse = z.infer<typeof ProductsData>;
 const typeData: Record<string, string> = {
-  [ProductTypeEnum.enum.READY_STOCK]: "Siap di Jual",
-  [ProductTypeEnum.enum.MADE_TO_ORDER]: "Made to Order",
+  [ProductTypeEnum.enum.REGULAR]: "Reguler",
   [ProductTypeEnum.enum.PRE_ORDER]: "Pre Order",
 };
 
@@ -29,6 +28,9 @@ const statusData: Record<string, string> = {
 export const columnsProducts = (
   // setIdData: (id: string) => void,
   deleteStaffData: (id: string) => void,
+  /// Cabang hanya boleh melihat katalog; tombol ubah/hapus tidak ditampilkan
+  /// untuk mereka. Penjagaan sebenarnya tetap di server.
+  canManage = true,
 ): ColumnDef<ProductResponse>[] => [
   {
     accessorKey: "expanded",
@@ -103,6 +105,11 @@ export const columnsProducts = (
     header: "Action",
     cell: ({ row }) => {
       const router = useRouter();
+
+      if (!canManage) {
+        return <span className="text-muted-foreground">—</span>;
+      }
+
       return (
         <div className="flex gap-2 justify-center">
           <Button

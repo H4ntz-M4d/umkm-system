@@ -23,6 +23,9 @@ export const StockTransferItemSchema = z.object({
  */
 export const CreateStockTransferSchema = z.object({
   toStoreId: z.string(),
+  /// Karyawan yang mengurus kiriman. Dikosongkan berarti dipakai akun yang
+  /// sedang login — sama seperti "Diproses oleh" di pesanan online.
+  userId: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
   items: z
     .array(StockTransferItemSchema)

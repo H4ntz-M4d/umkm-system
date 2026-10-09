@@ -16,7 +16,9 @@ import { CartItem } from "../pos-view";
 import PaymentChannel from "../payment-display/payment-channel";
 import { toIDR } from "../../../../utils/format-money";
 import { usePaymentMethodOperations } from "@/hooks/management/payment-method/use-payment-method-operations";
+import { useActivePosStore } from "@/hooks/pos/use-active-store";
 import { QrisPanel } from "../payment-display/QrisPanel";
+import { QrisStaticPanel } from "../payment-display/QrisStaticPanel";
 
 interface PosPaymentDialogProps {
   openPayment: boolean;
@@ -37,7 +39,11 @@ export default function PosPaymentDialog({
 }: PosPaymentDialogProps) {
   const [selected, setSelected] = useState<string | undefined>(undefined);
 
-  const { fetchPaymentData } = usePaymentMethodOperations();
+  /// Hanya metode milik toko yang sedang melayani, ditambah yang berlaku umum
+  /// seperti tunai. Tanpa ini kasir cabang ikut melihat rekening dan QRIS toko
+  /// lain, dan uangnya bisa mendarat di rekening yang salah.
+  const { storeId: activeStoreId } = useActivePosStore();
+  const { fetchPaymentData } = usePaymentMethodOperations(activeStoreId);
   const selectedPayment = fetchPaymentData?.data.find(
     (pm) => pm.id === selected,
   );
@@ -110,6 +116,16 @@ export default function PosPaymentDialog({
             )}
             {selectedPayment?.channel === "BANK_TRANSFER" && (
               <TransferPanel
+                total={totalShopping}
+                cartPayload={cart}
+                paymentData={selectedPayment}
+                onSuccess={handleSuccess}
+                transPosId={transPosId}
+                paymentId={selectedPayment.id}
+              />
+            )}
+            {selectedPayment?.channel === "QRIS_STATIC" && (
+              <QrisStaticPanel
                 total={totalShopping}
                 cartPayload={cart}
                 paymentData={selectedPayment}

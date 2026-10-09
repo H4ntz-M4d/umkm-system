@@ -130,15 +130,11 @@ export default function ProductInfoFields({
                             <SelectValue placeholder={"Pilih Tipe"} />
                           </SelectTrigger>
                           <SelectContent position="popper">
-                            <SelectItem
-                              value={ProductTypeEnum.enum["READY_STOCK"]}
-                            >
-                              Siap di Jual
-                            </SelectItem>
-                            <SelectItem
-                              value={ProductTypeEnum.enum["MADE_TO_ORDER"]}
-                            >
-                              Made to Order
+                            {/* Reguler dijual online (dipesan ke rumah
+                                produksi) sekaligus di kasir (dari stok toko);
+                                satu produk cukup diinput sekali. */}
+                            <SelectItem value={ProductTypeEnum.enum["REGULAR"]}>
+                              Reguler
                             </SelectItem>
                             <SelectItem
                               value={ProductTypeEnum.enum["PRE_ORDER"]}

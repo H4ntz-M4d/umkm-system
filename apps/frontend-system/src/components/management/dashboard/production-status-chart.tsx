@@ -26,10 +26,19 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const chartConfig = {
-  PLANNED: { label: "Direncanakan", theme: { light: "#2a78d6", dark: "#3987e5" } },
-  IN_PROGRESS: { label: "Diproses", theme: { light: "#eb6834", dark: "#d95926" } },
+  PLANNED: {
+    label: "Direncanakan",
+    theme: { light: "#2a78d6", dark: "#3987e5" },
+  },
+  IN_PROGRESS: {
+    label: "Diproses",
+    theme: { light: "#eb6834", dark: "#d95926" },
+  },
   COMPLETED: { label: "Selesai", theme: { light: "#1baf7a", dark: "#199e70" } },
-  CANCELLED: { label: "Dibatalkan", theme: { light: "#eda100", dark: "#c98500" } },
+  CANCELLED: {
+    label: "Dibatalkan",
+    theme: { light: "#eda100", dark: "#c98500" },
+  },
 } satisfies ChartConfig;
 
 export default function ProductionStatusChart({

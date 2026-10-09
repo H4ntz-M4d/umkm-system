@@ -15,11 +15,13 @@ import { useCategoriesOperation } from "@/hooks/management/categories/use-catego
 import { useDebounce } from "@/hooks/use-debounce";
 import { Plus, Search } from "lucide-react";
 import { useState } from "react";
+import { useCanManageMaster } from "@/hooks/management/use-central-store";
 
 export default function Page() {
   const [idData, setIdData] = useState<string>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
+  const canManage = useCanManageMaster();
   const debouncedSearch = useDebounce(search, 500);
 
   const { getCategoriesData, removeCategoriesData, getCategoriesSummaryData } =
@@ -58,15 +60,17 @@ export default function Page() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </InputGroup>
-          <Button
-            onClick={() => {
-              setIsOpen(true);
-              setIdData("");
-            }}
-          >
-            <Plus />
-            Tambah kategori
-          </Button>
+          {canManage && (
+            <Button
+              onClick={() => {
+                setIsOpen(true);
+                setIdData("");
+              }}
+            >
+              <Plus />
+              Tambah kategori
+            </Button>
+          )}
         </div>
       </div>
 
@@ -95,7 +99,12 @@ export default function Page() {
       {/* Table Content */}
       <div className="bg-muted/50 rounded-xl md:min-h-min">
         <DataTableCategories
-          columns={columnsCategories(deleteById, setIdData, setIsOpen)}
+          columns={columnsCategories(
+            deleteById,
+            setIdData,
+            setIsOpen,
+            canManage,
+          )}
           data={getCategoriesData?.data ?? []}
         />
       </div>

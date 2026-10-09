@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -19,23 +20,45 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FieldGroup, Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Plus, Trash2, Boxes } from "lucide-react";
+import {
+  FieldGroup,
+  Field,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Plus, Trash2, Boxes, ImagePlus, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { useExpenseCategoriesOperation } from "@/hooks/management/expense/use-expense-categories-operations";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { ExpenseSchema, ExpenseSchemaInput } from "@repo/schemas";
+import {
+  EXPENSE_PROOF_MAX_FILES,
+  ExpenseSchema,
+  ExpenseSchemaInput,
+} from "@repo/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DatePickerSimple } from "@/components/ui/date-picker-simple";
 import { CreatableCombobox } from "@/components/ui/creatable-combobox";
 import { useImmer } from "use-immer";
 import { toIDR } from "../../../../utils/format-money";
 import { useExpenseOperation } from "@/hooks/management/expense/use-expense-operations";
+import {
+  compressImage,
+  MAX_UPLOAD_BYTES,
+} from "../../../../utils/compress-image";
+import { toast } from "sonner";
 
 interface AddExpenseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /**
+   * Diisi kalau dialog dibuka untuk mengedit.
+   *
+   * Satu komponen untuk tambah dan edit, dibedakan oleh prop ini — pola yang
+   * sama dengan form Toko dan Kategori. Kalau dipisah jadi dua form, aturan
+   * validasinya cepat atau lambat akan menyimpang antara keduanya.
+   */
+  expenseId?: string | null;
 }
 
 const units = [
@@ -68,8 +91,14 @@ const initialData: ExpenseSchemaInput = {
 export function AddExpenseDialog({
   open,
   onOpenChange,
+  expenseId = null,
 }: AddExpenseDialogProps) {
   const [unitOptions, setUnitOptions] = useImmer(units);
+  /// Foto yang dipilih sebelum pengeluarannya ada (mode tambah). Baru
+  /// diunggah setelah catatannya tersimpan dan punya id.
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [isPreparing, setIsPreparing] = useState(false);
+  const isEditing = !!expenseId;
 
   const {
     control,
@@ -78,6 +107,7 @@ export function AddExpenseDialog({
     watch,
     setValue,
     getValues,
+    reset,
   } = useForm<ExpenseSchemaInput>({
     resolver: zodResolver(ExpenseSchema),
     defaultValues: initialData,
@@ -90,7 +120,100 @@ export function AddExpenseDialog({
 
   const { storeList } = useStoreOperations({ enableStoreList: true });
   const { dataExpenseCategories } = useExpenseCategoriesOperation({});
-  const { createExpenseData } = useExpenseOperation({});
+  const {
+    expenseDetailData,
+    createExpenseAsync,
+    updateExpenseAsync,
+    uploadProofsAsync,
+    removeProofAsync,
+    isUploadingProofs,
+    isRemovingProof,
+  } = useExpenseOperation({ expenseId: open ? expenseId : null });
+
+  const proofs = expenseDetailData?.proofs ?? [];
+  const proofSlotsLeft =
+    EXPENSE_PROOF_MAX_FILES - proofs.length - pendingFiles.length;
+
+  /**
+   * Form diisi ulang tiap dialog dibuka.
+   *
+   * Mode edit menunggu detailnya sampai; mode tambah kembali ke keadaan
+   * kosong supaya tidak membawa sisa pengeluaran yang barusan dilihat.
+   */
+  useEffect(() => {
+    if (!open) return;
+    setPendingFiles([]);
+
+    if (!expenseId) {
+      reset(initialData);
+      return;
+    }
+
+    if (!expenseDetailData) return;
+
+    reset({
+      storeId: String(expenseDetailData.storeId),
+      categoryId: String(expenseDetailData.categoryId),
+      description: expenseDetailData.description ?? "",
+      totalAmount: Number(expenseDetailData.totalAmount),
+      date: new Date(expenseDetailData.date),
+      expenseItem: expenseDetailData.expenseItem.map((item) => ({
+        rawMaterialId: "",
+        itemName: item.itemName ?? "",
+        quantity: item.quantity,
+        unit: item.unit,
+        price: Number(item.price),
+        subtotal: Number(item.subtotal),
+      })),
+    });
+  }, [open, expenseId, expenseDetailData, reset]);
+
+  /**
+   * Foto dikecilkan di browser sebelum diunggah, sama seperti bukti transfer
+   * di kasir: foto nota dari HP biasa 3–8 MB, dan rantai browser → backend →
+   * Cloudinary untuk berkas sebesar itu kerap lebih lama dari batas waktu.
+   */
+  const pickFiles = async (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0) return;
+
+    const chosen = Array.from(fileList);
+    if (chosen.length > proofSlotsLeft) {
+      toast.error("Jumlah foto melebihi batas", {
+        description:
+          proofSlotsLeft <= 0
+            ? `Bukti sudah ${EXPENSE_PROOF_MAX_FILES} foto (batas maksimal). Hapus salah satu dulu.`
+            : `Sisa jatah tinggal ${proofSlotsLeft} foto, sedangkan yang dipilih ${chosen.length}.`,
+      });
+      return;
+    }
+
+    setIsPreparing(true);
+    try {
+      const prepared: File[] = [];
+      for (const file of chosen) {
+        const compressed = await compressImage(file);
+        if (compressed.size > MAX_UPLOAD_BYTES) {
+          toast.error(`Foto ${file.name} terlalu besar`, {
+            description: "Maksimal 2MB setelah dikecilkan. Coba foto lain.",
+          });
+          continue;
+        }
+        prepared.push(compressed);
+      }
+
+      if (prepared.length === 0) return;
+
+      // Pada pengeluaran yang sudah ada, foto langsung diunggah supaya admin
+      // tidak perlu menekan Simpan hanya untuk melampirkan bukti.
+      if (expenseId) {
+        await uploadProofsAsync({ id: expenseId, files: prepared });
+      } else {
+        setPendingFiles((current) => [...current, ...prepared]);
+      }
+    } finally {
+      setIsPreparing(false);
+    }
+  };
 
   const items = watch("expenseItem");
 
@@ -113,13 +236,33 @@ export function AddExpenseDialog({
     }, 0);
   };
 
-  const submitData = (data: ExpenseSchemaInput) => {
+  const submitData = async (data: ExpenseSchemaInput) => {
     const finalData = {
       ...data,
       totalAmount: calculateTotal(),
     };
 
-    createExpenseData(finalData);
+    try {
+      if (expenseId) {
+        await updateExpenseAsync({ id: expenseId, data: finalData });
+      } else {
+        const created = await createExpenseAsync(finalData);
+
+        // Foto yang dipilih sebelum catatannya ada baru bisa diunggah
+        // sekarang, karena unggahan butuh id pengeluaran.
+        if (pendingFiles.length > 0) {
+          await uploadProofsAsync({
+            id: String(created.data.id),
+            files: pendingFiles,
+          });
+        }
+      }
+
+      onOpenChange(false);
+    } catch {
+      // Toast galatnya sudah ditampilkan mutation. Dialog sengaja dibiarkan
+      // terbuka supaya isian admin tidak hilang.
+    }
   };
 
   return (
@@ -131,10 +274,12 @@ export function AddExpenseDialog({
         >
           <DialogHeader>
             <DialogTitle className="text-xl">
-              Tambah Pengeluaran Baru
+              {isEditing ? "Edit Pengeluaran" : "Tambah Pengeluaran Baru"}
             </DialogTitle>
             <DialogDescription>
-              Catat pengeluaran baru dengan semua detail yang relevan.
+              {isEditing
+                ? "Ubah detail pengeluaran. Nominalnya ikut memperbarui catatan kas."
+                : "Catat pengeluaran baru dengan semua detail yang relevan."}
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="overflow-y-auto no-scrollbar">
@@ -389,6 +534,124 @@ export function AddExpenseDialog({
                 </div>
               </div>
 
+              {/* Bukti pengeluaran */}
+              <Field>
+                <FieldLabel>
+                  Bukti Pengeluaran (opsional, maksimal{" "}
+                  {EXPENSE_PROOF_MAX_FILES} foto)
+                </FieldLabel>
+
+                {(proofs.length > 0 || pendingFiles.length > 0) && (
+                  <div className="flex flex-wrap gap-2">
+                    {proofs.map((proof) => (
+                      <div
+                        key={proof.id}
+                        className="relative h-20 w-20 overflow-hidden rounded-lg border border-border"
+                      >
+                        <a
+                          href={proof.image}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Buka foto ukuran penuh"
+                        >
+                          <Image
+                            src={proof.image}
+                            alt="Bukti pengeluaran"
+                            fill
+                            sizes="80px"
+                            className="object-cover"
+                          />
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            expenseId &&
+                            removeProofAsync({
+                              id: expenseId,
+                              proofId: proof.id,
+                            }).catch(() => {})
+                          }
+                          disabled={isRemovingProof}
+                          aria-label="Hapus bukti"
+                          className="absolute right-0.5 top-0.5 rounded-full bg-background/90 p-1 text-muted-foreground hover:text-destructive disabled:opacity-50"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* Mode tambah: foto belum terunggah, jadi ditandai
+                        "menunggu" supaya jelas bedanya dengan yang tersimpan. */}
+                    {pendingFiles.map((file, index) => (
+                      <div
+                        key={`${file.name}-${index}`}
+                        className="relative flex h-20 w-20 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border p-1 text-center"
+                      >
+                        <span className="text-[10px] leading-tight text-muted-foreground line-clamp-2">
+                          {file.name}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">
+                          menunggu
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setPendingFiles((current) =>
+                              current.filter((_, i) => i !== index),
+                            )
+                          }
+                          aria-label="Batalkan foto ini"
+                          className="absolute right-0.5 top-0.5 rounded-full bg-background/90 p-1 text-muted-foreground hover:text-destructive"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    disabled={
+                      isPreparing || isUploadingProofs || proofSlotsLeft <= 0
+                    }
+                    onClick={() =>
+                      document.getElementById("expense-proof-input")?.click()
+                    }
+                  >
+                    <ImagePlus className="h-4 w-4" />
+                    {isPreparing
+                      ? "Menyiapkan gambar..."
+                      : isUploadingProofs
+                        ? "Mengunggah..."
+                        : "Tambah Foto"}
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    {proofSlotsLeft > 0
+                      ? `Sisa ${proofSlotsLeft} foto. Nota atau struk, maksimal 2MB per foto.`
+                      : "Batas foto sudah tercapai."}
+                  </p>
+                </div>
+
+                <input
+                  id="expense-proof-input"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  multiple
+                  hidden
+                  onChange={(event) => {
+                    void pickFiles(event.target.files);
+                    // Dikosongkan supaya memilih berkas yang sama dua kali
+                    // tetap memicu onChange.
+                    event.target.value = "";
+                  }}
+                />
+              </Field>
+
               {/* Notes */}
               <Controller
                 name="description"
@@ -415,7 +678,9 @@ export function AddExpenseDialog({
             >
               Cancel
             </Button>
-            <Button type="submit">Save Expense</Button>
+            <Button type="submit">
+              {isEditing ? "Simpan Perubahan" : "Save Expense"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

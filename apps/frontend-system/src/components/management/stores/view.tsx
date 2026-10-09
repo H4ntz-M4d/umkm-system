@@ -11,6 +11,7 @@ import { Toaster } from "sonner";
 import { StoreData } from "@repo/schemas";
 import { Button } from "@/components/ui/button";
 import AlertDeleteStore from "./alert-delete-store";
+import { useCanManageMaster } from "@/hooks/management/use-central-store";
 
 export default function View() {
   const { pagination, onPaginationChange } = usePaginationParams();
@@ -33,9 +34,12 @@ export default function View() {
     setOpenAlertDelete(true);
   };
 
+  const canManage = useCanManageMaster();
+
   const columnActions = columnsStore({
     onEdit: handleUpdate,
     onDelete: handleDelete,
+    canManage,
   });
 
   const pageCount = data?.total
@@ -56,9 +60,11 @@ export default function View() {
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex sm:flex-row flex-col gap-2 justify-between mt-5">
           <InputGroupInlineStart />
-          <Button className="w-30" onClick={handleCreate}>
-            Add Store
-          </Button>
+          {canManage && (
+            <Button className="w-30" onClick={handleCreate}>
+              Tambah Toko
+            </Button>
+          )}
         </div>
         <div className="bg-muted/50 rounded-xl md:min-h-min">
           {isLoading && !data ? (
@@ -77,7 +83,10 @@ export default function View() {
           initialData={selectedStore}
           onSubmit={(formData, onSaved) => {
             if (idData) {
-              updateData({ id: idData, data: formData }, { onSuccess: onSaved });
+              updateData(
+                { id: idData, data: formData },
+                { onSuccess: onSaved },
+              );
             } else {
               createData(formData, { onSuccess: onSaved });
             }

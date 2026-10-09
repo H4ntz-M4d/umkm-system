@@ -36,7 +36,6 @@ model Store {
 
   users                Users[]
   inventoryLedgers     InventoryLedger[]
-  productions          Production[]
   expenses             Expense[]
   posTransactions      PosTransaction[]
   cashTransactions     CashTransaction[]
@@ -44,6 +43,8 @@ model Store {
   productVariantStocks ProductVariantStock[]
   transfersOut         StockTransfer[]       @relation("TransferFrom")
   transfersIn          StockTransfer[]       @relation("TransferTo")
+  paymentMethods       PaymentMethod[]
+  stockAdjustments     StockAdjustment[]
 
   @@map("store")
 }
@@ -62,7 +63,13 @@ model Users {
   store              Store?              @relation(fields: [storeId], references: [id])
   employees          Employee?
   customer           Customer?
-  posTransactions    PosTransaction[]
+  posTransactions      PosTransaction[]
+  orders               Order[]
+  expenses             Expense[]
+  productionDeliveries ProductionDelivery[]
+  stockTransfers       StockTransfer[]
+  stockAdjustments     StockAdjustment[]
+  blogs                Blog[]
   passwordResetCodes PasswordResetCode[]
 
   @@map("users")
@@ -96,7 +103,7 @@ model ProductMaster {
   categoryId  BigInt?
   slug        String        @unique @db.VarChar(255)
   useVariant  Boolean       @default(false)
-  type        ProductType   @default(MADE_TO_ORDER)
+  type        ProductType   @default(REGULAR)
   status      ProductStatus @default(ACTIVE)
   createdAt   DateTime      @default(now())
 
@@ -106,6 +113,7 @@ model ProductMaster {
   imageGroups           ProductImageGroup[]
   wishlists             Wishlist[]
   productPreOrderDetail ProductPreOrderDetails?
+  bespokeOrders         BespokeOrder[]
 
   @@map("product_master")
 }
@@ -128,10 +136,19 @@ enum ProductStatus {
   DRAFT
 }
 
+/**
+ * Cara produk dijual — bukan salurannya.
+ *
+ * Dulu ada READY_STOCK dan MADE_TO_ORDER, yang sebenarnya membedakan SALURAN
+ * (kasir vs online), bukan produknya: admin terpaksa membuat dua produk kembar
+ * untuk barang yang sama. Sekarang saluran ditentukan konteks — kasir menjual
+ * dari stok toko, pesanan online selalu permintaan ke rumah produksi — jadi
+ * keduanya digabung jadi REGULAR. PRE_ORDER tetap terpisah karena punya aturan
+ * sendiri: kuota dan tanggal berakhir.
+ */
 enum ProductType {
-  MADE_TO_ORDER
+  REGULAR
   PRE_ORDER
-  READY_STOCK
 }
 
 /// Satu grup gambar per kombinasi nilai variant yang bersifat visual.
@@ -197,7 +214,7 @@ model ProductVariant {
   /// Jamak sejak stok dipegang per toko: satu baris per toko yang memegang
   /// varian ini.
   productVariantStocks ProductVariantStock[]
-  productions          Production[]
+  productionItems      ProductionItem[]
   orderItems           OrderItem[]
   posTransactionItems  PosTransactionItem[]
   stockTransferItems   StockTransferItem[]
@@ -206,6 +223,7 @@ model ProductVariant {
   @@index([productMasterId])
   @@index([imageGroupId])
   @@map("product_variant")
+  stockAdjustmentItems StockAdjustmentItem[]
 }
 
 /// Stok dipegang per toko: satu baris untuk tiap pasangan varian dan toko.
@@ -283,7 +301,7 @@ model Customer {
   userId            BigInt?           @unique
   users             Users?            @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders            Order[]
-  beSpokeDetails    BeSpokeDetails[]
+  bespokeOrders     BespokeOrder[]
   cart              Cart?
   customerAddresses CustomerAddress[]
   wishlists         Wishlist[]
@@ -323,6 +341,54 @@ model Employee {
 // ==================
 // Inventory Ledger
 // ==================
+
+/**
+ * Penyesuaian stok — satu kali pencatatan untuk banyak varian sekaligus.
+ *
+ * Dibutuhkan karena seluruh jalur stok lain adalah akibat dari kejadian lain
+ * (produksi, penjualan, kiriman). Stok awal saat sistem mulai dipakai, barang
+ * rusak, hilang, atau salah hitung saat opname tidak punya kejadian seperti
+ * itu — tanpa tabel ini, satu-satunya cara membetulkan angka adalah memalsukan
+ * transaksi.
+ *
+ * Alasan dan pencatatnya disimpan di sini, bukan di `InventoryLedger`, supaya
+ * tabel riwayat tetap seragam untuk semua sumber. Baris riwayatnya menunjuk
+ * ke sini lewat `referenceId`.
+ */
+model StockAdjustment {
+  id        BigInt   @id @default(autoincrement())
+  code      String   @unique @db.VarChar(100)
+  storeId   BigInt
+  /// Wajib diisi: angka stok yang berubah tanpa keterangan tidak bisa
+  /// ditelusuri lagi setelah beberapa bulan.
+  reason    String
+  userId    BigInt?
+  createdAt DateTime @default(now())
+
+  store Store  @relation(fields: [storeId], references: [id])
+  user  Users? @relation(fields: [userId], references: [id])
+  items StockAdjustmentItem[]
+
+  @@index([storeId])
+  @@map("stock_adjustment")
+}
+
+model StockAdjustmentItem {
+  id               BigInt @id @default(autoincrement())
+  adjustmentId     BigInt
+  productVariantId BigInt
+  /// Angka sebelum dan sesudah disimpan apa adanya, bukan cuma selisihnya:
+  /// itu yang memungkinkan koreksi ditelusuri ulang tanpa menghitung mundur
+  /// seluruh riwayat.
+  previousStock    Int
+  countedStock     Int
+
+  adjustment StockAdjustment @relation(fields: [adjustmentId], references: [id], onDelete: Cascade)
+  variant    ProductVariant  @relation(fields: [productVariantId], references: [id])
+
+  @@unique([adjustmentId, productVariantId])
+  @@map("stock_adjustment_item")
+}
 
 model InventoryLedger {
   id          BigInt            @id @default(autoincrement())
@@ -372,11 +438,9 @@ model StockTransfer {
 
   fromStoreId BigInt
   toStoreId   BigInt
-
-  /// Terisi bila kiriman ini terbentuk otomatis dari produksi yang ditujukan
-  /// untuk toko lain. Unik supaya satu produksi tidak pernah melahirkan dua
-  /// kiriman meski penyelesaiannya terpanggil berulang.
-  productionId BigInt? @unique
+  /// Karyawan yang mengurus kiriman ini. Boleh kosong untuk kiriman lama yang
+  /// dibuat sebelum kolom ini ada — data lama tidak diisi dengan tebakan.
+  userId BigInt?
 
   notes      String?
   createdAt  DateTime  @default(now())
@@ -385,7 +449,7 @@ model StockTransfer {
 
   fromStore  Store       @relation("TransferFrom", fields: [fromStoreId], references: [id])
   toStore    Store       @relation("TransferTo", fields: [toStoreId], references: [id])
-  production Production? @relation(fields: [productionId], references: [id])
+  user       Users?      @relation(fields: [userId], references: [id])
 
   items StockTransferItem[]
 
@@ -421,32 +485,85 @@ enum TransferStatus {
 // PRODUKSI INTERNAL
 // ==================
 
+/// Batch produksi.
+///
+/// Satu batch memuat banyak varian sekaligus dengan target masing-masing, dan
+/// hasilnya disetor BERTAHAP oleh toko produksi -- tidak pernah sekali jadi.
+/// Karena itu tidak ada "tipe produksi" (satu batch bisa mencampur tujuan) dan
+/// tidak ada "toko tujuan" (hasilnya selalu mendarat di rumah produksi).
 model Production {
-  id                BigInt           @id @default(autoincrement())
-  storeId           BigInt
-  producedVariantId BigInt?
-  quantityProduced  Int
-  type              ProductionType   @default(RESTOCK)
-  status            ProductionStatus
-  notes             String?
-  targetDate        DateTime
-  createdAt         DateTime         @default(now())
+  id         BigInt           @id @default(autoincrement())
+  code       String           @unique @db.VarChar(100)
+  status     ProductionStatus @default(PLANNED)
+  targetDate DateTime
+  notes      String?
+  /// Batch ini melanjutkan sisa target batch sebelumnya yang ditutup lebih
+  /// awal. Menjaga jejaknya, bukan memulai dari nol tanpa asal-usul.
+  parentProductionId BigInt?
+  completedAt        DateTime?
+  createdAt          DateTime  @default(now())
 
-  store          Store           @relation(fields: [storeId], references: [id])
-  variant        ProductVariant? @relation(fields: [producedVariantId], references: [id])
-  beSpokeDetails BeSpokeDetails?
-  /// Kiriman yang terbentuk otomatis saat produksi ini selesai, bila hasilnya
-  /// ditujukan untuk toko selain rumah produksi.
-  stockTransfer StockTransfer?
+  parent   Production?  @relation("BatchLanjutan", fields: [parentProductionId], references: [id])
+  children Production[] @relation("BatchLanjutan")
 
+  items      ProductionItem[]
+  deliveries ProductionDelivery[]
+
+  @@index([parentProductionId])
   @@map("production")
 }
 
-enum ProductionType {
-  RESTOCK
-  MADE_TO_ORDER
-  BE_SPOKE
-  PRE_ORDER
+/// Satu varian dalam batch, beserta target dan berapa yang sudah masuk.
+model ProductionItem {
+  id                BigInt @id @default(autoincrement())
+  productionId      BigInt
+  productVariantId  BigInt
+  targetQuantity    Int
+  /// Akumulasi dari seluruh setoran. Disimpan, bukan dihitung ulang tiap
+  /// kali, supaya daftar batch tidak perlu menjumlah ribuan baris setoran.
+  deliveredQuantity Int    @default(0)
+
+  production Production     @relation(fields: [productionId], references: [id], onDelete: Cascade)
+  variant    ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  deliveryItems ProductionDeliveryItem[]
+
+  @@unique([productionId, productVariantId])
+  @@index([productVariantId])
+  @@map("production_item")
+}
+
+/// Satu kali antar hasil produksi dari toko produksi ke toko utama.
+model ProductionDelivery {
+  id           BigInt   @id @default(autoincrement())
+  productionId BigInt
+  deliveredAt  DateTime
+  /// Catatan dari toko produksi yang mengantar (hasil QC di tempat mereka).
+  note         String?
+  /// Admin yang mencatat setoran ini.
+  userId       BigInt?
+  createdAt    DateTime @default(now())
+
+  production Production @relation(fields: [productionId], references: [id], onDelete: Cascade)
+  user       Users?     @relation(fields: [userId], references: [id])
+
+  items ProductionDeliveryItem[]
+
+  @@index([productionId])
+  @@map("production_delivery")
+}
+
+model ProductionDeliveryItem {
+  id               BigInt @id @default(autoincrement())
+  deliveryId       BigInt
+  productionItemId BigInt
+  quantity         Int
+
+  delivery ProductionDelivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  item     ProductionItem     @relation(fields: [productionItemId], references: [id], onDelete: Cascade)
+
+  @@unique([deliveryId, productionItemId])
+  @@map("production_delivery_item")
 }
 
 enum ProductionStatus {
@@ -454,6 +571,58 @@ enum ProductionStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+// ==================
+// BLOG
+// ==================
+
+/// Tulisan di storefront. Isinya HTML dari editor berformat, jadi WAJIB
+/// dibersihkan di server sebelum disimpan -- tanpa itu, siapa pun yang bisa
+/// menulis blog bisa menitipkan skrip ke halaman publik.
+model Blog {
+  id          BigInt     @id @default(autoincrement())
+  title       String     @db.VarChar(200)
+  slug        String     @unique @db.VarChar(220)
+  /// Kalimat pendek untuk kartu daftar dan deskripsi di hasil pencarian.
+  /// Kosong berarti diambil otomatis dari awal tulisan.
+  excerpt     String?    @db.VarChar(300)
+  content     String
+  coverImage  String?    @db.VarChar(500)
+  /// Kata kunci untuk metadata halaman.
+  keywords    String[]   @default([])
+  status      BlogStatus @default(DRAFT)
+  /// Diisi sekali saat pertama kali diterbitkan; dipakai mengurutkan daftar
+  /// publik dan menampilkan tanggal tayang.
+  publishedAt DateTime?
+  categoryId  BigInt?
+  /// Penulis, diambil dari token saat dibuat.
+  userId      BigInt?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  category BlogCategory? @relation(fields: [categoryId], references: [id])
+  user     Users?        @relation(fields: [userId], references: [id])
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@map("blog")
+}
+
+model BlogCategory {
+  id        BigInt   @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  slug      String   @unique @db.VarChar(120)
+  createdAt DateTime @default(now())
+
+  blogs Blog[]
+
+  @@map("blog_category")
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
 }
 
 // ==================
@@ -479,14 +648,39 @@ model Expense {
   categoryId  BigInt
   description String?
   totalAmount Decimal
+  /// Admin yang menginput pengeluaran ini. Diambil dari token, tidak pernah
+  /// dari isian form -- itu yang membuatnya tidak bisa dimanipulasi.
+  /// Kosong untuk data lama sebelum kolom ini ada.
+  userId      BigInt?
   createdAt   DateTime @default(now())
 
   expenseCategory ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   store           Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  /// Sengaja TIDAK cascade: menghapus akun karyawan tidak boleh ikut
+  /// menghapus pengeluarannya, karena angkanya sudah masuk laporan.
+  user            Users?          @relation(fields: [userId], references: [id])
 
   expenseItem ExpenseItem[]
+  proofs      ExpenseProof[]
 
+  @@index([userId])
   @@map("expense")
+}
+
+/// Foto bukti pengeluaran (nota, struk, bukti transfer). Opsional: pengeluaran
+/// tetap sah tanpa lampiran, jadi relasinya nol-ke-banyak, bukan wajib satu.
+model ExpenseProof {
+  id        BigInt   @id @default(autoincrement())
+  expenseId BigInt
+  /// URL Cloudinary. Menghapus pengeluaran ikut menghapus barisnya di sini,
+  /// dan servicenya yang menghapus berkasnya di Cloudinary.
+  image     String   @db.VarChar(500)
+  createdAt DateTime @default(now())
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+
+  @@index([expenseId])
+  @@map("expense_proof")
 }
 
 model ExpenseItem {
@@ -508,32 +702,71 @@ model ExpenseItem {
 // ==================
 
 model Order {
-  id                BigInt      @id @default(autoincrement())
+  id                BigInt              @id @default(autoincrement())
   storeId           BigInt
   customerId        BigInt?
-  orderId           String      @unique @db.VarChar(100)
-  paymentMethodId   BigInt
-  paymentGatewayRef String?     @db.VarChar(255)
+  orderId           String              @unique @db.VarChar(100)
+  paymentMethodId   BigInt?
+  paymentGatewayRef String?             @db.VarChar(255)
   status            OrderStatus
+  deliveryMethod    OrderDeliveryMethod @default(SHIP)
+  /// Jumlah referensi dari harga katalog saat pesanan diajukan -- dihitung
+  /// sekali, tidak pernah diubah lagi. Murni pembanding "sebelum vs sesudah
+  /// nego", bukan patokan harga final.
+  estimatedTotal    Decimal
+  /// Nominal DP yang sudah dibayar, diisi manual oleh admin setelah nego
+  /// selesai di WA -- angka bebas, bukan hasil hitungan dari totalAmount.
+  dpAmount          Decimal?
+  /// Snapshot kontak pemesan. Diisi untuk tamu (tidak punya akun) maupun
+  /// customer login, supaya admin tidak perlu join ke Customer hanya untuk
+  /// tahu siapa yang harus dihubungi.
+  buyerName         String?             @db.VarChar(150)
+  buyerPhone        String?             @db.VarChar(30)
+  /// Harga yang berlaku, bebas dinego dan ditimpa manual oleh admin --
+  /// lepas sama sekali dari estimatedTotal.
   totalAmount       Decimal
-  createdAt         DateTime    @default(now())
+  /// Kapan stok pesanan ini dikunci (dipindah dari stok bebas ke
+  /// reserved_stock) saat ditandai Lunas. Kosong berarti stoknya belum pernah
+  /// disentuh -- termasuk pesanan lama sebelum aturan ini ada, yang sengaja
+  /// dibiarkan apa adanya: Selesai/Batal/Refund hanya mengembalikan atau
+  /// mengeluarkan stok kalau kolom ini terisi.
+  stockLockedAt     DateTime?
+  /// Admin yang memproses pesanan ini (mencatat hasil nego, menutup pesanan).
+  /// Kosong untuk pesanan lama yang tidak punya jejaknya -- sengaja dibiarkan
+  /// kosong, bukan ditebak.
+  userId            BigInt?
+  createdAt         DateTime            @default(now())
 
   customer Customer?      @relation(fields: [customerId], references: [id])
   items    OrderItem[]
   shipment Shipment?
   payment  PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
   store    Store          @relation(fields: [storeId], references: [id])
+  user     Users?         @relation(fields: [userId], references: [id])
 
+  @@index([userId])
   @@map("order")
 }
 
 enum OrderStatus {
   PENDING
+  /// DP sudah dibayar tapi belum lunas -- tahap baru untuk alur nego WA.
+  DP
+  /// Barang selesai diproduksi, tapi belum tentu lunas -- pemicu WA yang
+  /// minta customer menyelesaikan pelunasan. Beda dari PAID: di sini uang
+  /// belum tentu penuh, jadi TIDAK termasuk status "settled" (stok/kas/kuota
+  /// belum boleh bergerak di titik ini).
+  PRODUCTION_DONE
   PAID
   CANCELLED
   SHIPPED
   COMPLETED
   REFUNDED
+}
+
+enum OrderDeliveryMethod {
+  SHIP
+  PICKUP
 }
 
 model OrderItem {
@@ -543,6 +776,9 @@ model OrderItem {
   quantity         Int
   price            Decimal
   subtotal         Decimal
+  /// Permintaan custom per item (ubah warna, motif, dll), diisi customer
+  /// saat mengajukan pesanan.
+  notes            String? @db.VarChar(500)
 
   order   Order          @relation(fields: [orderId], references: [id])
   variant ProductVariant @relation(fields: [productVariantId], references: [id])
@@ -587,20 +823,47 @@ model Wishlist {
   @@map("wishlist")
 }
 
-model BeSpokeDetails {
-  id           BigInt   @id @default(autoincrement())
-  productionId BigInt   @unique
-  customerId   BigInt?
-  title        String   @db.VarChar(100)
-  description  String?
-  quotedPrice  Decimal  @db.Decimal(18, 2)
-  createdAt    DateTime @default(now())
+/// Pesanan custom per pembeli -- dulu menempel pada Production sebagai
+/// "tipe produksi BE_SPOKE". Dipisah karena alurnya memang lain: tidak pernah
+/// menyentuh stok (tidak punya varian), dan justru mencatat kas MASUK sebesar
+/// harga yang disepakati saat selesai.
+model BespokeOrder {
+  id          BigInt         @id @default(autoincrement())
+  code        String         @unique @db.VarChar(100)
+  customerId  BigInt?
+  /// Produk katalog yang jadi dasar pesanan ini.
+  ///
+  /// Kosong berarti desainnya DI LUAR katalog, dan untuk itu berlaku jumlah
+  /// minimum (lihat `BESPOKE_MIN_QUANTITY_CUSTOM` di paket schemas). Kalau
+  /// terisi — termasuk ketika pembeli hanya minta ganti warna — jumlahnya
+  /// bebas, karena polanya sudah kami punya.
+  productMasterId BigInt?
+  title       String         @db.VarChar(100)
+  description String?
+  quantity    Int            @default(1)
+  quotedPrice Decimal        @db.Decimal(18, 2)
+  status      BespokeStatus  @default(PLANNED)
+  targetDate  DateTime
+  notes       String?
+  /// Diisi sekali saat status pertama kali jadi COMPLETED -- penanda bahwa
+  /// kas masuknya sudah dicatat, supaya tidak tercatat dua kali.
+  completedAt DateTime?
+  createdAt   DateTime       @default(now())
 
-  production Production @relation(fields: [productionId], references: [id])
-  customer   Customer?  @relation(fields: [customerId], references: [id])
-  shipments  Shipment?
+  customer      Customer?      @relation(fields: [customerId], references: [id])
+  productMaster ProductMaster? @relation(fields: [productMasterId], references: [id])
+  shipments     Shipment?
 
-  @@map("be_spoke_details")
+  @@index([customerId])
+  @@index([productMasterId])
+  @@map("bespoke_order")
+}
+
+enum BespokeStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
 
 model CustomerAddress {
@@ -621,7 +884,7 @@ model CustomerAddress {
 model Shipment {
   id               BigInt          @id @default(autoincrement())
   orderId          BigInt?         @unique
-  beSpokeDetailsId BigInt?         @unique
+  bespokeOrderId   BigInt?         @unique
   recipientName    String          @db.VarChar(255)
   phone            String          @db.VarChar(15)
   addressLine      String
@@ -631,10 +894,17 @@ model Shipment {
   trackingNumber   String?         @db.VarChar(100)
   status           ShipmentStatus? @default(PACKAGING)
   shippingCost     Decimal
+  /// Tiga kolom berikut murni catatan admin soal paket -- seperti
+  /// shippingCost, tidak menambah tagihan customer dan tidak menyentuh kas.
+  /// Berat ditulis apa adanya ("15 Kg") karena satuannya ikut ditulis admin.
+  totalWeight      String?         @db.VarChar(50)
+  unitWeight       String?         @db.VarChar(50)
+  /// Angka, bukan teks: harga per satuan bisa dijumlahkan dan dibandingkan.
+  unitPrice        Decimal?        @db.Decimal(18, 2)
   createdAt        DateTime        @default(now())
 
   order          Order?          @relation(fields: [orderId], references: [id])
-  beSpokeDetails BeSpokeDetails? @relation(fields: [beSpokeDetailsId], references: [id])
+  bespokeOrder   BespokeOrder?   @relation(fields: [bespokeOrderId], references: [id])
 
   @@map("shipment")
 }
@@ -651,16 +921,45 @@ enum ShipmentStatus {
 // ==================
 
 model PaymentMethod {
-  id                    BigInt                  @id @default(autoincrement())
-  name                  String                  @db.VarChar(100)
-  channel               PaymentChannel
-  isActive              Boolean                 @default(true)
+  id      BigInt         @id @default(autoincrement())
+  name    String         @db.VarChar(100)
+  channel PaymentChannel
+  /// Toko pemilik metode ini. Kosong berarti berlaku di semua toko — dipakai
+  /// untuk tunai, yang tidak pernah menyangkut rekening siapa pun.
+  ///
+  /// Rekening bank dan QRIS selalu milik satu toko: cabang berdiri sendiri dan
+  /// uangnya harus mendarat di rekening mereka, bukan di rekening toko utama.
+  /// Tanpa kolom ini kasir cabang ikut melihat rekening toko lain.
+  storeId  BigInt?
+  store    Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  isActive Boolean @default(true)
+
   orders                Order[]
   posTransactions       PosTransaction[]
   bankAccount           BankAccount?
+  qrisAccount           QrisAccount?
   transferPaymentDetail TransferPaymentDetail[]
 
+  @@index([storeId])
   @@map("payment_method")
+}
+
+/// Data QRIS tercetak milik satu metode pembayaran.
+///
+/// Dipisah dari `payment_method` dengan pola yang sama seperti `BankAccount`:
+/// hanya channel tertentu yang punya detail ini, dan menaruhnya di tabel induk
+/// berarti dua kolom yang selalu kosong untuk channel lain.
+model QrisAccount {
+  id              BigInt        @id @default(autoincrement())
+  paymentMethodId BigInt        @unique
+  paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Cascade)
+  /// Nama merchant yang tertera di QR — dipakai kasir untuk memastikan
+  /// pembeli memindai QR toko yang benar.
+  merchantName    String        @db.VarChar(100)
+  /// Gambar QR-nya (Cloudinary), ditampilkan di layar kasir.
+  qrImage         String        @db.VarChar(255)
+
+  @@map("qris_account")
 }
 
 model BankAccount {
@@ -678,6 +977,13 @@ enum PaymentChannel {
   CASH
   MIDTRANS
   BANK_TRANSFER
+  /// QRIS tercetak milik toko, ditempel di meja kasir.
+  ///
+  /// Berbeda dari MIDTRANS yang membuat QR dinamis berisi nominal dan
+  /// mendeteksi pelunasan sendiri: yang ini tidak tahu apa-apa soal
+  /// pembayaran, jadi kasir yang memastikan lalu mengunggah buktinya —
+  /// alurnya sama persis dengan transfer bank.
+  QRIS_STATIC
 }
 
 model CashTransaction {
@@ -692,7 +998,23 @@ model CashTransaction {
 
   store Store @relation(fields: [storeId], references: [id])
 
-  @@unique([referenceId, source])
+  /**
+   * Dulu `@@unique([referenceId, source])` — satu baris kas per acuan.
+   *
+   * Pesanan nego membayar bertahap (DP dulu, pelunasan belakangan, kadang
+   * berbulan kemudian), dan tiap pembayaran harus jadi barisnya sendiri supaya
+   * laporan kas bulanan mencerminkan uang yang benar-benar masuk pada bulan
+   * itu. Menumpuknya jadi satu baris yang di-update berarti seluruh nilainya
+   * ikut pindah ke bulan DP — dan laporan bulan yang sudah lewat berubah
+   * sendiri.
+   *
+   * Penjagaan duplikat untuk sumber lain TIDAK hilang: digantikan partial
+   * unique index `WHERE source <> 'ORDER'` yang dibuat manual di migrasi
+   * 20260916_cash_transaction_allow_installments. Prisma belum bisa
+   * mendeklarasikan partial index, jadi hanya indeks biasa yang tertulis di
+   * sini.
+   */
+  @@index([referenceId, source])
   @@map("cash_transaction")
 }
 
@@ -706,6 +1028,9 @@ enum CashSource {
   ORDER
   EXPENSE
   PRODUCTION
+  /// Pesanan custom. Dipisah dari PRODUCTION supaya laporan bisa
+  /// membedakan uang penjualan dari sekadar mutasi produksi.
+  BESPOKE
 }
 
 model TransferPaymentDetail {

@@ -2,90 +2,94 @@ import { apiFetcher } from "@/lib/api/api.fetcher";
 import managementApi from "@/lib/api/api.management";
 import {
   CreateProductionSchemaInput,
-  ProductionDataResponse,
+  ProductionDetailResponse,
   ProductionResponse,
   ProductionSummaryResponse,
-  UpdateProductionSchemaInput,
+  RecordDeliverySchemaInput,
 } from "@repo/schemas";
 
 export interface ProductionFilters {
-  skip?: number;
+  page?: number;
   limit?: number;
   search?: string;
-  type?: string;
   status?: string;
   dateFrom?: string;
   dateTo?: string;
 }
 
-export const fetchProductionData = async (filter: ProductionFilters) => {
-  const filters = Object.fromEntries(
-    Object.entries(filter).filter(([_, v]) => v !== undefined && v !== ""),
+export const fetchProductions = async (filters: ProductionFilters) => {
+  const { page, ...rest } = filters;
+  const limit = rest.limit ?? 10;
+
+  /// `page` diterjemahkan jadi `skip`: backend hanya membaca `skip`/`limit`.
+  const params = Object.fromEntries(
+    Object.entries({ ...rest, limit, skip: (page ?? 0) * limit })
+      .filter(([, value]) => value !== undefined && value !== "")
+      .map(([key, value]) => [key, String(value)]),
   );
 
-  const queryFilter = new URLSearchParams(filters).toString();
   const res = await apiFetcher(
-    managementApi.get(`v1/production?${queryFilter}`),
+    managementApi.get(`v1/production?${new URLSearchParams(params).toString()}`),
     ProductionResponse,
   );
 
   return { data: res.data, total: res.meta.total };
 };
 
-export const fetchProductionSummary = async () => {
-  const res = await apiFetcher(
+export const fetchProductionSummary = async () =>
+  apiFetcher(
     managementApi.get("v1/production/summary"),
     ProductionSummaryResponse,
   );
 
-  return res;
-};
-
-export const createProduction = async (data: CreateProductionSchemaInput) => {
+export const fetchProductionDetail = async (id: string) => {
   const res = await apiFetcher(
-    managementApi.post("v1/production", { json: data }),
-    ProductionDataResponse,
+    managementApi.get(`v1/production/${id}`),
+    ProductionDetailResponse,
   );
 
-  return res;
+  return res.data;
 };
+
+export const createProduction = async (data: CreateProductionSchemaInput) =>
+  apiFetcher(
+    managementApi.post("v1/production", { json: data }),
+    ProductionDetailResponse,
+  );
 
 export const updateProduction = async (
   id: string,
   data: CreateProductionSchemaInput,
-) => {
-  const res = await apiFetcher(
-    managementApi.put(`v1/production/${id}/edit`, { json: data }),
-    ProductionDataResponse,
+) =>
+  apiFetcher(
+    managementApi.put(`v1/production/${id}`, { json: data }),
+    ProductionDetailResponse,
   );
-  return res;
-};
 
-export const updateProductionStatus = async (
+/// Mencatat satu kali antar hasil produksi; responsnya batch terbaru supaya
+/// layar detail langsung menampilkan kemajuan barunya.
+export const recordProductionDelivery = async (
   id: string,
-  data: UpdateProductionSchemaInput,
-) => {
-  const res = await apiFetcher(
-    managementApi.patch(`v1/production/${id}/status-update`, { json: data }),
-    ProductionDataResponse,
+  data: RecordDeliverySchemaInput,
+) =>
+  apiFetcher(
+    managementApi.post(`v1/production/${id}/deliveries`, { json: data }),
+    ProductionDetailResponse,
   );
-  return res;
-};
 
-export const updateProductionStatusCompleted = async (
+export const cancelProductionDelivery = async (
   id: string,
-  data: UpdateProductionSchemaInput,
-) => {
-  const res = await apiFetcher(
-    managementApi.post(`v1/production/${id}/status-completed`, { json: data }),
-    ProductionDataResponse,
+  deliveryId: string,
+) =>
+  apiFetcher(
+    managementApi.delete(`v1/production/${id}/deliveries/${deliveryId}`),
+    ProductionDetailResponse,
   );
-  return res;
-};
 
-export const deleteProduction = async (id: string) => {
-  return await apiFetcher(
-    managementApi.delete(`v1/production/${id}`),
-    ProductionDataResponse,
-  );
-};
+export const closeProduction = async (id: string, createContinuation: boolean) =>
+  managementApi
+    .patch(`v1/production/${id}/close`, { json: { createContinuation } })
+    .json<{ data: { closed: string; continuationCode: string | null } }>();
+
+export const removeProduction = async (id: string) =>
+  managementApi.delete(`v1/production/${id}`).json();

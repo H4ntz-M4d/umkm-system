@@ -23,6 +23,18 @@ export const PERIOD_END = new Date(2026, 6, 28); // 28 Juli 2026
 export const PERIOD_START = new Date(2026, 4, 1); // 1 Mei 2026
 const STOCK_SEED_DATE = new Date(2026, 3, 26); // 26 April — produksi stok awal
 
+/// Status pesanan online yang muncul di data contoh — cerminan OrderStatus
+/// tanpa status yang tidak mungkin lagi tercipta dari alur nego.
+type OrderSeedStatus =
+  | "PENDING"
+  | "DP"
+  | "PRODUCTION_DONE"
+  | "PAID"
+  | "SHIPPED"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "REFUNDED";
+
 interface StockState {
   stock: number;
   reserved: number;
@@ -42,7 +54,7 @@ interface LedgerRow {
 interface CashRow {
   storeId: bigint;
   type: "IN" | "OUT";
-  source: "POS" | "ORDER" | "EXPENSE" | "PRODUCTION";
+  source: "POS" | "ORDER" | "EXPENSE" | "PRODUCTION" | "BESPOKE";
   amount: number;
   referenceId: bigint;
   createdAt: Date;
@@ -67,6 +79,9 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
 
   const ledgerRows: LedgerRow[] = [];
   const cashRows: CashRow[] = [];
+  /// Kuota pre-order yang terpakai pesanan lunas, dikurangi sekali di akhir
+  /// supaya tidak ada satu produk yang di-update berkali-kali.
+  const preOrderUsage = new Map<bigint, number>();
   const usedIds = new Set<string>();
 
   const stats: SeedStats = {
@@ -109,15 +124,12 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
     variant: SeededVariant,
     quantity: number,
     date: Date,
-    type: "RESTOCK" | "MADE_TO_ORDER" | "PRE_ORDER",
     notes: string,
   ) => {
     const production = await prisma.production.create({
       data: {
-        storeId,
         producedVariantId: variant.id,
         quantityProduced: quantity,
-        type,
         status: "COMPLETED",
         notes,
         targetDate: date,
@@ -149,7 +161,6 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
       variant,
       randomInt(min, max),
       atBusinessHour(STOCK_SEED_DATE),
-      "RESTOCK",
       "Produksi stok awal sebelum periode berjalan",
     );
   }
@@ -178,17 +189,15 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
       const targets =
         lowStock.length > 0 ? lowStock : pickMany(variants, randomInt(3, 6));
 
-      for (const variant of pickMany(targets, Math.min(targets.length, randomInt(6, 11)))) {
+      for (const variant of pickMany(
+        targets,
+        Math.min(targets.length, randomInt(6, 11)),
+      )) {
         const [min, max] = batchSize(variant);
         await completeProduction(
           variant,
           randomInt(Math.floor(min / 2), max),
           atBusinessHour(day),
-          variant.type === "PRE_ORDER"
-            ? "PRE_ORDER"
-            : variant.type === "MADE_TO_ORDER"
-              ? "MADE_TO_ORDER"
-              : "RESTOCK",
           "Restock rutin",
         );
       }
@@ -201,10 +210,8 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
       const [min, max] = batchSize(variant);
       await prisma.production.create({
         data: {
-          storeId,
           producedVariantId: variant.id,
           quantityProduced: randomInt(min, max),
-          type: "RESTOCK",
           status: chance(0.5) ? "IN_PROGRESS" : "PLANNED",
           notes: "Dijadwalkan untuk pekan depan",
           targetDate: addDays(day, randomInt(3, 10)),
@@ -216,7 +223,11 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
 
     // ----------------------------- Bespoke ---------------------------------
     // 1–3 pesanan khusus tiap bulan, jatuh di awal, tengah, dan akhir bulan.
-    if (dayOfMonth === 6 || (dayOfMonth === 17 && chance(0.75)) || (dayOfMonth === 26 && chance(0.5))) {
+    if (
+      dayOfMonth === 6 ||
+      (dayOfMonth === 17 && chance(0.75)) ||
+      (dayOfMonth === 26 && chance(0.5))
+    ) {
       await seedBespoke(day);
     }
 
@@ -225,7 +236,8 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
     // dan memuncak sekitar tanggal gajian.
     const monthlyBase = month === 4 ? 4 : month === 5 ? 5 : 6;
     const weekendBoost = isWeekend(day) ? randomInt(2, 4) : 0;
-    const paydayBoost = dayOfMonth >= 25 || dayOfMonth <= 3 ? randomInt(1, 3) : 0;
+    const paydayBoost =
+      dayOfMonth >= 25 || dayOfMonth <= 3 ? randomInt(1, 3) : 0;
     const posCount = Math.max(
       1,
       monthlyBase + weekendBoost + paydayBoost + randomInt(-2, 3),
@@ -258,9 +270,29 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
   }
 
   for (const [variantId, state] of stocks) {
+    /// Stok dipegang per toko, jadi kuncinya pasangan varian + toko.
     await prisma.productVariantStock.update({
-      where: { productVariantId: variantId },
+      where: {
+        productVariantId_storeId: { productVariantId: variantId, storeId },
+      },
       data: { stock: state.stock, reserved_stock: state.reserved },
+    });
+  }
+
+  /**
+   * Kuota pre-order yang terpakai pesanan lunas.
+   *
+   * Dikurangi di akhir, bukan tiap pesanan, supaya satu produk tidak
+   * di-update berkali-kali. `quotaTarget` ikut turun mengikuti
+   * `lockOrderStock` di backend.
+   */
+  for (const [productMasterId, quantity] of preOrderUsage) {
+    await prisma.productPreOrderDetails.updateMany({
+      where: { productMasterId },
+      data: {
+        maxQuota: { decrement: quantity },
+        quotaTarget: { decrement: quantity },
+      },
     });
   }
 
@@ -281,8 +313,15 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
     );
     if (available.length === 0) return [];
 
-    const chosen = pickMany(available, randomInt(1, Math.min(maxLines, available.length)));
-    const lines: { variant: SeededVariant; quantity: number; subtotal: number }[] = [];
+    const chosen = pickMany(
+      available,
+      randomInt(1, Math.min(maxLines, available.length)),
+    );
+    const lines: {
+      variant: SeededVariant;
+      quantity: number;
+      subtotal: number;
+    }[] = [];
 
     for (const variant of chosen) {
       const state = stocks.get(variant.id)!;
@@ -344,8 +383,9 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
     // Cermin paidOperation() di PosTransactionService.
     for (const line of lines) {
       const state = stocks.get(line.variant.id)!;
+      /// Hanya `stock`. Sejak `reserved_stock` jadi milik pesanan online yang
+      /// terkunci, kasir tidak lagi menambahnya (lihat pos-transaction.service).
       state.stock -= line.quantity;
-      state.reserved += line.quantity;
 
       ledgerRows.push({
         storeId,
@@ -369,43 +409,122 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
     });
   }
 
+  /**
+   * Pesanan online mengikuti alur nego WhatsApp, bukan pembayaran gateway.
+   *
+   * Harga katalog cuma perkiraan (`estimatedTotal`); yang berlaku adalah
+   * `totalAmount` hasil nego. Efek stok, kas, dan kuota ditulis persis seperti
+   * aturan di OrderService supaya data contoh tidak pernah bertentangan
+   * dengan apa yang akan dilakukan aplikasi:
+   *
+   *  - Lunas (dan seterusnya): stok bebas turun, `reserved_stock` naik,
+   *    kuota pre-order turun, `stockLockedAt` terisi.
+   *  - Selesai: kunci dilepas dan barangnya tercatat keluar (ledger OUT).
+   *  - Batal: tidak pernah dari status Lunas di sini, jadi stok tidak
+   *    bergerak; uang yang dikembalikan tercatat sebagai kas keluar.
+   *  - Refund: dari Dikirim, dengan dua kemungkinan — barang kembali ke stok,
+   *    atau dianggap hilang dan tercatat keluar.
+   */
   async function seedOnlineOrder(day: Date) {
     const createdAt = atBusinessHour(day);
     const lines = takeSellableItems(3);
     if (lines.length === 0) return;
 
     const customer = pick(customers);
-    const itemsTotal = lines.reduce((sum, line) => sum + line.subtotal, 0);
-    // Ongkir digratiskan, mengikuti SHIPPING_COST di CustomerOrderService.
-    const shippingCost = 0;
-    const total = itemsTotal + shippingCost;
+    const estimatedTotal = lines.reduce((sum, line) => sum + line.subtotal, 0);
 
-    // Pesanan beberapa hari terakhir wajar masih menunggu bayar.
+    /// Hasil nego: kebanyakan turun sedikit (potongan), sesekali naik karena
+    /// permintaan custom. Dibulatkan ke ribuan supaya enak dibaca.
+    const negotiationFactor = pick([0.9, 0.95, 0.95, 1, 1, 1.05, 1.1]);
+    const totalAmount =
+      Math.round((estimatedTotal * negotiationFactor) / 1000) * 1000;
+
+    const deliveryMethod = chance(0.3) ? "PICKUP" : "SHIP";
     const daysFromEnd = Math.round(
       (PERIOD_END.getTime() - day.getTime()) / 86400000,
     );
-    const status = daysFromEnd <= 2 && chance(0.45)
-      ? "PENDING"
-      : chance(0.07)
-        ? "CANCELLED"
-        : daysFromEnd > 10 && chance(0.55)
-          ? "COMPLETED"
-          : daysFromEnd > 4 && chance(0.5)
-            ? "SHIPPED"
-            : "PAID";
 
-    const isPaid = status !== "PENDING" && status !== "CANCELLED";
+    /// Pesanan yang baru masuk wajar masih dinego; makin tua pesanannya,
+    /// makin besar kemungkinan sudah tuntas.
+    const status: OrderSeedStatus =
+      daysFromEnd <= 2
+        ? chance(0.45)
+          ? "PENDING"
+          : "DP"
+        : chance(0.06)
+          ? "CANCELLED"
+          : daysFromEnd > 12 && chance(0.5)
+            ? "COMPLETED"
+            : daysFromEnd > 6 && chance(0.4)
+              ? deliveryMethod === "SHIP"
+                ? chance(0.2)
+                  ? "REFUNDED"
+                  : "SHIPPED"
+                : "COMPLETED"
+              : chance(0.25)
+                ? "PRODUCTION_DONE"
+                : chance(0.3)
+                  ? "DP"
+                  : "PAID";
+
+    /// Sudah lunas penuh — di titik ini stok dikunci dan kas masuk penuh.
+    const isSettled =
+      status === "PAID" ||
+      status === "SHIPPED" ||
+      status === "COMPLETED" ||
+      status === "REFUNDED";
+    /// Baru sebagian: DP tercatat, stok belum disentuh.
+    const isPartial = status === "DP" || status === "PRODUCTION_DONE";
+
+    const dpAmount = isSettled
+      ? totalAmount
+      : isPartial
+        ? Math.round((totalAmount * pick([0.3, 0.4, 0.5])) / 1000) * 1000
+        : status === "CANCELLED" && chance(0.5)
+          ? Math.round((totalAmount * 0.3) / 1000) * 1000
+          : null;
+
+    /// Tanggal peristiwa lanjutan (pelunasan, kirim, terima) selalu sesudah
+    /// pesanan dibuat, tapi tidak melewati akhir periode data.
+    const laterDate = (offset: number) => {
+      const target = addDays(day, offset);
+      return atBusinessHour(target > PERIOD_END ? PERIOD_END : target);
+    };
+    const settledAt = laterDate(randomInt(1, 3));
+
+    const shipmentStatus =
+      status === "COMPLETED"
+        ? "DELIVERED"
+        : status === "SHIPPED" || status === "REFUNDED"
+          ? "SHIPPED"
+          : "PACKAGING";
 
     const order = await prisma.order.create({
       data: {
         orderId: uniqueId("ORDER", day),
         storeId,
         customerId: customer.id,
-        paymentMethodId: paymentMethods.qris,
-        paymentGatewayRef:
-          status === "CANCELLED" ? null : `snap-${uniqueId("TOK", day).toLowerCase()}`,
+        /// Channel pembayaran baru diketahui setelah nego; pesanan yang masih
+        /// diajukan belum punya.
+        paymentMethodId:
+          status === "PENDING"
+            ? null
+            : pick([
+                paymentMethods.bri,
+                paymentMethods.bni,
+                paymentMethods.qris,
+                paymentMethods.cash,
+              ]),
+        /// Tidak ada lagi Midtrans di alur ini.
+        paymentGatewayRef: null,
         status,
-        totalAmount: total,
+        deliveryMethod,
+        estimatedTotal,
+        totalAmount,
+        dpAmount,
+        buyerName: customer.name,
+        buyerPhone: customer.phone,
+        stockLockedAt: isSettled ? settledAt : null,
         createdAt,
         items: {
           create: lines.map((line) => ({
@@ -413,52 +532,157 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
             quantity: line.quantity,
             price: line.variant.price,
             subtotal: line.subtotal,
+            /// Permintaan custom adalah bahan nego, jadi sebagian item
+            /// memang punya catatan.
+            notes: chance(0.25)
+              ? pick([
+                  "Tolong warnanya lebih gelap sedikit",
+                  "Tambah inisial nama di bagian depan",
+                  "Talinya dipanjangkan",
+                  "Dibungkus kado ya",
+                ])
+              : null,
           })),
         },
-        shipment: {
-          create: {
-            recipientName: customer.name,
-            phone: customer.phone,
-            addressLine: `Jl. ${pick(["Kaliurang", "Magelang", "Parangtritis", "Wates", "Godean"])} No. ${randomInt(1, 180)}`,
-            city: pick(["Yogyakarta", "Sleman", "Bantul", "Klaten", "Magelang"]),
-            province: pick(["DI Yogyakarta", "Jawa Tengah"]),
-            courier: pick(["JNE", "J&T", "SiCepat", "AnterAja"]),
-            shippingCost,
-            createdAt,
+        /// Pesanan ambil di tempat memang tidak punya baris pengiriman.
+        ...(deliveryMethod === "SHIP" && {
+          shipment: {
+            create: {
+              recipientName: customer.name,
+              phone: customer.phone,
+              addressLine: `Jl. ${pick(["Kaliurang", "Magelang", "Parangtritis", "Wates", "Godean"])} No. ${randomInt(1, 180)}`,
+              city: pick([
+                "Yogyakarta",
+                "Sleman",
+                "Bantul",
+                "Klaten",
+                "Magelang",
+              ]),
+              province: pick(["DI Yogyakarta", "Jawa Tengah"]),
+              courier: pick(["JNE", "J&T", "SiCepat", "AnterAja"]),
+              shippingCost: 0,
+              status: shipmentStatus,
+              trackingNumber:
+                shipmentStatus === "PACKAGING"
+                  ? null
+                  : `${uniqueId("RESI", day)}`,
+              createdAt,
+            },
           },
-        },
+        }),
       },
     });
 
     stats.order += 1;
-    if (!isPaid) return;
 
-    // Cermin paidOperationOrder() di CustomerOrderService.
-    for (const line of lines) {
-      const state = stocks.get(line.variant.id)!;
-      state.stock -= line.quantity;
-      state.reserved += line.quantity;
-
-      ledgerRows.push({
+    // ------------------------------- Kas ----------------------------------
+    if (dpAmount && (isPartial || status === "CANCELLED")) {
+      cashRows.push({
         storeId,
-        itemType: "PRODUCT_VARIANT",
-        itemId: line.variant.id,
-        direction: "OUT",
-        source: "ONLINE_ORDER",
-        quantity: line.quantity,
+        type: "IN",
+        source: "ORDER",
+        amount: dpAmount,
         referenceId: order.id,
         createdAt,
       });
     }
 
-    cashRows.push({
-      storeId,
-      type: "IN",
-      source: "ORDER",
-      amount: total,
-      referenceId: order.id,
-      createdAt,
-    });
+    if (isSettled) {
+      /// Sebagian pesanan dibayar dua tahap (DP lalu pelunasan), sebagian
+      /// sekali bayar — keduanya menghasilkan total yang sama.
+      const firstPayment = chance(0.5)
+        ? Math.round((totalAmount * 0.4) / 1000) * 1000
+        : totalAmount;
+
+      cashRows.push({
+        storeId,
+        type: "IN",
+        source: "ORDER",
+        amount: firstPayment,
+        referenceId: order.id,
+        createdAt,
+      });
+
+      if (firstPayment < totalAmount) {
+        cashRows.push({
+          storeId,
+          type: "IN",
+          source: "ORDER",
+          amount: totalAmount - firstPayment,
+          referenceId: order.id,
+          createdAt: settledAt,
+        });
+      }
+    }
+
+    if (status === "CANCELLED" && dpAmount) {
+      /// Sebagian pembatalan mengembalikan DP, sebagian hangus sesuai
+      /// kesepakatan.
+      const refund = chance(0.5) ? dpAmount : 0;
+      if (refund > 0) {
+        cashRows.push({
+          storeId,
+          type: "OUT",
+          source: "ORDER",
+          amount: refund,
+          referenceId: order.id,
+          createdAt: laterDate(randomInt(1, 4)),
+        });
+      }
+    }
+
+    if (status === "REFUNDED") {
+      cashRows.push({
+        storeId,
+        type: "OUT",
+        source: "ORDER",
+        amount: totalAmount,
+        referenceId: order.id,
+        createdAt: laterDate(randomInt(3, 7)),
+      });
+    }
+
+    // --------------------------- Stok & kuota ------------------------------
+    if (!isSettled) return;
+
+    /// Refund dengan barang kembali: stok sempat terkunci lalu dikembalikan
+    /// utuh, jadi hasil akhirnya tidak menyisakan perubahan stok maupun kuota.
+    const refundRestocked = status === "REFUNDED" && chance(0.5);
+    /// Kunci stok dilepas begitu pesanan tuntas (Selesai) atau barangnya
+    /// dianggap hilang (Refund tanpa barang kembali).
+    const stockReleased =
+      status === "COMPLETED" || (status === "REFUNDED" && !refundRestocked);
+
+    for (const line of lines) {
+      const state = stocks.get(line.variant.id)!;
+
+      if (refundRestocked) continue;
+
+      state.stock -= line.quantity;
+      if (!stockReleased) {
+        state.reserved += line.quantity;
+      } else {
+        ledgerRows.push({
+          storeId,
+          itemType: "PRODUCT_VARIANT",
+          itemId: line.variant.id,
+          direction: "OUT",
+          source: "ONLINE_ORDER",
+          quantity: line.quantity,
+          referenceId: order.id,
+          createdAt:
+            status === "COMPLETED" ? laterDate(randomInt(3, 8)) : settledAt,
+        });
+      }
+
+      if (line.variant.type === "PRE_ORDER") {
+        preOrderUsage.set(
+          line.variant.productMasterId,
+          (preOrderUsage.get(line.variant.productMasterId) ?? 0) +
+            line.quantity,
+        );
+      }
+    }
   }
 
   async function seedBespoke(day: Date) {
@@ -475,44 +699,38 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
       "Tote bag custom logo kantor",
     ]);
 
-    // Bespoke tidak menghasilkan varian katalog, jadi producedVariantId kosong
-    // dan tidak ada mutasi stok — sama seperti alur di ProductionService.
-    const production = await prisma.production.create({
+    /// Pesanan custom punya tabelnya sendiri: tidak menyentuh stok, dan
+    /// justru mencatat kas MASUK sebesar harga yang disepakati.
+    const bespoke = await prisma.bespokeOrder.create({
       data: {
-        storeId,
-        quantityProduced: randomInt(1, 12),
-        type: "BE_SPOKE",
+        code: formatTransactionId("BSP", day),
+        customerId: customer.id,
+        title,
+        description:
+          "Dikerjakan sesuai permintaan warna dan ukuran pelanggan.",
+        quantity: randomInt(1, 12),
+        quotedPrice,
         status: "COMPLETED",
         notes: "Pesanan khusus pelanggan",
         targetDate: addDays(day, randomInt(10, 21)),
+        completedAt: addDays(createdAt, randomInt(7, 18)),
         createdAt,
-        beSpokeDetails: {
-          create: {
-            customerId: customer.id,
-            title,
-            description: "Dikerjakan sesuai permintaan warna dan ukuran pelanggan.",
-            quotedPrice,
-            createdAt,
-          },
-        },
       },
-      include: { beSpokeDetails: true },
     });
 
-    // Cermin statusCompleted() di ProductionService: bespoke selesai = kas masuk.
     cashRows.push({
       storeId,
       type: "IN",
-      source: "PRODUCTION",
+      source: "BESPOKE",
       amount: quotedPrice,
-      referenceId: production.id,
+      referenceId: bespoke.id,
       createdAt,
     });
 
-    if (production.beSpokeDetails) {
+    {
       await prisma.shipment.create({
         data: {
-          beSpokeDetailsId: production.beSpokeDetails.id,
+          bespokeOrderId: bespoke.id,
           recipientName: customer.name,
           phone: customer.phone,
           addressLine: `Jl. ${pick(["Kaliurang", "Magelang", "Imogiri", "Palagan"])} No. ${randomInt(1, 150)}`,
@@ -525,7 +743,6 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
       });
     }
 
-    stats.production += 1;
     stats.bespoke += 1;
   }
 
@@ -533,10 +750,18 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
     day: Date,
     categoryName: string,
     description: string,
-    items: { itemName: string; quantity: number; unit: string; price: number }[],
+    items: {
+      itemName: string;
+      quantity: number;
+      unit: string;
+      price: number;
+    }[],
   ) {
     const createdAt = atBusinessHour(day);
-    const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+    const total = items.reduce(
+      (sum, item) => sum + item.quantity * item.price,
+      0,
+    );
 
     const expense = await prisma.expense.create({
       data: {
@@ -576,72 +801,191 @@ export async function seedTransactions(master: MasterData): Promise<SeedStats> {
 
     // Rutin bulanan.
     if (dayOfMonth === 1) {
-      await createExpense(atHour(day, 9), "Sewa Tempat", "Sewa ruko & workshop bulanan", [
-        { itemName: "Sewa ruko", quantity: 1, unit: "bulan", price: 2500000 },
-        { itemName: "Sewa workshop", quantity: 1, unit: "bulan", price: 1200000 },
-      ]);
+      await createExpense(
+        atHour(day, 9),
+        "Sewa Tempat",
+        "Sewa ruko & workshop bulanan",
+        [
+          { itemName: "Sewa ruko", quantity: 1, unit: "bulan", price: 2500000 },
+          {
+            itemName: "Sewa workshop",
+            quantity: 1,
+            unit: "bulan",
+            price: 1200000,
+          },
+        ],
+      );
     }
 
     if (dayOfMonth === 5) {
-      await createExpense(atHour(day, 10), "Internet", "Langganan internet toko", [
-        { itemName: "Paket internet 100 Mbps", quantity: 1, unit: "bulan", price: 385000 },
-      ]);
+      await createExpense(
+        atHour(day, 10),
+        "Internet",
+        "Langganan internet toko",
+        [
+          {
+            itemName: "Paket internet 100 Mbps",
+            quantity: 1,
+            unit: "bulan",
+            price: 385000,
+          },
+        ],
+      );
     }
 
     if (dayOfMonth === 10) {
-      await createExpense(atHour(day, 11), "Listrik & Air", "Tagihan listrik & air", [
-        { itemName: "Listrik", quantity: 1, unit: "bulan", price: randomInt(45, 78) * 10000 },
-        { itemName: "Air PDAM", quantity: 1, unit: "bulan", price: randomInt(12, 22) * 10000 },
-      ]);
+      await createExpense(
+        atHour(day, 11),
+        "Listrik & Air",
+        "Tagihan listrik & air",
+        [
+          {
+            itemName: "Listrik",
+            quantity: 1,
+            unit: "bulan",
+            price: randomInt(45, 78) * 10000,
+          },
+          {
+            itemName: "Air PDAM",
+            quantity: 1,
+            unit: "bulan",
+            price: randomInt(12, 22) * 10000,
+          },
+        ],
+      );
     }
 
     if (dayOfMonth === 25) {
-      await createExpense(atHour(day, 15), "Gaji Karyawan", "Gaji karyawan tetap", [
-        { itemName: "Gaji admin", quantity: 1, unit: "orang", price: 2800000 },
-        { itemName: "Gaji staf gudang", quantity: 1, unit: "orang", price: 2500000 },
-        { itemName: "Gaji kasir", quantity: 2, unit: "orang", price: 2300000 },
-      ]);
+      await createExpense(
+        atHour(day, 15),
+        "Gaji Karyawan",
+        "Gaji karyawan tetap",
+        [
+          {
+            itemName: "Gaji admin",
+            quantity: 1,
+            unit: "orang",
+            price: 2800000,
+          },
+          {
+            itemName: "Gaji staf gudang",
+            quantity: 1,
+            unit: "orang",
+            price: 2500000,
+          },
+          {
+            itemName: "Gaji kasir",
+            quantity: 2,
+            unit: "orang",
+            price: 2300000,
+          },
+        ],
+      );
     }
 
     if (dayOfMonth === 15 || dayOfMonth === 28) {
-      await createExpense(atHour(day, 16), "Upah Pengrajin", "Upah borongan pengrajin", [
-        { itemName: "Upah rajut tas", quantity: randomInt(8, 22), unit: "pcs", price: 45000 },
-        { itemName: "Upah rajut aksesoris", quantity: randomInt(20, 60), unit: "pcs", price: 6000 },
-      ]);
+      await createExpense(
+        atHour(day, 16),
+        "Upah Pengrajin",
+        "Upah borongan pengrajin",
+        [
+          {
+            itemName: "Upah rajut tas",
+            quantity: randomInt(8, 22),
+            unit: "pcs",
+            price: 45000,
+          },
+          {
+            itemName: "Upah rajut aksesoris",
+            quantity: randomInt(20, 60),
+            unit: "pcs",
+            price: 6000,
+          },
+        ],
+      );
     }
 
     // Tidak rutin.
     if (chance(0.16)) {
       await createExpense(day, "Bahan Baku", "Pembelian benang & bahan rajut", [
-        { itemName: "Benang katun", quantity: randomInt(10, 40), unit: "gulung", price: 22000 },
-        { itemName: "Tali kur", quantity: randomInt(5, 20), unit: "roll", price: 35000 },
-        { itemName: "Resleting", quantity: randomInt(10, 50), unit: "pcs", price: 3500 },
+        {
+          itemName: "Benang katun",
+          quantity: randomInt(10, 40),
+          unit: "gulung",
+          price: 22000,
+        },
+        {
+          itemName: "Tali kur",
+          quantity: randomInt(5, 20),
+          unit: "roll",
+          price: 35000,
+        },
+        {
+          itemName: "Resleting",
+          quantity: randomInt(10, 50),
+          unit: "pcs",
+          price: 3500,
+        },
       ]);
     }
 
     if (chance(0.07)) {
       await createExpense(day, "Kemasan", "Pembelian kemasan produk", [
-        { itemName: "Paper bag", quantity: randomInt(50, 200), unit: "pcs", price: 2500 },
-        { itemName: "Kartu ucapan", quantity: randomInt(50, 150), unit: "pcs", price: 1200 },
+        {
+          itemName: "Paper bag",
+          quantity: randomInt(50, 200),
+          unit: "pcs",
+          price: 2500,
+        },
+        {
+          itemName: "Kartu ucapan",
+          quantity: randomInt(50, 150),
+          unit: "pcs",
+          price: 1200,
+        },
       ]);
     }
 
     if (chance(0.09)) {
       await createExpense(day, "Pemasaran", "Iklan & promosi media sosial", [
-        { itemName: pick(["Iklan Instagram", "Iklan TikTok", "Endorse micro influencer"]), quantity: 1, unit: "paket", price: randomInt(15, 120) * 10000 },
+        {
+          itemName: pick([
+            "Iklan Instagram",
+            "Iklan TikTok",
+            "Endorse micro influencer",
+          ]),
+          quantity: 1,
+          unit: "paket",
+          price: randomInt(15, 120) * 10000,
+        },
       ]);
     }
 
     if (chance(0.12)) {
       await createExpense(day, "Transportasi", "Operasional & kirim bahan", [
-        { itemName: "Bensin & parkir", quantity: 1, unit: "kali", price: randomInt(5, 25) * 10000 },
+        {
+          itemName: "Bensin & parkir",
+          quantity: 1,
+          unit: "kali",
+          price: randomInt(5, 25) * 10000,
+        },
       ]);
     }
 
     if (chance(0.03)) {
       await createExpense(day, "Peralatan", "Pembelian alat rajut", [
-        { itemName: "Hakpen set", quantity: randomInt(1, 4), unit: "set", price: 85000 },
-        { itemName: "Gunting benang", quantity: randomInt(1, 5), unit: "pcs", price: 25000 },
+        {
+          itemName: "Hakpen set",
+          quantity: randomInt(1, 4),
+          unit: "set",
+          price: 85000,
+        },
+        {
+          itemName: "Gunting benang",
+          quantity: randomInt(1, 5),
+          unit: "pcs",
+          price: 25000,
+        },
       ]);
     }
   }

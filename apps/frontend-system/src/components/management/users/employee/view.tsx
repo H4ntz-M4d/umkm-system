@@ -11,34 +11,39 @@ import { usePaginationParams } from "@/hooks/use-paginations-params";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCanManageMaster } from "@/hooks/management/use-central-store";
 
 export default function EmployeeManagementView() {
   const { pagination, onPaginationChange } = usePaginationParams();
-  const [search, setSearch] = useState("")
-  const debounceSearch = useDebounce(search, 500)
+  const [search, setSearch] = useState("");
+  const canManage = useCanManageMaster();
+  const debounceSearch = useDebounce(search, 500);
   const router = useRouter();
 
-  const { dataEmployee, isLoadingEmployee, deleteStaffData } = useUsersOperation({
-    pagination, 
-    search: debounceSearch
-  });
+  const { dataEmployee, isLoadingEmployee, deleteStaffData } =
+    useUsersOperation({
+      pagination,
+      search: debounceSearch,
+    });
 
   const pageCount = dataEmployee?.total
-  ? Math.ceil(dataEmployee?.total / pagination.pageSize)
-  : 1;
-  
+    ? Math.ceil(dataEmployee?.total / pagination.pageSize)
+    : 1;
 
   return (
     <>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="flex sm:flex-row flex-col gap-2 justify-between mt-5">
-          <InputGroupInlineStart value={search} onChange={(e) => setSearch(e.target.value)} />
+          <InputGroupInlineStart
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
 
-          <Link href={'/management/employee/new'}>
-           <Button>
-            Add Karyawan
-           </Button>
-          </Link>
+          {canManage && (
+            <Link href={"/management/employee/new"}>
+              <Button>Tambah Karyawan</Button>
+            </Link>
+          )}
         </div>
         <div className="bg-muted/50 rounded-xl md:min-h-min">
           {isLoadingEmployee && !dataEmployee ? (
@@ -46,7 +51,7 @@ export default function EmployeeManagementView() {
           ) : (
             <DataTableEmployee
               data={dataEmployee?.data ?? []}
-              columns={columnsEmployee(deleteStaffData, router)}
+              columns={columnsEmployee(deleteStaffData, router, canManage)}
               pagination={pagination}
               pageCount={pageCount}
               onPaginationChange={onPaginationChange}

@@ -12,7 +12,17 @@ import {
   findOnlineSourceStore,
 } from 'common/helpers/online-store';
 import { MidtransService } from 'midtrans/midtrans.service';
-import { CheckoutDto, MyOrderQueryDto } from 'order/dto/order.dto';
+import {
+  CheckoutDto,
+  MyOrderQueryDto,
+  SubmitOrderDto,
+} from 'order/dto/order.dto';
+import type { JwtPayload } from 'common/decorator/auth.decorator';
+import {
+  lockOrderStock,
+  syncOrderCashIn,
+  type PaidOrder,
+} from 'common/helpers/order-paid-effects';
 import {
   customerOrderInclude,
   toCustomerOrderResponse,
@@ -25,92 +35,23 @@ const SHIPPING_COST = 0;
 /// Dipakai membentuk tautan kembali dari halaman Midtrans ke halaman pesanan.
 const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:3000';
 
-type PaidOrder = {
-  id: bigint;
-  storeId: bigint;
-  totalAmount: Prisma.Decimal;
-  items: {
-    productVariantId: bigint;
-    quantity: number;
-    type: string;
-    idPm: bigint;
-  }[];
+/// Bentuk minimal yang dibutuhkan `resolveShipment`. Ditulis struktural supaya
+/// dipenuhi baik oleh CheckoutDto (alur lama) maupun SubmitOrderDto (alur WA).
+type ShipmentSource = {
+  addressId?: string;
+  shipment?: {
+    recipientName: string;
+    phone: string;
+    addressLine: string;
+    city: string;
+    province: string;
+  };
+  courier: string;
 };
 
 @Injectable()
 export class CustomerOrderService {
   constructor(private readonly midtransService: MidtransService) {}
-
-  /**
-   * Efek samping saat pesanan lunas: catat mutasi stok, catat kas masuk, lalu
-   * kurangi stok. Cerminan paidOperation milik POS, dengan sumber ONLINE_ORDER.
-   */
-  private async paidOperationOrder(
-    order: PaidOrder,
-    tx: Prisma.TransactionClient,
-  ) {
-    await tx.inventoryLedger.createMany({
-      data: order.items.map((item) => ({
-        itemType: 'PRODUCT_VARIANT' as const,
-        itemId: item.productVariantId,
-        source: 'ONLINE_ORDER' as const,
-        referenceId: order.id,
-        direction: 'OUT' as const,
-        quantity: item.quantity,
-        storeId: order.storeId,
-      })),
-    });
-
-    // Penjualan online adalah kas MASUK. Perhatikan bahwa paidOperation di POS
-    // menulisnya sebagai OUT/EXPENSE — itu tampaknya keliru dan sengaja tidak
-    // ditiru di sini.
-    await tx.cashTransaction.create({
-      data: {
-        type: 'IN',
-        source: 'ORDER',
-        referenceId: order.id,
-        amount: order.totalAmount,
-        storeId: order.storeId,
-      },
-    });
-
-    for (const item of order.items) {
-      if (item.type === 'PRE_ORDER') {
-        await tx.productPreOrderDetails.update({
-          where: { productMasterId: item.idPm },
-          data: {
-            maxQuota: { decrement: item.quantity },
-            quotaTarget: { decrement: item.quantity },
-          },
-        });
-        continue;
-      } else if (item.type === 'MADE_TO_ORDER') {
-        continue;
-      }
-      /**
-       * Toko diambil dari pesanannya, bukan dihitung ulang dari penanda
-       * `isOnlineSource` saat ini.
-       *
-       * Bedanya baru terasa saat pembatalan atau refund: kalau saat itu toko
-       * sumber online sudah berpindah, menghitung ulang akan mengembalikan stok
-       * ke toko yang salah — dan selisihnya tidak akan ketahuan karena kedua
-       * angkanya tetap terlihat wajar. Pesanan harus mengingat dari mana
-       * barangnya diambil.
-       */
-      await tx.productVariantStock.update({
-        where: {
-          productVariantId_storeId: {
-            productVariantId: item.productVariantId,
-            storeId: order.storeId,
-          },
-        },
-        data: {
-          stock: { decrement: item.quantity },
-          reserved_stock: { increment: item.quantity },
-        },
-      });
-    }
-  }
 
   async checkout(userId: bigint, dto: CheckoutDto) {
     const customerId = await resolveCustomerId(userId);
@@ -142,36 +83,25 @@ export class CustomerOrderService {
       );
     }
 
-    // Stok diperiksa ulang di sini, bukan mengandalkan yang tersimpan di
-    // keranjang — barang bisa saja terjual lewat POS sejak dimasukkan.
-    for (const item of cart.cartItems) {
-      const stock = item.variant.productVariantStocks[0]?.stock ?? 0;
-      if (
-        item.variant.productMaster.type !== 'MADE_TO_ORDER' &&
-        item.variant.productMaster.type !== 'PRE_ORDER'
-      ) {
-        if (stock < item.quantity) {
-          const variantNames = item.variant.options
-            .map((opt) => opt.variantValue.value)
-            .join(' - ');
-
-          throw new BadRequestException(
-            `Maaf stock dari ${item.variant.productMaster.name}${
-              variantNames ? ` variant ${variantNames}` : ''
-            } tidak mencukupi`,
-          );
-        }
-      }
-    }
+    // Pengecekan stok ready stock dibuang sejak READY_STOCK digabung ke
+    // REGULAR: pesanan online tidak lagi mengambil dari stok toko.
 
     const shipmentInput = await this.resolveShipment(customerId, dto);
 
     /// Toko pemenuh pesanan ditentukan dari penandanya, bukan dari urutan
     /// pembuatan toko seperti sebelumnya — lihat `findOnlineSourceStore`.
-    const [store, paymentMethod, customer] = await Promise.all([
-      findOnlineSourceStore(),
+    const store = await findOnlineSourceStore();
+
+    const [paymentMethod, customer] = await Promise.all([
+      /// Metode milik toko pemenuh pesanan, atau yang berlaku umum. Sejak
+      /// metode pembayaran terikat toko, mengambil QRIS mana pun yang aktif
+      /// bisa membuat uang pembeli mendarat di rekening cabang lain.
       prisma.paymentMethod.findFirst({
-        where: { isActive: true, channel: 'MIDTRANS' },
+        where: {
+          isActive: true,
+          channel: 'MIDTRANS',
+          OR: [{ storeId: null }, { storeId: store.id }],
+        },
         orderBy: { id: 'asc' },
       }),
       prisma.customer.findUnique({ where: { id: customerId } }),
@@ -206,6 +136,9 @@ export class CustomerOrderService {
           customerId,
           paymentMethodId: paymentMethod.id,
           status: OrderStatus.PENDING,
+          /// Di alur lama keduanya memang selalu sama: harga katalog dipakai
+          /// apa adanya, tidak ada nego.
+          estimatedTotal: totalAmount,
           totalAmount,
           items: {
             create: orderItems.map((item) => ({
@@ -289,11 +222,253 @@ export class CustomerOrderService {
     }
   }
 
+  /**
+   * Pengajuan pesanan dari katalog — pengganti `checkout()`.
+   *
+   * Tidak ada pembayaran di sini sama sekali. Pesanan masuk berstatus PENDING
+   * ("Mengajukan"), lalu harga dan DP-nya disepakati di WhatsApp dan dicatat
+   * admin belakangan. Karena itu tidak ada stok maupun kas yang bergerak pada
+   * tahap ini — semuanya baru jalan saat admin menetapkan PAID.
+   *
+   * Isi keranjang datang dari client, berbeda dengan `checkout()` yang
+   * membacanya dari tabel Cart: keranjang tamu hanya hidup di localStorage
+   * browser dan tidak pernah tersinkron ke server. Yang dipercaya dari client
+   * cuma varian dan jumlahnya — harganya tetap dibaca ulang dari
+   * `ProductVariant.price` di sini.
+   */
+  async submitOrderRequest(user: JwtPayload | null, dto: SubmitOrderDto) {
+    const customerId = user ? await resolveCustomerId(user.sub) : null;
+
+    const customer = customerId
+      ? await prisma.customer.findUnique({
+          where: { id: customerId },
+          select: { name: true, phone: true },
+        })
+      : null;
+
+    /// Yang diketik di form menang atas data akun: pemesan boleh memakai nomor
+    /// lain untuk pesanan ini tanpa harus mengubah profilnya.
+    const buyerName = dto.buyerName?.trim() || customer?.name || null;
+    const buyerPhone = dto.buyerPhone?.trim() || customer?.phone || null;
+
+    // Seluruh kelanjutan pesanan terjadi lewat WhatsApp, jadi pesanan tanpa
+    // nomor yang bisa dihubungi tidak ada artinya — termasuk untuk customer
+    // yang sudah masuk tapi profilnya belum berisi nomor.
+    if (!buyerName || !buyerPhone) {
+      throw new BadRequestException(
+        'Nama dan nomor WhatsApp wajib diisi supaya pesanan bisa ditindaklanjuti',
+      );
+    }
+
+    const variants = await prisma.productVariant.findMany({
+      where: {
+        id: { in: dto.items.map((item) => BigInt(item.productVariantId)) },
+      },
+      select: {
+        id: true,
+        price: true,
+        productMaster: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+            /// Dibaca di sini, bukan query terpisah per item, supaya
+            /// pengecekan kuota di bawah tidak menambah round-trip DB.
+            productPreOrderDetail: { select: { maxQuota: true } },
+          },
+        },
+      },
+    });
+
+    const variantById = new Map(
+      variants.map((variant) => [variant.id.toString(), variant]),
+    );
+
+    const orderItems = dto.items.map((item) => {
+      const variant = variantById.get(item.productVariantId);
+
+      if (!variant) {
+        throw new BadRequestException(
+          'Ada produk yang sudah tidak tersedia. Muat ulang keranjang Anda.',
+        );
+      }
+
+      return {
+        productMasterId: variant.productMaster.id,
+        productName: variant.productMaster.name,
+        productType: variant.productMaster.type,
+        maxQuota: variant.productMaster.productPreOrderDetail?.maxQuota ?? null,
+        productVariantId: variant.id,
+        quantity: item.quantity,
+        price: variant.price,
+        subtotal: variant.price.mul(item.quantity),
+        notes: item.notes?.trim() || null,
+      };
+    });
+
+    /**
+     * Kuota pre-order dijaga di sini, bukan hanya nanti saat admin menandai
+     * lunas.
+     *
+     * Kuota baru benar-benar berkurang di database saat pesanan lunas (sesuai
+     * keputusan sebelumnya — tidak ada yang bergerak sebelum uangnya nyata
+     * diterima), tapi itu tidak berarti pengajuan yang jelas-jelas sudah
+     * melebihi sisa kuota SAAT INI boleh diterima begitu saja. Menerimanya lalu
+     * baru menolak saat admin sudah selesai nego adalah pengalaman yang buruk.
+     *
+     * Kuota MILIK PRODUK, bukan per varian — pilihan warna/ukuran tidak
+     * membuka kuota terpisah, jadi beberapa varian dari produk yang sama
+     * dijumlahkan dulu sebelum dibandingkan.
+     *
+     * Ini pemahaman kuota untuk sekarang; kalau nanti ternyata beda (mis.
+     * kuota per varian, atau PO boleh melebihi batas), logika di sini yang
+     * perlu disesuaikan.
+     */
+    const requestedByProduct = new Map<string, number>();
+    for (const item of orderItems) {
+      if (item.productType !== 'PRE_ORDER') continue;
+      const key = item.productMasterId.toString();
+      requestedByProduct.set(
+        key,
+        (requestedByProduct.get(key) ?? 0) + item.quantity,
+      );
+    }
+
+    const checkedProduct = new Set<string>();
+    for (const item of orderItems) {
+      if (item.productType !== 'PRE_ORDER') continue;
+      const key = item.productMasterId.toString();
+      // Dicek sekali per produk meski loop-nya jalan per item — varian lain
+      // dari produk yang sama tidak perlu ditolak berulang dengan pesan yang
+      // sama persis.
+      if (checkedProduct.has(key)) continue;
+      checkedProduct.add(key);
+
+      const requested = requestedByProduct.get(key)!;
+
+      if (item.maxQuota === null) {
+        throw new BadRequestException(
+          `${item.productName} sudah tidak menerima pre-order (kuota tidak ditemukan)`,
+        );
+      }
+
+      if (item.maxQuota < requested) {
+        throw new BadRequestException(
+          `Kuota pre-order ${item.productName} tersisa ${item.maxQuota}, tidak cukup untuk ${requested} pcs yang diminta`,
+        );
+      }
+    }
+
+    const estimatedTotal = orderItems.reduce(
+      (total, item) => total.add(item.subtotal),
+      new Prisma.Decimal(0),
+    );
+
+    /// Toko pembukuan pesanan tetap toko sumber online, termasuk untuk pesanan
+    /// yang diambil sendiri — yang berpindah cuma cara serah terimanya, bukan
+    /// dari toko mana pesanan itu dicatat.
+    const store = await findOnlineSourceStore();
+
+    const shipmentInput =
+      dto.deliveryMethod === 'SHIP'
+        ? /// courier dipastikan ada oleh superRefine di SubmitOrderSchema
+          /// untuk deliveryMethod "SHIP".
+          await this.resolveShipment(customerId, {
+            ...dto,
+            courier: dto.courier!,
+          })
+        : null;
+
+    const order = await prisma.$transaction(async (tx) => {
+      const created = await tx.order.create({
+        data: {
+          orderId: idFormat('ORDER'),
+          storeId: store.id,
+          customerId,
+          status: OrderStatus.PENDING,
+          deliveryMethod: dto.deliveryMethod,
+          estimatedTotal,
+          /// Sama dulu dengan estimasi; ditimpa admin begitu nego selesai.
+          totalAmount: estimatedTotal,
+          buyerName,
+          buyerPhone,
+          // Hanya kolom milik OrderItem yang dikirim — orderItems membawa
+          // productMasterId/productName/productType/maxQuota tambahan, dipakai
+          // untuk pengecekan kuota di atas, bukan bagian dari baris OrderItem.
+          items: {
+            create: orderItems.map((item) => ({
+              productVariantId: item.productVariantId,
+              quantity: item.quantity,
+              price: item.price,
+              subtotal: item.subtotal,
+              notes: item.notes,
+            })),
+          },
+          ...(shipmentInput && {
+            shipment: {
+              create: { ...shipmentInput, shippingCost: SHIPPING_COST },
+            },
+          }),
+        },
+      });
+
+      if (customerId && dto.saveAddress && dto.shipment) {
+        // Alamat pertama otomatis jadi default, sama seperti AddressService.create.
+        const addressCount = await tx.customerAddress.count({
+          where: { customerId },
+        });
+
+        await tx.customerAddress.create({
+          data: { ...dto.shipment, customerId, isDefault: addressCount === 0 },
+        });
+      }
+
+      // Hanya customer yang login punya keranjang di server; keranjang tamu
+      // dikosongkan di browser setelah pengajuan berhasil.
+      if (customerId) {
+        const cart = await tx.cart.findUnique({
+          where: { customerId },
+          select: { id: true },
+        });
+
+        if (cart) {
+          await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+        }
+      }
+
+      return created;
+    });
+
+    return {
+      orderId: order.orderId,
+      estimatedTotal: String(estimatedTotal),
+      totalItems: orderItems.reduce((total, item) => total + item.quantity, 0),
+      /// Tamu tidak bisa membuka /orders yang login-gated, jadi frontend perlu
+      /// tahu apakah pesanan ini tertaut akun sebelum mengarahkan ke sana.
+      isGuest: customerId === null,
+    };
+  }
+
   /// Alamat pengiriman dibekukan ke Shipment, entah diambil dari buku alamat
   /// atau diketik langsung — supaya riwayat pesanan tidak ikut berubah saat
   /// customer mengedit alamatnya.
-  private async resolveShipment(customerId: bigint, dto: CheckoutDto) {
+  ///
+  /// `customerId` boleh null sejak tamu bisa memesan: yang tidak punya sesi
+  /// wajib mengetik alamatnya, karena buku alamat itu milik akun.
+  private async resolveShipment(
+    customerId: bigint | null,
+    dto: ShipmentSource,
+  ) {
     if (dto.addressId) {
+      /// Dijaga eksplisit, bukan mengandalkan perbandingan customerId di bawah
+      /// yang kebetulan juga gagal untuk null: tanpa ini, tamu bisa menyebut
+      /// ID alamat milik orang lain dan isinya ikut tersalin ke pesanan.
+      if (!customerId) {
+        throw new BadRequestException(
+          'Alamat tersimpan hanya bisa dipakai oleh akun yang sudah masuk',
+        );
+      }
+
       const address = await prisma.customerAddress.findUnique({
         where: { id: BigInt(dto.addressId) },
       });
@@ -383,7 +558,7 @@ export class CustomerOrderService {
       await prisma.$transaction(async (tx) => {
         await tx.order.update({
           where: { id: order.id },
-          data: { status: OrderStatus.PAID },
+          data: { status: OrderStatus.PAID, stockLockedAt: new Date() },
           select: {
             items: {
               select: {
@@ -395,7 +570,11 @@ export class CustomerOrderService {
           },
         });
 
-        await this.paidOperationOrder(order, tx);
+        /// Jalur lama (tanpa rute) ikut aturan kunci stok yang sama, supaya
+        /// tidak ada dua versi aturan stok pesanan.
+        await lockOrderStock(order, tx);
+        /// Alur lama selalu lunas sekali jalan, jadi targetnya nilai penuh.
+        await syncOrderCashIn(order, order.totalAmount, tx);
       });
 
       return OrderStatus.PAID;
@@ -433,7 +612,9 @@ export class CustomerOrderService {
             productVariantId: true,
             quantity: true,
             variant: {
-              select: { productMaster: { select: { id: true, type: true } } },
+              select: {
+                productMaster: { select: { id: true, name: true, type: true } },
+              },
             },
           },
         },
@@ -468,6 +649,7 @@ export class CustomerOrderService {
       ...orderRaw,
       items: orderRaw.items.map((item) => ({
         idPm: item.variant.productMaster.id,
+        productName: item.variant.productMaster.name,
         type: item.variant.productMaster.type,
         ...item,
       })),
@@ -505,7 +687,9 @@ export class CustomerOrderService {
             productVariantId: true,
             quantity: true,
             variant: {
-              select: { productMaster: { select: { id: true, type: true } } },
+              select: {
+                productMaster: { select: { id: true, name: true, type: true } },
+              },
             },
           },
         },
@@ -520,6 +704,7 @@ export class CustomerOrderService {
       ...orderRaw,
       items: orderRaw.items.map((item) => ({
         idPm: item.variant.productMaster.id,
+        productName: item.variant.productMaster.name,
         type: item.variant.productMaster.type,
         ...item,
       })),

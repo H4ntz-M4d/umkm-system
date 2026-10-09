@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { shopWhatsAppUrl } from "../../../../utils/whatsapp";
 
 const Footer = () => {
   return (
@@ -46,9 +47,11 @@ const Footer = () => {
             </h4>
             <ul className="space-y-2.5 text-sm">
               {[
-                { label: "FAQ", path: "/" },
-                { label: "Cara Pesan", path: "/" },
-                { label: "Hubungi Kami", path: "https://wa.me/6288232000188" },
+                { label: "Tentang Kami", path: "/about" },
+                { label: "Menjadi Reseller", path: "/reseller" },
+                { label: "Cara Pesan", path: "/about#cara-pesan" },
+                { label: "FAQ", path: "/about#faq" },
+                { label: "Hubungi Kami", path: shopWhatsAppUrl() },
               ].map((item, index) => (
                 <li key={index}>
                   <Link
@@ -72,9 +75,15 @@ const Footer = () => {
                   label: "Instagram",
                   path: "https://www.instagram.com/nurfacraft_jogja?igsh=MTdncGxudGIzbDQzMA==",
                 },
-                { label: "TikTok", path: "https://www.tiktok.com/@tasrajutjogjanurfa" },
-                { label: "Facebook", path: "https://www.facebook.com/tasrajutjogjanurfa" },
-                { label: "WhatsApp", path: "https://wa.me/6288232000188" },
+                {
+                  label: "TikTok",
+                  path: "https://www.tiktok.com/@tasrajutjogjanurfa",
+                },
+                {
+                  label: "Facebook",
+                  path: "https://www.facebook.com/tasrajutjogjanurfa",
+                },
+                { label: "WhatsApp", path: shopWhatsAppUrl() },
               ].map((item) => (
                 <li key={item.path}>
                   <Link

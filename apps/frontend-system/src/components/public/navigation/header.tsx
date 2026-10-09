@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Bell, User, Menu, X, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { CartDataType } from "@repo/schemas";
 import MobileHeader from "./mobile-header";
@@ -25,6 +26,26 @@ const Header = ({ user, cart }: { user?: any; cart?: CartDataType | null }) => {
       <div className="mx-auto px-4 md:px-8 flex items-center justify-between h-16 md:h-20">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
+          {/* Tanda logo dipakai tanpa tulisannya: namanya sudah tertulis di
+              sebelahnya dengan huruf situs, jadi tidak perlu diulang dua kali. */}
+          <Image
+            src="/logo-mark.png"
+            alt=""
+            width={40}
+            height={40}
+            priority
+            className="size-9 object-contain md:size-10 dark:hidden"
+          />
+          {/* Varian terang untuk mode gelap. Bukan filter `invert`: membalik
+              cokelat menghasilkan biru muda, yang bukan warna merek. */}
+          <Image
+            src="/logo-mark-light.png"
+            alt=""
+            width={40}
+            height={40}
+            priority
+            className="hidden size-9 object-contain md:size-10 dark:block"
+          />
           <span className="font-display text-xl md:text-2xl font-bold text-foreground tracking-tight">
             Nurfa<span className="text-primary">Craft</span>
           </span>
@@ -55,7 +76,7 @@ const Header = ({ user, cart }: { user?: any; cart?: CartDataType | null }) => {
           </button> */}
           <Link
             href="/wishlist"
-            aria-label="Wishlist"
+            aria-label="Favorit"
             className="hidden md:flex relative p-2 rounded-lg text-foreground/70 hover:text-white hover:bg-secondary transition-colors"
           >
             <Heart size={20} />
@@ -74,7 +95,7 @@ const Header = ({ user, cart }: { user?: any; cart?: CartDataType | null }) => {
             ) : (
               <Link href={"/login"}>
                 <button className="p-2 rounded-lg text-foreground/70 hover:text-white hover:bg-secondary transition-colors">
-                  Login
+                  Masuk
                 </button>
               </Link>
             )}

@@ -3,12 +3,13 @@ import {
   fetchPayment,
   removePayment,
   updatePayment,
+  uploadQrisImage,
 } from "@/lib/queries/payment-method/payment-method.query";
 import { PaymentMethodSchemaInput } from "@repo/schemas";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const usePaymentMethodOperations = () => {
+export const usePaymentMethodOperations = (storeId?: string | null) => {
   const qc = useQueryClient();
   const invalidate = () =>
     qc.invalidateQueries({ queryKey: ["payment-method"] });
@@ -19,8 +20,15 @@ export const usePaymentMethodOperations = () => {
     toast.error(title, { description: err.message });
 
   const fetchPaymentQuery = useQuery({
-    queryKey: ["payment-method"],
-    queryFn: () => fetchPayment(),
+    queryKey: ["payment-method", storeId ?? "all"],
+    queryFn: () => fetchPayment(storeId),
+  });
+
+  /// Dipakai lewat `mutateAsync` karena form perlu menunggu URL-nya sebelum
+  /// bisa menyimpan metode pembayarannya.
+  const uploadQrisMutation = useMutation({
+    mutationFn: (file: File) => uploadQrisImage(file),
+    onError: showError("Gagal mengunggah gambar QR"),
   });
 
   const createPaymentMutation = useMutation({
@@ -61,5 +69,7 @@ export const usePaymentMethodOperations = () => {
     createPaymentData: createPaymentMutation.mutate,
     updatePaymentData: updatePaymentMutation.mutate,
     removePaymentData: removePaymentMutation.mutate,
-  }
+    uploadQrisImageAsync: uploadQrisMutation.mutateAsync,
+    isUploadingQris: uploadQrisMutation.isPending,
+  };
 };

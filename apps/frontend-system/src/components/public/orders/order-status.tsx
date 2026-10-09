@@ -2,9 +2,13 @@ import type { CustomerOrderDataType } from "@repo/schemas";
 
 type OrderStatus = CustomerOrderDataType["status"];
 
+/// "Mengajukan", bukan "Menunggu Pembayaran": pesanan sekarang masuk lebih
+/// dulu sebagai pengajuan, lalu harga dan DP-nya disepakati lewat WhatsApp.
 const STATUS_LABEL: Record<OrderStatus, string> = {
-  PENDING: "Menunggu Pembayaran",
-  PAID: "Sudah Dibayar",
+  PENDING: "Mengajukan",
+  DP: "DP Dibayar",
+  PRODUCTION_DONE: "Produksi Selesai",
+  PAID: "Lunas",
   SHIPPED: "Dikirim",
   COMPLETED: "Selesai",
   CANCELLED: "Dibatalkan",
@@ -13,6 +17,8 @@ const STATUS_LABEL: Record<OrderStatus, string> = {
 
 const STATUS_CLASS: Record<OrderStatus, string> = {
   PENDING: "bg-primary/10 text-primary",
+  DP: "bg-amber-100 text-amber-700",
+  PRODUCTION_DONE: "bg-amber-100 text-amber-700",
   PAID: "bg-secondary/20 text-secondary",
   SHIPPED: "bg-secondary/20 text-secondary",
   COMPLETED: "bg-secondary/20 text-secondary",

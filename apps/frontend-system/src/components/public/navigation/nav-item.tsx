@@ -10,21 +10,25 @@ interface navLink {
 
 export const NavItem = (): navLink[] => [
   {
-    label: "Home",
+    label: "Beranda",
     path: "/",
   },
   {
-    label: "Products",
+    label: "Produk",
     path: "/products",
   },
-  // {
-  //   label: "Blog",
-  //   path: "/blog",
-  // },
-  // {
-  //   label: "About",
-  //   path: "/about",
-  // },
+  {
+    label: "Blog",
+    path: "/blog",
+  },
+  {
+    label: "Tentang Kami",
+    path: "/about",
+  },
+  {
+    label: "Reseller",
+    path: "/reseller",
+  },
 ];
 
 export const NavItemProfile = (
@@ -35,15 +39,15 @@ export const NavItemProfile = (
     path: "/profile",
   },
   {
-    label: "Wishlist",
+    label: "Favorit",
     path: "/wishlist",
   },
   {
-    label: "Shopping History",
+    label: "Riwayat Pesanan",
     path: "/orders",
   },
   {
-    label: "Logout",
+    label: "Keluar",
     path: "#",
     fn: () => {
       signOutCustomer();

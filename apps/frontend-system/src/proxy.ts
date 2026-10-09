@@ -86,11 +86,12 @@ export async function proxy(request: NextRequest) {
 
   // /cart sengaja TIDAK dijaga: keranjang guest hidup di localStorage, jadi
   // pengunjung harus bisa membukanya sebelum login.
-  if (
-    pathname.startsWith("/wishlist") ||
-    pathname.startsWith("/checkout") ||
-    pathname.startsWith("/orders")
-  ) {
+  //
+  // /checkout ikut dilepas sejak pemesanan dilanjutkan lewat WhatsApp: tamu
+  // boleh mengajukan pesanan cukup dengan nama dan nomor WhatsApp, dan
+  // keranjangnya pun cuma ada di localStorage seperti halnya /cart. Halaman
+  // itu tetap membaca sesi kalau ada, untuk menautkan pesanan ke akunnya.
+  if (pathname.startsWith("/wishlist") || pathname.startsWith("/orders")) {
     const accessToken = request.cookies.get("access_token_customer")?.value;
     const refreshToken = request.cookies.get("refresh_token_customer")?.value;
     if ((!accessToken || isTokenExpired(accessToken)) && refreshToken) {

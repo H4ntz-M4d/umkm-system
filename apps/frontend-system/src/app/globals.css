@@ -257,6 +257,108 @@ body {
 }
 
 /**
+ * Tampilan isi tulisan blog.
+ *
+ * Satu kelas dipakai dua tempat: area ketik editor di sisi admin dan artikel di
+ * sisi publik. Ditulis sekali supaya yang dilihat penulis saat mengetik sama
+ * dengan yang dibaca pengunjung. Daftar tagnya mengikuti tag yang diizinkan
+ * pembersih HTML di server (`blog.sanitize.ts`) — tag di luar itu tidak pernah
+ * sampai tersimpan, jadi tidak perlu digayakan.
+ */
+.rich-text {
+  line-height: 1.8;
+}
+
+.rich-text > * + * {
+  margin-top: 1rem;
+}
+
+.rich-text h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+}
+
+.rich-text h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+
+.rich-text h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+}
+
+.rich-text ul,
+.rich-text ol {
+  padding-left: 1.5rem;
+}
+
+.rich-text ul {
+  list-style: disc;
+}
+
+.rich-text ol {
+  list-style: decimal;
+}
+
+.rich-text li + li {
+  margin-top: 0.25rem;
+}
+
+.rich-text blockquote {
+  border-left: 3px solid var(--border);
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+
+.rich-text a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rich-text img {
+  border-radius: var(--radius);
+  max-width: 100%;
+  height: auto;
+}
+
+.rich-text hr {
+  border-top: 1px solid var(--border);
+}
+
+.rich-text pre {
+  background: var(--muted);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+}
+
+.rich-text code {
+  font-size: 0.9em;
+}
+
+.rich-text figcaption {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
+/* Teks bantu saat area ketik masih kosong. Tiptap menaruh atributnya di
+   paragraf pertama, jadi penanda kosongnya disasar langsung. */
+.rich-text p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--muted-foreground);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/**
  * Aturan cetak.
  *
  * Dipakai halaman /management/reports/print dan tombol cetak di halaman tabel.

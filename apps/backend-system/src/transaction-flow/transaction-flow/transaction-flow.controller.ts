@@ -1,10 +1,5 @@
-import {
-  Controller,
-  Get,
-  ParseIntPipe,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Pagination } from 'common/paginate/pagination';
 import { TransactionFlowService } from './transaction-flow.service';
 import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
 import { RolesGuard } from 'common/guards/guard.roles';
@@ -22,15 +17,14 @@ export class TransactionFlowController {
     @Query('store') store: string,
     @Query('type') type: string,
     @Query('source') source: string,
-    @Query('page', ParseIntPipe) page: number,
-    @Query('limit', ParseIntPipe) limit: number,
+    @Query() pagination: Pagination,
   ) {
     return this.transactionFlowService.findAll({
       storeId: store,
       type,
       source,
-      skip: page,
-      take: limit,
+      skip: pagination.skip ?? 0,
+      take: pagination.limit ?? 10,
     });
   }
 

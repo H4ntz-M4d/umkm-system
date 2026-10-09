@@ -4,8 +4,10 @@ import {
   CheckoutResponse,
   CustomerOrderDetailResponse,
   CustomerOrderListResponse,
+  SubmitOrderResponse,
   type CheckoutInput,
   type MyOrderQueryInput,
+  type SubmitOrderInput,
 } from "@repo/schemas";
 
 /// Dari Server Component cookie tidak ikut otomatis, jadi token dikirim manual
@@ -13,6 +15,24 @@ import {
 const auth = (token?: string) =>
   token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
+/**
+ * Mengajukan pesanan dari katalog.
+ *
+ * Boleh dipanggil tanpa sesi: tamu cukup menyertakan nama dan nomor WhatsApp.
+ * Isi keranjang ikut dikirim karena keranjang tamu tidak pernah sampai ke
+ * server — harganya tetap dihitung ulang di sana.
+ */
+export const submitOrder = async (data: SubmitOrderInput) =>
+  apiFetcher(
+    customerApi.post("v1/orders/submit", { json: data }),
+    SubmitOrderResponse,
+  );
+
+/**
+ * Checkout bayar-online lama — DINONAKTIFKAN, rutenya sudah dicabut di backend
+ * sehingga pemanggilan ini akan 404. Sengaja tidak dihapus supaya alur lama
+ * bisa dihidupkan kembali tanpa menulis ulang.
+ */
 export const checkout = async (data: CheckoutInput) =>
   apiFetcher(
     customerApi.post("v1/orders/checkout", { json: data }),

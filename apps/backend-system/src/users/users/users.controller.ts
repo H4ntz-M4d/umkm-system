@@ -26,6 +26,8 @@ import { RolesGuard } from 'common/guards/guard.roles';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IMAGE_VALIDATOR } from 'common/interceptors/upload-image.interceptors';
 import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
+import { CentralStoreOnly } from 'common/decorator/central-store.decorator';
+import { CentralStoreGuard } from 'common/guards/guard.central-store';
 
 @Controller('api/v1/users')
 export class UsersController {
@@ -48,6 +50,22 @@ export class UsersController {
     return this.services.findAllCustomer(pagination);
   }
 
+  /**
+   * Daftar nama karyawan untuk dropdown.
+   *
+   * Perannya lebih luas dari `/employees` karena dialog nego pesanan juga
+   * dibuka Kasir. Isinya pun dipangkas jadi id + nama + peran.
+   *
+   * Didaftarkan SEBELUM `@Get(':id')`: kalau tidak, "employees" tertangkap
+   * sebagai id dan ParseIntPipe menolaknya.
+   */
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR, UserRole.GUDANG)
+  @Get('/employees/list')
+  findEmployeeOptions() {
+    return this.services.findEmployeeOptions();
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @Get(':id')
@@ -55,8 +73,9 @@ export class UsersController {
     return this.services.findById(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @CentralStoreOnly()
   @Post()
   @UseInterceptors(FileInterceptor('image'))
   create(
@@ -66,8 +85,9 @@ export class UsersController {
     return this.services.createAdmin(dto, file);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @CentralStoreOnly()
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   update(
@@ -78,8 +98,9 @@ export class UsersController {
     return this.services.update(BigInt(id), dto, file);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @CentralStoreOnly()
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.services.remove(BigInt(id));

@@ -224,7 +224,7 @@ export type ProductMasterGroupByOutputType = {
   _max: ProductMasterMaxAggregateOutputType | null
 }
 
-export type GetProductMasterGroupByPayload<T extends ProductMasterGroupByArgs> = Prisma.PrismaPromise<
+type GetProductMasterGroupByPayload<T extends ProductMasterGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProductMasterGroupByOutputType, T['by']> &
       {
@@ -258,6 +258,7 @@ export type ProductMasterWhereInput = {
   imageGroups?: Prisma.ProductImageGroupListRelationFilter
   wishlists?: Prisma.WishlistListRelationFilter
   productPreOrderDetail?: Prisma.XOR<Prisma.ProductPreOrderDetailsNullableScalarRelationFilter, Prisma.ProductPreOrderDetailsWhereInput> | null
+  bespokeOrders?: Prisma.BespokeOrderListRelationFilter
 }
 
 export type ProductMasterOrderByWithRelationInput = {
@@ -276,6 +277,7 @@ export type ProductMasterOrderByWithRelationInput = {
   imageGroups?: Prisma.ProductImageGroupOrderByRelationAggregateInput
   wishlists?: Prisma.WishlistOrderByRelationAggregateInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsOrderByWithRelationInput
+  bespokeOrders?: Prisma.BespokeOrderOrderByRelationAggregateInput
 }
 
 export type ProductMasterWhereUniqueInput = Prisma.AtLeast<{
@@ -297,6 +299,7 @@ export type ProductMasterWhereUniqueInput = Prisma.AtLeast<{
   imageGroups?: Prisma.ProductImageGroupListRelationFilter
   wishlists?: Prisma.WishlistListRelationFilter
   productPreOrderDetail?: Prisma.XOR<Prisma.ProductPreOrderDetailsNullableScalarRelationFilter, Prisma.ProductPreOrderDetailsWhereInput> | null
+  bespokeOrders?: Prisma.BespokeOrderListRelationFilter
 }, "id" | "slug">
 
 export type ProductMasterOrderByWithAggregationInput = {
@@ -346,6 +349,7 @@ export type ProductMasterCreateInput = {
   imageGroups?: Prisma.ProductImageGroupCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateInput = {
@@ -363,6 +367,7 @@ export type ProductMasterUncheckedCreateInput = {
   imageGroups?: Prisma.ProductImageGroupUncheckedCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUpdateInput = {
@@ -380,6 +385,7 @@ export type ProductMasterUpdateInput = {
   imageGroups?: Prisma.ProductImageGroupUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateInput = {
@@ -397,6 +403,7 @@ export type ProductMasterUncheckedUpdateInput = {
   imageGroups?: Prisma.ProductImageGroupUncheckedUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterCreateManyInput = {
@@ -493,6 +500,11 @@ export type ProductMasterSumOrderByAggregateInput = {
 export type ProductMasterScalarRelationFilter = {
   is?: Prisma.ProductMasterWhereInput
   isNot?: Prisma.ProductMasterWhereInput
+}
+
+export type ProductMasterNullableScalarRelationFilter = {
+  is?: Prisma.ProductMasterWhereInput | null
+  isNot?: Prisma.ProductMasterWhereInput | null
 }
 
 export type ProductMasterCreateNestedManyWithoutCategoriesInput = {
@@ -615,6 +627,22 @@ export type ProductMasterUpdateOneRequiredWithoutWishlistsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductMasterUpdateToOneWithWhereWithoutWishlistsInput, Prisma.ProductMasterUpdateWithoutWishlistsInput>, Prisma.ProductMasterUncheckedUpdateWithoutWishlistsInput>
 }
 
+export type ProductMasterCreateNestedOneWithoutBespokeOrdersInput = {
+  create?: Prisma.XOR<Prisma.ProductMasterCreateWithoutBespokeOrdersInput, Prisma.ProductMasterUncheckedCreateWithoutBespokeOrdersInput>
+  connectOrCreate?: Prisma.ProductMasterCreateOrConnectWithoutBespokeOrdersInput
+  connect?: Prisma.ProductMasterWhereUniqueInput
+}
+
+export type ProductMasterUpdateOneWithoutBespokeOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductMasterCreateWithoutBespokeOrdersInput, Prisma.ProductMasterUncheckedCreateWithoutBespokeOrdersInput>
+  connectOrCreate?: Prisma.ProductMasterCreateOrConnectWithoutBespokeOrdersInput
+  upsert?: Prisma.ProductMasterUpsertWithoutBespokeOrdersInput
+  disconnect?: Prisma.ProductMasterWhereInput | boolean
+  delete?: Prisma.ProductMasterWhereInput | boolean
+  connect?: Prisma.ProductMasterWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductMasterUpdateToOneWithWhereWithoutBespokeOrdersInput, Prisma.ProductMasterUpdateWithoutBespokeOrdersInput>, Prisma.ProductMasterUncheckedUpdateWithoutBespokeOrdersInput>
+}
+
 export type ProductMasterCreateWithoutCategoriesInput = {
   id?: bigint | number
   name: string
@@ -629,6 +657,7 @@ export type ProductMasterCreateWithoutCategoriesInput = {
   imageGroups?: Prisma.ProductImageGroupCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateWithoutCategoriesInput = {
@@ -645,6 +674,7 @@ export type ProductMasterUncheckedCreateWithoutCategoriesInput = {
   imageGroups?: Prisma.ProductImageGroupUncheckedCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterCreateOrConnectWithoutCategoriesInput = {
@@ -702,6 +732,7 @@ export type ProductMasterCreateWithoutProductPreOrderDetailInput = {
   categories?: Prisma.CategoriesCreateNestedOneWithoutProductMastersInput
   imageGroups?: Prisma.ProductImageGroupCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutProductInput
+  bespokeOrders?: Prisma.BespokeOrderCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateWithoutProductPreOrderDetailInput = {
@@ -718,6 +749,7 @@ export type ProductMasterUncheckedCreateWithoutProductPreOrderDetailInput = {
   variantTypes?: Prisma.ProductVariantTypeUncheckedCreateNestedManyWithoutProductMasterInput
   imageGroups?: Prisma.ProductImageGroupUncheckedCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutProductInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterCreateOrConnectWithoutProductPreOrderDetailInput = {
@@ -750,6 +782,7 @@ export type ProductMasterUpdateWithoutProductPreOrderDetailInput = {
   categories?: Prisma.CategoriesUpdateOneWithoutProductMastersNestedInput
   imageGroups?: Prisma.ProductImageGroupUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutProductNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateWithoutProductPreOrderDetailInput = {
@@ -766,6 +799,7 @@ export type ProductMasterUncheckedUpdateWithoutProductPreOrderDetailInput = {
   variantTypes?: Prisma.ProductVariantTypeUncheckedUpdateManyWithoutProductMasterNestedInput
   imageGroups?: Prisma.ProductImageGroupUncheckedUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutProductNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterCreateWithoutImageGroupsInput = {
@@ -782,6 +816,7 @@ export type ProductMasterCreateWithoutImageGroupsInput = {
   categories?: Prisma.CategoriesCreateNestedOneWithoutProductMastersInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateWithoutImageGroupsInput = {
@@ -798,6 +833,7 @@ export type ProductMasterUncheckedCreateWithoutImageGroupsInput = {
   variantTypes?: Prisma.ProductVariantTypeUncheckedCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterCreateOrConnectWithoutImageGroupsInput = {
@@ -830,6 +866,7 @@ export type ProductMasterUpdateWithoutImageGroupsInput = {
   categories?: Prisma.CategoriesUpdateOneWithoutProductMastersNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateWithoutImageGroupsInput = {
@@ -846,6 +883,7 @@ export type ProductMasterUncheckedUpdateWithoutImageGroupsInput = {
   variantTypes?: Prisma.ProductVariantTypeUncheckedUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterCreateWithoutVariantsInput = {
@@ -862,6 +900,7 @@ export type ProductMasterCreateWithoutVariantsInput = {
   imageGroups?: Prisma.ProductImageGroupCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateWithoutVariantsInput = {
@@ -878,6 +917,7 @@ export type ProductMasterUncheckedCreateWithoutVariantsInput = {
   imageGroups?: Prisma.ProductImageGroupUncheckedCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterCreateOrConnectWithoutVariantsInput = {
@@ -910,6 +950,7 @@ export type ProductMasterUpdateWithoutVariantsInput = {
   imageGroups?: Prisma.ProductImageGroupUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateWithoutVariantsInput = {
@@ -926,6 +967,7 @@ export type ProductMasterUncheckedUpdateWithoutVariantsInput = {
   imageGroups?: Prisma.ProductImageGroupUncheckedUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterCreateWithoutVariantTypesInput = {
@@ -942,6 +984,7 @@ export type ProductMasterCreateWithoutVariantTypesInput = {
   imageGroups?: Prisma.ProductImageGroupCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateWithoutVariantTypesInput = {
@@ -958,6 +1001,7 @@ export type ProductMasterUncheckedCreateWithoutVariantTypesInput = {
   imageGroups?: Prisma.ProductImageGroupUncheckedCreateNestedManyWithoutProductMasterInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutProductInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterCreateOrConnectWithoutVariantTypesInput = {
@@ -990,6 +1034,7 @@ export type ProductMasterUpdateWithoutVariantTypesInput = {
   imageGroups?: Prisma.ProductImageGroupUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateWithoutVariantTypesInput = {
@@ -1006,6 +1051,7 @@ export type ProductMasterUncheckedUpdateWithoutVariantTypesInput = {
   imageGroups?: Prisma.ProductImageGroupUncheckedUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterCreateWithoutWishlistsInput = {
@@ -1022,6 +1068,7 @@ export type ProductMasterCreateWithoutWishlistsInput = {
   categories?: Prisma.CategoriesCreateNestedOneWithoutProductMastersInput
   imageGroups?: Prisma.ProductImageGroupCreateNestedManyWithoutProductMasterInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterUncheckedCreateWithoutWishlistsInput = {
@@ -1038,6 +1085,7 @@ export type ProductMasterUncheckedCreateWithoutWishlistsInput = {
   variantTypes?: Prisma.ProductVariantTypeUncheckedCreateNestedManyWithoutProductMasterInput
   imageGroups?: Prisma.ProductImageGroupUncheckedCreateNestedManyWithoutProductMasterInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedCreateNestedOneWithoutProductMasterInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedCreateNestedManyWithoutProductMasterInput
 }
 
 export type ProductMasterCreateOrConnectWithoutWishlistsInput = {
@@ -1070,6 +1118,7 @@ export type ProductMasterUpdateWithoutWishlistsInput = {
   categories?: Prisma.CategoriesUpdateOneWithoutProductMastersNestedInput
   imageGroups?: Prisma.ProductImageGroupUpdateManyWithoutProductMasterNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateWithoutWishlistsInput = {
@@ -1085,6 +1134,91 @@ export type ProductMasterUncheckedUpdateWithoutWishlistsInput = {
   variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductMasterNestedInput
   variantTypes?: Prisma.ProductVariantTypeUncheckedUpdateManyWithoutProductMasterNestedInput
   imageGroups?: Prisma.ProductImageGroupUncheckedUpdateManyWithoutProductMasterNestedInput
+  productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedUpdateManyWithoutProductMasterNestedInput
+}
+
+export type ProductMasterCreateWithoutBespokeOrdersInput = {
+  id?: bigint | number
+  name: string
+  description?: string | null
+  slug: string
+  useVariant?: boolean
+  type?: $Enums.ProductType
+  status?: $Enums.ProductStatus
+  createdAt?: Date | string
+  variants?: Prisma.ProductVariantCreateNestedManyWithoutProductMasterInput
+  variantTypes?: Prisma.ProductVariantTypeCreateNestedManyWithoutProductMasterInput
+  categories?: Prisma.CategoriesCreateNestedOneWithoutProductMastersInput
+  imageGroups?: Prisma.ProductImageGroupCreateNestedManyWithoutProductMasterInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutProductInput
+  productPreOrderDetail?: Prisma.ProductPreOrderDetailsCreateNestedOneWithoutProductMasterInput
+}
+
+export type ProductMasterUncheckedCreateWithoutBespokeOrdersInput = {
+  id?: bigint | number
+  name: string
+  description?: string | null
+  categoryId?: bigint | number | null
+  slug: string
+  useVariant?: boolean
+  type?: $Enums.ProductType
+  status?: $Enums.ProductStatus
+  createdAt?: Date | string
+  variants?: Prisma.ProductVariantUncheckedCreateNestedManyWithoutProductMasterInput
+  variantTypes?: Prisma.ProductVariantTypeUncheckedCreateNestedManyWithoutProductMasterInput
+  imageGroups?: Prisma.ProductImageGroupUncheckedCreateNestedManyWithoutProductMasterInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutProductInput
+  productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedCreateNestedOneWithoutProductMasterInput
+}
+
+export type ProductMasterCreateOrConnectWithoutBespokeOrdersInput = {
+  where: Prisma.ProductMasterWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductMasterCreateWithoutBespokeOrdersInput, Prisma.ProductMasterUncheckedCreateWithoutBespokeOrdersInput>
+}
+
+export type ProductMasterUpsertWithoutBespokeOrdersInput = {
+  update: Prisma.XOR<Prisma.ProductMasterUpdateWithoutBespokeOrdersInput, Prisma.ProductMasterUncheckedUpdateWithoutBespokeOrdersInput>
+  create: Prisma.XOR<Prisma.ProductMasterCreateWithoutBespokeOrdersInput, Prisma.ProductMasterUncheckedCreateWithoutBespokeOrdersInput>
+  where?: Prisma.ProductMasterWhereInput
+}
+
+export type ProductMasterUpdateToOneWithWhereWithoutBespokeOrdersInput = {
+  where?: Prisma.ProductMasterWhereInput
+  data: Prisma.XOR<Prisma.ProductMasterUpdateWithoutBespokeOrdersInput, Prisma.ProductMasterUncheckedUpdateWithoutBespokeOrdersInput>
+}
+
+export type ProductMasterUpdateWithoutBespokeOrdersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  variants?: Prisma.ProductVariantUpdateManyWithoutProductMasterNestedInput
+  variantTypes?: Prisma.ProductVariantTypeUpdateManyWithoutProductMasterNestedInput
+  categories?: Prisma.CategoriesUpdateOneWithoutProductMastersNestedInput
+  imageGroups?: Prisma.ProductImageGroupUpdateManyWithoutProductMasterNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutProductNestedInput
+  productPreOrderDetail?: Prisma.ProductPreOrderDetailsUpdateOneWithoutProductMasterNestedInput
+}
+
+export type ProductMasterUncheckedUpdateWithoutBespokeOrdersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  useVariant?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  variants?: Prisma.ProductVariantUncheckedUpdateManyWithoutProductMasterNestedInput
+  variantTypes?: Prisma.ProductVariantTypeUncheckedUpdateManyWithoutProductMasterNestedInput
+  imageGroups?: Prisma.ProductImageGroupUncheckedUpdateManyWithoutProductMasterNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedUpdateOneWithoutProductMasterNestedInput
 }
 
@@ -1113,6 +1247,7 @@ export type ProductMasterUpdateWithoutCategoriesInput = {
   imageGroups?: Prisma.ProductImageGroupUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateWithoutCategoriesInput = {
@@ -1129,6 +1264,7 @@ export type ProductMasterUncheckedUpdateWithoutCategoriesInput = {
   imageGroups?: Prisma.ProductImageGroupUncheckedUpdateManyWithoutProductMasterNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutProductNestedInput
   productPreOrderDetail?: Prisma.ProductPreOrderDetailsUncheckedUpdateOneWithoutProductMasterNestedInput
+  bespokeOrders?: Prisma.BespokeOrderUncheckedUpdateManyWithoutProductMasterNestedInput
 }
 
 export type ProductMasterUncheckedUpdateManyWithoutCategoriesInput = {
@@ -1152,6 +1288,7 @@ export type ProductMasterCountOutputType = {
   variantTypes: number
   imageGroups: number
   wishlists: number
+  bespokeOrders: number
 }
 
 export type ProductMasterCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1159,6 +1296,7 @@ export type ProductMasterCountOutputTypeSelect<ExtArgs extends runtime.Types.Ext
   variantTypes?: boolean | ProductMasterCountOutputTypeCountVariantTypesArgs
   imageGroups?: boolean | ProductMasterCountOutputTypeCountImageGroupsArgs
   wishlists?: boolean | ProductMasterCountOutputTypeCountWishlistsArgs
+  bespokeOrders?: boolean | ProductMasterCountOutputTypeCountBespokeOrdersArgs
 }
 
 /**
@@ -1199,6 +1337,13 @@ export type ProductMasterCountOutputTypeCountWishlistsArgs<ExtArgs extends runti
   where?: Prisma.WishlistWhereInput
 }
 
+/**
+ * ProductMasterCountOutputType without action
+ */
+export type ProductMasterCountOutputTypeCountBespokeOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BespokeOrderWhereInput
+}
+
 
 export type ProductMasterSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1216,6 +1361,7 @@ export type ProductMasterSelect<ExtArgs extends runtime.Types.Extensions.Interna
   imageGroups?: boolean | Prisma.ProductMaster$imageGroupsArgs<ExtArgs>
   wishlists?: boolean | Prisma.ProductMaster$wishlistsArgs<ExtArgs>
   productPreOrderDetail?: boolean | Prisma.ProductMaster$productPreOrderDetailArgs<ExtArgs>
+  bespokeOrders?: boolean | Prisma.ProductMaster$bespokeOrdersArgs<ExtArgs>
   _count?: boolean | Prisma.ProductMasterCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productMaster"]>
 
@@ -1265,6 +1411,7 @@ export type ProductMasterInclude<ExtArgs extends runtime.Types.Extensions.Intern
   imageGroups?: boolean | Prisma.ProductMaster$imageGroupsArgs<ExtArgs>
   wishlists?: boolean | Prisma.ProductMaster$wishlistsArgs<ExtArgs>
   productPreOrderDetail?: boolean | Prisma.ProductMaster$productPreOrderDetailArgs<ExtArgs>
+  bespokeOrders?: boolean | Prisma.ProductMaster$bespokeOrdersArgs<ExtArgs>
   _count?: boolean | Prisma.ProductMasterCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductMasterIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1283,6 +1430,7 @@ export type $ProductMasterPayload<ExtArgs extends runtime.Types.Extensions.Inter
     imageGroups: Prisma.$ProductImageGroupPayload<ExtArgs>[]
     wishlists: Prisma.$WishlistPayload<ExtArgs>[]
     productPreOrderDetail: Prisma.$ProductPreOrderDetailsPayload<ExtArgs> | null
+    bespokeOrders: Prisma.$BespokeOrderPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -1694,6 +1842,7 @@ export interface Prisma__ProductMasterClient<T, Null = never, ExtArgs extends ru
   imageGroups<T extends Prisma.ProductMaster$imageGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductMaster$imageGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductImageGroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   wishlists<T extends Prisma.ProductMaster$wishlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductMaster$wishlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productPreOrderDetail<T extends Prisma.ProductMaster$productPreOrderDetailArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductMaster$productPreOrderDetailArgs<ExtArgs>>): Prisma.Prisma__ProductPreOrderDetailsClient<runtime.Types.Result.GetResult<Prisma.$ProductPreOrderDetailsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  bespokeOrders<T extends Prisma.ProductMaster$bespokeOrdersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductMaster$bespokeOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BespokeOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1928,11 +2077,6 @@ export type ProductMasterFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` ProductMasters.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of ProductMasters.
-   */
   distinct?: Prisma.ProductMasterScalarFieldEnum | Prisma.ProductMasterScalarFieldEnum[]
 }
 
@@ -2264,6 +2408,30 @@ export type ProductMaster$productPreOrderDetailArgs<ExtArgs extends runtime.Type
    */
   include?: Prisma.ProductPreOrderDetailsInclude<ExtArgs> | null
   where?: Prisma.ProductPreOrderDetailsWhereInput
+}
+
+/**
+ * ProductMaster.bespokeOrders
+ */
+export type ProductMaster$bespokeOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BespokeOrder
+   */
+  select?: Prisma.BespokeOrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BespokeOrder
+   */
+  omit?: Prisma.BespokeOrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BespokeOrderInclude<ExtArgs> | null
+  where?: Prisma.BespokeOrderWhereInput
+  orderBy?: Prisma.BespokeOrderOrderByWithRelationInput | Prisma.BespokeOrderOrderByWithRelationInput[]
+  cursor?: Prisma.BespokeOrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BespokeOrderScalarFieldEnum | Prisma.BespokeOrderScalarFieldEnum[]
 }
 
 /**

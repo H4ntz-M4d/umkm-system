@@ -150,7 +150,10 @@ export default function InventoryLedgerFilter({
             ))}
           </SelectContent>
         </Select>
-        <DatePickerWithRange value={dateRange} onValueChange={handleDateChange} />
+        <DatePickerWithRange
+          value={dateRange}
+          onValueChange={handleDateChange}
+        />
       </div>
     </div>
   );

@@ -55,10 +55,11 @@ export const useGuestCart = create<CartState>()(
                 ? {
                     ...current,
                     snapshot: item.snapshot,
-                    quantity: Math.min(
-                      item.snapshot.stock,
-                      current.quantity + item.quantity,
-                    ),
+                    // Tidak dibatasi stok: pesanan online dikerjakan setelah
+                    // dipesan. Dulu dibatasi `snapshot.stock`, yang untuk
+                    // produk made-to-order/pre-order bernilai 0 — menambah
+                    // produk yang sama kedua kalinya membuat jumlahnya jadi 0.
+                    quantity: current.quantity + item.quantity,
                   }
                 : current,
             ),
@@ -71,10 +72,8 @@ export const useGuestCart = create<CartState>()(
             current.productVariantId === productVariantId
               ? {
                   ...current,
-                  quantity: Math.max(
-                    1,
-                    Math.min(current.snapshot.stock, quantity),
-                  ),
+                  // Minimal 1, tanpa batas stok — lihat keterangan di addItem.
+                  quantity: Math.max(1, quantity),
                 }
               : current,
           ),

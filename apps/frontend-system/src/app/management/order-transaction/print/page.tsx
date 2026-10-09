@@ -78,14 +78,28 @@ export default function Page() {
     <PrintTablePage
       title="Laporan Pesanan Online"
       subtitle={printSubtitle(dateFrom, dateTo)}
-      headers={["Tanggal", "Nomor pesanan", "Pelanggan", "Status", "Total"]}
-      numericFrom={4}
+      headers={[
+        "Tanggal",
+        "Nomor pesanan",
+        "Pelanggan",
+        "Diproses oleh",
+        "Status",
+        "Ongkir",
+        "Total",
+      ]}
+      /// Digeser mengikuti dua kolom baru: kalau tertinggal, kolom Status ikut
+      /// rata kanan seolah-olah angka.
+      numericFrom={5}
       isLoading={online.isLoading}
       rows={(online.data?.data ?? []).map((item) => [
         dayjs(item.createdAt).locale("id").format("DD MMM YYYY"),
         item.orderId,
         item.customerName ?? "-",
+        item.processedByName ?? "-",
         item.status,
+        /// Pesanan ambil di tempat tidak punya ongkir sama sekali — dibiarkan
+        /// kosong, bukan Rp 0 yang terbaca seperti "gratis".
+        item.shipment ? toIDR(item.shipment.shippingCost) : "-",
         toIDR(item.totalAmount),
       ])}
     />

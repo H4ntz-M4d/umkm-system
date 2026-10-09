@@ -35,7 +35,12 @@ export class ReportsExportService {
         columns: [
           { header: 'Keterangan', key: 'label', width: 34 },
           { header: 'Periode ini', key: 'current', money: true, width: 18 },
-          { header: 'Periode sebelumnya', key: 'previous', money: true, width: 20 },
+          {
+            header: 'Periode sebelumnya',
+            key: 'previous',
+            money: true,
+            width: 20,
+          },
         ],
         rows: [
           { label: `Periode: ${s.range.dateFrom} s/d ${s.range.dateTo}` },

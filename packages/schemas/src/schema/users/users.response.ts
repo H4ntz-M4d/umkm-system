@@ -36,6 +36,25 @@ export const EmployeeSchemaResponse = UsersWithEmployeeSchemaResponse.pick({
   image: true,
 })
 
+/**
+ * Bentuk ringkas untuk mengisi dropdown "Diproses oleh" pada pesanan.
+ *
+ * Sengaja hanya id, nama, dan peran: dropdown ini juga dibuka Kasir, dan
+ * daftar karyawan yang lengkap membawa email, toko, serta status akun yang
+ * tidak ada urusannya dengan memilih nama.
+ */
+export const EmployeeOptionData = z.object({
+  id: z.coerce.string(),
+  name: z.string(),
+  role: z.enum(["OWNER", "ADMIN", "KASIR", "GUDANG"]),
+});
+
+export type EmployeeOptionDataType = z.infer<typeof EmployeeOptionData>;
+
+export const EmployeeOptionListResponse = ApiSuccessResponse(
+  z.array(EmployeeOptionData),
+);
+
 export const AllUsersDataResponse = ApiSuccessResponse(
   z.array(UsersSchemaResponse)
 )

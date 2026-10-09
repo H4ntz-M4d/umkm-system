@@ -28,9 +28,7 @@ export * from "./enums.js"
  * Type-safe database client for TypeScript
  * @example
  * ```
- * const prisma = new PrismaClient({
- *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
- * })
+ * const prisma = new PrismaClient()
  * // Fetch zero or more Stores
  * const stores = await prisma.store.findMany()
  * ```
@@ -131,6 +129,27 @@ export type PasswordResetCode = Prisma.PasswordResetCodeModel
  */
 export type Employee = Prisma.EmployeeModel
 /**
+ * Model StockAdjustment
+ * *
+ *  * Penyesuaian stok — satu kali pencatatan untuk banyak varian sekaligus.
+ *  *
+ *  * Dibutuhkan karena seluruh jalur stok lain adalah akibat dari kejadian lain
+ *  * (produksi, penjualan, kiriman). Stok awal saat sistem mulai dipakai, barang
+ *  * rusak, hilang, atau salah hitung saat opname tidak punya kejadian seperti
+ *  * itu — tanpa tabel ini, satu-satunya cara membetulkan angka adalah memalsukan
+ *  * transaksi.
+ *  *
+ *  * Alasan dan pencatatnya disimpan di sini, bukan di `InventoryLedger`, supaya
+ *  * tabel riwayat tetap seragam untuk semua sumber. Baris riwayatnya menunjuk
+ *  * ke sini lewat `referenceId`.
+ */
+export type StockAdjustment = Prisma.StockAdjustmentModel
+/**
+ * Model StockAdjustmentItem
+ * 
+ */
+export type StockAdjustmentItem = Prisma.StockAdjustmentItemModel
+/**
  * Model InventoryLedger
  * 
  */
@@ -153,9 +172,41 @@ export type StockTransfer = Prisma.StockTransferModel
 export type StockTransferItem = Prisma.StockTransferItemModel
 /**
  * Model Production
+ * Batch produksi.
  * 
+ * Satu batch memuat banyak varian sekaligus dengan target masing-masing, dan
+ * hasilnya disetor BERTAHAP oleh toko produksi -- tidak pernah sekali jadi.
+ * Karena itu tidak ada "tipe produksi" (satu batch bisa mencampur tujuan) dan
+ * tidak ada "toko tujuan" (hasilnya selalu mendarat di rumah produksi).
  */
 export type Production = Prisma.ProductionModel
+/**
+ * Model ProductionItem
+ * Satu varian dalam batch, beserta target dan berapa yang sudah masuk.
+ */
+export type ProductionItem = Prisma.ProductionItemModel
+/**
+ * Model ProductionDelivery
+ * Satu kali antar hasil produksi dari toko produksi ke toko utama.
+ */
+export type ProductionDelivery = Prisma.ProductionDeliveryModel
+/**
+ * Model ProductionDeliveryItem
+ * 
+ */
+export type ProductionDeliveryItem = Prisma.ProductionDeliveryItemModel
+/**
+ * Model Blog
+ * Tulisan di storefront. Isinya HTML dari editor berformat, jadi WAJIB
+ * dibersihkan di server sebelum disimpan -- tanpa itu, siapa pun yang bisa
+ * menulis blog bisa menitipkan skrip ke halaman publik.
+ */
+export type Blog = Prisma.BlogModel
+/**
+ * Model BlogCategory
+ * 
+ */
+export type BlogCategory = Prisma.BlogCategoryModel
 /**
  * Model ExpenseCategory
  * 
@@ -166,6 +217,12 @@ export type ExpenseCategory = Prisma.ExpenseCategoryModel
  * 
  */
 export type Expense = Prisma.ExpenseModel
+/**
+ * Model ExpenseProof
+ * Foto bukti pengeluaran (nota, struk, bukti transfer). Opsional: pengeluaran
+ * tetap sah tanpa lampiran, jadi relasinya nol-ke-banyak, bukan wajib satu.
+ */
+export type ExpenseProof = Prisma.ExpenseProofModel
 /**
  * Model ExpenseItem
  * 
@@ -197,10 +254,13 @@ export type CartItem = Prisma.CartItemModel
  */
 export type Wishlist = Prisma.WishlistModel
 /**
- * Model BeSpokeDetails
- * 
+ * Model BespokeOrder
+ * Pesanan custom per pembeli -- dulu menempel pada Production sebagai
+ * "tipe produksi BE_SPOKE". Dipisah karena alurnya memang lain: tidak pernah
+ * menyentuh stok (tidak punya varian), dan justru mencatat kas MASUK sebesar
+ * harga yang disepakati saat selesai.
  */
-export type BeSpokeDetails = Prisma.BeSpokeDetailsModel
+export type BespokeOrder = Prisma.BespokeOrderModel
 /**
  * Model CustomerAddress
  * 
@@ -216,6 +276,15 @@ export type Shipment = Prisma.ShipmentModel
  * 
  */
 export type PaymentMethod = Prisma.PaymentMethodModel
+/**
+ * Model QrisAccount
+ * Data QRIS tercetak milik satu metode pembayaran.
+ * 
+ * Dipisah dari `payment_method` dengan pola yang sama seperti `BankAccount`:
+ * hanya channel tertentu yang punya detail ini, dan menaruhnya di tabel induk
+ * berarti dua kolom yang selalu kosong untuk channel lain.
+ */
+export type QrisAccount = Prisma.QrisAccountModel
 /**
  * Model BankAccount
  * 

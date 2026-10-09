@@ -19,8 +19,10 @@ export const StockTransferData = z.object({
   toStoreId: z.string(),
   toStoreName: z.string(),
   /// Terisi bila kiriman ini lahir otomatis dari produksi yang selesai.
-  productionId: z.string().nullable(),
   notes: z.string().nullable(),
+  /// Karyawan yang mengurus kiriman. Kosong pada kiriman lama.
+  handledById: z.coerce.string().nullable().default(null),
+  handledByName: z.string().nullable().default(null),
   createdAt: z.string(),
   sentAt: z.string().nullable(),
   receivedAt: z.string().nullable(),

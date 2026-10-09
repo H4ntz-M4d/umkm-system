@@ -7,15 +7,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { VariantData, z } from "@repo/schemas";
 
-type ProductVariant = z.infer<typeof VariantData>
+type ProductVariant = z.infer<typeof VariantData>;
 
 interface DataTableProps<TData extends ProductVariant, TValue> {
   columns: ColumnDef<TData, TValue>[];

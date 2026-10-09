@@ -30,9 +30,8 @@ export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
 
 
 export const ProductType = {
-  MADE_TO_ORDER: 'MADE_TO_ORDER',
-  PRE_ORDER: 'PRE_ORDER',
-  READY_STOCK: 'READY_STOCK'
+  REGULAR: 'REGULAR',
+  PRE_ORDER: 'PRE_ORDER'
 } as const
 
 export type ProductType = (typeof ProductType)[keyof typeof ProductType]
@@ -74,16 +73,6 @@ export const TransferStatus = {
 export type TransferStatus = (typeof TransferStatus)[keyof typeof TransferStatus]
 
 
-export const ProductionType = {
-  RESTOCK: 'RESTOCK',
-  MADE_TO_ORDER: 'MADE_TO_ORDER',
-  BE_SPOKE: 'BE_SPOKE',
-  PRE_ORDER: 'PRE_ORDER'
-} as const
-
-export type ProductionType = (typeof ProductionType)[keyof typeof ProductionType]
-
-
 export const ProductionStatus = {
   PLANNED: 'PLANNED',
   IN_PROGRESS: 'IN_PROGRESS',
@@ -94,8 +83,18 @@ export const ProductionStatus = {
 export type ProductionStatus = (typeof ProductionStatus)[keyof typeof ProductionStatus]
 
 
+export const BlogStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED'
+} as const
+
+export type BlogStatus = (typeof BlogStatus)[keyof typeof BlogStatus]
+
+
 export const OrderStatus = {
   PENDING: 'PENDING',
+  DP: 'DP',
+  PRODUCTION_DONE: 'PRODUCTION_DONE',
   PAID: 'PAID',
   CANCELLED: 'CANCELLED',
   SHIPPED: 'SHIPPED',
@@ -104,6 +103,24 @@ export const OrderStatus = {
 } as const
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
+export const OrderDeliveryMethod = {
+  SHIP: 'SHIP',
+  PICKUP: 'PICKUP'
+} as const
+
+export type OrderDeliveryMethod = (typeof OrderDeliveryMethod)[keyof typeof OrderDeliveryMethod]
+
+
+export const BespokeStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type BespokeStatus = (typeof BespokeStatus)[keyof typeof BespokeStatus]
 
 
 export const ShipmentStatus = {
@@ -119,7 +136,8 @@ export type ShipmentStatus = (typeof ShipmentStatus)[keyof typeof ShipmentStatus
 export const PaymentChannel = {
   CASH: 'CASH',
   MIDTRANS: 'MIDTRANS',
-  BANK_TRANSFER: 'BANK_TRANSFER'
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  QRIS_STATIC: 'QRIS_STATIC'
 } as const
 
 export type PaymentChannel = (typeof PaymentChannel)[keyof typeof PaymentChannel]
@@ -137,7 +155,8 @@ export const CashSource = {
   POS: 'POS',
   ORDER: 'ORDER',
   EXPENSE: 'EXPENSE',
-  PRODUCTION: 'PRODUCTION'
+  PRODUCTION: 'PRODUCTION',
+  BESPOKE: 'BESPOKE'
 } as const
 
 export type CashSource = (typeof CashSource)[keyof typeof CashSource]

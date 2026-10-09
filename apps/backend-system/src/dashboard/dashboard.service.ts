@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { prisma } from '@repo/db';
+import type { JwtPayload } from 'common/decorator/auth.decorator';
+import { findProductionHouse } from 'common/helpers/online-store';
+import { Prisma, prisma } from '@repo/db';
 import { DashboardTrendPeriodType } from '@repo/schemas';
 import {
   DashboardExpenseByCategoryQueryDto,
+  DashboardScopeQueryDto,
   DashboardTrendQueryDto,
 } from './dto/dashboard.dto';
 
@@ -89,11 +92,60 @@ function resolveTrendRange(period: DashboardTrendPeriodType) {
   };
 }
 
+/// Nilai khusus yang berarti "gabungkan semua toko".
+const ALL_STORES = 'all';
+
+/**
+ * Potongan WHERE untuk menyaring per toko di kueri mentah.
+ *
+ * Dibuat lewat `Prisma.sql` dengan nilai sebagai parameter, bukan dirangkai
+ * jadi teks — id-nya berasal dari permintaan pengguna, dan merangkainya
+ * langsung membuka celah penyuntikan SQL.
+ */
+function storeScopeSql(storeId: bigint | null, alias?: string): Prisma.Sql {
+  if (storeId === null) return Prisma.empty;
+
+  return alias
+    ? Prisma.sql`AND ${Prisma.raw(`"${alias}"`)}."storeId" = ${storeId}`
+    : Prisma.sql`AND "storeId" = ${storeId}`;
+}
+
 @Injectable()
 export class DashboardService {
-  async orderTrend(query: DashboardTrendQueryDto) {
+  /**
+   * Menentukan toko mana yang boleh dilihat pemanggil.
+   *
+   * Cabang Nurfa Craft berdiri sendiri: pendapatan mereka bukan pendapatan
+   * pusat, dan sebaliknya. Karena itu akun yang terikat toko SELALU dikunci ke
+   * tokonya sendiri — `storeId` yang dikirim layar diabaikan untuk mereka,
+   * supaya angka toko lain tidak bisa dilihat hanya dengan mengganti
+   * parameter di URL.
+   *
+   * Akun pusat (tanpa toko) yang memilih. Tanpa pilihan, yang ditampilkan
+   * adalah toko pusat — bukan gabungan — karena angka gabungan menjumlahkan
+   * uang usaha lain ke dalam omzet sendiri, dan itu menyesatkan kalau muncul
+   * begitu saja tanpa diminta.
+   *
+   * Mengembalikan `null` berarti tanpa penyaringan (gabungan).
+   */
+  private async resolveScope(
+    user: JwtPayload,
+    requestedStoreId?: string,
+  ): Promise<bigint | null> {
+    if (user.storeId) return BigInt(user.storeId);
+
+    if (requestedStoreId === ALL_STORES) return null;
+    if (requestedStoreId) return BigInt(requestedStoreId);
+
+    const central = await findProductionHouse();
+    return central.id;
+  }
+
+  async orderTrend(query: DashboardTrendQueryDto, user: JwtPayload) {
     const { dateFromKey, dateToKey, bucket, rangeStart, rangeEnd } =
       resolveTrendRange(query.period);
+    const storeId = await this.resolveScope(user, query.storeId);
+    const storeFilter = storeScopeSql(storeId);
 
     const onlineRows = await prisma.$queryRaw<{ day: Date; count: bigint }[]>`
       SELECT DATE_TRUNC(${bucket}, "createdAt" + INTERVAL '7 hours')::date AS day,
@@ -101,6 +153,7 @@ export class DashboardService {
       FROM "order"
       WHERE status != 'CANCELLED'
         AND "createdAt" BETWEEN ${rangeStart} AND ${rangeEnd}
+        ${storeFilter}
       GROUP BY day
       ORDER BY day
     `;
@@ -111,6 +164,7 @@ export class DashboardService {
       FROM pos_transaction
       WHERE status != 'CANCELLED'
         AND "createdAt" BETWEEN ${rangeStart} AND ${rangeEnd}
+        ${storeFilter}
       GROUP BY day
       ORDER BY day
     `;
@@ -140,16 +194,29 @@ export class DashboardService {
     };
   }
 
-  async omzetTrend(query: DashboardTrendQueryDto) {
+  async omzetTrend(query: DashboardTrendQueryDto, user: JwtPayload) {
     const { dateFromKey, dateToKey, bucket, rangeStart, rangeEnd } =
       resolveTrendRange(query.period);
+    const storeId = await this.resolveScope(user, query.storeId);
+    const storeFilter = storeScopeSql(storeId);
 
+    /**
+     * Omzet online dihitung dari KAS pesanan, sama seperti halaman laporan
+     * (lihat catatan panjang di reports.revenue.ts).
+     *
+     * Dulu di sini dijumlahkan `totalAmount` semua pesanan yang bukan batal.
+     * Sejak harga dinego lewat WhatsApp, pesanan yang baru diajukan pun sudah
+     * punya `totalAmount` (berisi perkiraan dari harga katalog), sehingga
+     * grafik omzet ikut menghitung uang yang belum tentu pernah masuk — dan
+     * refund tidak pernah menguranginya.
+     */
     const onlineRows = await prisma.$queryRaw<{ day: Date; total: string }[]>`
-      SELECT DATE_TRUNC(${bucket}, "createdAt" + INTERVAL '7 hours')::date AS day,
-             COALESCE(SUM("totalAmount"), 0) AS total
-      FROM "order"
-      WHERE status != 'CANCELLED'
-        AND "createdAt" BETWEEN ${rangeStart} AND ${rangeEnd}
+      SELECT DATE_TRUNC(${bucket}, c."createdAt" + INTERVAL '7 hours')::date AS day,
+             COALESCE(SUM(CASE WHEN c.type = 'IN' THEN c.amount ELSE -c.amount END), 0) AS total
+      FROM cash_transaction c
+      WHERE c.source = 'ORDER'
+        AND c."createdAt" BETWEEN ${rangeStart} AND ${rangeEnd}
+        ${storeScopeSql(storeId, 'c')}
       GROUP BY day
       ORDER BY day
     `;
@@ -160,6 +227,7 @@ export class DashboardService {
       FROM pos_transaction
       WHERE status != 'CANCELLED'
         AND "createdAt" BETWEEN ${rangeStart} AND ${rangeEnd}
+        ${storeFilter}
       GROUP BY day
       ORDER BY day
     `;
@@ -189,7 +257,11 @@ export class DashboardService {
     };
   }
 
-  async expenseByCategory(query: DashboardExpenseByCategoryQueryDto) {
+  async expenseByCategory(
+    query: DashboardExpenseByCategoryQueryDto,
+    user: JwtPayload,
+  ) {
+    const storeId = await this.resolveScope(user, query.storeId);
     const now = new Date();
     const dateFrom =
       query.period === 'yearly'
@@ -208,6 +280,7 @@ export class DashboardService {
           gte: dateFrom,
           lt: dateTo,
         },
+        ...(storeId !== null && { storeId }),
       },
     });
 
@@ -235,7 +308,28 @@ export class DashboardService {
     };
   }
 
-  async productionStatus() {
+  async productionStatus(query: DashboardScopeQueryDto, user: JwtPayload) {
+    const storeId = await this.resolveScope(user, query.storeId);
+
+    /**
+     * Produksi tidak punya kolom toko: seluruhnya terjadi di rumah produksi.
+     *
+     * Jadi saat yang dilihat adalah satu toko selain rumah produksi, jawabannya
+     * memang nol — toko itu tidak memproduksi apa pun. Dikembalikan nol,
+     * bukan angka pusat, supaya cabang tidak melihat kegiatan yang bukan
+     * miliknya.
+     */
+    if (storeId !== null) {
+      const central = await findProductionHouse();
+      if (central.id !== storeId) {
+        return {
+          success: true,
+          data: PRODUCTION_STATUSES.map((status) => ({ status, count: 0 })),
+          meta: { timeStamp: new Date().toISOString() },
+        };
+      }
+    }
+
     const grouped = await prisma.production.groupBy({
       by: ['status'],
       _count: true,

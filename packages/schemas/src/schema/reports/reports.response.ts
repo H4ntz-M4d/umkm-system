@@ -27,6 +27,8 @@ export const ReportSummaryData = z.object({
   revenue: MoneyWithPrevious,
   revenuePos: MoneyWithPrevious,
   revenueOnline: MoneyWithPrevious,
+  /// Pesanan custom. Nilai bawaan menjaga respons lama tetap terbaca.
+  revenueBespoke: MoneyWithPrevious.default({ current: "0", previous: "0" }),
   expense: MoneyWithPrevious,
   /// revenue - expense.
   balance: MoneyWithPrevious,
@@ -38,6 +40,7 @@ export const RevenueExpensePoint = z.object({
   revenue: z.string(),
   revenuePos: z.string(),
   revenueOnline: z.string(),
+  revenueBespoke: z.string().default("0"),
   expense: z.string(),
 });
 

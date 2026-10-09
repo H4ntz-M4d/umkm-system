@@ -12,6 +12,7 @@ import {
   DashboardTrendPeriodType,
 } from "@repo/schemas";
 import { useState } from "react";
+import StoreScopeFilter from "@/components/management/dashboard/store-scope-filter";
 /// `role` diteruskan ke kartu stok rendah, yang memakainya untuk memutuskan
 /// tautan ke halaman Stok Rendah — datanya sendiri boleh dilihat semua role.
 export default function DashboardView({ role }: { role?: string }) {
@@ -21,6 +22,8 @@ export default function DashboardView({ role }: { role?: string }) {
     useState<DashboardTrendPeriodType>("daily");
   const [expenseByCategoryPeriod, setExpenseByCategoryPeriod] =
     useState<DashboardCategoryPeriodType>("monthly");
+  /// Kosong = bawaan dari server (toko akun, atau toko pusat).
+  const [storeScope, setStoreScope] = useState("");
 
   const {
     orderTrendData,
@@ -35,10 +38,21 @@ export default function DashboardView({ role }: { role?: string }) {
     orderTrendPeriod,
     omzetTrendPeriod,
     expenseByCategoryPeriod,
+    storeId: storeScope,
   });
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-display text-xl font-bold">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            Angka yang ditampilkan mengikuti toko yang dipilih.
+          </p>
+        </div>
+        <StoreScopeFilter value={storeScope} onValueChange={setStoreScope} />
+      </div>
+
       <div className="grid auto-rows-min gap-6 lg:grid-cols-12">
         <div className="lg:col-span-8">
           {isLoadingOmzetTrend || !omzetTrendData ? (

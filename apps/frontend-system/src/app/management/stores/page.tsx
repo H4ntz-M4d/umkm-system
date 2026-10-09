@@ -1,5 +1,9 @@
 import { fetchStore } from "@/lib/queries/stores/stores.query";
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import View from "../../../components/management/stores/view";
 
 // interface PageProps {
@@ -14,7 +18,7 @@ export default async function Page(/*{searchParams}: PageProps*/) {
   // const resolvedSearchParams = await searchParams;
 
   // const queryClient = new QueryClient();
-  
+
   // const pageIndex = Number(resolvedSearchParams?.page || 1) - 1;
   // const pageSize = Number(resolvedSearchParams?.limit || 10);
 
@@ -25,7 +29,7 @@ export default async function Page(/*{searchParams}: PageProps*/) {
 
   return (
     // <HydrationBoundary state={dehydrate(queryClient)}>
-      <View />
+    <View />
     // </HydrationBoundary>
-  )
+  );
 }

@@ -12,8 +12,10 @@ type OrderResponse = z.infer<typeof OrderData>;
 type StatusType = z.infer<typeof OrderStatus>;
 
 const statusMap: Record<StatusType, string> = {
-  PENDING: "Menunggu",
-  PAID: "Dibayar",
+  PENDING: "Mengajukan",
+  DP: "DP Dibayar",
+  PRODUCTION_DONE: "Produksi Selesai",
+  PAID: "Lunas",
   SHIPPED: "Dikirim",
   COMPLETED: "Selesai",
   CANCELLED: "Batal",
@@ -23,6 +25,7 @@ const statusMap: Record<StatusType, string> = {
 export const columnsOrder = (
   onView: (order: OrderResponse) => void,
   onCancel: (orderId: string) => void,
+  onNegotiate: (order: OrderResponse) => void,
 ): ColumnDef<OrderResponse>[] => [
   {
     accessorKey: "expanded",
@@ -44,22 +47,38 @@ export const columnsOrder = (
     header: "Order Id",
   },
   {
-    accessorKey: "storeName",
-    header: () => <p className="text-start">Nama Toko</p>,
-    cell: ({ row }) => <p className="text-start">{row.original.storeName}</p>,
-  },
-  {
     accessorKey: "customerName",
     header: "Pelanggan",
   },
   {
-    accessorKey: "paymentMethodName",
-    header: "Metode Pembayaran",
+    /// Perkiraan awal ikut ditampilkan selama harganya belum disepakati,
+    /// supaya jelas angka mana yang masih bisa berubah.
+    accessorKey: "totalAmount",
+    header: "Nilai Pesanan",
+    cell: ({ row }) =>
+      row.original.status === "PENDING" ? (
+        <p className="text-muted-foreground">
+          ~{toIDR(row.original.estimatedTotal)}
+        </p>
+      ) : (
+        <div>
+          <p>{toIDR(row.original.totalAmount)}</p>
+          {row.original.dpAmount && (
+            <p className="text-xs text-muted-foreground">
+              DP {toIDR(row.original.dpAmount)}
+            </p>
+          )}
+        </div>
+      ),
   },
   {
-    accessorKey: "totalAmount",
-    header: "Jumlah Transaksi",
-    cell: ({ row }) => <p>{toIDR(row.original.totalAmount)}</p>,
+    accessorKey: "processedByName",
+    header: "Diproses oleh",
+    cell: ({ row }) => (
+      <p className="text-muted-foreground">
+        {row.original.processedByName ?? "-"}
+      </p>
+    ),
   },
   {
     accessorKey: "status",
@@ -85,6 +104,11 @@ export const columnsOrder = (
     header: "Action",
     cell: ({ row }) => (
       <div className="flex gap-2 justify-center">
+        {/* Nego hanya berarti selama pesanan belum tutup buku — status setelah
+            itu ditolak service, jadi tombolnya pun tidak ditawarkan. */}
+        {!["COMPLETED", "CANCELLED", "REFUNDED"].includes(
+          row.original.status,
+        ) && <Button onClick={() => onNegotiate(row.original)}>Nego</Button>}
         <Button variant="outline" onClick={() => onView(row.original)}>
           Lihat
         </Button>

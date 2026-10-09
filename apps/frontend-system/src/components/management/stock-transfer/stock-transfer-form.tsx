@@ -22,6 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
+import { useUsersOperation } from "@/hooks/management/users/use-users-operation";
+import { useAuth } from "@/stores/useAuth";
 import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { CreateStockTransferInput } from "@repo/schemas";
 
@@ -38,10 +40,19 @@ export default function StockTransferForm({
 }) {
   const [open, setOpen] = useState(false);
   const [toStoreId, setToStoreId] = useState("");
+  const [handledById, setHandledById] = useState("");
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState<DraftItem[]>([EMPTY_ITEM]);
 
   const { storeList } = useStoreOperations({ enableStoreList: true });
+  const { employeeOptions } = useUsersOperation({
+    enabledEmployeeOptions: true,
+  });
+  const me = useAuth((state) => state.user);
+
+  /// Bawaannya akun yang sedang login — itu yang paling sering benar — tapi
+  /// tetap bisa diganti kalau kirimannya diurus orang lain.
+  const effectiveHandledById = handledById || me?.id || "";
   const { fetchProductVariantList } = useProductsOperation({
     enabledProductVariantList: true,
   });
@@ -65,6 +76,7 @@ export default function StockTransferForm({
 
   const reset = () => {
     setToStoreId("");
+    setHandledById("");
     setNotes("");
     setItems([EMPTY_ITEM]);
   };
@@ -79,6 +91,7 @@ export default function StockTransferForm({
 
     onSubmit({
       toStoreId,
+      userId: effectiveHandledById || null,
       notes: notes.trim() || null,
       items: filledItems,
     });
@@ -130,6 +143,28 @@ export default function StockTransferForm({
                 )}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Diurus oleh</Label>
+            <Select value={effectiveHandledById} onValueChange={setHandledById}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih karyawan" />
+              </SelectTrigger>
+              <SelectContent>
+                {employeeOptions?.map((employee) => (
+                  <SelectItem key={employee.id} value={employee.id}>
+                    {employee.name}
+                    <span className="text-xs text-muted-foreground">
+                      ({employee.role})
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Dipakai sebagai jejak saat ada selisih barang di tujuan.
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -211,7 +246,10 @@ export default function StockTransferForm({
             <Button variant="outline" onClick={() => setOpen(false)}>
               Batal
             </Button>
-            <Button onClick={handleSubmit} disabled={!canSubmit || isSubmitting}>
+            <Button
+              onClick={handleSubmit}
+              disabled={!canSubmit || isSubmitting}
+            >
               {isSubmitting ? "Menyimpan..." : "Buat kiriman"}
             </Button>
           </div>

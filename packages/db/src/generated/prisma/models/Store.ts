@@ -199,7 +199,7 @@ export type StoreGroupByOutputType = {
   _max: StoreMaxAggregateOutputType | null
 }
 
-export type GetStoreGroupByPayload<T extends StoreGroupByArgs> = Prisma.PrismaPromise<
+type GetStoreGroupByPayload<T extends StoreGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<StoreGroupByOutputType, T['by']> &
       {
@@ -226,7 +226,6 @@ export type StoreWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
   users?: Prisma.UsersListRelationFilter
   inventoryLedgers?: Prisma.InventoryLedgerListRelationFilter
-  productions?: Prisma.ProductionListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
   posTransactions?: Prisma.PosTransactionListRelationFilter
   cashTransactions?: Prisma.CashTransactionListRelationFilter
@@ -234,6 +233,8 @@ export type StoreWhereInput = {
   productVariantStocks?: Prisma.ProductVariantStockListRelationFilter
   transfersOut?: Prisma.StockTransferListRelationFilter
   transfersIn?: Prisma.StockTransferListRelationFilter
+  paymentMethods?: Prisma.PaymentMethodListRelationFilter
+  stockAdjustments?: Prisma.StockAdjustmentListRelationFilter
 }
 
 export type StoreOrderByWithRelationInput = {
@@ -245,7 +246,6 @@ export type StoreOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   users?: Prisma.UsersOrderByRelationAggregateInput
   inventoryLedgers?: Prisma.InventoryLedgerOrderByRelationAggregateInput
-  productions?: Prisma.ProductionOrderByRelationAggregateInput
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
   posTransactions?: Prisma.PosTransactionOrderByRelationAggregateInput
   cashTransactions?: Prisma.CashTransactionOrderByRelationAggregateInput
@@ -253,6 +253,8 @@ export type StoreOrderByWithRelationInput = {
   productVariantStocks?: Prisma.ProductVariantStockOrderByRelationAggregateInput
   transfersOut?: Prisma.StockTransferOrderByRelationAggregateInput
   transfersIn?: Prisma.StockTransferOrderByRelationAggregateInput
+  paymentMethods?: Prisma.PaymentMethodOrderByRelationAggregateInput
+  stockAdjustments?: Prisma.StockAdjustmentOrderByRelationAggregateInput
 }
 
 export type StoreWhereUniqueInput = Prisma.AtLeast<{
@@ -267,7 +269,6 @@ export type StoreWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Store"> | Date | string
   users?: Prisma.UsersListRelationFilter
   inventoryLedgers?: Prisma.InventoryLedgerListRelationFilter
-  productions?: Prisma.ProductionListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
   posTransactions?: Prisma.PosTransactionListRelationFilter
   cashTransactions?: Prisma.CashTransactionListRelationFilter
@@ -275,6 +276,8 @@ export type StoreWhereUniqueInput = Prisma.AtLeast<{
   productVariantStocks?: Prisma.ProductVariantStockListRelationFilter
   transfersOut?: Prisma.StockTransferListRelationFilter
   transfersIn?: Prisma.StockTransferListRelationFilter
+  paymentMethods?: Prisma.PaymentMethodListRelationFilter
+  stockAdjustments?: Prisma.StockAdjustmentListRelationFilter
 }, "id">
 
 export type StoreOrderByWithAggregationInput = {
@@ -312,7 +315,6 @@ export type StoreCreateInput = {
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
@@ -320,6 +322,8 @@ export type StoreCreateInput = {
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateInput = {
@@ -331,7 +335,6 @@ export type StoreUncheckedCreateInput = {
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
@@ -339,6 +342,8 @@ export type StoreUncheckedCreateInput = {
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUpdateInput = {
@@ -350,7 +355,6 @@ export type StoreUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
@@ -358,6 +362,8 @@ export type StoreUpdateInput = {
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateInput = {
@@ -369,7 +375,6 @@ export type StoreUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
@@ -377,6 +382,8 @@ export type StoreUncheckedUpdateInput = {
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateManyInput = {
@@ -501,6 +508,20 @@ export type StoreUpdateOneRequiredWithoutProductVariantStocksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutProductVariantStocksInput, Prisma.StoreUpdateWithoutProductVariantStocksInput>, Prisma.StoreUncheckedUpdateWithoutProductVariantStocksInput>
 }
 
+export type StoreCreateNestedOneWithoutStockAdjustmentsInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutStockAdjustmentsInput, Prisma.StoreUncheckedCreateWithoutStockAdjustmentsInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutStockAdjustmentsInput
+  connect?: Prisma.StoreWhereUniqueInput
+}
+
+export type StoreUpdateOneRequiredWithoutStockAdjustmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutStockAdjustmentsInput, Prisma.StoreUncheckedCreateWithoutStockAdjustmentsInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutStockAdjustmentsInput
+  upsert?: Prisma.StoreUpsertWithoutStockAdjustmentsInput
+  connect?: Prisma.StoreWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutStockAdjustmentsInput, Prisma.StoreUpdateWithoutStockAdjustmentsInput>, Prisma.StoreUncheckedUpdateWithoutStockAdjustmentsInput>
+}
+
 export type StoreCreateNestedOneWithoutInventoryLedgersInput = {
   create?: Prisma.XOR<Prisma.StoreCreateWithoutInventoryLedgersInput, Prisma.StoreUncheckedCreateWithoutInventoryLedgersInput>
   connectOrCreate?: Prisma.StoreCreateOrConnectWithoutInventoryLedgersInput
@@ -543,20 +564,6 @@ export type StoreUpdateOneRequiredWithoutTransfersInNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutTransfersInInput, Prisma.StoreUpdateWithoutTransfersInInput>, Prisma.StoreUncheckedUpdateWithoutTransfersInInput>
 }
 
-export type StoreCreateNestedOneWithoutProductionsInput = {
-  create?: Prisma.XOR<Prisma.StoreCreateWithoutProductionsInput, Prisma.StoreUncheckedCreateWithoutProductionsInput>
-  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutProductionsInput
-  connect?: Prisma.StoreWhereUniqueInput
-}
-
-export type StoreUpdateOneRequiredWithoutProductionsNestedInput = {
-  create?: Prisma.XOR<Prisma.StoreCreateWithoutProductionsInput, Prisma.StoreUncheckedCreateWithoutProductionsInput>
-  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutProductionsInput
-  upsert?: Prisma.StoreUpsertWithoutProductionsInput
-  connect?: Prisma.StoreWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutProductionsInput, Prisma.StoreUpdateWithoutProductionsInput>, Prisma.StoreUncheckedUpdateWithoutProductionsInput>
-}
-
 export type StoreCreateNestedOneWithoutExpensesInput = {
   create?: Prisma.XOR<Prisma.StoreCreateWithoutExpensesInput, Prisma.StoreUncheckedCreateWithoutExpensesInput>
   connectOrCreate?: Prisma.StoreCreateOrConnectWithoutExpensesInput
@@ -583,6 +590,22 @@ export type StoreUpdateOneRequiredWithoutOrdersNestedInput = {
   upsert?: Prisma.StoreUpsertWithoutOrdersInput
   connect?: Prisma.StoreWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutOrdersInput, Prisma.StoreUpdateWithoutOrdersInput>, Prisma.StoreUncheckedUpdateWithoutOrdersInput>
+}
+
+export type StoreCreateNestedOneWithoutPaymentMethodsInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutPaymentMethodsInput, Prisma.StoreUncheckedCreateWithoutPaymentMethodsInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutPaymentMethodsInput
+  connect?: Prisma.StoreWhereUniqueInput
+}
+
+export type StoreUpdateOneWithoutPaymentMethodsNestedInput = {
+  create?: Prisma.XOR<Prisma.StoreCreateWithoutPaymentMethodsInput, Prisma.StoreUncheckedCreateWithoutPaymentMethodsInput>
+  connectOrCreate?: Prisma.StoreCreateOrConnectWithoutPaymentMethodsInput
+  upsert?: Prisma.StoreUpsertWithoutPaymentMethodsInput
+  disconnect?: Prisma.StoreWhereInput | boolean
+  delete?: Prisma.StoreWhereInput | boolean
+  connect?: Prisma.StoreWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StoreUpdateToOneWithWhereWithoutPaymentMethodsInput, Prisma.StoreUpdateWithoutPaymentMethodsInput>, Prisma.StoreUncheckedUpdateWithoutPaymentMethodsInput>
 }
 
 export type StoreCreateNestedOneWithoutCashTransactionsInput = {
@@ -621,7 +644,6 @@ export type StoreCreateWithoutUsersInput = {
   isProductionHouse?: boolean
   createdAt?: Date | string
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
@@ -629,6 +651,8 @@ export type StoreCreateWithoutUsersInput = {
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutUsersInput = {
@@ -639,7 +663,6 @@ export type StoreUncheckedCreateWithoutUsersInput = {
   isProductionHouse?: boolean
   createdAt?: Date | string
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
@@ -647,6 +670,8 @@ export type StoreUncheckedCreateWithoutUsersInput = {
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutUsersInput = {
@@ -673,7 +698,6 @@ export type StoreUpdateWithoutUsersInput = {
   isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
@@ -681,6 +705,8 @@ export type StoreUpdateWithoutUsersInput = {
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutUsersInput = {
@@ -691,7 +717,6 @@ export type StoreUncheckedUpdateWithoutUsersInput = {
   isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
@@ -699,6 +724,8 @@ export type StoreUncheckedUpdateWithoutUsersInput = {
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutProductVariantStocksInput = {
@@ -710,13 +737,14 @@ export type StoreCreateWithoutProductVariantStocksInput = {
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutProductVariantStocksInput = {
@@ -728,13 +756,14 @@ export type StoreUncheckedCreateWithoutProductVariantStocksInput = {
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutProductVariantStocksInput = {
@@ -762,13 +791,14 @@ export type StoreUpdateWithoutProductVariantStocksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutProductVariantStocksInput = {
@@ -780,13 +810,106 @@ export type StoreUncheckedUpdateWithoutProductVariantStocksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreCreateWithoutStockAdjustmentsInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  isOnlineSource?: boolean
+  isProductionHouse?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
+  cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
+  productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
+  transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
+  transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+}
+
+export type StoreUncheckedCreateWithoutStockAdjustmentsInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  isOnlineSource?: boolean
+  isProductionHouse?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
+  cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
+  productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
+  transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
+  transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+}
+
+export type StoreCreateOrConnectWithoutStockAdjustmentsInput = {
+  where: Prisma.StoreWhereUniqueInput
+  create: Prisma.XOR<Prisma.StoreCreateWithoutStockAdjustmentsInput, Prisma.StoreUncheckedCreateWithoutStockAdjustmentsInput>
+}
+
+export type StoreUpsertWithoutStockAdjustmentsInput = {
+  update: Prisma.XOR<Prisma.StoreUpdateWithoutStockAdjustmentsInput, Prisma.StoreUncheckedUpdateWithoutStockAdjustmentsInput>
+  create: Prisma.XOR<Prisma.StoreCreateWithoutStockAdjustmentsInput, Prisma.StoreUncheckedCreateWithoutStockAdjustmentsInput>
+  where?: Prisma.StoreWhereInput
+}
+
+export type StoreUpdateToOneWithWhereWithoutStockAdjustmentsInput = {
+  where?: Prisma.StoreWhereInput
+  data: Prisma.XOR<Prisma.StoreUpdateWithoutStockAdjustmentsInput, Prisma.StoreUncheckedUpdateWithoutStockAdjustmentsInput>
+}
+
+export type StoreUpdateWithoutStockAdjustmentsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnlineSource?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
+  cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
+  productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
+  transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
+  transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreUncheckedUpdateWithoutStockAdjustmentsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnlineSource?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
+  productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
+  transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
+  transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutInventoryLedgersInput = {
@@ -797,7 +920,6 @@ export type StoreCreateWithoutInventoryLedgersInput = {
   isProductionHouse?: boolean
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
@@ -805,6 +927,8 @@ export type StoreCreateWithoutInventoryLedgersInput = {
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutInventoryLedgersInput = {
@@ -815,7 +939,6 @@ export type StoreUncheckedCreateWithoutInventoryLedgersInput = {
   isProductionHouse?: boolean
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
@@ -823,6 +946,8 @@ export type StoreUncheckedCreateWithoutInventoryLedgersInput = {
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutInventoryLedgersInput = {
@@ -849,7 +974,6 @@ export type StoreUpdateWithoutInventoryLedgersInput = {
   isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
@@ -857,6 +981,8 @@ export type StoreUpdateWithoutInventoryLedgersInput = {
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutInventoryLedgersInput = {
@@ -867,7 +993,6 @@ export type StoreUncheckedUpdateWithoutInventoryLedgersInput = {
   isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
@@ -875,6 +1000,8 @@ export type StoreUncheckedUpdateWithoutInventoryLedgersInput = {
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutTransfersOutInput = {
@@ -886,13 +1013,14 @@ export type StoreCreateWithoutTransfersOutInput = {
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutTransfersOutInput = {
@@ -904,13 +1032,14 @@ export type StoreUncheckedCreateWithoutTransfersOutInput = {
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutTransfersOutInput = {
@@ -927,13 +1056,14 @@ export type StoreCreateWithoutTransfersInInput = {
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutTransfersInInput = {
@@ -945,13 +1075,14 @@ export type StoreUncheckedCreateWithoutTransfersInInput = {
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutTransfersInInput = {
@@ -979,13 +1110,14 @@ export type StoreUpdateWithoutTransfersOutInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutTransfersOutInput = {
@@ -997,13 +1129,14 @@ export type StoreUncheckedUpdateWithoutTransfersOutInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUpsertWithoutTransfersInInput = {
@@ -1026,13 +1159,14 @@ export type StoreUpdateWithoutTransfersInInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutTransfersInInput = {
@@ -1044,101 +1178,14 @@ export type StoreUncheckedUpdateWithoutTransfersInInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
-}
-
-export type StoreCreateWithoutProductionsInput = {
-  id?: bigint | number
-  name: string
-  isActive?: boolean
-  isOnlineSource?: boolean
-  isProductionHouse?: boolean
-  createdAt?: Date | string
-  users?: Prisma.UsersCreateNestedManyWithoutStoreInput
-  inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
-  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
-  cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
-  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
-  productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
-  transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
-  transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
-}
-
-export type StoreUncheckedCreateWithoutProductionsInput = {
-  id?: bigint | number
-  name: string
-  isActive?: boolean
-  isOnlineSource?: boolean
-  isProductionHouse?: boolean
-  createdAt?: Date | string
-  users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
-  inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
-  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
-  cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
-  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
-  productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
-  transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
-  transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
-}
-
-export type StoreCreateOrConnectWithoutProductionsInput = {
-  where: Prisma.StoreWhereUniqueInput
-  create: Prisma.XOR<Prisma.StoreCreateWithoutProductionsInput, Prisma.StoreUncheckedCreateWithoutProductionsInput>
-}
-
-export type StoreUpsertWithoutProductionsInput = {
-  update: Prisma.XOR<Prisma.StoreUpdateWithoutProductionsInput, Prisma.StoreUncheckedUpdateWithoutProductionsInput>
-  create: Prisma.XOR<Prisma.StoreCreateWithoutProductionsInput, Prisma.StoreUncheckedCreateWithoutProductionsInput>
-  where?: Prisma.StoreWhereInput
-}
-
-export type StoreUpdateToOneWithWhereWithoutProductionsInput = {
-  where?: Prisma.StoreWhereInput
-  data: Prisma.XOR<Prisma.StoreUpdateWithoutProductionsInput, Prisma.StoreUncheckedUpdateWithoutProductionsInput>
-}
-
-export type StoreUpdateWithoutProductionsInput = {
-  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isOnlineSource?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
-  inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
-  posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
-  cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
-  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
-  productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
-  transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
-  transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
-}
-
-export type StoreUncheckedUpdateWithoutProductionsInput = {
-  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isOnlineSource?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
-  inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
-  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
-  cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
-  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
-  productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
-  transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
-  transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutExpensesInput = {
@@ -1150,13 +1197,14 @@ export type StoreCreateWithoutExpensesInput = {
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutExpensesInput = {
@@ -1168,13 +1216,14 @@ export type StoreUncheckedCreateWithoutExpensesInput = {
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutExpensesInput = {
@@ -1202,13 +1251,14 @@ export type StoreUpdateWithoutExpensesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutExpensesInput = {
@@ -1220,13 +1270,14 @@ export type StoreUncheckedUpdateWithoutExpensesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutOrdersInput = {
@@ -1238,13 +1289,14 @@ export type StoreCreateWithoutOrdersInput = {
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutOrdersInput = {
@@ -1256,13 +1308,14 @@ export type StoreUncheckedCreateWithoutOrdersInput = {
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutOrdersInput = {
@@ -1290,13 +1343,14 @@ export type StoreUpdateWithoutOrdersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutOrdersInput = {
@@ -1308,13 +1362,106 @@ export type StoreUncheckedUpdateWithoutOrdersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreCreateWithoutPaymentMethodsInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  isOnlineSource?: boolean
+  isProductionHouse?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
+  cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
+  productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
+  transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
+  transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
+}
+
+export type StoreUncheckedCreateWithoutPaymentMethodsInput = {
+  id?: bigint | number
+  name: string
+  isActive?: boolean
+  isOnlineSource?: boolean
+  isProductionHouse?: boolean
+  createdAt?: Date | string
+  users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
+  cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
+  productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
+  transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
+  transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
+}
+
+export type StoreCreateOrConnectWithoutPaymentMethodsInput = {
+  where: Prisma.StoreWhereUniqueInput
+  create: Prisma.XOR<Prisma.StoreCreateWithoutPaymentMethodsInput, Prisma.StoreUncheckedCreateWithoutPaymentMethodsInput>
+}
+
+export type StoreUpsertWithoutPaymentMethodsInput = {
+  update: Prisma.XOR<Prisma.StoreUpdateWithoutPaymentMethodsInput, Prisma.StoreUncheckedUpdateWithoutPaymentMethodsInput>
+  create: Prisma.XOR<Prisma.StoreCreateWithoutPaymentMethodsInput, Prisma.StoreUncheckedCreateWithoutPaymentMethodsInput>
+  where?: Prisma.StoreWhereInput
+}
+
+export type StoreUpdateToOneWithWhereWithoutPaymentMethodsInput = {
+  where?: Prisma.StoreWhereInput
+  data: Prisma.XOR<Prisma.StoreUpdateWithoutPaymentMethodsInput, Prisma.StoreUncheckedUpdateWithoutPaymentMethodsInput>
+}
+
+export type StoreUpdateWithoutPaymentMethodsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnlineSource?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
+  cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
+  productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
+  transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
+  transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
+}
+
+export type StoreUncheckedUpdateWithoutPaymentMethodsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isOnlineSource?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isProductionHouse?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
+  inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
+  productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
+  transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
+  transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutCashTransactionsInput = {
@@ -1326,13 +1473,14 @@ export type StoreCreateWithoutCashTransactionsInput = {
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutCashTransactionsInput = {
@@ -1344,13 +1492,14 @@ export type StoreUncheckedCreateWithoutCashTransactionsInput = {
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutCashTransactionsInput = {
@@ -1378,13 +1527,14 @@ export type StoreUpdateWithoutCashTransactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutCashTransactionsInput = {
@@ -1396,13 +1546,14 @@ export type StoreUncheckedUpdateWithoutCashTransactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreCreateWithoutPosTransactionsInput = {
@@ -1414,13 +1565,14 @@ export type StoreCreateWithoutPosTransactionsInput = {
   createdAt?: Date | string
   users?: Prisma.UsersCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutStoreInput
 }
 
 export type StoreUncheckedCreateWithoutPosTransactionsInput = {
@@ -1432,13 +1584,14 @@ export type StoreUncheckedCreateWithoutPosTransactionsInput = {
   createdAt?: Date | string
   users?: Prisma.UsersUncheckedCreateNestedManyWithoutStoreInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedCreateNestedManyWithoutStoreInput
-  productions?: Prisma.ProductionUncheckedCreateNestedManyWithoutStoreInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutStoreInput
   cashTransactions?: Prisma.CashTransactionUncheckedCreateNestedManyWithoutStoreInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutStoreInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedCreateNestedManyWithoutStoreInput
   transfersOut?: Prisma.StockTransferUncheckedCreateNestedManyWithoutFromStoreInput
   transfersIn?: Prisma.StockTransferUncheckedCreateNestedManyWithoutToStoreInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedCreateNestedManyWithoutStoreInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutStoreInput
 }
 
 export type StoreCreateOrConnectWithoutPosTransactionsInput = {
@@ -1466,13 +1619,14 @@ export type StoreUpdateWithoutPosTransactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutStoreNestedInput
 }
 
 export type StoreUncheckedUpdateWithoutPosTransactionsInput = {
@@ -1484,13 +1638,14 @@ export type StoreUncheckedUpdateWithoutPosTransactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UsersUncheckedUpdateManyWithoutStoreNestedInput
   inventoryLedgers?: Prisma.InventoryLedgerUncheckedUpdateManyWithoutStoreNestedInput
-  productions?: Prisma.ProductionUncheckedUpdateManyWithoutStoreNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutStoreNestedInput
   cashTransactions?: Prisma.CashTransactionUncheckedUpdateManyWithoutStoreNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutStoreNestedInput
   productVariantStocks?: Prisma.ProductVariantStockUncheckedUpdateManyWithoutStoreNestedInput
   transfersOut?: Prisma.StockTransferUncheckedUpdateManyWithoutFromStoreNestedInput
   transfersIn?: Prisma.StockTransferUncheckedUpdateManyWithoutToStoreNestedInput
+  paymentMethods?: Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutStoreNestedInput
 }
 
 
@@ -1501,7 +1656,6 @@ export type StoreUncheckedUpdateWithoutPosTransactionsInput = {
 export type StoreCountOutputType = {
   users: number
   inventoryLedgers: number
-  productions: number
   expenses: number
   posTransactions: number
   cashTransactions: number
@@ -1509,12 +1663,13 @@ export type StoreCountOutputType = {
   productVariantStocks: number
   transfersOut: number
   transfersIn: number
+  paymentMethods: number
+  stockAdjustments: number
 }
 
 export type StoreCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | StoreCountOutputTypeCountUsersArgs
   inventoryLedgers?: boolean | StoreCountOutputTypeCountInventoryLedgersArgs
-  productions?: boolean | StoreCountOutputTypeCountProductionsArgs
   expenses?: boolean | StoreCountOutputTypeCountExpensesArgs
   posTransactions?: boolean | StoreCountOutputTypeCountPosTransactionsArgs
   cashTransactions?: boolean | StoreCountOutputTypeCountCashTransactionsArgs
@@ -1522,6 +1677,8 @@ export type StoreCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   productVariantStocks?: boolean | StoreCountOutputTypeCountProductVariantStocksArgs
   transfersOut?: boolean | StoreCountOutputTypeCountTransfersOutArgs
   transfersIn?: boolean | StoreCountOutputTypeCountTransfersInArgs
+  paymentMethods?: boolean | StoreCountOutputTypeCountPaymentMethodsArgs
+  stockAdjustments?: boolean | StoreCountOutputTypeCountStockAdjustmentsArgs
 }
 
 /**
@@ -1546,13 +1703,6 @@ export type StoreCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.Ext
  */
 export type StoreCountOutputTypeCountInventoryLedgersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.InventoryLedgerWhereInput
-}
-
-/**
- * StoreCountOutputType without action
- */
-export type StoreCountOutputTypeCountProductionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ProductionWhereInput
 }
 
 /**
@@ -1604,6 +1754,20 @@ export type StoreCountOutputTypeCountTransfersInArgs<ExtArgs extends runtime.Typ
   where?: Prisma.StockTransferWhereInput
 }
 
+/**
+ * StoreCountOutputType without action
+ */
+export type StoreCountOutputTypeCountPaymentMethodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentMethodWhereInput
+}
+
+/**
+ * StoreCountOutputType without action
+ */
+export type StoreCountOutputTypeCountStockAdjustmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StockAdjustmentWhereInput
+}
+
 
 export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1614,7 +1778,6 @@ export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdAt?: boolean
   users?: boolean | Prisma.Store$usersArgs<ExtArgs>
   inventoryLedgers?: boolean | Prisma.Store$inventoryLedgersArgs<ExtArgs>
-  productions?: boolean | Prisma.Store$productionsArgs<ExtArgs>
   expenses?: boolean | Prisma.Store$expensesArgs<ExtArgs>
   posTransactions?: boolean | Prisma.Store$posTransactionsArgs<ExtArgs>
   cashTransactions?: boolean | Prisma.Store$cashTransactionsArgs<ExtArgs>
@@ -1622,6 +1785,8 @@ export type StoreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   productVariantStocks?: boolean | Prisma.Store$productVariantStocksArgs<ExtArgs>
   transfersOut?: boolean | Prisma.Store$transfersOutArgs<ExtArgs>
   transfersIn?: boolean | Prisma.Store$transfersInArgs<ExtArgs>
+  paymentMethods?: boolean | Prisma.Store$paymentMethodsArgs<ExtArgs>
+  stockAdjustments?: boolean | Prisma.Store$stockAdjustmentsArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["store"]>
 
@@ -1656,7 +1821,6 @@ export type StoreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type StoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Store$usersArgs<ExtArgs>
   inventoryLedgers?: boolean | Prisma.Store$inventoryLedgersArgs<ExtArgs>
-  productions?: boolean | Prisma.Store$productionsArgs<ExtArgs>
   expenses?: boolean | Prisma.Store$expensesArgs<ExtArgs>
   posTransactions?: boolean | Prisma.Store$posTransactionsArgs<ExtArgs>
   cashTransactions?: boolean | Prisma.Store$cashTransactionsArgs<ExtArgs>
@@ -1664,6 +1828,8 @@ export type StoreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   productVariantStocks?: boolean | Prisma.Store$productVariantStocksArgs<ExtArgs>
   transfersOut?: boolean | Prisma.Store$transfersOutArgs<ExtArgs>
   transfersIn?: boolean | Prisma.Store$transfersInArgs<ExtArgs>
+  paymentMethods?: boolean | Prisma.Store$paymentMethodsArgs<ExtArgs>
+  stockAdjustments?: boolean | Prisma.Store$stockAdjustmentsArgs<ExtArgs>
   _count?: boolean | Prisma.StoreCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StoreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1674,7 +1840,6 @@ export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     users: Prisma.$UsersPayload<ExtArgs>[]
     inventoryLedgers: Prisma.$InventoryLedgerPayload<ExtArgs>[]
-    productions: Prisma.$ProductionPayload<ExtArgs>[]
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
     posTransactions: Prisma.$PosTransactionPayload<ExtArgs>[]
     cashTransactions: Prisma.$CashTransactionPayload<ExtArgs>[]
@@ -1682,6 +1847,8 @@ export type $StorePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     productVariantStocks: Prisma.$ProductVariantStockPayload<ExtArgs>[]
     transfersOut: Prisma.$StockTransferPayload<ExtArgs>[]
     transfersIn: Prisma.$StockTransferPayload<ExtArgs>[]
+    paymentMethods: Prisma.$PaymentMethodPayload<ExtArgs>[]
+    stockAdjustments: Prisma.$StockAdjustmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -2103,7 +2270,6 @@ export interface Prisma__StoreClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   users<T extends Prisma.Store$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UsersPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventoryLedgers<T extends Prisma.Store$inventoryLedgersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$inventoryLedgersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryLedgerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  productions<T extends Prisma.Store$productionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$productionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   expenses<T extends Prisma.Store$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   posTransactions<T extends Prisma.Store$posTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$posTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cashTransactions<T extends Prisma.Store$cashTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$cashTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2111,6 +2277,8 @@ export interface Prisma__StoreClient<T, Null = never, ExtArgs extends runtime.Ty
   productVariantStocks<T extends Prisma.Store$productVariantStocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$productVariantStocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductVariantStockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transfersOut<T extends Prisma.Store$transfersOutArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$transfersOutArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockTransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transfersIn<T extends Prisma.Store$transfersInArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$transfersInArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockTransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  paymentMethods<T extends Prisma.Store$paymentMethodsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$paymentMethodsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentMethodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockAdjustments<T extends Prisma.Store$stockAdjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Store$stockAdjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2342,11 +2510,6 @@ export type StoreFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Skip the first `n` Stores.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of Stores.
-   */
   distinct?: Prisma.StoreScalarFieldEnum | Prisma.StoreScalarFieldEnum[]
 }
 
@@ -2587,30 +2750,6 @@ export type Store$inventoryLedgersArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
- * Store.productions
- */
-export type Store$productionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Production
-   */
-  select?: Prisma.ProductionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Production
-   */
-  omit?: Prisma.ProductionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ProductionInclude<ExtArgs> | null
-  where?: Prisma.ProductionWhereInput
-  orderBy?: Prisma.ProductionOrderByWithRelationInput | Prisma.ProductionOrderByWithRelationInput[]
-  cursor?: Prisma.ProductionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ProductionScalarFieldEnum | Prisma.ProductionScalarFieldEnum[]
-}
-
-/**
  * Store.expenses
  */
 export type Store$expensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2776,6 +2915,54 @@ export type Store$transfersInArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.StockTransferScalarFieldEnum | Prisma.StockTransferScalarFieldEnum[]
+}
+
+/**
+ * Store.paymentMethods
+ */
+export type Store$paymentMethodsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PaymentMethod
+   */
+  select?: Prisma.PaymentMethodSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PaymentMethod
+   */
+  omit?: Prisma.PaymentMethodOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentMethodInclude<ExtArgs> | null
+  where?: Prisma.PaymentMethodWhereInput
+  orderBy?: Prisma.PaymentMethodOrderByWithRelationInput | Prisma.PaymentMethodOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentMethodWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentMethodScalarFieldEnum | Prisma.PaymentMethodScalarFieldEnum[]
+}
+
+/**
+ * Store.stockAdjustments
+ */
+export type Store$stockAdjustmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockAdjustment
+   */
+  select?: Prisma.StockAdjustmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockAdjustment
+   */
+  omit?: Prisma.StockAdjustmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockAdjustmentInclude<ExtArgs> | null
+  where?: Prisma.StockAdjustmentWhereInput
+  orderBy?: Prisma.StockAdjustmentOrderByWithRelationInput | Prisma.StockAdjustmentOrderByWithRelationInput[]
+  cursor?: Prisma.StockAdjustmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StockAdjustmentScalarFieldEnum | Prisma.StockAdjustmentScalarFieldEnum[]
 }
 
 /**

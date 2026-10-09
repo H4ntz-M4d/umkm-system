@@ -1,6 +1,6 @@
-import { CustomerRegisterSchema, LoginSchema } from "@repo/schemas";
-import { createZodDto } from "nestjs-zod";
+import { CustomerRegisterSchema, LoginSchema } from '@repo/schemas';
+import { createZodDto } from 'nestjs-zod';
 
-export class LoginDto extends createZodDto(LoginSchema){}
+export class LoginDto extends createZodDto(LoginSchema) {}
 
-export class CustomerRegisterDto extends createZodDto(CustomerRegisterSchema){}
+export class CustomerRegisterDto extends createZodDto(CustomerRegisterSchema) {}

@@ -9,8 +9,7 @@ import { ShoppingBasket, TriangleAlert } from "lucide-react";
 type LowStock = z.infer<typeof LowStockData>;
 
 const PRODUCT_TYPE_LABEL: Record<LowStock["type"], string> = {
-  READY_STOCK: "Ready Stock",
-  MADE_TO_ORDER: "Made To Order",
+  REGULAR: "Reguler",
   PRE_ORDER: "Pre Order",
 };
 

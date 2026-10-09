@@ -1,5 +1,6 @@
 import FeaturedCollection from "@/components/public/home/featured-collection";
 import HeroSection from "@/components/public/home/hero-section";
+import LatestBlogs from "@/components/public/home/latest-blogs";
 import MadeToOrder from "@/components/public/home/made-to-order";
 
 /// Halaman dirakit di server supaya FeaturedCollection bisa jadi async Server
@@ -11,6 +12,7 @@ export default function Home() {
       <HeroSection />
       <FeaturedCollection />
       <MadeToOrder />
+      <LatestBlogs />
     </>
   );
 }

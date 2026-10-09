@@ -7,6 +7,7 @@ import type {
 import { idFormat } from 'common/helpers/id-format';
 import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
 import { findProductionHouse } from 'common/helpers/online-store';
+import type { JwtPayload } from 'common/decorator/auth.decorator';
 import {
   toStockTransferResponse,
   transferInclude,
@@ -57,7 +58,7 @@ export class StockTransferService {
     };
   }
 
-  async create(data: CreateStockTransferInput) {
+  async create(data: CreateStockTransferInput, actor: JwtPayload) {
     const from = await findProductionHouse();
     const toStoreId = BigInt(data.toStoreId);
 
@@ -78,11 +79,17 @@ export class StockTransferService {
       );
     }
 
+    /// Penanggung jawab: yang dipilih di form, atau akun yang membuatnya bila
+    /// tidak dipilih. Id ngawur ditolak di sini supaya tidak jatuh sebagai
+    /// galat kunci asing yang tidak menyebut masalahnya.
+    const handledBy = await resolveHandledBy(data.userId, actor);
+
     const transfer = await prisma.stockTransfer.create({
       data: {
         code: idFormat('TRF'),
         fromStoreId: from.id,
         toStoreId,
+        userId: handledBy,
         notes: data.notes ?? null,
         items: {
           create: data.items.map((item) => ({
@@ -294,4 +301,29 @@ export class StockTransferService {
       meta: { timeStamp: new Date().toISOString() },
     };
   }
+}
+
+/**
+ * Menentukan karyawan penanggung jawab kiriman.
+ *
+ * Yang dipilih di form dipakai apa adanya; kalau tidak dipilih, akun yang
+ * sedang membuat kiriman yang dicatat. Aturannya sama dengan "Diproses oleh"
+ * di pesanan online supaya kedua layar tidak berperilaku berbeda.
+ */
+async function resolveHandledBy(
+  requestedUserId: string | null | undefined,
+  actor: JwtPayload,
+): Promise<bigint> {
+  if (!requestedUserId) return BigInt(actor.sub);
+
+  const user = await prisma.users.findFirst({
+    where: { id: BigInt(requestedUserId), isActive: true },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new BadRequestException('Karyawan tidak ditemukan atau nonaktif.');
+  }
+
+  return user.id;
 }

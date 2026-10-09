@@ -8,6 +8,8 @@ import { ProductionModule } from './production/production.module';
 import { InventoryLedgerModule } from './inventory-ledger/inventory-ledger.module';
 import { ExpenseCategoryModule } from './expense-category/expense-category.module';
 import { ExpenseModule } from './expense/expense.module';
+import { BespokeModule } from './bespoke/bespoke.module';
+import { BlogModule } from './blog/blog.module';
 import { PosTransactionModule } from './pos-transaction/pos-transaction.module';
 import { CategoriesModule } from './categories/categories.module';
 import { PaymentModule } from './payment/payment.module';
@@ -19,6 +21,7 @@ import { TransactionFlowModule } from './transaction-flow/transaction-flow.modul
 import { OrderModule } from './order/order.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ReportsModule } from './reports/reports.module';
+import { StockAdjustmentModule } from 'stock-adjustment/stock-adjustment.module';
 import { StockTransferModule } from './stock-transfer/stock-transfer.module';
 import { CartModule } from './cart/cart.module';
 import { AddressModule } from './address/address.module';
@@ -56,6 +59,8 @@ import { validateEnv } from './common/config/env.schema';
     InventoryLedgerModule,
     ExpenseCategoryModule,
     ExpenseModule,
+    BespokeModule,
+    BlogModule,
     PosTransactionModule,
     CategoriesModule,
     PaymentModule,
@@ -65,6 +70,7 @@ import { validateEnv } from './common/config/env.schema';
     DashboardModule,
     ReportsModule,
     StockTransferModule,
+    StockAdjustmentModule,
     CartModule,
     AddressModule,
     WishlistModule,

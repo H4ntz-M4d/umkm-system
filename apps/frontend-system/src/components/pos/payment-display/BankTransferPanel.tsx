@@ -12,6 +12,10 @@ import { useActivePosStore } from "@/hooks/pos/use-active-store";
 import { toast } from "sonner";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { Input } from "@/components/ui/input";
+import {
+  compressImage,
+  MAX_UPLOAD_BYTES,
+} from "../../../../utils/compress-image";
 import loading from "@/app/management/stores/loading";
 
 interface Props {
@@ -36,6 +40,7 @@ export function TransferPanel({
   const [step, setStep] = useState<Step>("info");
   const [transactionId, setTransactionId] = useState<string | null>(null);
   const [proofFile, setProofFile] = useState<File | null>(null);
+  const [isPreparing, setIsPreparing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {
     mutationPosTransactionData,
@@ -80,8 +85,25 @@ export function TransferPanel({
     if (!transactionId || !proofFile) return;
     setError(null);
     try {
+      /**
+       * Foto dikecilkan dulu di browser. Foto HP biasanya 3-8 MB, dan
+       * mengirimnya apa adanya membuat permintaan sering melewati batas waktu
+       * padahal backend tetap menyelesaikannya — kasir melihat "gagal" untuk
+       * pembayaran yang sebenarnya sudah tercatat.
+       */
+      setIsPreparing(true);
+      const compressed = await compressImage(proofFile);
+      setIsPreparing(false);
+
+      if (compressed.size > MAX_UPLOAD_BYTES) {
+        setError(
+          "Ukuran gambar masih di atas 2MB setelah dikecilkan. Coba foto ulang dengan resolusi lebih rendah.",
+        );
+        return;
+      }
+
       const formData = new FormData();
-      formData.append("paymentProof", proofFile);
+      formData.append("paymentProof", compressed);
 
       await uploadPaymentProofData(
         {
@@ -95,6 +117,7 @@ export function TransferPanel({
         },
       );
     } catch (err) {
+      setIsPreparing(false);
       setError(err instanceof Error ? err.message : "Konfirmasi gagal");
     }
   };
@@ -198,12 +221,16 @@ export function TransferPanel({
 
           <button
             onClick={handleConfirm}
-            disabled={!proofFile || isLoadingUploadPaymentProofData}
+            disabled={
+              !proofFile || isPreparing || isLoadingUploadPaymentProofData
+            }
             className="w-full bg-green-600 text-white rounded-xl py-3 font-medium disabled:opacity-50"
           >
-            {isLoadingUploadPaymentProofData
-              ? "Mengkonfirmasi..."
-              : "Konfirmasi Pembayaran"}
+            {isPreparing
+              ? "Menyiapkan gambar..."
+              : isLoadingUploadPaymentProofData
+                ? "Mengkonfirmasi..."
+                : "Konfirmasi Pembayaran"}
           </button>
         </div>
       )}

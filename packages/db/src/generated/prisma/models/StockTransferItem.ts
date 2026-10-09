@@ -197,7 +197,7 @@ export type StockTransferItemGroupByOutputType = {
   _max: StockTransferItemMaxAggregateOutputType | null
 }
 
-export type GetStockTransferItemGroupByPayload<T extends StockTransferItemGroupByArgs> = Prisma.PrismaPromise<
+type GetStockTransferItemGroupByPayload<T extends StockTransferItemGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<StockTransferItemGroupByOutputType, T['by']> &
       {
@@ -1269,11 +1269,6 @@ export type StockTransferItemFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Skip the first `n` StockTransferItems.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of StockTransferItems.
-   */
   distinct?: Prisma.StockTransferItemScalarFieldEnum | Prisma.StockTransferItemScalarFieldEnum[]
 }
 

@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Pagination } from 'common/paginate/pagination';
 import { findOnlineSourceStore } from 'common/helpers/online-store';
 import {
@@ -105,7 +110,8 @@ export class ProductsService {
   private static readonly VARIANT_USAGE_LABELS = {
     orderItems: 'pesanan online',
     posTransactionItems: 'transaksi kasir',
-    productions: 'produksi',
+    /// Sejak produksi berbentuk batch, varian dipakai lewat baris batchnya.
+    productionItems: 'produksi',
   } as const;
 
   /**
@@ -126,7 +132,7 @@ export class ProductsService {
           select: {
             orderItems: true,
             posTransactionItems: true,
-            productions: true,
+            productionItems: true,
           },
         },
       },
@@ -196,6 +202,7 @@ export class ProductsService {
             productVariantStocks: {
               select: {
                 stock: true,
+                reserved_stock: true,
               },
             },
           },
@@ -302,15 +309,29 @@ export class ProductsService {
     return toProductResponseById(data);
   }
 
+  /**
+   * Daftar varian untuk isian pencarian (mis. form produksi).
+   *
+   * Seluruh produk ikut, termasuk draft dan nonaktif: barang yang sedang
+   * tidak dijual tetap boleh diproduksi. Statusnya ikut dikirim supaya
+   * penanda di daftar pilihan bisa mengatakannya terus terang.
+   */
   async findProductVariantsList() {
     const data = await prisma.productMaster.findMany({
+      orderBy: { name: 'asc' },
       select: {
         id: true,
         name: true,
+        status: true,
         variants: {
+          orderBy: { sku: 'asc' },
           select: {
             id: true,
             sku: true,
+            isActive: true,
+            options: {
+              select: { variantValue: { select: { value: true } } },
+            },
           },
         },
       },
@@ -407,6 +428,96 @@ export class ProductsService {
     };
   }
 
+  /**
+   * Data label barcode satu varian: SKU dan harga dibaca dari database, bukan
+   * dari parameter halaman cetak, supaya label tidak pernah memuat SKU yang
+   * salah ketik.
+   */
+  async getVariantLabel(variantId: bigint) {
+    const [variant, stores] = await Promise.all([
+      prisma.productVariant.findUnique({
+        where: { id: variantId },
+        select: {
+          id: true,
+          sku: true,
+          price: true,
+          productMaster: { select: { name: true } },
+          options: { select: { variantValue: { select: { value: true } } } },
+          productVariantStocks: { select: { storeId: true, stock: true } },
+        },
+      }),
+      prisma.store.findMany({
+        where: { isActive: true },
+        select: { id: true, name: true, isProductionHouse: true },
+        orderBy: { id: 'asc' },
+      }),
+    ]);
+
+    if (!variant) throw new NotFoundException('Varian tidak ditemukan');
+
+    const stockByStore = new Map(
+      variant.productVariantStocks.map((row) => [
+        row.storeId.toString(),
+        row.stock,
+      ]),
+    );
+
+    return {
+      success: true,
+      data: {
+        variantId: variant.id.toString(),
+        productName: variant.productMaster.name,
+        variantLabel: variant.options
+          .map((option) => option.variantValue.value)
+          .join(' / '),
+        sku: variant.sku,
+        price: variant.price.toString(),
+        stocks: stores.map((store) => ({
+          storeId: store.id.toString(),
+          storeName: store.name,
+          isProductionHouse: store.isProductionHouse,
+          stock: stockByStore.get(store.id.toString()) ?? 0,
+        })),
+      },
+      meta: { timeStamp: new Date().toISOString() },
+    };
+  }
+
+  /**
+   * Dipanggil kasir hanya saat barcode yang discan tidak ada di daftarnya.
+   *
+   * Daftar kasir cuma berisi produk aktif yang punya stok di toko itu dan lolos
+   * filter pencarian/kategori — jadi dari sisi kasir, "stok habis", "produk
+   * nonaktif", "tersaring filter", dan "barcode bukan produk kita" terlihat
+   * sama. Endpoint ini yang membedakannya. `data: null` berarti SKU-nya memang
+   * tidak dikenal.
+   */
+  async findPosVariantBySku(storeId: bigint, sku: string) {
+    const variant = await prisma.productVariant.findUnique({
+      where: { sku: sku.trim() },
+      select: {
+        productMaster: { select: { name: true, status: true } },
+        options: { select: { variantValue: { select: { value: true } } } },
+        productVariantStocks: { where: { storeId }, select: { stock: true } },
+      },
+    });
+
+    return {
+      success: true,
+      data: variant
+        ? {
+            productName: variant.productMaster.name,
+            variantLabel: variant.options
+              .map((option) => option.variantValue.value)
+              .join(' / '),
+            isActive: variant.productMaster.status === ProductStatus.ACTIVE,
+            stock: variant.productVariantStocks[0]?.stock ?? 0,
+          }
+        : null,
+      meta: { timeStamp: new Date().toISOString() },
+    };
+  }
+
   // =============================== Function Mutation Data =======================================
 
   async create(rawData: CreateProductDto) {
@@ -437,12 +548,11 @@ export class ProductsService {
       const status = statusMap[data.status] ?? ProductStatus.ACTIVE;
 
       const typeMap: Record<string, ProductType> = {
-        READY_STOCK: ProductType.READY_STOCK,
-        MADE_TO_ORDER: ProductType.MADE_TO_ORDER,
+        REGULAR: ProductType.REGULAR,
         PRE_ORDER: ProductType.PRE_ORDER,
       };
 
-      const typeData = typeMap[data.type] ?? ProductType.READY_STOCK;
+      const typeData = typeMap[data.type] ?? ProductType.REGULAR;
 
       const slugData = this.generateSlug(data.name);
 
@@ -701,12 +811,11 @@ export class ProductsService {
       const status = statusMap[data.status] ?? existingProduct.status;
 
       const typeMap: Record<string, ProductType> = {
-        READY_STOCK: ProductType.READY_STOCK,
-        MADE_TO_ORDER: ProductType.MADE_TO_ORDER,
+        REGULAR: ProductType.REGULAR,
         PRE_ORDER: ProductType.PRE_ORDER,
       };
 
-      const typeData = typeMap[data.type] ?? ProductType.READY_STOCK;
+      const typeData = typeMap[data.type] ?? ProductType.REGULAR;
 
       // 2. Update Product Master
       await tx.productMaster.update({

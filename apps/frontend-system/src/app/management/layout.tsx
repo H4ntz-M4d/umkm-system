@@ -5,7 +5,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 import { getAdminProfile } from "@/lib/queries/auth/auth.api";
 import { cookies, headers } from "next/headers";
-import { useAuth } from "@/stores/useAuth";
 import { getRoleFromToken } from "@/lib/auth/token-role";
 
 interface AdminLayoutProps {
@@ -42,7 +41,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <>
-      <ManagementProvider>
+      <ManagementProvider user={user}>
         <SidebarProvider>
           <AppSidebar user={user} role={role} />
           <SidebarInset className={"overflow-hidden"}>

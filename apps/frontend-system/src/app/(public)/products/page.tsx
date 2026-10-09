@@ -10,14 +10,35 @@ import ProductCard from "@/components/public/products/products-card";
 import ProductsFilter from "@/components/public/products/products-filter";
 import ProductsActiveFilters from "@/components/public/products/products-active-filters";
 import ProductsPagination from "@/components/public/products/products-pagination";
+import { canonical } from "@/lib/seo/site";
 
 const PAGE_SIZE = 12;
 
-export const metadata: Metadata = {
-  title: "Koleksi Rajutan | NurfaCraft",
-  description:
-    "Jelajahi koleksi rajutan handmade NurfaCraft — dikerjakan tangan oleh pengrajin lokal Indonesia.",
-};
+/**
+ * Canonical yang sadar halaman.
+ *
+ * Penyaring dan urutan (`?sort=`, `?categoryId=`) hanya menyusun ulang katalog
+ * yang sama, jadi semuanya diarahkan ke `/products`. Tapi nomor halaman BEDA
+ * isinya — kalau halaman 2 ikut diarahkan ke halaman 1, produk yang hanya
+ * muncul di halaman dalam tidak akan pernah terindeks. Karena itu `?page=`
+ * menunjuk ke dirinya sendiri.
+ */
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const page = Math.max(1, Number(readParam(params, "page") ?? 1) || 1);
+  const path = page > 1 ? `/products?page=${page}` : "/products";
+
+  return {
+    title: page > 1 ? `Koleksi Rajutan — Halaman ${page}` : "Koleksi Rajutan",
+    description:
+      "Jelajahi koleksi rajutan handmade Nurfa Craft — dikerjakan tangan oleh pengrajin lokal Indonesia.",
+    alternates: canonical(path),
+  };
+}
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -79,7 +100,10 @@ export default async function Page({
         <ProductsFilter categories={categories.data} />
 
         <div className="flex-1">
-          <ProductsActiveFilters params={flatParams} categories={categories.data} />
+          <ProductsActiveFilters
+            params={flatParams}
+            categories={categories.data}
+          />
 
           <p className="text-xs text-muted-foreground mb-6">
             {total} produk ditemukan

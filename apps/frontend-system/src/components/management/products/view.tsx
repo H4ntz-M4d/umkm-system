@@ -7,13 +7,17 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { usePaginationParams } from "@/hooks/use-paginations-params";
 import Link from "next/link";
 import { useState } from "react";
-import {DataTableProducts} from "@/components/management/products/data-table";
+import { DataTableProducts } from "@/components/management/products/data-table";
 import { useProductsOperation } from "@/hooks/management/products/use-products-operation";
 import { columnsProducts } from "@/components/management/products/column";
+import { useCanManageMaster } from "@/hooks/management/use-central-store";
 
 export default function ProductManagementView() {
   const { pagination, onPaginationChange } = usePaginationParams();
   const [search, setSearch] = useState("");
+  /// Cabang boleh melihat katalog, tapi tidak mengubahnya — katalog dipakai
+  /// bersama seluruh toko.
+  const canManage = useCanManageMaster();
   const debounceSearch = useDebounce(search, 500);
 
   const { fetchProductData, isLoadingProduct, deleteProductData } =
@@ -24,7 +28,7 @@ export default function ProductManagementView() {
 
   const deleteStaffData = (id: string) => {
     deleteProductData(id);
-  }
+  };
 
   const pageCount = fetchProductData?.meta.total
     ? Math.ceil(fetchProductData?.meta.total / pagination.pageSize)
@@ -39,9 +43,11 @@ export default function ProductManagementView() {
             onChange={(e) => setSearch(e.target.value)}
           />
 
-          <Link href={"/management/products/new"}>
-            <Button>Tambah Produk</Button>
-          </Link>
+          {canManage && (
+            <Link href={"/management/products/new"}>
+              <Button>Tambah Produk</Button>
+            </Link>
+          )}
         </div>
         <div className="bg-muted/50 rounded-xl md:min-h-min">
           {isLoadingProduct && !fetchProductData ? (
@@ -49,7 +55,7 @@ export default function ProductManagementView() {
           ) : (
             <DataTableProducts
               data={fetchProductData?.data ?? []}
-              columns={columnsProducts(deleteStaffData)}
+              columns={columnsProducts(deleteStaffData, canManage)}
               pagination={pagination}
               pageCount={pageCount}
               onPaginationChange={onPaginationChange}

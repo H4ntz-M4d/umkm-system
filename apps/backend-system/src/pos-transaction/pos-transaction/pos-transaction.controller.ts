@@ -25,6 +25,7 @@ import { UserRole } from '@repo/db';
 import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
 import { SkipThrottle } from '@nestjs/throttler';
 import { resolveTransactionStore } from 'common/helpers/resolve-store';
+import { IMAGE_VALIDATOR } from 'common/interceptors/upload-image.interceptors';
 
 @Controller('api/v1/pos-transactions')
 export class PosTransactionController {
@@ -121,7 +122,10 @@ export class PosTransactionController {
   @UseInterceptors(FileInterceptor('paymentProof'))
   async uploadPaymentProof(
     @Param('id', ParseIntPipe) transPosId: bigint,
-    @UploadedFile() file: Express.Multer.File,
+    /// Satu-satunya endpoint unggah yang dulu tanpa validasi: foto sebesar apa
+    /// pun diterima lalu dikirim ke Cloudinary, dan itulah yang membuat
+    /// permintaannya kelamaan. Batasnya kini sama dengan endpoint lain (2MB).
+    @UploadedFile(IMAGE_VALIDATOR(true)) file: Express.Multer.File,
   ) {
     return await this.posTransactionService.uploadProodOfPayment(
       transPosId,
@@ -140,11 +144,13 @@ export class PosTransactionController {
     return await this.posTransactionService.handleMidtransWebHook(body);
   }
 
+  /// Dipanggil layar kasir saat QR ditinggal: dialog ditutup atau QR dibuat
+  /// ulang. Membatalkan di Midtrans sekaligus di database kita.
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
-  @Patch('/completed-transaction')
-  async completedTransactions(@Param('id', ParseIntPipe) transPosId: bigint) {
-    return await this.posTransactionService.completedTransaction(transPosId);
+  @Patch(':id/abandon-qris')
+  async abandonQris(@Param('id', ParseIntPipe) transPosId: bigint) {
+    return await this.posTransactionService.abandonQrisTransaction(transPosId);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

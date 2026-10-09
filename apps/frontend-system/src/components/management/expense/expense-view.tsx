@@ -18,6 +18,7 @@ import { ExpenseFilters } from "@/lib/queries/expense/expense.query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useExpenseCategoriesOperation } from "@/hooks/management/expense/use-expense-categories-operations";
 import { DateRange } from "react-day-picker";
+import { AddExpenseDialog } from "@/components/management/expense/expense-form";
 import { format } from "date-fns";
 
 export default function ExpenseView({ filters }: { filters: ExpenseFilters }) {
@@ -27,7 +28,12 @@ export default function ExpenseView({ filters }: { filters: ExpenseFilters }) {
   const startDate = searchParams.get("startDate") || "";
   const endDate = searchParams.get("endDate") || "";
 
-  const { fetchExpenseData, removeExpenseData } = useExpenseOperation({ filters });
+  const { fetchExpenseData, removeExpenseData } = useExpenseOperation({
+    filters,
+  });
+  /// Dialog edit dipasang di sini, bukan di halaman, supaya tombol Edit di
+  /// baris tabel tidak perlu mengoper state naik-turun lewat beberapa lapis.
+  const [editingId, setEditingId] = useState<string | null>(null);
   const { dataExpenseCategories } = useExpenseCategoriesOperation({});
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
@@ -120,13 +126,21 @@ export default function ExpenseView({ filters }: { filters: ExpenseFilters }) {
       </div>
       <div className="bg-muted/50 rounded-xl md:min-h-min">
         <DataTableExpense
-          columns={columnsExpense(removeExpenseData)}
+          columns={columnsExpense(removeExpenseData, setEditingId)}
           data={fetchExpenseData?.data ?? []}
           pageCount={pageCount}
           pagination={pagination}
           onPaginationChange={onPaginationChange}
         />
       </div>
+
+      <AddExpenseDialog
+        open={editingId !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingId(null);
+        }}
+        expenseId={editingId}
+      />
     </>
   );
 }

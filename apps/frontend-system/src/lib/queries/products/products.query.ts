@@ -7,6 +7,8 @@ import {
   ProductVariantResponse,
   ProductListDataResponse,
   UploadProductImagesResponse,
+  VariantLabelResponse,
+  PosSkuLookupResponse,
 } from "@repo/schemas";
 import { apiFetcher } from "@/lib/api/api.fetcher";
 
@@ -106,3 +108,22 @@ export const deleteProduct = async (id: string) => {
   );
   return res;
 };
+
+/// Data label barcode satu varian beserta stoknya di tiap toko.
+export const fetchVariantLabel = async (variantId: string) =>
+  apiFetcher(
+    managementApi.get(`v1/products/variants/${variantId}/label`),
+    VariantLabelResponse,
+  );
+
+/**
+ * Menanyakan SKU ke server saat barcode yang discan kasir tidak ada di
+ * daftarnya. `data: null` berarti SKU tidak dikenal sama sekali.
+ */
+export const fetchPosVariantBySku = async (sku: string, storeId?: string) =>
+  apiFetcher(
+    managementApi.get("v1/products/point-of-sales/by-sku", {
+      searchParams: { sku, ...(storeId && { storeId }) },
+    }),
+    PosSkuLookupResponse,
+  );

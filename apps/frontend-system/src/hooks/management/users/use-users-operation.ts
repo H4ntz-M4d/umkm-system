@@ -1,5 +1,6 @@
 import {
   createStaff,
+  fetchEmployeeOptions,
   fetchUserById,
   fetchUsersCustomer,
   fetchUsersEmployee,
@@ -19,6 +20,7 @@ export function useUsersOperation({
   pagination,
   userId,
   search,
+  enabledEmployeeOptions = false,
 }: {
   pagination?: {
     pageIndex: number;
@@ -26,6 +28,9 @@ export function useUsersOperation({
   };
   userId?: string | undefined | null;
   search?: string | undefined;
+  /// Dinyalakan hanya oleh layar yang butuh dropdown karyawan, supaya halaman
+  /// lain tidak ikut menarik daftarnya tanpa perlu.
+  enabledEmployeeOptions?: boolean;
 }) {
   const qc = useQueryClient();
 
@@ -54,6 +59,20 @@ export function useUsersOperation({
       fetchUsersCustomer(pagination!.pageIndex, pagination!.pageSize, search),
     placeholderData: keepPreviousData,
     enabled: isTableMode,
+  });
+
+  /**
+   * Daftar nama karyawan untuk dropdown.
+   *
+   * Key-nya sengaja terpisah dari `["employee"]` milik tabel karyawan: daftar
+   * ini jarang berubah dan tidak perlu ikut ditarik ulang setiap kali data
+   * karyawan disunting.
+   */
+  const getEmployeeOptions = useQuery({
+    queryKey: ["employee-options"],
+    queryFn: fetchEmployeeOptions,
+    enabled: enabledEmployeeOptions,
+    staleTime: 5 * 60 * 1000,
   });
 
   const getUserById = useQuery({
@@ -102,6 +121,9 @@ export function useUsersOperation({
     isLoadingCustomer: getUsersCustomer.isLoading,
 
     getUserDataById: getUserById.data,
+
+    employeeOptions: getEmployeeOptions.data,
+    isLoadingEmployeeOptions: getEmployeeOptions.isLoading,
 
     createAdminData: createAdminMutate.mutate,
     isCreatingData: createAdminMutate.isPending,

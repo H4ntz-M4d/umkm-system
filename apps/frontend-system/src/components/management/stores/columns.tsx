@@ -9,10 +9,13 @@ import { dayjs } from "@repo/utils";
 interface ColumnActions {
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+  /// Daftar toko boleh dilihat cabang, tapi hanya pusat yang mengubahnya.
+  canManage?: boolean;
 }
 export const columnsStore = ({
   onEdit,
   onDelete,
+  canManage = true,
 }: ColumnActions): ColumnDef<StoreData>[] => [
   {
     accessorKey: "id",
@@ -48,6 +51,10 @@ export const columnsStore = ({
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
+      if (!canManage) {
+        return <span className="text-muted-foreground">—</span>;
+      }
+
       return (
         <div className="flex gap-2 justify-center">
           <Button

@@ -224,7 +224,7 @@ export type UsersGroupByOutputType = {
   _max: UsersMaxAggregateOutputType | null
 }
 
-export type GetUsersGroupByPayload<T extends UsersGroupByArgs> = Prisma.PrismaPromise<
+type GetUsersGroupByPayload<T extends UsersGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UsersGroupByOutputType, T['by']> &
       {
@@ -256,6 +256,12 @@ export type UsersWhereInput = {
   employees?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   posTransactions?: Prisma.PosTransactionListRelationFilter
+  orders?: Prisma.OrderListRelationFilter
+  expenses?: Prisma.ExpenseListRelationFilter
+  productionDeliveries?: Prisma.ProductionDeliveryListRelationFilter
+  stockTransfers?: Prisma.StockTransferListRelationFilter
+  stockAdjustments?: Prisma.StockAdjustmentListRelationFilter
+  blogs?: Prisma.BlogListRelationFilter
   passwordResetCodes?: Prisma.PasswordResetCodeListRelationFilter
 }
 
@@ -273,6 +279,12 @@ export type UsersOrderByWithRelationInput = {
   employees?: Prisma.EmployeeOrderByWithRelationInput
   customer?: Prisma.CustomerOrderByWithRelationInput
   posTransactions?: Prisma.PosTransactionOrderByRelationAggregateInput
+  orders?: Prisma.OrderOrderByRelationAggregateInput
+  expenses?: Prisma.ExpenseOrderByRelationAggregateInput
+  productionDeliveries?: Prisma.ProductionDeliveryOrderByRelationAggregateInput
+  stockTransfers?: Prisma.StockTransferOrderByRelationAggregateInput
+  stockAdjustments?: Prisma.StockAdjustmentOrderByRelationAggregateInput
+  blogs?: Prisma.BlogOrderByRelationAggregateInput
   passwordResetCodes?: Prisma.PasswordResetCodeOrderByRelationAggregateInput
 }
 
@@ -293,6 +305,12 @@ export type UsersWhereUniqueInput = Prisma.AtLeast<{
   employees?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   posTransactions?: Prisma.PosTransactionListRelationFilter
+  orders?: Prisma.OrderListRelationFilter
+  expenses?: Prisma.ExpenseListRelationFilter
+  productionDeliveries?: Prisma.ProductionDeliveryListRelationFilter
+  stockTransfers?: Prisma.StockTransferListRelationFilter
+  stockAdjustments?: Prisma.StockAdjustmentListRelationFilter
+  blogs?: Prisma.BlogListRelationFilter
   passwordResetCodes?: Prisma.PasswordResetCodeListRelationFilter
 }, "id" | "email">
 
@@ -341,6 +359,12 @@ export type UsersCreateInput = {
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
@@ -357,6 +381,12 @@ export type UsersUncheckedCreateInput = {
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -373,6 +403,12 @@ export type UsersUpdateInput = {
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
@@ -389,6 +425,12 @@ export type UsersUncheckedUpdateInput = {
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -595,6 +637,102 @@ export type UsersUpdateOneRequiredWithoutEmployeesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutEmployeesInput, Prisma.UsersUpdateWithoutEmployeesInput>, Prisma.UsersUncheckedUpdateWithoutEmployeesInput>
 }
 
+export type UsersCreateNestedOneWithoutStockAdjustmentsInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutStockAdjustmentsInput, Prisma.UsersUncheckedCreateWithoutStockAdjustmentsInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutStockAdjustmentsInput
+  connect?: Prisma.UsersWhereUniqueInput
+}
+
+export type UsersUpdateOneWithoutStockAdjustmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutStockAdjustmentsInput, Prisma.UsersUncheckedCreateWithoutStockAdjustmentsInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutStockAdjustmentsInput
+  upsert?: Prisma.UsersUpsertWithoutStockAdjustmentsInput
+  disconnect?: Prisma.UsersWhereInput | boolean
+  delete?: Prisma.UsersWhereInput | boolean
+  connect?: Prisma.UsersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutStockAdjustmentsInput, Prisma.UsersUpdateWithoutStockAdjustmentsInput>, Prisma.UsersUncheckedUpdateWithoutStockAdjustmentsInput>
+}
+
+export type UsersCreateNestedOneWithoutStockTransfersInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutStockTransfersInput, Prisma.UsersUncheckedCreateWithoutStockTransfersInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutStockTransfersInput
+  connect?: Prisma.UsersWhereUniqueInput
+}
+
+export type UsersUpdateOneWithoutStockTransfersNestedInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutStockTransfersInput, Prisma.UsersUncheckedCreateWithoutStockTransfersInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutStockTransfersInput
+  upsert?: Prisma.UsersUpsertWithoutStockTransfersInput
+  disconnect?: Prisma.UsersWhereInput | boolean
+  delete?: Prisma.UsersWhereInput | boolean
+  connect?: Prisma.UsersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutStockTransfersInput, Prisma.UsersUpdateWithoutStockTransfersInput>, Prisma.UsersUncheckedUpdateWithoutStockTransfersInput>
+}
+
+export type UsersCreateNestedOneWithoutProductionDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutProductionDeliveriesInput, Prisma.UsersUncheckedCreateWithoutProductionDeliveriesInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutProductionDeliveriesInput
+  connect?: Prisma.UsersWhereUniqueInput
+}
+
+export type UsersUpdateOneWithoutProductionDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutProductionDeliveriesInput, Prisma.UsersUncheckedCreateWithoutProductionDeliveriesInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutProductionDeliveriesInput
+  upsert?: Prisma.UsersUpsertWithoutProductionDeliveriesInput
+  disconnect?: Prisma.UsersWhereInput | boolean
+  delete?: Prisma.UsersWhereInput | boolean
+  connect?: Prisma.UsersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutProductionDeliveriesInput, Prisma.UsersUpdateWithoutProductionDeliveriesInput>, Prisma.UsersUncheckedUpdateWithoutProductionDeliveriesInput>
+}
+
+export type UsersCreateNestedOneWithoutBlogsInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutBlogsInput, Prisma.UsersUncheckedCreateWithoutBlogsInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutBlogsInput
+  connect?: Prisma.UsersWhereUniqueInput
+}
+
+export type UsersUpdateOneWithoutBlogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutBlogsInput, Prisma.UsersUncheckedCreateWithoutBlogsInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutBlogsInput
+  upsert?: Prisma.UsersUpsertWithoutBlogsInput
+  disconnect?: Prisma.UsersWhereInput | boolean
+  delete?: Prisma.UsersWhereInput | boolean
+  connect?: Prisma.UsersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutBlogsInput, Prisma.UsersUpdateWithoutBlogsInput>, Prisma.UsersUncheckedUpdateWithoutBlogsInput>
+}
+
+export type UsersCreateNestedOneWithoutExpensesInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutExpensesInput, Prisma.UsersUncheckedCreateWithoutExpensesInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutExpensesInput
+  connect?: Prisma.UsersWhereUniqueInput
+}
+
+export type UsersUpdateOneWithoutExpensesNestedInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutExpensesInput, Prisma.UsersUncheckedCreateWithoutExpensesInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutExpensesInput
+  upsert?: Prisma.UsersUpsertWithoutExpensesInput
+  disconnect?: Prisma.UsersWhereInput | boolean
+  delete?: Prisma.UsersWhereInput | boolean
+  connect?: Prisma.UsersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutExpensesInput, Prisma.UsersUpdateWithoutExpensesInput>, Prisma.UsersUncheckedUpdateWithoutExpensesInput>
+}
+
+export type UsersCreateNestedOneWithoutOrdersInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutOrdersInput, Prisma.UsersUncheckedCreateWithoutOrdersInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutOrdersInput
+  connect?: Prisma.UsersWhereUniqueInput
+}
+
+export type UsersUpdateOneWithoutOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.UsersCreateWithoutOrdersInput, Prisma.UsersUncheckedCreateWithoutOrdersInput>
+  connectOrCreate?: Prisma.UsersCreateOrConnectWithoutOrdersInput
+  upsert?: Prisma.UsersUpsertWithoutOrdersInput
+  disconnect?: Prisma.UsersWhereInput | boolean
+  delete?: Prisma.UsersWhereInput | boolean
+  connect?: Prisma.UsersWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsersUpdateToOneWithWhereWithoutOrdersInput, Prisma.UsersUpdateWithoutOrdersInput>, Prisma.UsersUncheckedUpdateWithoutOrdersInput>
+}
+
 export type UsersCreateNestedOneWithoutPosTransactionsInput = {
   create?: Prisma.XOR<Prisma.UsersCreateWithoutPosTransactionsInput, Prisma.UsersUncheckedCreateWithoutPosTransactionsInput>
   connectOrCreate?: Prisma.UsersCreateOrConnectWithoutPosTransactionsInput
@@ -621,6 +759,12 @@ export type UsersCreateWithoutStoreInput = {
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
@@ -636,6 +780,12 @@ export type UsersUncheckedCreateWithoutStoreInput = {
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -692,6 +842,12 @@ export type UsersCreateWithoutCustomerInput = {
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
@@ -707,6 +863,12 @@ export type UsersUncheckedCreateWithoutCustomerInput = {
   slug?: string | null
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -738,6 +900,12 @@ export type UsersUpdateWithoutCustomerInput = {
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
@@ -753,6 +921,12 @@ export type UsersUncheckedUpdateWithoutCustomerInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -769,6 +943,12 @@ export type UsersCreateWithoutPasswordResetCodesInput = {
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
 }
 
 export type UsersUncheckedCreateWithoutPasswordResetCodesInput = {
@@ -784,6 +964,12 @@ export type UsersUncheckedCreateWithoutPasswordResetCodesInput = {
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UsersCreateOrConnectWithoutPasswordResetCodesInput = {
@@ -815,6 +1001,12 @@ export type UsersUpdateWithoutPasswordResetCodesInput = {
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
 }
 
 export type UsersUncheckedUpdateWithoutPasswordResetCodesInput = {
@@ -830,6 +1022,12 @@ export type UsersUncheckedUpdateWithoutPasswordResetCodesInput = {
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UsersCreateWithoutEmployeesInput = {
@@ -844,6 +1042,12 @@ export type UsersCreateWithoutEmployeesInput = {
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
@@ -859,6 +1063,12 @@ export type UsersUncheckedCreateWithoutEmployeesInput = {
   slug?: string | null
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -890,6 +1100,12 @@ export type UsersUpdateWithoutEmployeesInput = {
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
@@ -905,6 +1121,612 @@ export type UsersUncheckedUpdateWithoutEmployeesInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UsersCreateWithoutStockAdjustmentsInput = {
+  id?: bigint | number
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
+  employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
+}
+
+export type UsersUncheckedCreateWithoutStockAdjustmentsInput = {
+  id?: bigint | number
+  storeId?: bigint | number | null
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UsersCreateOrConnectWithoutStockAdjustmentsInput = {
+  where: Prisma.UsersWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsersCreateWithoutStockAdjustmentsInput, Prisma.UsersUncheckedCreateWithoutStockAdjustmentsInput>
+}
+
+export type UsersUpsertWithoutStockAdjustmentsInput = {
+  update: Prisma.XOR<Prisma.UsersUpdateWithoutStockAdjustmentsInput, Prisma.UsersUncheckedUpdateWithoutStockAdjustmentsInput>
+  create: Prisma.XOR<Prisma.UsersCreateWithoutStockAdjustmentsInput, Prisma.UsersUncheckedCreateWithoutStockAdjustmentsInput>
+  where?: Prisma.UsersWhereInput
+}
+
+export type UsersUpdateToOneWithWhereWithoutStockAdjustmentsInput = {
+  where?: Prisma.UsersWhereInput
+  data: Prisma.XOR<Prisma.UsersUpdateWithoutStockAdjustmentsInput, Prisma.UsersUncheckedUpdateWithoutStockAdjustmentsInput>
+}
+
+export type UsersUpdateWithoutStockAdjustmentsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
+  employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
+}
+
+export type UsersUncheckedUpdateWithoutStockAdjustmentsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UsersCreateWithoutStockTransfersInput = {
+  id?: bigint | number
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
+  employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
+}
+
+export type UsersUncheckedCreateWithoutStockTransfersInput = {
+  id?: bigint | number
+  storeId?: bigint | number | null
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UsersCreateOrConnectWithoutStockTransfersInput = {
+  where: Prisma.UsersWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsersCreateWithoutStockTransfersInput, Prisma.UsersUncheckedCreateWithoutStockTransfersInput>
+}
+
+export type UsersUpsertWithoutStockTransfersInput = {
+  update: Prisma.XOR<Prisma.UsersUpdateWithoutStockTransfersInput, Prisma.UsersUncheckedUpdateWithoutStockTransfersInput>
+  create: Prisma.XOR<Prisma.UsersCreateWithoutStockTransfersInput, Prisma.UsersUncheckedCreateWithoutStockTransfersInput>
+  where?: Prisma.UsersWhereInput
+}
+
+export type UsersUpdateToOneWithWhereWithoutStockTransfersInput = {
+  where?: Prisma.UsersWhereInput
+  data: Prisma.XOR<Prisma.UsersUpdateWithoutStockTransfersInput, Prisma.UsersUncheckedUpdateWithoutStockTransfersInput>
+}
+
+export type UsersUpdateWithoutStockTransfersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
+  employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
+}
+
+export type UsersUncheckedUpdateWithoutStockTransfersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UsersCreateWithoutProductionDeliveriesInput = {
+  id?: bigint | number
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
+  employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
+}
+
+export type UsersUncheckedCreateWithoutProductionDeliveriesInput = {
+  id?: bigint | number
+  storeId?: bigint | number | null
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UsersCreateOrConnectWithoutProductionDeliveriesInput = {
+  where: Prisma.UsersWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsersCreateWithoutProductionDeliveriesInput, Prisma.UsersUncheckedCreateWithoutProductionDeliveriesInput>
+}
+
+export type UsersUpsertWithoutProductionDeliveriesInput = {
+  update: Prisma.XOR<Prisma.UsersUpdateWithoutProductionDeliveriesInput, Prisma.UsersUncheckedUpdateWithoutProductionDeliveriesInput>
+  create: Prisma.XOR<Prisma.UsersCreateWithoutProductionDeliveriesInput, Prisma.UsersUncheckedCreateWithoutProductionDeliveriesInput>
+  where?: Prisma.UsersWhereInput
+}
+
+export type UsersUpdateToOneWithWhereWithoutProductionDeliveriesInput = {
+  where?: Prisma.UsersWhereInput
+  data: Prisma.XOR<Prisma.UsersUpdateWithoutProductionDeliveriesInput, Prisma.UsersUncheckedUpdateWithoutProductionDeliveriesInput>
+}
+
+export type UsersUpdateWithoutProductionDeliveriesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
+  employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
+}
+
+export type UsersUncheckedUpdateWithoutProductionDeliveriesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UsersCreateWithoutBlogsInput = {
+  id?: bigint | number
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
+  employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
+}
+
+export type UsersUncheckedCreateWithoutBlogsInput = {
+  id?: bigint | number
+  storeId?: bigint | number | null
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UsersCreateOrConnectWithoutBlogsInput = {
+  where: Prisma.UsersWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsersCreateWithoutBlogsInput, Prisma.UsersUncheckedCreateWithoutBlogsInput>
+}
+
+export type UsersUpsertWithoutBlogsInput = {
+  update: Prisma.XOR<Prisma.UsersUpdateWithoutBlogsInput, Prisma.UsersUncheckedUpdateWithoutBlogsInput>
+  create: Prisma.XOR<Prisma.UsersCreateWithoutBlogsInput, Prisma.UsersUncheckedCreateWithoutBlogsInput>
+  where?: Prisma.UsersWhereInput
+}
+
+export type UsersUpdateToOneWithWhereWithoutBlogsInput = {
+  where?: Prisma.UsersWhereInput
+  data: Prisma.XOR<Prisma.UsersUpdateWithoutBlogsInput, Prisma.UsersUncheckedUpdateWithoutBlogsInput>
+}
+
+export type UsersUpdateWithoutBlogsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
+  employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
+}
+
+export type UsersUncheckedUpdateWithoutBlogsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UsersCreateWithoutExpensesInput = {
+  id?: bigint | number
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
+  employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
+}
+
+export type UsersUncheckedCreateWithoutExpensesInput = {
+  id?: bigint | number
+  storeId?: bigint | number | null
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UsersCreateOrConnectWithoutExpensesInput = {
+  where: Prisma.UsersWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsersCreateWithoutExpensesInput, Prisma.UsersUncheckedCreateWithoutExpensesInput>
+}
+
+export type UsersUpsertWithoutExpensesInput = {
+  update: Prisma.XOR<Prisma.UsersUpdateWithoutExpensesInput, Prisma.UsersUncheckedUpdateWithoutExpensesInput>
+  create: Prisma.XOR<Prisma.UsersCreateWithoutExpensesInput, Prisma.UsersUncheckedCreateWithoutExpensesInput>
+  where?: Prisma.UsersWhereInput
+}
+
+export type UsersUpdateToOneWithWhereWithoutExpensesInput = {
+  where?: Prisma.UsersWhereInput
+  data: Prisma.XOR<Prisma.UsersUpdateWithoutExpensesInput, Prisma.UsersUncheckedUpdateWithoutExpensesInput>
+}
+
+export type UsersUpdateWithoutExpensesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
+  employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
+}
+
+export type UsersUncheckedUpdateWithoutExpensesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UsersCreateWithoutOrdersInput = {
+  id?: bigint | number
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  store?: Prisma.StoreCreateNestedOneWithoutUsersInput
+  employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutUsersInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
+}
+
+export type UsersUncheckedCreateWithoutOrdersInput = {
+  id?: bigint | number
+  storeId?: bigint | number | null
+  email: string
+  password: string
+  role: $Enums.UserRole
+  isActive?: boolean
+  createdAt?: Date | string
+  refreshToken?: string | null
+  slug?: string | null
+  employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
+  customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutUsersInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UsersCreateOrConnectWithoutOrdersInput = {
+  where: Prisma.UsersWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsersCreateWithoutOrdersInput, Prisma.UsersUncheckedCreateWithoutOrdersInput>
+}
+
+export type UsersUpsertWithoutOrdersInput = {
+  update: Prisma.XOR<Prisma.UsersUpdateWithoutOrdersInput, Prisma.UsersUncheckedUpdateWithoutOrdersInput>
+  create: Prisma.XOR<Prisma.UsersCreateWithoutOrdersInput, Prisma.UsersUncheckedCreateWithoutOrdersInput>
+  where?: Prisma.UsersWhereInput
+}
+
+export type UsersUpdateToOneWithWhereWithoutOrdersInput = {
+  where?: Prisma.UsersWhereInput
+  data: Prisma.XOR<Prisma.UsersUpdateWithoutOrdersInput, Prisma.UsersUncheckedUpdateWithoutOrdersInput>
+}
+
+export type UsersUpdateWithoutOrdersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
+  employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
+  passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
+}
+
+export type UsersUncheckedUpdateWithoutOrdersInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refreshToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
+  customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -920,6 +1742,12 @@ export type UsersCreateWithoutPosTransactionsInput = {
   store?: Prisma.StoreCreateNestedOneWithoutUsersInput
   employees?: Prisma.EmployeeCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerCreateNestedOneWithoutUsersInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeCreateNestedManyWithoutUserInput
 }
 
@@ -935,6 +1763,12 @@ export type UsersUncheckedCreateWithoutPosTransactionsInput = {
   slug?: string | null
   employees?: Prisma.EmployeeUncheckedCreateNestedOneWithoutUsersInput
   customer?: Prisma.CustomerUncheckedCreateNestedOneWithoutUsersInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutUserInput
+  stockTransfers?: Prisma.StockTransferUncheckedCreateNestedManyWithoutUserInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedCreateNestedManyWithoutUserInput
+  blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutUserInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -966,6 +1800,12 @@ export type UsersUpdateWithoutPosTransactionsInput = {
   store?: Prisma.StoreUpdateOneWithoutUsersNestedInput
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
@@ -981,6 +1821,12 @@ export type UsersUncheckedUpdateWithoutPosTransactionsInput = {
   slug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1007,6 +1853,12 @@ export type UsersUpdateWithoutStoreInput = {
   employees?: Prisma.EmployeeUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUpdateManyWithoutUserNestedInput
 }
 
@@ -1022,6 +1874,12 @@ export type UsersUncheckedUpdateWithoutStoreInput = {
   employees?: Prisma.EmployeeUncheckedUpdateOneWithoutUsersNestedInput
   customer?: Prisma.CustomerUncheckedUpdateOneWithoutUsersNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutUsersNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  productionDeliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutUserNestedInput
+  stockTransfers?: Prisma.StockTransferUncheckedUpdateManyWithoutUserNestedInput
+  stockAdjustments?: Prisma.StockAdjustmentUncheckedUpdateManyWithoutUserNestedInput
+  blogs?: Prisma.BlogUncheckedUpdateManyWithoutUserNestedInput
   passwordResetCodes?: Prisma.PasswordResetCodeUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1043,11 +1901,23 @@ export type UsersUncheckedUpdateManyWithoutStoreInput = {
 
 export type UsersCountOutputType = {
   posTransactions: number
+  orders: number
+  expenses: number
+  productionDeliveries: number
+  stockTransfers: number
+  stockAdjustments: number
+  blogs: number
   passwordResetCodes: number
 }
 
 export type UsersCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   posTransactions?: boolean | UsersCountOutputTypeCountPosTransactionsArgs
+  orders?: boolean | UsersCountOutputTypeCountOrdersArgs
+  expenses?: boolean | UsersCountOutputTypeCountExpensesArgs
+  productionDeliveries?: boolean | UsersCountOutputTypeCountProductionDeliveriesArgs
+  stockTransfers?: boolean | UsersCountOutputTypeCountStockTransfersArgs
+  stockAdjustments?: boolean | UsersCountOutputTypeCountStockAdjustmentsArgs
+  blogs?: boolean | UsersCountOutputTypeCountBlogsArgs
   passwordResetCodes?: boolean | UsersCountOutputTypeCountPasswordResetCodesArgs
 }
 
@@ -1066,6 +1936,48 @@ export type UsersCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
  */
 export type UsersCountOutputTypeCountPosTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PosTransactionWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExpenseWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountProductionDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductionDeliveryWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountStockTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StockTransferWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountStockAdjustmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StockAdjustmentWhereInput
+}
+
+/**
+ * UsersCountOutputType without action
+ */
+export type UsersCountOutputTypeCountBlogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlogWhereInput
 }
 
 /**
@@ -1090,6 +2002,12 @@ export type UsersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   employees?: boolean | Prisma.Users$employeesArgs<ExtArgs>
   customer?: boolean | Prisma.Users$customerArgs<ExtArgs>
   posTransactions?: boolean | Prisma.Users$posTransactionsArgs<ExtArgs>
+  orders?: boolean | Prisma.Users$ordersArgs<ExtArgs>
+  expenses?: boolean | Prisma.Users$expensesArgs<ExtArgs>
+  productionDeliveries?: boolean | Prisma.Users$productionDeliveriesArgs<ExtArgs>
+  stockTransfers?: boolean | Prisma.Users$stockTransfersArgs<ExtArgs>
+  stockAdjustments?: boolean | Prisma.Users$stockAdjustmentsArgs<ExtArgs>
+  blogs?: boolean | Prisma.Users$blogsArgs<ExtArgs>
   passwordResetCodes?: boolean | Prisma.Users$passwordResetCodesArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["users"]>
@@ -1138,6 +2056,12 @@ export type UsersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   employees?: boolean | Prisma.Users$employeesArgs<ExtArgs>
   customer?: boolean | Prisma.Users$customerArgs<ExtArgs>
   posTransactions?: boolean | Prisma.Users$posTransactionsArgs<ExtArgs>
+  orders?: boolean | Prisma.Users$ordersArgs<ExtArgs>
+  expenses?: boolean | Prisma.Users$expensesArgs<ExtArgs>
+  productionDeliveries?: boolean | Prisma.Users$productionDeliveriesArgs<ExtArgs>
+  stockTransfers?: boolean | Prisma.Users$stockTransfersArgs<ExtArgs>
+  stockAdjustments?: boolean | Prisma.Users$stockAdjustmentsArgs<ExtArgs>
+  blogs?: boolean | Prisma.Users$blogsArgs<ExtArgs>
   passwordResetCodes?: boolean | Prisma.Users$passwordResetCodesArgs<ExtArgs>
   _count?: boolean | Prisma.UsersCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1155,6 +2079,12 @@ export type $UsersPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     employees: Prisma.$EmployeePayload<ExtArgs> | null
     customer: Prisma.$CustomerPayload<ExtArgs> | null
     posTransactions: Prisma.$PosTransactionPayload<ExtArgs>[]
+    orders: Prisma.$OrderPayload<ExtArgs>[]
+    expenses: Prisma.$ExpensePayload<ExtArgs>[]
+    productionDeliveries: Prisma.$ProductionDeliveryPayload<ExtArgs>[]
+    stockTransfers: Prisma.$StockTransferPayload<ExtArgs>[]
+    stockAdjustments: Prisma.$StockAdjustmentPayload<ExtArgs>[]
+    blogs: Prisma.$BlogPayload<ExtArgs>[]
     passwordResetCodes: Prisma.$PasswordResetCodePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1565,6 +2495,12 @@ export interface Prisma__UsersClient<T, Null = never, ExtArgs extends runtime.Ty
   employees<T extends Prisma.Users$employeesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$employeesArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.Users$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   posTransactions<T extends Prisma.Users$posTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$posTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orders<T extends Prisma.Users$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  expenses<T extends Prisma.Users$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  productionDeliveries<T extends Prisma.Users$productionDeliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$productionDeliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockTransfers<T extends Prisma.Users$stockTransfersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$stockTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockTransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockAdjustments<T extends Prisma.Users$stockAdjustmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$stockAdjustmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockAdjustmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  blogs<T extends Prisma.Users$blogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$blogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   passwordResetCodes<T extends Prisma.Users$passwordResetCodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Users$passwordResetCodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1800,11 +2736,6 @@ export type UsersFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Skip the first `n` Users.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of Users.
-   */
   distinct?: Prisma.UsersScalarFieldEnum | Prisma.UsersScalarFieldEnum[]
 }
 
@@ -2083,6 +3014,150 @@ export type Users$posTransactionsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.PosTransactionScalarFieldEnum | Prisma.PosTransactionScalarFieldEnum[]
+}
+
+/**
+ * Users.orders
+ */
+export type Users$ordersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Order
+   */
+  select?: Prisma.OrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Order
+   */
+  omit?: Prisma.OrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderInclude<ExtArgs> | null
+  where?: Prisma.OrderWhereInput
+  orderBy?: Prisma.OrderOrderByWithRelationInput | Prisma.OrderOrderByWithRelationInput[]
+  cursor?: Prisma.OrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
+}
+
+/**
+ * Users.expenses
+ */
+export type Users$expensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Expense
+   */
+  select?: Prisma.ExpenseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Expense
+   */
+  omit?: Prisma.ExpenseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExpenseInclude<ExtArgs> | null
+  where?: Prisma.ExpenseWhereInput
+  orderBy?: Prisma.ExpenseOrderByWithRelationInput | Prisma.ExpenseOrderByWithRelationInput[]
+  cursor?: Prisma.ExpenseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExpenseScalarFieldEnum | Prisma.ExpenseScalarFieldEnum[]
+}
+
+/**
+ * Users.productionDeliveries
+ */
+export type Users$productionDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductionDelivery
+   */
+  select?: Prisma.ProductionDeliverySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductionDelivery
+   */
+  omit?: Prisma.ProductionDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductionDeliveryInclude<ExtArgs> | null
+  where?: Prisma.ProductionDeliveryWhereInput
+  orderBy?: Prisma.ProductionDeliveryOrderByWithRelationInput | Prisma.ProductionDeliveryOrderByWithRelationInput[]
+  cursor?: Prisma.ProductionDeliveryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductionDeliveryScalarFieldEnum | Prisma.ProductionDeliveryScalarFieldEnum[]
+}
+
+/**
+ * Users.stockTransfers
+ */
+export type Users$stockTransfersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockTransfer
+   */
+  select?: Prisma.StockTransferSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockTransfer
+   */
+  omit?: Prisma.StockTransferOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockTransferInclude<ExtArgs> | null
+  where?: Prisma.StockTransferWhereInput
+  orderBy?: Prisma.StockTransferOrderByWithRelationInput | Prisma.StockTransferOrderByWithRelationInput[]
+  cursor?: Prisma.StockTransferWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StockTransferScalarFieldEnum | Prisma.StockTransferScalarFieldEnum[]
+}
+
+/**
+ * Users.stockAdjustments
+ */
+export type Users$stockAdjustmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StockAdjustment
+   */
+  select?: Prisma.StockAdjustmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StockAdjustment
+   */
+  omit?: Prisma.StockAdjustmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StockAdjustmentInclude<ExtArgs> | null
+  where?: Prisma.StockAdjustmentWhereInput
+  orderBy?: Prisma.StockAdjustmentOrderByWithRelationInput | Prisma.StockAdjustmentOrderByWithRelationInput[]
+  cursor?: Prisma.StockAdjustmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StockAdjustmentScalarFieldEnum | Prisma.StockAdjustmentScalarFieldEnum[]
+}
+
+/**
+ * Users.blogs
+ */
+export type Users$blogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Blog
+   */
+  select?: Prisma.BlogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Blog
+   */
+  omit?: Prisma.BlogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlogInclude<ExtArgs> | null
+  where?: Prisma.BlogWhereInput
+  orderBy?: Prisma.BlogOrderByWithRelationInput | Prisma.BlogOrderByWithRelationInput[]
+  cursor?: Prisma.BlogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BlogScalarFieldEnum | Prisma.BlogScalarFieldEnum[]
 }
 
 /**

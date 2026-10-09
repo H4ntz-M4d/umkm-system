@@ -31,3 +31,18 @@ export const AuthUser = createParamDecorator(
     }
   },
 );
+
+/**
+ * Pasangan `AuthUser` untuk rute yang boleh diakses tanpa sesi.
+ *
+ * Mengembalikan `null` alih-alih melempar 401 saat tidak ada pengguna, jadi
+ * handler-nya yang memutuskan apa artinya "tamu". Hanya berguna bersama
+ * `OptionalJwtAuthGuard` — dengan `JwtAuthGuard` biasa, request tanpa sesi
+ * tidak akan pernah sampai ke handler.
+ */
+export const OptionalAuthUser = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const req = context.switchToHttp().getRequest<Request>();
+    return (req.user as JwtPayload | undefined) ?? null;
+  },
+);

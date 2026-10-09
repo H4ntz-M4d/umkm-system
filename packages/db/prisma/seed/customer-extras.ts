@@ -53,7 +53,9 @@ export async function seedCustomerExtras(master: MasterData) {
     }
 
     // Wishlist disimpan per produk, bukan per varian.
-    const productIds = [...new Set(variants.map((variant) => variant.productMasterId))];
+    const productIds = [
+      ...new Set(variants.map((variant) => variant.productMasterId)),
+    ];
     for (const productMasterId of pickMany(productIds, randomInt(0, 5))) {
       await prisma.wishlist.create({
         data: { customerId: customer.id, productMasterId },
@@ -63,7 +65,9 @@ export async function seedCustomerExtras(master: MasterData) {
 
     // Keranjang yang belum di-checkout.
     if (chance(0.4)) {
-      const cart = await prisma.cart.create({ data: { customerId: customer.id } });
+      const cart = await prisma.cart.create({
+        data: { customerId: customer.id },
+      });
       carts += 1;
 
       for (const variant of pickMany(variants, randomInt(1, 3))) {

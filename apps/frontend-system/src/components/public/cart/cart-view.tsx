@@ -132,11 +132,7 @@ export default function CartView({ serverCart, isLoggedIn }: CartViewProps) {
                   <button
                     type="button"
                     onClick={() => void setQuantity(item.id, item.quantity + 1)}
-                    disabled={
-                      isBusy ||
-                      (item.productType === "RESTOCK" &&
-                        item.quantity >= item.stock)
-                    }
+                    disabled={isBusy}
                     className="p-2 text-foreground/70 hover:text-foreground disabled:opacity-40"
                   >
                     <Plus size={14} />
@@ -148,11 +144,6 @@ export default function CartView({ serverCart, isLoggedIn }: CartViewProps) {
                 </p>
               </div>
 
-              {item.quantity >= item.stock && (
-                <p className="text-[11px] text-muted-foreground mt-2">
-                  Jumlah maksimal sesuai stok tersisa ({item.stock})
-                </p>
-              )}
             </div>
           </div>
         ))}
@@ -190,9 +181,12 @@ export default function CartView({ serverCart, isLoggedIn }: CartViewProps) {
           </div>
 
           <div className="mt-6 flex flex-col gap-3">
-            <Link href={isLoggedIn ? "/checkout" : "/login"} className="w-full">
+            {/* Tamu tidak lagi dibelokkan ke login: pemesanan dilanjutkan di
+                WhatsApp, jadi memaksa daftar dulu cuma menghadang orang di
+                titik dia belum tahu harga akhirnya. */}
+            <Link href="/checkout" className="w-full">
               <Button size={"lg"} type="button" className="w-full">
-                {isLoggedIn ? "Lanjut ke Pembayaran" : "Login untuk Checkout"}
+                Lanjut Pesan
               </Button>
             </Link>
             <Link href={"/products"}>

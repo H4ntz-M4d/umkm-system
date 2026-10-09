@@ -9,6 +9,15 @@ export type AdminUser = {
   /// toko — merekalah yang memilih toko sendiri saat memakai POS.
   storeId?: string | null;
   storeName?: string | null;
+  /**
+   * Apakah akun ini orang pusat — dihitung server, bukan ditebak layar.
+   *
+   * Dipakai menyembunyikan tombol tambah/ubah/hapus data master pada orang
+   * cabang. Penjagaan sebenarnya tetap di server (`CentralStoreGuard`);
+   * yang di sini hanya supaya tidak ada tombol yang menjanjikan sesuatu lalu
+   * berakhir dengan pesan ditolak.
+   */
+  isCentralStore?: boolean;
 };
 
 type AuthState = {

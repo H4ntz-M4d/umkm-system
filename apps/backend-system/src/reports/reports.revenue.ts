@@ -13,19 +13,26 @@ import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
  * mudah menyimpang antar laporan dan penyimpangan itu tidak terlihat — angkanya
  * tetap tampil wajar, hanya salah. Dua aturan yang dijaga:
  *
- * 1. **Pesanan online: `PAID`, `SHIPPED`, dan `COMPLETED`.** Pesanan lunas
- *    berpindah status saat diproses gudang, jadi memfilter `PAID` saja
- *    menghilangkan sebagian besar pemasukan — pada data sekarang sekitar 56%.
- * 2. **Ongkir tidak dihitung.** `Order.totalAmount` sudah mengandung ongkir
- *    (`customer-order.service.ts`), jadi nilai online diambil dari
- *    `SUM(order_item.subtotal)`. Saat ini ongkir masih nol sehingga kedua cara
- *    menghasilkan angka sama, tapi memakai subtotal membuat laporan tetap benar
- *    begitu ongkir mulai dikenakan, tanpa perlu menyentuh kode ini.
+ 1. **Pesanan online dihitung dari KAS pesanan, bukan dari statusnya.**
+ *    Pemasukan online = seluruh kas bersumber `ORDER` yang masuk, dikurangi
+ *    yang keluar, pada rentang tanggal yang diminta.
  *
- * Perbedaan dengan dashboard disengaja: `dashboard.service.ts` memakai
- * `status != 'CANCELLED'` dan `totalAmount`, sehingga ikut menghitung pesanan
- * yang belum dibayar. Dashboard tidak diubah, jadi angka laporan memang lebih
- * kecil — halaman laporan yang menjelaskan definisinya sendiri.
+ *    Sebelumnya laporan menjumlahkan `order_item.subtotal` untuk pesanan
+ *    berstatus `PAID`/`SHIPPED`/`COMPLETED`. Sejak pesanan dinego lewat
+ *    WhatsApp, cara itu salah di dua sisi sekaligus: **DP yang sudah diterima
+ *    tidak terhitung** selama pesanannya belum lunas, dan **pembatalan atau
+ *    refund tidak pernah mengurangi** omzet walaupun uangnya sudah keluar.
+ *    Kas mencatat keduanya apa adanya, jadi dipakai langsung.
+ *
+ *    Ikutan penting: uang dihitung pada bulan uangnya MASUK, bukan bulan
+ *    pesanannya dibuat. Untuk pesanan yang DP-nya bulan lalu dan lunasnya
+ *    bulan ini, itu justru yang benar.
+ *
+ * 2. **Ongkir tidak lagi jadi soal di sisi uang**, karena yang dijumlahkan
+ *    adalah kas. Untuk laporan yang memang per produk (produk terlaris), yang
+ *    dipakai tetap `order_item.subtotal` dengan status
+ *    `PAID`/`SHIPPED`/`COMPLETED` — di situ pertanyaannya "barang apa yang
+ *    laku", bukan "uangnya berapa".
  */
 
 const DATE_KEY_LENGTH = 10;
@@ -115,7 +122,18 @@ const paidPosStatuses = Prisma.join(
 );
 
 export const paidPosCondition = Prisma.sql`p.status::text IN (${paidPosStatuses})`;
+/// Dipakai laporan yang menghitung BARANG (produk terlaris), bukan uang.
 export const paidOrderCondition = Prisma.sql`o.status::text IN (${paidOrderStatuses})`;
+
+/// Kas pesanan online: masuk dikurangi keluar. Refund dan pembatalan yang
+/// mengembalikan uang otomatis ikut mengurangi karena tercatat sebagai OUT.
+export const ORDER_CASH_AMOUNT = Prisma.sql`SUM(CASE WHEN c.type = 'IN' THEN c.amount ELSE -c.amount END)`;
+
+export function cashStoreFilter(storeId?: string): Prisma.Sql {
+  return storeId
+    ? Prisma.sql`AND c."storeId" = ${BigInt(storeId)}`
+    : Prisma.empty;
+}
 
 /// Semua nilai uang dikembalikan sebagai string (`::text` di SQL) supaya tidak
 /// pernah melewati float sebelum sampai ke frontend.
@@ -134,14 +152,32 @@ export function posRevenue(window: DateWindow, storeId?: string) {
   `);
 }
 
+/**
+ * Pemasukan pesanan custom.
+ *
+ * Dihitung dari kas bersumber BESPOKE, dengan alasan yang sama seperti
+ * pesanan online: yang dijumlahkan adalah uang yang benar-benar masuk, pada
+ * bulan uangnya masuk. Sebelum sumber ini ada, uang pesanan custom menyamar
+ * sebagai mutasi produksi dan tidak pernah terhitung sebagai omzet sama
+ * sekali.
+ */
+export function bespokeRevenue(window: DateWindow, storeId?: string) {
+  return sumOf(Prisma.sql`
+    SELECT COALESCE(${ORDER_CASH_AMOUNT}, 0)::text AS total
+    FROM cash_transaction c
+    WHERE c.source = 'BESPOKE'
+      AND c."createdAt" BETWEEN ${window.start} AND ${window.end}
+      ${cashStoreFilter(storeId)}
+  `);
+}
+
 export function onlineRevenue(window: DateWindow, storeId?: string) {
   return sumOf(Prisma.sql`
-    SELECT COALESCE(SUM(oi.subtotal), 0)::text AS total
-    FROM order_item oi
-    JOIN "order" o ON oi."orderId" = o.id
-    WHERE ${paidOrderCondition}
-      AND o."createdAt" BETWEEN ${window.start} AND ${window.end}
-      ${orderStoreFilter(storeId)}
+    SELECT COALESCE(${ORDER_CASH_AMOUNT}, 0)::text AS total
+    FROM cash_transaction c
+    WHERE c.source = 'ORDER'
+      AND c."createdAt" BETWEEN ${window.start} AND ${window.end}
+      ${cashStoreFilter(storeId)}
   `);
 }
 

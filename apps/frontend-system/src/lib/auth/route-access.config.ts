@@ -33,9 +33,18 @@ const ROUTE_ACCESS: Record<string, readonly ManagementRole[]> = {
   "/management/categories": ["OWNER", "ADMIN", "GUDANG"],
   "/management/products": ["OWNER", "ADMIN", "GUDANG"],
   "/management/production": ["OWNER", "ADMIN", "GUDANG"],
+  /// Pesanan custom menyangkut harga yang disepakati dengan pembeli dan
+  /// pencatatan kas, jadi bukan pekerjaan gudang.
+  "/management/bespoke": ["OWNER", "ADMIN"],
+  /// Blog tampil atas nama toko di halaman publik, jadi penerbitannya
+  /// dipegang Owner dan Admin saja.
+  "/management/blog": ["OWNER", "ADMIN"],
   "/management/inventory-ledger": ["OWNER", "ADMIN", "GUDANG"],
   "/management/low-stock": ["OWNER", "ADMIN", "GUDANG"],
   "/management/stock-transfer": ["OWNER", "ADMIN", "GUDANG"],
+  /// Menyetel stok bisa menutupi barang yang hilang, jadi kewenangannya
+  /// dipegang Owner dan Admin — bukan Kasir maupun Gudang.
+  "/management/stock-adjustment": ["OWNER", "ADMIN"],
 
   // Owner & Admin
   "/management/expense": ["OWNER", "ADMIN"],

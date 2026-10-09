@@ -40,7 +40,7 @@ export default function CardSummary({
   dataSummary: SummaryDataResponse;
 }) {
   const data = getDataCard(dataSummary);
-  
+
   return (
     <>
       {data.map((item, index) => (
@@ -50,9 +50,7 @@ export default function CardSummary({
               <p className="text-xs font-medium">{item.title.toUpperCase()}</p>
               {item.icon}
             </div>
-            <h2 className="font-extralight text-3xl">
-              {item.value}
-            </h2>
+            <h2 className="font-extralight text-3xl">{item.value}</h2>
             <p className="text-black/50 dark:text-white font-stretch-condensed">
               {item.description}
             </p>

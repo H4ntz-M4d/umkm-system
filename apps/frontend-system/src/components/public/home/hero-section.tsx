@@ -4,17 +4,19 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import heroImage from "@/assets/hero-knitting.jpg";
+import Image from "next/image";
 
 export default function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       {/* Background image with overlay */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src={heroImage.src}
           alt="Handmade knitting artisan workspace"
           className="w-full h-full object-cover"
           loading="eager"
+          fill
         />
         <div className="absolute inset-0 bg-linear-to-r from-background/95 via-background/70 to-background/30" />
       </div>

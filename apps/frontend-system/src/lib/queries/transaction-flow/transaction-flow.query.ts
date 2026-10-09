@@ -14,8 +14,15 @@ export interface TransactionFlowFilter {
   store?: string;
 }
 export const fetchTransactionFlow = async (filters: TransactionFlowFilter) => {
+  // Indeks halaman diubah jadi `skip` di sini, sama seperti fetchProducts dan
+  // fetchOrders — backend menerima `skip`/`limit` lewat Pagination.
+  const { page, ...rest } = filters;
+  const limit = rest.limit ?? 10;
+
   const filter = Object.fromEntries(
-    Object.entries(filters).filter(([_, v]) => v !== undefined && v !== ""),
+    Object.entries({ ...rest, limit, skip: (page ?? 0) * limit })
+      .filter(([, v]) => v !== undefined && v !== "")
+      .map(([k, v]) => [k, String(v)]),
   );
 
   const cleanFilters = new URLSearchParams(filter).toString();

@@ -116,11 +116,11 @@ export class InventoryLedgerService {
    *
    * Tiga hal yang menentukan bentuk query ini:
    *
-   * 1. **Dasar hitungnya `stock`, bukan `stock - reserved_stock`.** `stock` di
-   *    basis kode ini sudah bersih karena penjualan POS dan checkout online
-   *    langsung men-decrement-nya. `reserved_stock` ikut di-increment pada
-   *    operasi yang sama tapi tidak pernah dikembalikan, jadi mengurangkannya
-   *    berarti menghitung penjualan dua kali. Lihat catatan di `LowStockData`.
+   * 1. **Dasar hitungnya `stock`, bukan `stock - reserved_stock`.** `stock`
+   *    adalah stok bebas: penjualan kasir mengurangi langsung, dan stok yang
+   *    dikunci untuk pesanan online sudah dipindah keluar dari `stock` ke
+   *    `reserved_stock`. Mengurangkannya lagi berarti menghitung stok terkunci
+   *    dua kali. Lihat catatan di `LowStockData`.
    * 2. **Produk nonaktif dan draft dikecualikan.** Peringatan stok untuk barang
    *    yang sudah tidak dijual hanya jadi kebisingan yang menutupi yang penting.
    * 3. **Penyaringan dan paginasi sama-sama di SQL**, bukan di memori, supaya

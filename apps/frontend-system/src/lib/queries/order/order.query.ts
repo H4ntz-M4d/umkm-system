@@ -1,8 +1,11 @@
 import { apiFetcher } from "@/lib/api/api.fetcher";
 import managementApi from "@/lib/api/api.management";
 import {
+  OrderCancelResponse,
   OrderResponse,
+  UpdateOrderNegotiationResponse,
   UpdateShipmentResponse,
+  type UpdateOrderNegotiationInput,
   type UpdateShipmentInput,
 } from "@repo/schemas";
 
@@ -36,11 +39,14 @@ export const fetchOrders = async (
   );
 };
 
-export const cancelOrder = async (orderId: string[]) => {
-  return await managementApi
-    .patch("v1/orders/cancelled", { json: orderId })
-    .json();
-};
+/// Lewat apiFetcher supaya penolakan dari backend (mis. "Pembatalan massal
+/// hanya untuk pesanan berstatus Mengajukan...") sampai utuh ke admin, bukan
+/// galat HTTP generik.
+export const cancelOrder = async (orderId: string[]) =>
+  apiFetcher(
+    managementApi.patch("v1/orders/cancelled", { json: orderId }),
+    OrderCancelResponse,
+  );
 
 /**
  * Pengiriman ditangani manual; status & nomor resi diperbarui admin sendiri.
@@ -56,5 +62,23 @@ export const updateShipment = async (
   return await apiFetcher(
     managementApi.patch(`v1/orders/${orderId}/shipment`, { json: data }),
     UpdateShipmentResponse,
+  );
+};
+
+/**
+ * Mencatat hasil negosiasi WhatsApp: total yang disepakati, DP yang sudah
+ * masuk, dan pergeseran statusnya.
+ *
+ * Dibungkus apiFetcher supaya penolakan dari backend ("Nominal DP tidak boleh
+ * melebihi total kesepakatan", "Pesanan ini diambil di tempat…") sampai utuh
+ * ke admin, bukan jadi galat generik.
+ */
+export const updateOrderNegotiation = async (
+  orderId: string,
+  data: UpdateOrderNegotiationInput,
+) => {
+  return await apiFetcher(
+    managementApi.patch(`v1/orders/${orderId}/negotiation`, { json: data }),
+    UpdateOrderNegotiationResponse,
   );
 };

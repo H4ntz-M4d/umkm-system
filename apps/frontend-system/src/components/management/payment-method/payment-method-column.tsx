@@ -3,13 +3,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { PaymentChannelEnum, PaymentResponseData, z } from "@repo/schemas";
 import { Button } from "@/components/ui/button";
+import { PAYMENT_CHANNEL_LABEL } from "@/lib/payment/channel-label";
 
 type PaymentChannel = z.infer<typeof PaymentChannelEnum>;
-const channelMap: Record<PaymentChannel, string> = {
-  CASH: "Tunai",
-  BANK_TRANSFER: "Transfer Bank",
-  MIDTRANS: "MIdtrans Payment Gateway",
-};
+/// Label dipakai bersama layar kasir — lihat `lib/payment/channel-label`.
+const channelMap = PAYMENT_CHANNEL_LABEL;
 
 export const columnsPaymentMethod = (
   deleteById: (id: string) => void,
@@ -33,6 +31,13 @@ export const columnsPaymentMethod = (
 
       return <span>{channel}</span>;
     },
+  },
+  {
+    accessorKey: "storeName",
+    header: "Berlaku di",
+    /// Metode tanpa toko berlaku di mana saja — ditulis apa adanya supaya
+    /// tidak terbaca sebagai data yang belum diisi.
+    cell: ({ row }) => row.original.storeName ?? "Semua toko",
   },
   {
     accessorKey: "isActive",

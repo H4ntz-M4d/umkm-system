@@ -54,6 +54,7 @@ export function useCart({ serverCart, isLoggedIn }: UseCartOptions) {
   const addGuestItem = useGuestCart((state) => state.addItem);
   const updateGuestQuantity = useGuestCart((state) => state.updateQuantity);
   const removeGuestItem = useGuestCart((state) => state.removeItem);
+  const clearGuestCart = useGuestCart((state) => state.clear);
 
   // Isi localStorage belum ada saat render server, jadi tunggu mount dulu
   // supaya markup client dan server tidak berbeda.
@@ -134,6 +135,23 @@ export function useCart({ serverCart, isLoggedIn }: UseCartOptions) {
     [isLoggedIn, removeGuestItem, run],
   );
 
+  /**
+   * Mengosongkan keranjang di sisi client saja.
+   *
+   * Dipakai setelah pengajuan pesanan tersimpan. Untuk customer yang login,
+   * server sudah mengosongkan keranjangnya sendiri di dalam transaksi yang
+   * sama — di sini cukup menyegarkan halaman SSR-nya. Untuk tamu, localStorage
+   * memang satu-satunya tempat keranjang itu ada.
+   */
+  const clearLocal = useCallback(() => {
+    if (!isLoggedIn) {
+      clearGuestCart();
+      return;
+    }
+
+    startTransition(() => router.refresh());
+  }, [isLoggedIn, clearGuestCart, router]);
+
   return {
     items,
     totalItems,
@@ -141,6 +159,7 @@ export function useCart({ serverCart, isLoggedIn }: UseCartOptions) {
     add,
     setQuantity,
     remove,
+    clearLocal,
     isBusy: isPending || isMutating,
     hydrated: isLoggedIn || hydrated,
   };

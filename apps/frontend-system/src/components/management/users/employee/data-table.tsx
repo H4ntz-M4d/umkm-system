@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   ColumnDef,
@@ -6,8 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
   PaginationState,
-  OnChangeFn
-} from "@tanstack/react-table"
+  OnChangeFn,
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -16,24 +16,32 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { DataTablePagination } from "@/components/ui/pagination"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+} from "@/components/ui/table";
+import { DataTablePagination } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  pageCount: number
-  pagination: PaginationState
-  onPaginationChange: OnChangeFn<PaginationState>
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  pageCount: number;
+  pagination: PaginationState;
+  onPaginationChange: OnChangeFn<PaginationState>;
 }
 
 export function DataTableEmployee<TData, TValue>({
   columns,
   data,
-  pageCount, pagination, onPaginationChange
+  pageCount,
+  pagination,
+  onPaginationChange,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -45,8 +53,7 @@ export function DataTableEmployee<TData, TValue>({
     state: {
       pagination,
     },
-
-  })
+  });
 
   return (
     <div>
@@ -57,15 +64,18 @@ export function DataTableEmployee<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-white text-center">
+                    <TableHead
+                      key={header.id}
+                      className="text-white text-center"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -73,20 +83,27 @@ export function DataTableEmployee<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow className="bg-primary-foreground"
+                <TableRow
+                  className="bg-primary-foreground"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="text-center">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -105,11 +122,13 @@ export function DataTableEmployee<TData, TValue>({
             <Select
               value={`${table.getState().pagination.pageSize}`}
               onValueChange={(value) => {
-                table.setPageSize(Number(value))
+                table.setPageSize(Number(value));
               }}
             >
               <SelectTrigger className="h-8 w-17.5">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 25, 30, 40, 50].map((pageSize) => (
@@ -151,5 +170,5 @@ export function DataTableEmployee<TData, TValue>({
         </div>
       </div>
     </div>
-  )
+  );
 }

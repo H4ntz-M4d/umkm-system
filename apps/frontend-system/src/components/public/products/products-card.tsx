@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { PublicProductCardDataType } from "@repo/schemas";
 import { toIDR } from "../../../../utils/format-money";
-import { isOutOfStock, productTypeBadge } from "./product-display";
+import { isPreOrderSoldOut, productTypeBadge } from "./product-display";
 import WishlistButton from "../wishlist/wishlist-button";
 
 interface ProductCardProps {
@@ -22,48 +22,36 @@ const ProductCard = ({
   isLoggedIn = false,
 }: ProductCardProps) => {
   const badge = productTypeBadge(product.type);
-  const outOfStock = isOutOfStock(product.type, product.totalStock);
+  const outOfStock = isPreOrderSoldOut(product);
   const priceLabel =
     product.priceMin === product.priceMax
       ? toIDR(product.priceMin)
       : `${toIDR(product.priceMin)} - ${toIDR(product.priceMax)}`;
 
   const renderStockBadge = () => {
-    // 1. Tipe READY_STOCK (Mengandalkan Stok Fisik)
-    if (product.type === "READY_STOCK") {
-      if (product.totalStock <= 0) {
+    // 1. Tipe PRE_ORDER (Menampilkan Kuota Maksimal)
+    if (product.type === "PRE_ORDER") {
+      const maxQuota = product.productPreOrderDetail?.maxQuota ?? 0;
+
+      // Kuota habis ditandai tegas — sebelumnya memakai badge biru netral yang
+      // sama seperti kuota masih tersedia, jadi "Sisa: 0 Pcs" gampang terlewat.
+      if (maxQuota <= 0) {
         return (
           <span className="absolute top-3 right-3 px-2.5 py-1 bg-foreground/80 text-background text-[10px] font-bold uppercase tracking-wider rounded-md">
-            Stok Habis
+            Kuota Habis
           </span>
         );
       }
-
-      if (product.totalStock <= 5) {
-        return (
-          <span className="absolute top-3 right-3 px-2.5 py-1 bg-amber-500/90 text-white text-[10px] font-bold rounded-md">
-            Sisa {product.totalStock}
-          </span>
-        );
-      }
-
-      return null; // Tidak tampilkan badge jika stok masih aman (> 5)
-    }
-
-    // 2. Tipe PRE_ORDER (Menampilkan Kuota Maksimal)
-    if (product.type === "PRE_ORDER") {
-      const maxQuota =
-        product.productPreOrderDetail?.maxQuota;
 
       return (
         <span className="absolute top-3 right-3 px-2.5 py-1 bg-blue-600/90 text-white text-[10px] font-bold rounded-md">
-          PO (Sisa: {maxQuota ?? 0} Pcs)
+          PO (Sisa: {maxQuota} Pcs)
         </span>
       );
     }
 
-    // 3. Tipe MADE_TO_ORDER (Selalu Tersedia)
-    if (product.type === "MADE_TO_ORDER") {
+    // 2. Tipe REGULAR (selalu bisa dipesan — dikerjakan setelah dipesan)
+    if (product.type === "REGULAR") {
       return (
         <span className="absolute top-3 right-3 px-2.5 py-1 bg-emerald-600/90 text-white text-[10px] font-bold rounded-md">
           Tersedia

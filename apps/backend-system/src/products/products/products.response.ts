@@ -11,6 +11,11 @@ function sumStock(stocks: { stock: number }[] | undefined): number {
   return (stocks ?? []).reduce((total, row) => total + row.stock, 0);
 }
 
+/// Sama seperti `sumStock`, untuk stok yang dikunci pesanan online.
+function sumReserved(stocks: { reserved_stock: number }[]): number {
+  return stocks.reduce((total, row) => total + row.reserved_stock, 0);
+}
+
 /**
  * Fragmen select untuk meratakan gambar grup menjadi satu field `image` pada
  * variant. Dipakai di semua query baca supaya sisi pembaca tidak perlu menyusuri
@@ -57,8 +62,8 @@ type ProductTableEntity = Prisma.ProductMasterGetPayload<{
         imageGroup: typeof variantImageGroupSelect;
         productVariantStocks: {
           select: {
-            id: true;
             stock: true;
+            reserved_stock: true;
           };
         };
       };
@@ -88,6 +93,7 @@ export function toAllProductsResponse(entity: ProductTableEntity) {
       /// secara keseluruhan, bukan satu cabang. Rincian per toko menyusul
       /// bersama pemilih toko di halaman manajemen.
       productVariantStocks: sumStock(variant.productVariantStocks),
+      reservedStock: sumReserved(variant.productVariantStocks),
     })),
   };
 }
@@ -264,10 +270,15 @@ type ProductVariantListEntity = Prisma.ProductMasterGetPayload<{
   select: {
     id: true;
     name: true;
+    status: true;
     variants: {
       select: {
         id: true;
         sku: true;
+        isActive: true;
+        options: {
+          select: { variantValue: { select: { value: true } } };
+        };
       };
     };
   };
@@ -277,9 +288,16 @@ export function toProductVariantListResponse(entity: ProductVariantListEntity) {
   return {
     id: entity.id,
     name: entity.name,
+    status: entity.status,
     variants: entity.variants.map((variant) => ({
       id: variant.id,
       sku: variant.sku,
+      isActive: variant.isActive,
+      /// Gabungan nilai opsi ("Merah - M"), pola yang sama dengan daftar
+      /// item pesanan. Kosong untuk produk tanpa varian.
+      optionLabel: variant.options
+        .map((option) => option.variantValue.value)
+        .join(' - '),
     })),
   };
 }

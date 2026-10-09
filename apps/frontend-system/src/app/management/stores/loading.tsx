@@ -16,7 +16,10 @@ export default function Loading() {
       <div className="border rounded-lg overflow-hidden">
         <div className="h-12 bg-muted border-b" /> {/* Table Header */}
         {Array.from({ length: 5 }).map((_, index) => (
-          <div className="h-16 border-b flex items-center px-4 space-x-4" key={index}>
+          <div
+            className="h-16 border-b flex items-center px-4 space-x-4"
+            key={index}
+          >
             <Skeleton className="h-4 bg-muted w-12" />
             <Skeleton className="h-4 bg-muted w-full" />
             <Skeleton className="h-4 bg-muted w-20" />

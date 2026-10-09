@@ -13,105 +13,108 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { sendWorkbook } from 'common/helpers/excel';
-import { ProductionService } from 'production/production/production.service';
-import { Pagination } from 'common/paginate/pagination';
-import {
-  CreateProductionBeSpokeDto,
-  UpdateProductionDto,
-} from 'production/dto/production.dto';
-import { ProductionStatus, ProductionType, UserRole } from '@repo/db';
+import { UserRole } from '@repo/db';
+import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
+import { Roles } from 'common/decorator/roles.decorator';
 import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
 import { RolesGuard } from 'common/guards/guard.roles';
-import { Roles } from 'common/decorator/roles.decorator';
+import { sendWorkbook } from 'common/helpers/excel';
+import {
+  CloseProductionDto,
+  CreateProductionDto,
+  ProductionQueryDto,
+  RecordDeliveryDto,
+} from 'production/dto/production.dto';
+import { ProductionService } from './production.service';
+import { CentralStoreOnly } from 'common/decorator/central-store.decorator';
+import { CentralStoreGuard } from 'common/guards/guard.central-store';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
 @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
 @Controller('api/v1/production')
 export class ProductionController {
-  constructor(private productionService: ProductionService) {}
+  constructor(private readonly productionService: ProductionService) {}
 
-  @Get()
-  findAll(
-    @Query() pagination: Pagination,
-    @Query('search') search?: string,
-    @Query('type') type?: ProductionType,
-    @Query('status') status?: ProductionStatus,
-    @Query('dateFrom') dateFrom?: string,
-    @Query('dateTo') dateTo?: string,
-  ) {
-    return this.productionService.findAll(
-      pagination,
-      search,
-      type,
-      status,
-      dateFrom,
-      dateTo,
-    );
-  }
-
-  @Get('/summary')
-  productionSummary() {
-    return this.productionService.productionSummary();
-  }
-
-  /// Didaftarkan sebelum `@Get(':id')` agar "/export" tidak tertangkap sebagai id.
+  /// Didaftarkan sebelum rute berparameter agar "/export" dan "/summary"
+  /// tidak tertangkap sebagai sebuah id.
   @Get('/export')
-  async exportExcel(
-    @Res() res: Response,
-    @Query('search') search?: string,
-    @Query('type') type?: ProductionType,
-    @Query('status') status?: ProductionStatus,
-    @Query('dateFrom') dateFrom?: string,
-    @Query('dateTo') dateTo?: string,
-  ) {
-    const { buffer, filename } = await this.productionService.exportWorkbook(
-      search,
-      type,
-      status,
-      dateFrom,
-      dateTo,
-    );
+  async exportExcel(@Res() res: Response, @Query() query: ProductionQueryDto) {
+    const { buffer, filename } =
+      await this.productionService.exportWorkbook(query);
 
     sendWorkbook(res, buffer, filename);
   }
 
-  @Get(':id')
-  findById(@Param('id', ParseIntPipe) id: bigint) {
-    return this.productionService.findById(id);
+  @Get('/summary')
+  summary() {
+    return this.productionService.summary();
   }
 
+  @Get()
+  findAll(@Query() query: ProductionQueryDto) {
+    return this.productionService.findAll(query);
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: bigint) {
+    return this.productionService.findOne(BigInt(id));
+  }
+
+  @CentralStoreOnly()
   @Post()
-  create(@Body() data: CreateProductionBeSpokeDto) {
+  create(@Body() data: CreateProductionDto) {
     return this.productionService.create(data);
   }
 
-  @Put(':id/edit')
-  updateProduction(
+  @CentralStoreOnly()
+  @Put(':id')
+  update(
     @Param('id', ParseIntPipe) id: bigint,
-    @Body() data: CreateProductionBeSpokeDto,
+    @Body() data: CreateProductionDto,
   ) {
-    return this.productionService.updateProduction(id, data);
+    return this.productionService.update(BigInt(id), data);
   }
 
-  @Patch(':id/status-update')
-  updateProductionStatus(
+  /**
+   * Mencatat hasil yang diantar toko produksi.
+   *
+   * Gudang ikut dibolehkan karena merekalah yang menerima barangnya di toko
+   * utama; pencatatnya diambil dari token, bukan dari body.
+   */
+  @CentralStoreOnly()
+  @Post(':id/deliveries')
+  recordDelivery(
     @Param('id', ParseIntPipe) id: bigint,
-    @Body() data: UpdateProductionDto,
+    @Body() data: RecordDeliveryDto,
+    @AuthUser() user: JwtPayload,
   ) {
-    return this.productionService.updateStatusNotCompleted(id, data);
+    return this.productionService.recordDelivery(BigInt(id), data, user);
   }
 
-  @Post(':id/status-completed')
-  updateProductionStatusCompleted(
+  @CentralStoreOnly()
+  @Delete(':id/deliveries/:deliveryId')
+  cancelDelivery(
     @Param('id', ParseIntPipe) id: bigint,
-    @Body() data: UpdateProductionDto,
+    @Param('deliveryId', ParseIntPipe) deliveryId: bigint,
   ) {
-    return this.productionService.updateStatusCompleted(id, data);
+    return this.productionService.cancelDelivery(
+      BigInt(id),
+      BigInt(deliveryId),
+    );
   }
 
+  @CentralStoreOnly()
+  @Patch(':id/close')
+  close(
+    @Param('id', ParseIntPipe) id: bigint,
+    @Body() data: CloseProductionDto,
+  ) {
+    return this.productionService.close(BigInt(id), data);
+  }
+
+  @CentralStoreOnly()
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: bigint) {
-    return this.productionService.remove(id);
+    return this.productionService.remove(BigInt(id));
   }
 }

@@ -5,12 +5,15 @@ import {
   BaggageClaim,
   BanknoteArrowDown,
   Boxes,
+  BookOpen,
+  ClipboardCheck,
   ChartLine,
   Grid2X2Plus,
   Handbag,
   Landmark,
   LayoutDashboard,
   PackageOpen,
+  Scissors,
   ScrollText,
   ShoppingBasketIcon,
   Store,
@@ -99,6 +102,11 @@ const data = {
       icon: PackageOpen,
     },
     {
+      title: "Pesanan Custom",
+      url: "/management/bespoke",
+      icon: Scissors,
+    },
+    {
       title: "Stok Rendah",
       url: "/management/low-stock",
       icon: TriangleAlert,
@@ -107,6 +115,11 @@ const data = {
       title: "Distribusi Stok",
       url: "/management/stock-transfer",
       icon: Truck,
+    },
+    {
+      title: "Penyesuaian Stok",
+      url: "/management/stock-adjustment",
+      icon: ClipboardCheck,
     },
   ],
   reportAndFinanceItems: [
@@ -134,6 +147,13 @@ const data = {
       title: "Laporan",
       url: "/management/reports",
       icon: ChartLine,
+    },
+  ],
+  publicContentItems: [
+    {
+      title: "Blog",
+      url: "/management/blog",
+      icon: BookOpen,
     },
   ],
 };
@@ -168,6 +188,10 @@ function filterByRole(items: NavItem[], role?: string): NavItem[] {
 
 export function AppSidebar({ user, role, ...props }: AppSidebarProps) {
   const pathname = usePathname();
+  /// Dihitung server dan dibawa profil; `undefined` (profil gagal dimuat)
+  /// diperlakukan sebagai bukan pusat, supaya menu tidak terbuka karena
+  /// kegagalan.
+  const isCentralStore = user?.isCentralStore === true;
 
   const menu = React.useMemo(
     () => ({
@@ -178,8 +202,18 @@ export function AppSidebar({ user, role, ...props }: AppSidebarProps) {
         role,
       ),
       reportAndFinance: filterByRole(data.reportAndFinanceItems, role),
+      /**
+       * Konten storefront (blog) hanya untuk pusat.
+       *
+       * Blog tampil atas nama Nurfa Craft secara keseluruhan, bukan milik satu
+       * cabang — dan servernya pun menolak cabang, jadi menunya tidak perlu
+       * ditawarkan hanya untuk berakhir dengan pesan ditolak.
+       */
+      publicContent: isCentralStore
+        ? filterByRole(data.publicContentItems, role)
+        : [],
     }),
-    [role],
+    [role, isCentralStore],
   );
 
   return (
@@ -217,6 +251,7 @@ export function AppSidebar({ user, role, ...props }: AppSidebarProps) {
           masterItems={menu.master}
           inventoryAndProductionItems={menu.inventoryAndProduction}
           reportAndFinanceItems={menu.reportAndFinance}
+          publicContentItems={menu.publicContent}
           pathname={pathname}
         />
       </SidebarContent>

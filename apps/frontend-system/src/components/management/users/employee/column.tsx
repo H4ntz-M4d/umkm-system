@@ -14,6 +14,8 @@ import { Badge } from "@/components/ui/badge";
 export const columnsEmployee = (
   deleteStaffData: (id: string) => void,
   router: AppRouterInstance,
+  /// Akun karyawan dibuat dan dicabut pusat, termasuk karyawan cabang.
+  canManage = true,
 ): ColumnDef<UserRow>[] => [
   {
     accessorKey: "id",
@@ -62,6 +64,10 @@ export const columnsEmployee = (
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
+      if (!canManage) {
+        return <span className="text-muted-foreground">—</span>;
+      }
+
       return (
         <div className="flex gap-2 justify-center">
           <Button

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Midtrans from 'midtrans-client';
 import * as crypto from 'crypto';
+import { QRIS_EXPIRY_MINUTES } from '@repo/schemas';
 
 @Injectable()
 export class MidtransService {
@@ -31,6 +32,12 @@ export class MidtransService {
       },
       qris: {
         acquirer: 'gopay',
+      },
+      /// Disamakan dengan hitungan mundur di layar kasir. Tanpa ini Midtrans
+      /// memakai masa berlaku bawaannya yang lebih lama dari tampilan layar.
+      custom_expiry: {
+        expiry_duration: QRIS_EXPIRY_MINUTES,
+        unit: 'minute',
       },
     });
 
@@ -155,6 +162,36 @@ export class MidtransService {
       if (String(httpStatus) === '404') return null;
 
       throw error;
+    }
+  }
+
+  /**
+   * Membatalkan transaksi yang masih menunggu pembayaran di Midtrans.
+   *
+   * Dipakai saat kasir meninggalkan QR (menutup dialog atau membuat QR baru).
+   * Tanpa ini, QR lama tetap bisa dibayar sampai masa berlakunya habis — dan
+   * kalau kasir sudah beralih ke tunai, pembayaran yang telat masuk membuat
+   * barang yang sama terbayar dua kali.
+   *
+   * Mengembalikan `false` (bukan melempar) kalau Midtrans menolak, misalnya
+   * karena transaksinya sudah settlement atau sudah kadaluarsa — dua-duanya
+   * kondisi wajar yang ditangani pemanggil, bukan kegagalan sistem.
+   */
+  async cancelTransaction(orderId: string): Promise<boolean> {
+    try {
+      const core = this.core as unknown as {
+        transaction: { cancel: (id: string) => Promise<any> };
+      };
+
+      await core.transaction.cancel(orderId);
+      return true;
+    } catch (error: any) {
+      this.logger.warn(
+        `Gagal membatalkan transaksi ${orderId} di Midtrans: ${
+          error?.ApiResponse?.status_message ?? error?.message ?? 'tidak diketahui'
+        }`,
+      );
+      return false;
     }
   }
   /* eslint-enable */

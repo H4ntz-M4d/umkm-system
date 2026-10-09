@@ -33,6 +33,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Controller,
+  FieldErrors,
   FieldValues,
   Path,
   SubmitHandler,
@@ -43,6 +44,7 @@ import {
 import { useStoreOperations } from "@/hooks/management/stores/use-store-operations";
 import { Spinner } from "@/components/ui/spinner";
 import { ArrowLeftIcon } from "lucide-react";
+import { toast } from "sonner";
 
 const role = [
   {
@@ -209,14 +211,40 @@ const FormEmployeeUI = <T extends FieldValues>({
 
   useEffect(() => {
     if (getUserDataById) {
-      form.reset(getUserDataById?.data as unknown as T);
+      const user = getUserDataById.data;
+      /**
+       * Nilai kosong dari API dirapikan dulu sebelum masuk ke form.
+       *
+       * API mengirim `null` untuk karyawan tanpa foto dan untuk Owner/Admin
+       * yang tidak terikat toko, sedangkan skema edit hanya menerima teks untuk
+       * `image` dan angka > 0 untuk `storeId` (`null` dikonversi jadi 0). Dulu
+       * data mentah langsung di-reset, sehingga SEMUA karyawan gagal validasi
+       * di field foto yang tidak menampilkan galat — tombol Simpan diam saja.
+       */
+      form.reset({
+        ...user,
+        image: user.image ?? "",
+        storeId: user.storeId ?? undefined,
+      } as unknown as T);
     } else {
       form.reset();
     }
   }, [getUserDataById, form]);
 
+  /**
+   * Dipanggil saat validasi gagal. Beberapa field ada di kolom kiri atau di luar
+   * layar, jadi galatnya bisa tidak terlihat dari posisi tombol Simpan — toast
+   * ini memastikan kegagalan validasi tidak pernah diam lagi.
+   */
+  const onInvalid = (errors: FieldErrors<T>) => {
+    const count = Object.keys(errors).length;
+    toast.error("Data belum bisa disimpan", {
+      description: `Ada ${count} isian yang perlu diperbaiki — lihat keterangan merah pada form.`,
+    });
+  };
+
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
       <div className="flex lg:flex-row flex-col gap-10">
         <div className="flex flex-col gap-8 lg:w-80 w-full items-center">
           <Card className="lg:w-80 w-full">
@@ -276,6 +304,11 @@ const FormEmployeeUI = <T extends FieldValues>({
                 Gambar profile opsional untuk di tambahkan. hanya menerima file
                 *.png, *.jpg dan *.jpeg
               </p>
+              {form.formState.errors.image && (
+                <FieldError
+                  errors={[form.formState.errors.image as { message?: string }]}
+                />
+              )}
             </CardContent>
           </Card>
           <Card className="lg:w-80 w-full">
@@ -299,6 +332,9 @@ const FormEmployeeUI = <T extends FieldValues>({
                           <SelectItem value="false">Non Aktif</SelectItem>
                         </SelectContent>
                       </Select>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
                     </Field>
                   )}
                 />
@@ -430,6 +466,9 @@ const FormEmployeeUI = <T extends FieldValues>({
                           </FieldLabel>
                         ))}
                       </RadioGroup>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
                     </Field>
                   )}
                 />
@@ -501,7 +540,12 @@ export default function FormEmployee({ id }: { id?: string }) {
   return (
     <>
       <div className={"flex gap-3 items-center py-4 px-8"}>
-        <Button type={"button"} variant={"ghost"} size={"lg"} onClick={() => router.back()}>
+        <Button
+          type={"button"}
+          variant={"ghost"}
+          size={"lg"}
+          onClick={() => router.back()}
+        >
           <ArrowLeftIcon size={30} />
         </Button>
         <div className={"flex flex-col gap-1"}>

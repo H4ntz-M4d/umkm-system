@@ -220,7 +220,7 @@ export type ProductVariantStockGroupByOutputType = {
   _max: ProductVariantStockMaxAggregateOutputType | null
 }
 
-export type GetProductVariantStockGroupByPayload<T extends ProductVariantStockGroupByArgs> = Prisma.PrismaPromise<
+type GetProductVariantStockGroupByPayload<T extends ProductVariantStockGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProductVariantStockGroupByOutputType, T['by']> &
       {
@@ -1362,11 +1362,6 @@ export type ProductVariantStockFindManyArgs<ExtArgs extends runtime.Types.Extens
    * Skip the first `n` ProductVariantStocks.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of ProductVariantStocks.
-   */
   distinct?: Prisma.ProductVariantStockScalarFieldEnum | Prisma.ProductVariantStockScalarFieldEnum[]
 }
 

@@ -106,7 +106,11 @@ export class AuthService {
 
     res.cookie('access_token_admin', token.accessToken, authCookieOptions());
 
-    res.cookie('refresh_token_admin', token.refreshToken, authCookieOptions(REFRESH_TOKEN_MAX_AGE));
+    res.cookie(
+      'refresh_token_admin',
+      token.refreshToken,
+      authCookieOptions(REFRESH_TOKEN_MAX_AGE),
+    );
 
     return {
       message: 'Login Success, selamat datang',
@@ -130,6 +134,7 @@ export class AuthService {
         store: {
           select: {
             name: true,
+            isProductionHouse: true,
           },
         },
       },
@@ -159,7 +164,11 @@ export class AuthService {
 
     res.cookie('access_token_admin', tokens.accessToken, authCookieOptions());
 
-    res.cookie('refresh_token_admin', tokens.refreshToken, authCookieOptions(REFRESH_TOKEN_RENEWAL_MAX_AGE));
+    res.cookie(
+      'refresh_token_admin',
+      tokens.refreshToken,
+      authCookieOptions(REFRESH_TOKEN_RENEWAL_MAX_AGE),
+    );
 
     return {
       message: 'Success',
@@ -256,7 +265,11 @@ export class AuthService {
 
     res.cookie('access_token_customer', token.accessToken, authCookieOptions());
 
-    res.cookie('refresh_token_customer', token.refreshToken, authCookieOptions());
+    res.cookie(
+      'refresh_token_customer',
+      token.refreshToken,
+      authCookieOptions(),
+    );
 
     return {
       message: 'Login Success, selamat datang',
@@ -286,9 +299,17 @@ export class AuthService {
       data: { refreshToken: hashedRefresh },
     });
 
-    res.cookie('access_token_customer', tokens.accessToken, authCookieOptions());
+    res.cookie(
+      'access_token_customer',
+      tokens.accessToken,
+      authCookieOptions(),
+    );
 
-    res.cookie('refresh_token_customer', tokens.refreshToken, authCookieOptions(REFRESH_TOKEN_RENEWAL_MAX_AGE));
+    res.cookie(
+      'refresh_token_customer',
+      tokens.refreshToken,
+      authCookieOptions(REFRESH_TOKEN_RENEWAL_MAX_AGE),
+    );
 
     return {
       message: 'Success',

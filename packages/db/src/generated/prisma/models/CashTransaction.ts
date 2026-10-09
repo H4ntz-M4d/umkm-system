@@ -225,7 +225,7 @@ export type CashTransactionGroupByOutputType = {
   _max: CashTransactionMaxAggregateOutputType | null
 }
 
-export type GetCashTransactionGroupByPayload<T extends CashTransactionGroupByArgs> = Prisma.PrismaPromise<
+type GetCashTransactionGroupByPayload<T extends CashTransactionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<CashTransactionGroupByOutputType, T['by']> &
       {
@@ -269,7 +269,6 @@ export type CashTransactionOrderByWithRelationInput = {
 
 export type CashTransactionWhereUniqueInput = Prisma.AtLeast<{
   id?: bigint | number
-  referenceId_source?: Prisma.CashTransactionReferenceIdSourceCompoundUniqueInput
   AND?: Prisma.CashTransactionWhereInput | Prisma.CashTransactionWhereInput[]
   OR?: Prisma.CashTransactionWhereInput[]
   NOT?: Prisma.CashTransactionWhereInput | Prisma.CashTransactionWhereInput[]
@@ -281,7 +280,7 @@ export type CashTransactionWhereUniqueInput = Prisma.AtLeast<{
   note?: Prisma.StringNullableFilter<"CashTransaction"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CashTransaction"> | Date | string
   store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
-}, "id" | "referenceId_source">
+}, "id">
 
 export type CashTransactionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -397,11 +396,6 @@ export type CashTransactionListRelationFilter = {
 
 export type CashTransactionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type CashTransactionReferenceIdSourceCompoundUniqueInput = {
-  referenceId: bigint | number
-  source: $Enums.CashSource
 }
 
 export type CashTransactionCountOrderByAggregateInput = {
@@ -1303,11 +1297,6 @@ export type CashTransactionFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` CashTransactions.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of CashTransactions.
-   */
   distinct?: Prisma.CashTransactionScalarFieldEnum | Prisma.CashTransactionScalarFieldEnum[]
 }
 

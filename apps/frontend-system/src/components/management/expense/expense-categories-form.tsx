@@ -79,10 +79,10 @@ export default function ExpenseCategoriesForm({
     },
     values: initialData,
   });
-  
+
   const { createExpenseCategoryData, updateExpenseCategoriesData } =
     useExpenseCategoriesOperation({});
-    
+
   const onSubmitData = (data: ExpenseCategorySchemaInput) => {
     // Dialog ditutup hanya saat berhasil — kalau ditutup lebih dulu, pesan
     // galat yang baru saja diperbaiki tampil ke layar yang sudah kosong, dan

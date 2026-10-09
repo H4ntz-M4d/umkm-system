@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { PosTransactionSchemaInput, ProductListData, z } from "@repo/schemas";
 import { AdminUser, useAuth } from "@/stores/useAuth";
 import { useActivePosStore } from "@/hooks/pos/use-active-store";
+import { usePosSkuLookup } from "@/hooks/pos/use-pos-sku-lookup";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
 import { CameraScannerDialog } from "@/components/pos/camera-dialog";
 import { toast } from "sonner";
@@ -219,14 +220,54 @@ export default function PosView() {
     }
   };
 
+  const lookupSku = usePosSkuLookup(activeStoreId);
+
+  /**
+   * Menjelaskan kenapa barcode tidak ada di daftar kasir.
+   *
+   * Daftar kasir hanya memuat produk aktif yang punya stok di toko ini dan lolos
+   * filter pencarian/kategori. Dulu semua kemungkinan itu dijawab satu pesan
+   * "Barcode tidak ditemukan" — padahal barcodenya benar dan yang habis
+   * stoknya. Server yang tahu jawaban sebenarnya.
+   */
+  const explainUnmatchedScan = async (codeSku: string) => {
+    const notify = (title: string, description: string) =>
+      toast.error(title, { position: "top-center", description });
+
+    try {
+      const result = await lookupSku(codeSku.trim());
+      const variant = result.data;
+
+      if (!variant) {
+        notify("Barcode tidak dikenal", codeSku);
+        return;
+      }
+
+      const name = variant.variantLabel
+        ? `${variant.productName} (${variant.variantLabel})`
+        : variant.productName;
+
+      if (!variant.isActive) {
+        notify("Produk tidak aktif", `${name} sedang dinonaktifkan`);
+      } else if (variant.stock <= 0) {
+        notify("Stok habis", `${name} habis di toko ini`);
+      } else {
+        // Stoknya ada, berarti yang menyembunyikannya filter layar kasir.
+        notify(
+          "Produk tersaring filter",
+          `${name} tidak tampil karena pencarian/kategori aktif — kosongkan filter lalu scan ulang`,
+        );
+      }
+    } catch {
+      notify("Barcode tidak ditemukan", codeSku);
+    }
+  };
+
   const handleBarcodeScan = (codeSku: string) => {
     const match = findVariantBySku(codeSku);
     if (!match) {
       beepError();
-      toast.error("Barcode tidak ditemukan", {
-        position: "top-center",
-        description: codeSku,
-      });
+      void explainUnmatchedScan(codeSku);
       return;
     }
     addToCart(match.product, match.productVariant);

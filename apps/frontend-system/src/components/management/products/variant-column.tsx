@@ -5,6 +5,12 @@ import NoImage from "@/assets/no-picture.jpg";
 import Image from "next/image";
 import { VariantData, z } from "@repo/schemas";
 import { toIDR } from "../../../../utils/format-money";
+import { PrintLabelDialog } from "./barcode-label/print-label-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type ProductVariant = z.infer<typeof VariantData>;
 
@@ -47,7 +53,9 @@ export const columnsVariantProducts = () // setIdData: (id: string) => void,
       return (
         <div className="flex flex-col gap-1 text-end">
           <p className="font-body font-bold">Harga</p>
-          <p className="font-body text-secondary">{toIDR(row.original.price)}</p>
+          <p className="font-body text-secondary">
+            {toIDR(row.original.price)}
+          </p>
         </div>
       );
     },
@@ -69,16 +77,45 @@ export const columnsVariantProducts = () // setIdData: (id: string) => void,
     header: () => null,
     cell: ({ row }) => {
       const stock = row.original.productVariantStocks;
+      const reserved = row.original.reservedStock ?? 0;
 
       return (
         <div className="flex flex-col gap-1 text-end">
           <p className="font-body font-bold">Stok Barang:</p>
           <p className="font-body text-secondary">
             {typeof stock === "number" ? stock : 0}
+            {/* Stok bebas turun saat pesanan online Lunas — tanpa keterangan
+                ini, barangnya tampak hilang padahal sedang menunggu diambil
+                atau dikirim. */}
+            {reserved > 0 && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="ml-1 cursor-help text-muted-foreground underline decoration-dotted">
+                    · {reserved} terkunci
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Dipesan online dan sudah Lunas, menunggu Selesai. Tidak bisa
+                  dijual di kasir.
+                </TooltipContent>
+              </Tooltip>
+            )}
           </p>
         </div>
       );
     },
+  },
+  {
+    id: "print-label",
+    header: () => null,
+    cell: ({ row }) => (
+      <div className="flex justify-end">
+        <PrintLabelDialog
+          variantId={String(row.original.id)}
+          sku={row.original.sku}
+        />
+      </div>
+    ),
   },
   // {
   //   id: "actions",

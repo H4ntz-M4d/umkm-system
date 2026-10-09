@@ -25,6 +25,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { validateImageFiles } from 'common/interceptors/upload-image.interceptors';
 import { AuthUser, type JwtPayload } from 'common/decorator/auth.decorator';
 import { resolveTransactionStore } from 'common/helpers/resolve-store';
+import { CentralStoreOnly } from 'common/decorator/central-store.decorator';
+import { CentralStoreGuard } from 'common/guards/guard.central-store';
 
 @Controller('api/v1/products')
 export class ProductsController {
@@ -74,15 +76,45 @@ export class ProductsController {
     );
   }
 
+  /// Toko diselesaikan sama seperti daftar produk kasir: Kasir dari akunnya,
+  /// Owner/Admin dari pilihannya — supaya stok yang dilaporkan adalah stok
+  /// toko yang sama dengan daftar yang sedang dilihat kasir.
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.KASIR)
+  @Get('/point-of-sales/by-sku')
+  async findPosVariantBySku(
+    @AuthUser() user: JwtPayload,
+    @Query('sku') sku: string,
+    @Query('storeId') storeId?: string,
+  ) {
+    if (!sku?.trim()) {
+      throw new BadRequestException('SKU wajib diisi');
+    }
+
+    const resolvedStoreId = await resolveTransactionStore(user, storeId);
+
+    return await this.productsService.findPosVariantBySku(resolvedStoreId, sku);
+  }
+
+  /// Role mengikuti halaman kelola produk, tempat tombol cetak label berada.
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
+  @Get('/variants/:variantId/label')
+  async getVariantLabel(@Param('variantId', ParseIntPipe) variantId: number) {
+    return await this.productsService.getVariantLabel(BigInt(variantId));
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @CentralStoreOnly()
   @Post()
   async create(@Body() data: CreateProductDto) {
     return await this.productsService.create(data);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
+  @UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @CentralStoreOnly()
   @Put(':id')
   async update(
     @Param('id', ParseIntPipe) id: bigint,
@@ -91,15 +123,17 @@ export class ProductsController {
     return await this.productsService.update(id, data);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
+  @UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @CentralStoreOnly()
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: bigint) {
     return await this.productsService.remove(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.GUDANG)
+  @UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @CentralStoreOnly()
   @Patch('/:id/upload')
   @UseInterceptors(FilesInterceptor('images', 10))
   async uploadImages(

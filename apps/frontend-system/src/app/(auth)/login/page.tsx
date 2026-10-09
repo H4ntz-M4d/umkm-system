@@ -17,7 +17,12 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { CustomerRegisterSchema, LoginSchema } from "@repo/schemas";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
@@ -48,7 +53,7 @@ export default function CustomerAuth() {
     defaultValues: {
       email: "",
       password: "",
-    }
+    },
   });
 
   const loginMutate = (data: FormDataLogin) => {
@@ -96,14 +101,17 @@ export default function CustomerAuth() {
         />
         <div className="absolute inset-0 bg-linear-to-b from-foreground/40 via-foreground/30 to-background" />
         <div className="relative flex flex-col items-center justify-center h-full text-center px-4">
-          <div className="flex items-center gap-2.5 mb-3 animate-fade-in">
-            <div className="w-11 h-11 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg">
-              <span className="text-primary-foreground font-display font-bold text-xl">
-                N
-              </span>
-            </div>
+          <div className="flex items-center gap-1 mb-3 animate-fade-in">
+            <Image
+              src="/logo-mark-light.png"
+              alt=""
+              width={40}
+              height={40}
+              priority
+              className="size-9 object-contain md:size-10"
+            />
             <span className="font-display text-2xl font-semibold text-primary-foreground drop-shadow-md">
-              NurfaCraft
+              Nurfa<span className="text-primary">Craft</span>
             </span>
           </div>
           <p

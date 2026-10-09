@@ -34,13 +34,16 @@ export default function Page() {
     <PrintTablePage
       title="Laporan Pengeluaran"
       subtitle={printSubtitle(dateFrom, dateTo)}
-      headers={["Tanggal", "Kategori", "Keterangan", "Jumlah"]}
-      numericFrom={3}
+      headers={["Tanggal", "Kategori", "Keterangan", "Diinput oleh", "Jumlah"]}
+      /// Digeser mengikuti kolom baru; kalau tertinggal, kolom "Diinput oleh"
+      /// ikut rata kanan seolah-olah angka.
+      numericFrom={4}
       isLoading={isLoading}
       rows={(data?.data ?? []).map((item) => [
         dayjs(item.date).locale("id").format("DD MMM YYYY"),
         item.categoryName ?? "-",
         item.description ?? "-",
+        item.createdByName ?? "-",
         toIDR(item.totalAmount),
       ])}
     />

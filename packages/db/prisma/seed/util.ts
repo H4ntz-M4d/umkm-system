@@ -93,7 +93,8 @@ export function formatTransactionId(prefix: string, date: Date): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   let suffix = "";
-  for (let i = 0; i < 4; i += 1) suffix += chars[randomInt(0, chars.length - 1)];
+  for (let i = 0; i < 4; i += 1)
+    suffix += chars[randomInt(0, chars.length - 1)];
 
   return `${prefix}-${stamp}-${suffix}`;
 }

@@ -14,7 +14,12 @@ import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model Production
+ * Batch produksi.
  * 
+ * Satu batch memuat banyak varian sekaligus dengan target masing-masing, dan
+ * hasilnya disetor BERTAHAP oleh toko produksi -- tidak pernah sekali jadi.
+ * Karena itu tidak ada "tipe produksi" (satu batch bisa mencampur tujuan) dan
+ * tidak ada "toko tujuan" (hasilnya selalu mendarat di rumah produksi).
  */
 export type ProductionModel = runtime.Types.Result.DefaultSelection<Prisma.$ProductionPayload>
 
@@ -28,51 +33,44 @@ export type AggregateProduction = {
 
 export type ProductionAvgAggregateOutputType = {
   id: number | null
-  storeId: number | null
-  producedVariantId: number | null
-  quantityProduced: number | null
+  parentProductionId: number | null
 }
 
 export type ProductionSumAggregateOutputType = {
   id: bigint | null
-  storeId: bigint | null
-  producedVariantId: bigint | null
-  quantityProduced: number | null
+  parentProductionId: bigint | null
 }
 
 export type ProductionMinAggregateOutputType = {
   id: bigint | null
-  storeId: bigint | null
-  producedVariantId: bigint | null
-  quantityProduced: number | null
-  type: $Enums.ProductionType | null
+  code: string | null
   status: $Enums.ProductionStatus | null
-  notes: string | null
   targetDate: Date | null
+  notes: string | null
+  parentProductionId: bigint | null
+  completedAt: Date | null
   createdAt: Date | null
 }
 
 export type ProductionMaxAggregateOutputType = {
   id: bigint | null
-  storeId: bigint | null
-  producedVariantId: bigint | null
-  quantityProduced: number | null
-  type: $Enums.ProductionType | null
+  code: string | null
   status: $Enums.ProductionStatus | null
-  notes: string | null
   targetDate: Date | null
+  notes: string | null
+  parentProductionId: bigint | null
+  completedAt: Date | null
   createdAt: Date | null
 }
 
 export type ProductionCountAggregateOutputType = {
   id: number
-  storeId: number
-  producedVariantId: number
-  quantityProduced: number
-  type: number
+  code: number
   status: number
-  notes: number
   targetDate: number
+  notes: number
+  parentProductionId: number
+  completedAt: number
   createdAt: number
   _all: number
 }
@@ -80,51 +78,44 @@ export type ProductionCountAggregateOutputType = {
 
 export type ProductionAvgAggregateInputType = {
   id?: true
-  storeId?: true
-  producedVariantId?: true
-  quantityProduced?: true
+  parentProductionId?: true
 }
 
 export type ProductionSumAggregateInputType = {
   id?: true
-  storeId?: true
-  producedVariantId?: true
-  quantityProduced?: true
+  parentProductionId?: true
 }
 
 export type ProductionMinAggregateInputType = {
   id?: true
-  storeId?: true
-  producedVariantId?: true
-  quantityProduced?: true
-  type?: true
+  code?: true
   status?: true
-  notes?: true
   targetDate?: true
+  notes?: true
+  parentProductionId?: true
+  completedAt?: true
   createdAt?: true
 }
 
 export type ProductionMaxAggregateInputType = {
   id?: true
-  storeId?: true
-  producedVariantId?: true
-  quantityProduced?: true
-  type?: true
+  code?: true
   status?: true
-  notes?: true
   targetDate?: true
+  notes?: true
+  parentProductionId?: true
+  completedAt?: true
   createdAt?: true
 }
 
 export type ProductionCountAggregateInputType = {
   id?: true
-  storeId?: true
-  producedVariantId?: true
-  quantityProduced?: true
-  type?: true
+  code?: true
   status?: true
-  notes?: true
   targetDate?: true
+  notes?: true
+  parentProductionId?: true
+  completedAt?: true
   createdAt?: true
   _all?: true
 }
@@ -217,13 +208,12 @@ export type ProductionGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type ProductionGroupByOutputType = {
   id: bigint
-  storeId: bigint
-  producedVariantId: bigint | null
-  quantityProduced: number
-  type: $Enums.ProductionType
+  code: string
   status: $Enums.ProductionStatus
-  notes: string | null
   targetDate: Date
+  notes: string | null
+  parentProductionId: bigint | null
+  completedAt: Date | null
   createdAt: Date
   _count: ProductionCountAggregateOutputType | null
   _avg: ProductionAvgAggregateOutputType | null
@@ -232,7 +222,7 @@ export type ProductionGroupByOutputType = {
   _max: ProductionMaxAggregateOutputType | null
 }
 
-export type GetProductionGroupByPayload<T extends ProductionGroupByArgs> = Prisma.PrismaPromise<
+type GetProductionGroupByPayload<T extends ProductionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProductionGroupByOutputType, T['by']> &
       {
@@ -252,64 +242,60 @@ export type ProductionWhereInput = {
   OR?: Prisma.ProductionWhereInput[]
   NOT?: Prisma.ProductionWhereInput | Prisma.ProductionWhereInput[]
   id?: Prisma.BigIntFilter<"Production"> | bigint | number
-  storeId?: Prisma.BigIntFilter<"Production"> | bigint | number
-  producedVariantId?: Prisma.BigIntNullableFilter<"Production"> | bigint | number | null
-  quantityProduced?: Prisma.IntFilter<"Production"> | number
-  type?: Prisma.EnumProductionTypeFilter<"Production"> | $Enums.ProductionType
+  code?: Prisma.StringFilter<"Production"> | string
   status?: Prisma.EnumProductionStatusFilter<"Production"> | $Enums.ProductionStatus
-  notes?: Prisma.StringNullableFilter<"Production"> | string | null
   targetDate?: Prisma.DateTimeFilter<"Production"> | Date | string
+  notes?: Prisma.StringNullableFilter<"Production"> | string | null
+  parentProductionId?: Prisma.BigIntNullableFilter<"Production"> | bigint | number | null
+  completedAt?: Prisma.DateTimeNullableFilter<"Production"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Production"> | Date | string
-  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
-  variant?: Prisma.XOR<Prisma.ProductVariantNullableScalarRelationFilter, Prisma.ProductVariantWhereInput> | null
-  beSpokeDetails?: Prisma.XOR<Prisma.BeSpokeDetailsNullableScalarRelationFilter, Prisma.BeSpokeDetailsWhereInput> | null
-  stockTransfer?: Prisma.XOR<Prisma.StockTransferNullableScalarRelationFilter, Prisma.StockTransferWhereInput> | null
+  parent?: Prisma.XOR<Prisma.ProductionNullableScalarRelationFilter, Prisma.ProductionWhereInput> | null
+  children?: Prisma.ProductionListRelationFilter
+  items?: Prisma.ProductionItemListRelationFilter
+  deliveries?: Prisma.ProductionDeliveryListRelationFilter
 }
 
 export type ProductionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
-  producedVariantId?: Prisma.SortOrderInput | Prisma.SortOrder
-  quantityProduced?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  notes?: Prisma.SortOrderInput | Prisma.SortOrder
   targetDate?: Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentProductionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  store?: Prisma.StoreOrderByWithRelationInput
-  variant?: Prisma.ProductVariantOrderByWithRelationInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsOrderByWithRelationInput
-  stockTransfer?: Prisma.StockTransferOrderByWithRelationInput
+  parent?: Prisma.ProductionOrderByWithRelationInput
+  children?: Prisma.ProductionOrderByRelationAggregateInput
+  items?: Prisma.ProductionItemOrderByRelationAggregateInput
+  deliveries?: Prisma.ProductionDeliveryOrderByRelationAggregateInput
 }
 
 export type ProductionWhereUniqueInput = Prisma.AtLeast<{
   id?: bigint | number
+  code?: string
   AND?: Prisma.ProductionWhereInput | Prisma.ProductionWhereInput[]
   OR?: Prisma.ProductionWhereInput[]
   NOT?: Prisma.ProductionWhereInput | Prisma.ProductionWhereInput[]
-  storeId?: Prisma.BigIntFilter<"Production"> | bigint | number
-  producedVariantId?: Prisma.BigIntNullableFilter<"Production"> | bigint | number | null
-  quantityProduced?: Prisma.IntFilter<"Production"> | number
-  type?: Prisma.EnumProductionTypeFilter<"Production"> | $Enums.ProductionType
   status?: Prisma.EnumProductionStatusFilter<"Production"> | $Enums.ProductionStatus
-  notes?: Prisma.StringNullableFilter<"Production"> | string | null
   targetDate?: Prisma.DateTimeFilter<"Production"> | Date | string
+  notes?: Prisma.StringNullableFilter<"Production"> | string | null
+  parentProductionId?: Prisma.BigIntNullableFilter<"Production"> | bigint | number | null
+  completedAt?: Prisma.DateTimeNullableFilter<"Production"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Production"> | Date | string
-  store?: Prisma.XOR<Prisma.StoreScalarRelationFilter, Prisma.StoreWhereInput>
-  variant?: Prisma.XOR<Prisma.ProductVariantNullableScalarRelationFilter, Prisma.ProductVariantWhereInput> | null
-  beSpokeDetails?: Prisma.XOR<Prisma.BeSpokeDetailsNullableScalarRelationFilter, Prisma.BeSpokeDetailsWhereInput> | null
-  stockTransfer?: Prisma.XOR<Prisma.StockTransferNullableScalarRelationFilter, Prisma.StockTransferWhereInput> | null
-}, "id">
+  parent?: Prisma.XOR<Prisma.ProductionNullableScalarRelationFilter, Prisma.ProductionWhereInput> | null
+  children?: Prisma.ProductionListRelationFilter
+  items?: Prisma.ProductionItemListRelationFilter
+  deliveries?: Prisma.ProductionDeliveryListRelationFilter
+}, "id" | "code">
 
 export type ProductionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
-  producedVariantId?: Prisma.SortOrderInput | Prisma.SortOrder
-  quantityProduced?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  notes?: Prisma.SortOrderInput | Prisma.SortOrder
   targetDate?: Prisma.SortOrder
+  notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  parentProductionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ProductionCountOrderByAggregateInput
   _avg?: Prisma.ProductionAvgOrderByAggregateInput
@@ -323,104 +309,106 @@ export type ProductionScalarWhereWithAggregatesInput = {
   OR?: Prisma.ProductionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProductionScalarWhereWithAggregatesInput | Prisma.ProductionScalarWhereWithAggregatesInput[]
   id?: Prisma.BigIntWithAggregatesFilter<"Production"> | bigint | number
-  storeId?: Prisma.BigIntWithAggregatesFilter<"Production"> | bigint | number
-  producedVariantId?: Prisma.BigIntNullableWithAggregatesFilter<"Production"> | bigint | number | null
-  quantityProduced?: Prisma.IntWithAggregatesFilter<"Production"> | number
-  type?: Prisma.EnumProductionTypeWithAggregatesFilter<"Production"> | $Enums.ProductionType
+  code?: Prisma.StringWithAggregatesFilter<"Production"> | string
   status?: Prisma.EnumProductionStatusWithAggregatesFilter<"Production"> | $Enums.ProductionStatus
-  notes?: Prisma.StringNullableWithAggregatesFilter<"Production"> | string | null
   targetDate?: Prisma.DateTimeWithAggregatesFilter<"Production"> | Date | string
+  notes?: Prisma.StringNullableWithAggregatesFilter<"Production"> | string | null
+  parentProductionId?: Prisma.BigIntNullableWithAggregatesFilter<"Production"> | bigint | number | null
+  completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Production"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Production"> | Date | string
 }
 
 export type ProductionCreateInput = {
   id?: bigint | number
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
-  store: Prisma.StoreCreateNestedOneWithoutProductionsInput
-  variant?: Prisma.ProductVariantCreateNestedOneWithoutProductionsInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsCreateNestedOneWithoutProductionInput
-  stockTransfer?: Prisma.StockTransferCreateNestedOneWithoutProductionInput
+  parent?: Prisma.ProductionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ProductionCreateNestedManyWithoutParentInput
+  items?: Prisma.ProductionItemCreateNestedManyWithoutProductionInput
+  deliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutProductionInput
 }
 
 export type ProductionUncheckedCreateInput = {
   id?: bigint | number
-  storeId: bigint | number
-  producedVariantId?: bigint | number | null
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  parentProductionId?: bigint | number | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUncheckedCreateNestedOneWithoutProductionInput
-  stockTransfer?: Prisma.StockTransferUncheckedCreateNestedOneWithoutProductionInput
+  children?: Prisma.ProductionUncheckedCreateNestedManyWithoutParentInput
+  items?: Prisma.ProductionItemUncheckedCreateNestedManyWithoutProductionInput
+  deliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutProductionInput
 }
 
 export type ProductionUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  store?: Prisma.StoreUpdateOneRequiredWithoutProductionsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneWithoutProductionsNestedInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsUpdateOneWithoutProductionNestedInput
-  stockTransfer?: Prisma.StockTransferUpdateOneWithoutProductionNestedInput
+  parent?: Prisma.ProductionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ProductionUpdateManyWithoutParentNestedInput
+  items?: Prisma.ProductionItemUpdateManyWithoutProductionNestedInput
+  deliveries?: Prisma.ProductionDeliveryUpdateManyWithoutProductionNestedInput
 }
 
 export type ProductionUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  producedVariantId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentProductionId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUncheckedUpdateOneWithoutProductionNestedInput
-  stockTransfer?: Prisma.StockTransferUncheckedUpdateOneWithoutProductionNestedInput
+  children?: Prisma.ProductionUncheckedUpdateManyWithoutParentNestedInput
+  items?: Prisma.ProductionItemUncheckedUpdateManyWithoutProductionNestedInput
+  deliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutProductionNestedInput
 }
 
 export type ProductionCreateManyInput = {
   id?: bigint | number
-  storeId: bigint | number
-  producedVariantId?: bigint | number | null
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  parentProductionId?: bigint | number | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
 }
 
 export type ProductionUpdateManyMutationInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ProductionUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  producedVariantId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentProductionId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ProductionNullableScalarRelationFilter = {
+  is?: Prisma.ProductionWhereInput | null
+  isNot?: Prisma.ProductionWhereInput | null
 }
 
 export type ProductionListRelationFilter = {
@@ -433,59 +421,47 @@ export type ProductionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type ProductionNullableScalarRelationFilter = {
-  is?: Prisma.ProductionWhereInput | null
-  isNot?: Prisma.ProductionWhereInput | null
-}
-
 export type ProductionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
-  producedVariantId?: Prisma.SortOrder
-  quantityProduced?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  notes?: Prisma.SortOrder
   targetDate?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  parentProductionId?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ProductionAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
-  producedVariantId?: Prisma.SortOrder
-  quantityProduced?: Prisma.SortOrder
+  parentProductionId?: Prisma.SortOrder
 }
 
 export type ProductionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
-  producedVariantId?: Prisma.SortOrder
-  quantityProduced?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  notes?: Prisma.SortOrder
   targetDate?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  parentProductionId?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ProductionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
-  producedVariantId?: Prisma.SortOrder
-  quantityProduced?: Prisma.SortOrder
-  type?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  notes?: Prisma.SortOrder
   targetDate?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
+  parentProductionId?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ProductionSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  storeId?: Prisma.SortOrder
-  producedVariantId?: Prisma.SortOrder
-  quantityProduced?: Prisma.SortOrder
+  parentProductionId?: Prisma.SortOrder
 }
 
 export type ProductionScalarRelationFilter = {
@@ -493,178 +469,214 @@ export type ProductionScalarRelationFilter = {
   isNot?: Prisma.ProductionWhereInput
 }
 
-export type ProductionCreateNestedManyWithoutStoreInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutStoreInput, Prisma.ProductionUncheckedCreateWithoutStoreInput> | Prisma.ProductionCreateWithoutStoreInput[] | Prisma.ProductionUncheckedCreateWithoutStoreInput[]
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutStoreInput | Prisma.ProductionCreateOrConnectWithoutStoreInput[]
-  createMany?: Prisma.ProductionCreateManyStoreInputEnvelope
-  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-}
-
-export type ProductionUncheckedCreateNestedManyWithoutStoreInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutStoreInput, Prisma.ProductionUncheckedCreateWithoutStoreInput> | Prisma.ProductionCreateWithoutStoreInput[] | Prisma.ProductionUncheckedCreateWithoutStoreInput[]
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutStoreInput | Prisma.ProductionCreateOrConnectWithoutStoreInput[]
-  createMany?: Prisma.ProductionCreateManyStoreInputEnvelope
-  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-}
-
-export type ProductionUpdateManyWithoutStoreNestedInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutStoreInput, Prisma.ProductionUncheckedCreateWithoutStoreInput> | Prisma.ProductionCreateWithoutStoreInput[] | Prisma.ProductionUncheckedCreateWithoutStoreInput[]
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutStoreInput | Prisma.ProductionCreateOrConnectWithoutStoreInput[]
-  upsert?: Prisma.ProductionUpsertWithWhereUniqueWithoutStoreInput | Prisma.ProductionUpsertWithWhereUniqueWithoutStoreInput[]
-  createMany?: Prisma.ProductionCreateManyStoreInputEnvelope
-  set?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  disconnect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  delete?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  update?: Prisma.ProductionUpdateWithWhereUniqueWithoutStoreInput | Prisma.ProductionUpdateWithWhereUniqueWithoutStoreInput[]
-  updateMany?: Prisma.ProductionUpdateManyWithWhereWithoutStoreInput | Prisma.ProductionUpdateManyWithWhereWithoutStoreInput[]
-  deleteMany?: Prisma.ProductionScalarWhereInput | Prisma.ProductionScalarWhereInput[]
-}
-
-export type ProductionUncheckedUpdateManyWithoutStoreNestedInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutStoreInput, Prisma.ProductionUncheckedCreateWithoutStoreInput> | Prisma.ProductionCreateWithoutStoreInput[] | Prisma.ProductionUncheckedCreateWithoutStoreInput[]
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutStoreInput | Prisma.ProductionCreateOrConnectWithoutStoreInput[]
-  upsert?: Prisma.ProductionUpsertWithWhereUniqueWithoutStoreInput | Prisma.ProductionUpsertWithWhereUniqueWithoutStoreInput[]
-  createMany?: Prisma.ProductionCreateManyStoreInputEnvelope
-  set?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  disconnect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  delete?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  update?: Prisma.ProductionUpdateWithWhereUniqueWithoutStoreInput | Prisma.ProductionUpdateWithWhereUniqueWithoutStoreInput[]
-  updateMany?: Prisma.ProductionUpdateManyWithWhereWithoutStoreInput | Prisma.ProductionUpdateManyWithWhereWithoutStoreInput[]
-  deleteMany?: Prisma.ProductionScalarWhereInput | Prisma.ProductionScalarWhereInput[]
-}
-
-export type ProductionCreateNestedManyWithoutVariantInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutVariantInput, Prisma.ProductionUncheckedCreateWithoutVariantInput> | Prisma.ProductionCreateWithoutVariantInput[] | Prisma.ProductionUncheckedCreateWithoutVariantInput[]
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutVariantInput | Prisma.ProductionCreateOrConnectWithoutVariantInput[]
-  createMany?: Prisma.ProductionCreateManyVariantInputEnvelope
-  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-}
-
-export type ProductionUncheckedCreateNestedManyWithoutVariantInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutVariantInput, Prisma.ProductionUncheckedCreateWithoutVariantInput> | Prisma.ProductionCreateWithoutVariantInput[] | Prisma.ProductionUncheckedCreateWithoutVariantInput[]
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutVariantInput | Prisma.ProductionCreateOrConnectWithoutVariantInput[]
-  createMany?: Prisma.ProductionCreateManyVariantInputEnvelope
-  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-}
-
-export type ProductionUpdateManyWithoutVariantNestedInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutVariantInput, Prisma.ProductionUncheckedCreateWithoutVariantInput> | Prisma.ProductionCreateWithoutVariantInput[] | Prisma.ProductionUncheckedCreateWithoutVariantInput[]
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutVariantInput | Prisma.ProductionCreateOrConnectWithoutVariantInput[]
-  upsert?: Prisma.ProductionUpsertWithWhereUniqueWithoutVariantInput | Prisma.ProductionUpsertWithWhereUniqueWithoutVariantInput[]
-  createMany?: Prisma.ProductionCreateManyVariantInputEnvelope
-  set?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  disconnect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  delete?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  update?: Prisma.ProductionUpdateWithWhereUniqueWithoutVariantInput | Prisma.ProductionUpdateWithWhereUniqueWithoutVariantInput[]
-  updateMany?: Prisma.ProductionUpdateManyWithWhereWithoutVariantInput | Prisma.ProductionUpdateManyWithWhereWithoutVariantInput[]
-  deleteMany?: Prisma.ProductionScalarWhereInput | Prisma.ProductionScalarWhereInput[]
-}
-
-export type ProductionUncheckedUpdateManyWithoutVariantNestedInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutVariantInput, Prisma.ProductionUncheckedCreateWithoutVariantInput> | Prisma.ProductionCreateWithoutVariantInput[] | Prisma.ProductionUncheckedCreateWithoutVariantInput[]
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutVariantInput | Prisma.ProductionCreateOrConnectWithoutVariantInput[]
-  upsert?: Prisma.ProductionUpsertWithWhereUniqueWithoutVariantInput | Prisma.ProductionUpsertWithWhereUniqueWithoutVariantInput[]
-  createMany?: Prisma.ProductionCreateManyVariantInputEnvelope
-  set?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  disconnect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  delete?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
-  update?: Prisma.ProductionUpdateWithWhereUniqueWithoutVariantInput | Prisma.ProductionUpdateWithWhereUniqueWithoutVariantInput[]
-  updateMany?: Prisma.ProductionUpdateManyWithWhereWithoutVariantInput | Prisma.ProductionUpdateManyWithWhereWithoutVariantInput[]
-  deleteMany?: Prisma.ProductionScalarWhereInput | Prisma.ProductionScalarWhereInput[]
-}
-
-export type ProductionCreateNestedOneWithoutStockTransferInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutStockTransferInput, Prisma.ProductionUncheckedCreateWithoutStockTransferInput>
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutStockTransferInput
+export type ProductionCreateNestedOneWithoutChildrenInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutChildrenInput, Prisma.ProductionUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutChildrenInput
   connect?: Prisma.ProductionWhereUniqueInput
 }
 
-export type ProductionUpdateOneWithoutStockTransferNestedInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutStockTransferInput, Prisma.ProductionUncheckedCreateWithoutStockTransferInput>
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutStockTransferInput
-  upsert?: Prisma.ProductionUpsertWithoutStockTransferInput
-  disconnect?: Prisma.ProductionWhereInput | boolean
-  delete?: Prisma.ProductionWhereInput | boolean
-  connect?: Prisma.ProductionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductionUpdateToOneWithWhereWithoutStockTransferInput, Prisma.ProductionUpdateWithoutStockTransferInput>, Prisma.ProductionUncheckedUpdateWithoutStockTransferInput>
+export type ProductionCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutParentInput, Prisma.ProductionUncheckedCreateWithoutParentInput> | Prisma.ProductionCreateWithoutParentInput[] | Prisma.ProductionUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutParentInput | Prisma.ProductionCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.ProductionCreateManyParentInputEnvelope
+  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
 }
 
-export type EnumProductionTypeFieldUpdateOperationsInput = {
-  set?: $Enums.ProductionType
+export type ProductionUncheckedCreateNestedManyWithoutParentInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutParentInput, Prisma.ProductionUncheckedCreateWithoutParentInput> | Prisma.ProductionCreateWithoutParentInput[] | Prisma.ProductionUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutParentInput | Prisma.ProductionCreateOrConnectWithoutParentInput[]
+  createMany?: Prisma.ProductionCreateManyParentInputEnvelope
+  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
 }
 
 export type EnumProductionStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProductionStatus
 }
 
-export type ProductionCreateNestedOneWithoutBeSpokeDetailsInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutBeSpokeDetailsInput, Prisma.ProductionUncheckedCreateWithoutBeSpokeDetailsInput>
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutBeSpokeDetailsInput
+export type ProductionUpdateOneWithoutChildrenNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutChildrenInput, Prisma.ProductionUncheckedCreateWithoutChildrenInput>
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutChildrenInput
+  upsert?: Prisma.ProductionUpsertWithoutChildrenInput
+  disconnect?: Prisma.ProductionWhereInput | boolean
+  delete?: Prisma.ProductionWhereInput | boolean
+  connect?: Prisma.ProductionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductionUpdateToOneWithWhereWithoutChildrenInput, Prisma.ProductionUpdateWithoutChildrenInput>, Prisma.ProductionUncheckedUpdateWithoutChildrenInput>
+}
+
+export type ProductionUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutParentInput, Prisma.ProductionUncheckedCreateWithoutParentInput> | Prisma.ProductionCreateWithoutParentInput[] | Prisma.ProductionUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutParentInput | Prisma.ProductionCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.ProductionUpsertWithWhereUniqueWithoutParentInput | Prisma.ProductionUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.ProductionCreateManyParentInputEnvelope
+  set?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
+  disconnect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
+  delete?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
+  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
+  update?: Prisma.ProductionUpdateWithWhereUniqueWithoutParentInput | Prisma.ProductionUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.ProductionUpdateManyWithWhereWithoutParentInput | Prisma.ProductionUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.ProductionScalarWhereInput | Prisma.ProductionScalarWhereInput[]
+}
+
+export type ProductionUncheckedUpdateManyWithoutParentNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutParentInput, Prisma.ProductionUncheckedCreateWithoutParentInput> | Prisma.ProductionCreateWithoutParentInput[] | Prisma.ProductionUncheckedCreateWithoutParentInput[]
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutParentInput | Prisma.ProductionCreateOrConnectWithoutParentInput[]
+  upsert?: Prisma.ProductionUpsertWithWhereUniqueWithoutParentInput | Prisma.ProductionUpsertWithWhereUniqueWithoutParentInput[]
+  createMany?: Prisma.ProductionCreateManyParentInputEnvelope
+  set?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
+  disconnect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
+  delete?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
+  connect?: Prisma.ProductionWhereUniqueInput | Prisma.ProductionWhereUniqueInput[]
+  update?: Prisma.ProductionUpdateWithWhereUniqueWithoutParentInput | Prisma.ProductionUpdateWithWhereUniqueWithoutParentInput[]
+  updateMany?: Prisma.ProductionUpdateManyWithWhereWithoutParentInput | Prisma.ProductionUpdateManyWithWhereWithoutParentInput[]
+  deleteMany?: Prisma.ProductionScalarWhereInput | Prisma.ProductionScalarWhereInput[]
+}
+
+export type ProductionCreateNestedOneWithoutItemsInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutItemsInput, Prisma.ProductionUncheckedCreateWithoutItemsInput>
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutItemsInput
   connect?: Prisma.ProductionWhereUniqueInput
 }
 
-export type ProductionUpdateOneRequiredWithoutBeSpokeDetailsNestedInput = {
-  create?: Prisma.XOR<Prisma.ProductionCreateWithoutBeSpokeDetailsInput, Prisma.ProductionUncheckedCreateWithoutBeSpokeDetailsInput>
-  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutBeSpokeDetailsInput
-  upsert?: Prisma.ProductionUpsertWithoutBeSpokeDetailsInput
+export type ProductionUpdateOneRequiredWithoutItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutItemsInput, Prisma.ProductionUncheckedCreateWithoutItemsInput>
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutItemsInput
+  upsert?: Prisma.ProductionUpsertWithoutItemsInput
   connect?: Prisma.ProductionWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductionUpdateToOneWithWhereWithoutBeSpokeDetailsInput, Prisma.ProductionUpdateWithoutBeSpokeDetailsInput>, Prisma.ProductionUncheckedUpdateWithoutBeSpokeDetailsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductionUpdateToOneWithWhereWithoutItemsInput, Prisma.ProductionUpdateWithoutItemsInput>, Prisma.ProductionUncheckedUpdateWithoutItemsInput>
 }
 
-export type ProductionCreateWithoutStoreInput = {
+export type ProductionCreateNestedOneWithoutDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutDeliveriesInput, Prisma.ProductionUncheckedCreateWithoutDeliveriesInput>
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutDeliveriesInput
+  connect?: Prisma.ProductionWhereUniqueInput
+}
+
+export type ProductionUpdateOneRequiredWithoutDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductionCreateWithoutDeliveriesInput, Prisma.ProductionUncheckedCreateWithoutDeliveriesInput>
+  connectOrCreate?: Prisma.ProductionCreateOrConnectWithoutDeliveriesInput
+  upsert?: Prisma.ProductionUpsertWithoutDeliveriesInput
+  connect?: Prisma.ProductionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductionUpdateToOneWithWhereWithoutDeliveriesInput, Prisma.ProductionUpdateWithoutDeliveriesInput>, Prisma.ProductionUncheckedUpdateWithoutDeliveriesInput>
+}
+
+export type ProductionCreateWithoutChildrenInput = {
   id?: bigint | number
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
-  variant?: Prisma.ProductVariantCreateNestedOneWithoutProductionsInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsCreateNestedOneWithoutProductionInput
-  stockTransfer?: Prisma.StockTransferCreateNestedOneWithoutProductionInput
+  parent?: Prisma.ProductionCreateNestedOneWithoutChildrenInput
+  items?: Prisma.ProductionItemCreateNestedManyWithoutProductionInput
+  deliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutProductionInput
 }
 
-export type ProductionUncheckedCreateWithoutStoreInput = {
+export type ProductionUncheckedCreateWithoutChildrenInput = {
   id?: bigint | number
-  producedVariantId?: bigint | number | null
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  parentProductionId?: bigint | number | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUncheckedCreateNestedOneWithoutProductionInput
-  stockTransfer?: Prisma.StockTransferUncheckedCreateNestedOneWithoutProductionInput
+  items?: Prisma.ProductionItemUncheckedCreateNestedManyWithoutProductionInput
+  deliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutProductionInput
 }
 
-export type ProductionCreateOrConnectWithoutStoreInput = {
+export type ProductionCreateOrConnectWithoutChildrenInput = {
   where: Prisma.ProductionWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProductionCreateWithoutStoreInput, Prisma.ProductionUncheckedCreateWithoutStoreInput>
+  create: Prisma.XOR<Prisma.ProductionCreateWithoutChildrenInput, Prisma.ProductionUncheckedCreateWithoutChildrenInput>
 }
 
-export type ProductionCreateManyStoreInputEnvelope = {
-  data: Prisma.ProductionCreateManyStoreInput | Prisma.ProductionCreateManyStoreInput[]
+export type ProductionCreateWithoutParentInput = {
+  id?: bigint | number
+  code: string
+  status?: $Enums.ProductionStatus
+  targetDate: Date | string
+  notes?: string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  children?: Prisma.ProductionCreateNestedManyWithoutParentInput
+  items?: Prisma.ProductionItemCreateNestedManyWithoutProductionInput
+  deliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutProductionInput
+}
+
+export type ProductionUncheckedCreateWithoutParentInput = {
+  id?: bigint | number
+  code: string
+  status?: $Enums.ProductionStatus
+  targetDate: Date | string
+  notes?: string | null
+  completedAt?: Date | string | null
+  createdAt?: Date | string
+  children?: Prisma.ProductionUncheckedCreateNestedManyWithoutParentInput
+  items?: Prisma.ProductionItemUncheckedCreateNestedManyWithoutProductionInput
+  deliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutProductionInput
+}
+
+export type ProductionCreateOrConnectWithoutParentInput = {
+  where: Prisma.ProductionWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductionCreateWithoutParentInput, Prisma.ProductionUncheckedCreateWithoutParentInput>
+}
+
+export type ProductionCreateManyParentInputEnvelope = {
+  data: Prisma.ProductionCreateManyParentInput | Prisma.ProductionCreateManyParentInput[]
   skipDuplicates?: boolean
 }
 
-export type ProductionUpsertWithWhereUniqueWithoutStoreInput = {
-  where: Prisma.ProductionWhereUniqueInput
-  update: Prisma.XOR<Prisma.ProductionUpdateWithoutStoreInput, Prisma.ProductionUncheckedUpdateWithoutStoreInput>
-  create: Prisma.XOR<Prisma.ProductionCreateWithoutStoreInput, Prisma.ProductionUncheckedCreateWithoutStoreInput>
+export type ProductionUpsertWithoutChildrenInput = {
+  update: Prisma.XOR<Prisma.ProductionUpdateWithoutChildrenInput, Prisma.ProductionUncheckedUpdateWithoutChildrenInput>
+  create: Prisma.XOR<Prisma.ProductionCreateWithoutChildrenInput, Prisma.ProductionUncheckedCreateWithoutChildrenInput>
+  where?: Prisma.ProductionWhereInput
 }
 
-export type ProductionUpdateWithWhereUniqueWithoutStoreInput = {
-  where: Prisma.ProductionWhereUniqueInput
-  data: Prisma.XOR<Prisma.ProductionUpdateWithoutStoreInput, Prisma.ProductionUncheckedUpdateWithoutStoreInput>
+export type ProductionUpdateToOneWithWhereWithoutChildrenInput = {
+  where?: Prisma.ProductionWhereInput
+  data: Prisma.XOR<Prisma.ProductionUpdateWithoutChildrenInput, Prisma.ProductionUncheckedUpdateWithoutChildrenInput>
 }
 
-export type ProductionUpdateManyWithWhereWithoutStoreInput = {
+export type ProductionUpdateWithoutChildrenInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
+  targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.ProductionUpdateOneWithoutChildrenNestedInput
+  items?: Prisma.ProductionItemUpdateManyWithoutProductionNestedInput
+  deliveries?: Prisma.ProductionDeliveryUpdateManyWithoutProductionNestedInput
+}
+
+export type ProductionUncheckedUpdateWithoutChildrenInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
+  targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentProductionId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.ProductionItemUncheckedUpdateManyWithoutProductionNestedInput
+  deliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutProductionNestedInput
+}
+
+export type ProductionUpsertWithWhereUniqueWithoutParentInput = {
+  where: Prisma.ProductionWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductionUpdateWithoutParentInput, Prisma.ProductionUncheckedUpdateWithoutParentInput>
+  create: Prisma.XOR<Prisma.ProductionCreateWithoutParentInput, Prisma.ProductionUncheckedCreateWithoutParentInput>
+}
+
+export type ProductionUpdateWithWhereUniqueWithoutParentInput = {
+  where: Prisma.ProductionWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductionUpdateWithoutParentInput, Prisma.ProductionUncheckedUpdateWithoutParentInput>
+}
+
+export type ProductionUpdateManyWithWhereWithoutParentInput = {
   where: Prisma.ProductionScalarWhereInput
-  data: Prisma.XOR<Prisma.ProductionUpdateManyMutationInput, Prisma.ProductionUncheckedUpdateManyWithoutStoreInput>
+  data: Prisma.XOR<Prisma.ProductionUpdateManyMutationInput, Prisma.ProductionUncheckedUpdateManyWithoutParentInput>
 }
 
 export type ProductionScalarWhereInput = {
@@ -672,395 +684,332 @@ export type ProductionScalarWhereInput = {
   OR?: Prisma.ProductionScalarWhereInput[]
   NOT?: Prisma.ProductionScalarWhereInput | Prisma.ProductionScalarWhereInput[]
   id?: Prisma.BigIntFilter<"Production"> | bigint | number
-  storeId?: Prisma.BigIntFilter<"Production"> | bigint | number
-  producedVariantId?: Prisma.BigIntNullableFilter<"Production"> | bigint | number | null
-  quantityProduced?: Prisma.IntFilter<"Production"> | number
-  type?: Prisma.EnumProductionTypeFilter<"Production"> | $Enums.ProductionType
+  code?: Prisma.StringFilter<"Production"> | string
   status?: Prisma.EnumProductionStatusFilter<"Production"> | $Enums.ProductionStatus
-  notes?: Prisma.StringNullableFilter<"Production"> | string | null
   targetDate?: Prisma.DateTimeFilter<"Production"> | Date | string
+  notes?: Prisma.StringNullableFilter<"Production"> | string | null
+  parentProductionId?: Prisma.BigIntNullableFilter<"Production"> | bigint | number | null
+  completedAt?: Prisma.DateTimeNullableFilter<"Production"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Production"> | Date | string
 }
 
-export type ProductionCreateWithoutVariantInput = {
+export type ProductionCreateWithoutItemsInput = {
   id?: bigint | number
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
-  store: Prisma.StoreCreateNestedOneWithoutProductionsInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsCreateNestedOneWithoutProductionInput
-  stockTransfer?: Prisma.StockTransferCreateNestedOneWithoutProductionInput
+  parent?: Prisma.ProductionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ProductionCreateNestedManyWithoutParentInput
+  deliveries?: Prisma.ProductionDeliveryCreateNestedManyWithoutProductionInput
 }
 
-export type ProductionUncheckedCreateWithoutVariantInput = {
+export type ProductionUncheckedCreateWithoutItemsInput = {
   id?: bigint | number
-  storeId: bigint | number
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
-  createdAt?: Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUncheckedCreateNestedOneWithoutProductionInput
-  stockTransfer?: Prisma.StockTransferUncheckedCreateNestedOneWithoutProductionInput
-}
-
-export type ProductionCreateOrConnectWithoutVariantInput = {
-  where: Prisma.ProductionWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProductionCreateWithoutVariantInput, Prisma.ProductionUncheckedCreateWithoutVariantInput>
-}
-
-export type ProductionCreateManyVariantInputEnvelope = {
-  data: Prisma.ProductionCreateManyVariantInput | Prisma.ProductionCreateManyVariantInput[]
-  skipDuplicates?: boolean
-}
-
-export type ProductionUpsertWithWhereUniqueWithoutVariantInput = {
-  where: Prisma.ProductionWhereUniqueInput
-  update: Prisma.XOR<Prisma.ProductionUpdateWithoutVariantInput, Prisma.ProductionUncheckedUpdateWithoutVariantInput>
-  create: Prisma.XOR<Prisma.ProductionCreateWithoutVariantInput, Prisma.ProductionUncheckedCreateWithoutVariantInput>
-}
-
-export type ProductionUpdateWithWhereUniqueWithoutVariantInput = {
-  where: Prisma.ProductionWhereUniqueInput
-  data: Prisma.XOR<Prisma.ProductionUpdateWithoutVariantInput, Prisma.ProductionUncheckedUpdateWithoutVariantInput>
-}
-
-export type ProductionUpdateManyWithWhereWithoutVariantInput = {
-  where: Prisma.ProductionScalarWhereInput
-  data: Prisma.XOR<Prisma.ProductionUpdateManyMutationInput, Prisma.ProductionUncheckedUpdateManyWithoutVariantInput>
-}
-
-export type ProductionCreateWithoutStockTransferInput = {
-  id?: bigint | number
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
   notes?: string | null
-  targetDate: Date | string
+  parentProductionId?: bigint | number | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
-  store: Prisma.StoreCreateNestedOneWithoutProductionsInput
-  variant?: Prisma.ProductVariantCreateNestedOneWithoutProductionsInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsCreateNestedOneWithoutProductionInput
+  children?: Prisma.ProductionUncheckedCreateNestedManyWithoutParentInput
+  deliveries?: Prisma.ProductionDeliveryUncheckedCreateNestedManyWithoutProductionInput
 }
 
-export type ProductionUncheckedCreateWithoutStockTransferInput = {
-  id?: bigint | number
-  storeId: bigint | number
-  producedVariantId?: bigint | number | null
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
-  targetDate: Date | string
-  createdAt?: Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUncheckedCreateNestedOneWithoutProductionInput
-}
-
-export type ProductionCreateOrConnectWithoutStockTransferInput = {
+export type ProductionCreateOrConnectWithoutItemsInput = {
   where: Prisma.ProductionWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProductionCreateWithoutStockTransferInput, Prisma.ProductionUncheckedCreateWithoutStockTransferInput>
+  create: Prisma.XOR<Prisma.ProductionCreateWithoutItemsInput, Prisma.ProductionUncheckedCreateWithoutItemsInput>
 }
 
-export type ProductionUpsertWithoutStockTransferInput = {
-  update: Prisma.XOR<Prisma.ProductionUpdateWithoutStockTransferInput, Prisma.ProductionUncheckedUpdateWithoutStockTransferInput>
-  create: Prisma.XOR<Prisma.ProductionCreateWithoutStockTransferInput, Prisma.ProductionUncheckedCreateWithoutStockTransferInput>
+export type ProductionUpsertWithoutItemsInput = {
+  update: Prisma.XOR<Prisma.ProductionUpdateWithoutItemsInput, Prisma.ProductionUncheckedUpdateWithoutItemsInput>
+  create: Prisma.XOR<Prisma.ProductionCreateWithoutItemsInput, Prisma.ProductionUncheckedCreateWithoutItemsInput>
   where?: Prisma.ProductionWhereInput
 }
 
-export type ProductionUpdateToOneWithWhereWithoutStockTransferInput = {
+export type ProductionUpdateToOneWithWhereWithoutItemsInput = {
   where?: Prisma.ProductionWhereInput
-  data: Prisma.XOR<Prisma.ProductionUpdateWithoutStockTransferInput, Prisma.ProductionUncheckedUpdateWithoutStockTransferInput>
+  data: Prisma.XOR<Prisma.ProductionUpdateWithoutItemsInput, Prisma.ProductionUncheckedUpdateWithoutItemsInput>
 }
 
-export type ProductionUpdateWithoutStockTransferInput = {
+export type ProductionUpdateWithoutItemsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  store?: Prisma.StoreUpdateOneRequiredWithoutProductionsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneWithoutProductionsNestedInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsUpdateOneWithoutProductionNestedInput
+  parent?: Prisma.ProductionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ProductionUpdateManyWithoutParentNestedInput
+  deliveries?: Prisma.ProductionDeliveryUpdateManyWithoutProductionNestedInput
 }
 
-export type ProductionUncheckedUpdateWithoutStockTransferInput = {
+export type ProductionUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  producedVariantId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentProductionId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUncheckedUpdateOneWithoutProductionNestedInput
+  children?: Prisma.ProductionUncheckedUpdateManyWithoutParentNestedInput
+  deliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutProductionNestedInput
 }
 
-export type ProductionCreateWithoutBeSpokeDetailsInput = {
+export type ProductionCreateWithoutDeliveriesInput = {
   id?: bigint | number
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
-  store: Prisma.StoreCreateNestedOneWithoutProductionsInput
-  variant?: Prisma.ProductVariantCreateNestedOneWithoutProductionsInput
-  stockTransfer?: Prisma.StockTransferCreateNestedOneWithoutProductionInput
+  parent?: Prisma.ProductionCreateNestedOneWithoutChildrenInput
+  children?: Prisma.ProductionCreateNestedManyWithoutParentInput
+  items?: Prisma.ProductionItemCreateNestedManyWithoutProductionInput
 }
 
-export type ProductionUncheckedCreateWithoutBeSpokeDetailsInput = {
+export type ProductionUncheckedCreateWithoutDeliveriesInput = {
   id?: bigint | number
-  storeId: bigint | number
-  producedVariantId?: bigint | number | null
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  parentProductionId?: bigint | number | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
-  stockTransfer?: Prisma.StockTransferUncheckedCreateNestedOneWithoutProductionInput
+  children?: Prisma.ProductionUncheckedCreateNestedManyWithoutParentInput
+  items?: Prisma.ProductionItemUncheckedCreateNestedManyWithoutProductionInput
 }
 
-export type ProductionCreateOrConnectWithoutBeSpokeDetailsInput = {
+export type ProductionCreateOrConnectWithoutDeliveriesInput = {
   where: Prisma.ProductionWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProductionCreateWithoutBeSpokeDetailsInput, Prisma.ProductionUncheckedCreateWithoutBeSpokeDetailsInput>
+  create: Prisma.XOR<Prisma.ProductionCreateWithoutDeliveriesInput, Prisma.ProductionUncheckedCreateWithoutDeliveriesInput>
 }
 
-export type ProductionUpsertWithoutBeSpokeDetailsInput = {
-  update: Prisma.XOR<Prisma.ProductionUpdateWithoutBeSpokeDetailsInput, Prisma.ProductionUncheckedUpdateWithoutBeSpokeDetailsInput>
-  create: Prisma.XOR<Prisma.ProductionCreateWithoutBeSpokeDetailsInput, Prisma.ProductionUncheckedCreateWithoutBeSpokeDetailsInput>
+export type ProductionUpsertWithoutDeliveriesInput = {
+  update: Prisma.XOR<Prisma.ProductionUpdateWithoutDeliveriesInput, Prisma.ProductionUncheckedUpdateWithoutDeliveriesInput>
+  create: Prisma.XOR<Prisma.ProductionCreateWithoutDeliveriesInput, Prisma.ProductionUncheckedCreateWithoutDeliveriesInput>
   where?: Prisma.ProductionWhereInput
 }
 
-export type ProductionUpdateToOneWithWhereWithoutBeSpokeDetailsInput = {
+export type ProductionUpdateToOneWithWhereWithoutDeliveriesInput = {
   where?: Prisma.ProductionWhereInput
-  data: Prisma.XOR<Prisma.ProductionUpdateWithoutBeSpokeDetailsInput, Prisma.ProductionUncheckedUpdateWithoutBeSpokeDetailsInput>
+  data: Prisma.XOR<Prisma.ProductionUpdateWithoutDeliveriesInput, Prisma.ProductionUncheckedUpdateWithoutDeliveriesInput>
 }
 
-export type ProductionUpdateWithoutBeSpokeDetailsInput = {
+export type ProductionUpdateWithoutDeliveriesInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  store?: Prisma.StoreUpdateOneRequiredWithoutProductionsNestedInput
-  variant?: Prisma.ProductVariantUpdateOneWithoutProductionsNestedInput
-  stockTransfer?: Prisma.StockTransferUpdateOneWithoutProductionNestedInput
+  parent?: Prisma.ProductionUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.ProductionUpdateManyWithoutParentNestedInput
+  items?: Prisma.ProductionItemUpdateManyWithoutProductionNestedInput
 }
 
-export type ProductionUncheckedUpdateWithoutBeSpokeDetailsInput = {
+export type ProductionUncheckedUpdateWithoutDeliveriesInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  producedVariantId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  parentProductionId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  stockTransfer?: Prisma.StockTransferUncheckedUpdateOneWithoutProductionNestedInput
+  children?: Prisma.ProductionUncheckedUpdateManyWithoutParentNestedInput
+  items?: Prisma.ProductionItemUncheckedUpdateManyWithoutProductionNestedInput
 }
 
-export type ProductionCreateManyStoreInput = {
+export type ProductionCreateManyParentInput = {
   id?: bigint | number
-  producedVariantId?: bigint | number | null
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
+  code: string
+  status?: $Enums.ProductionStatus
   targetDate: Date | string
+  notes?: string | null
+  completedAt?: Date | string | null
   createdAt?: Date | string
 }
 
-export type ProductionUpdateWithoutStoreInput = {
+export type ProductionUpdateWithoutParentInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  variant?: Prisma.ProductVariantUpdateOneWithoutProductionsNestedInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsUpdateOneWithoutProductionNestedInput
-  stockTransfer?: Prisma.StockTransferUpdateOneWithoutProductionNestedInput
+  children?: Prisma.ProductionUpdateManyWithoutParentNestedInput
+  items?: Prisma.ProductionItemUpdateManyWithoutProductionNestedInput
+  deliveries?: Prisma.ProductionDeliveryUpdateManyWithoutProductionNestedInput
 }
 
-export type ProductionUncheckedUpdateWithoutStoreInput = {
+export type ProductionUncheckedUpdateWithoutParentInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  producedVariantId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUncheckedUpdateOneWithoutProductionNestedInput
-  stockTransfer?: Prisma.StockTransferUncheckedUpdateOneWithoutProductionNestedInput
+  children?: Prisma.ProductionUncheckedUpdateManyWithoutParentNestedInput
+  items?: Prisma.ProductionItemUncheckedUpdateManyWithoutProductionNestedInput
+  deliveries?: Prisma.ProductionDeliveryUncheckedUpdateManyWithoutProductionNestedInput
 }
 
-export type ProductionUncheckedUpdateManyWithoutStoreInput = {
+export type ProductionUncheckedUpdateManyWithoutParentInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  producedVariantId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type ProductionCreateManyVariantInput = {
-  id?: bigint | number
-  storeId: bigint | number
-  quantityProduced: number
-  type?: $Enums.ProductionType
-  status: $Enums.ProductionStatus
-  notes?: string | null
-  targetDate: Date | string
-  createdAt?: Date | string
-}
-
-export type ProductionUpdateWithoutVariantInput = {
-  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
-  status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  store?: Prisma.StoreUpdateOneRequiredWithoutProductionsNestedInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsUpdateOneWithoutProductionNestedInput
-  stockTransfer?: Prisma.StockTransferUpdateOneWithoutProductionNestedInput
-}
-
-export type ProductionUncheckedUpdateWithoutVariantInput = {
-  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
-  status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUncheckedUpdateOneWithoutProductionNestedInput
-  stockTransfer?: Prisma.StockTransferUncheckedUpdateOneWithoutProductionNestedInput
-}
-
-export type ProductionUncheckedUpdateManyWithoutVariantInput = {
-  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  storeId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  quantityProduced?: Prisma.IntFieldUpdateOperationsInput | number
-  type?: Prisma.EnumProductionTypeFieldUpdateOperationsInput | $Enums.ProductionType
-  status?: Prisma.EnumProductionStatusFieldUpdateOperationsInput | $Enums.ProductionStatus
-  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  targetDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type ProductionCountOutputType
+ */
+
+export type ProductionCountOutputType = {
+  children: number
+  items: number
+  deliveries: number
+}
+
+export type ProductionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  children?: boolean | ProductionCountOutputTypeCountChildrenArgs
+  items?: boolean | ProductionCountOutputTypeCountItemsArgs
+  deliveries?: boolean | ProductionCountOutputTypeCountDeliveriesArgs
+}
+
+/**
+ * ProductionCountOutputType without action
+ */
+export type ProductionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductionCountOutputType
+   */
+  select?: Prisma.ProductionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProductionCountOutputType without action
+ */
+export type ProductionCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductionWhereInput
+}
+
+/**
+ * ProductionCountOutputType without action
+ */
+export type ProductionCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductionItemWhereInput
+}
+
+/**
+ * ProductionCountOutputType without action
+ */
+export type ProductionCountOutputTypeCountDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductionDeliveryWhereInput
+}
 
 
 export type ProductionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  storeId?: boolean
-  producedVariantId?: boolean
-  quantityProduced?: boolean
-  type?: boolean
+  code?: boolean
   status?: boolean
-  notes?: boolean
   targetDate?: boolean
+  notes?: boolean
+  parentProductionId?: boolean
+  completedAt?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.Production$variantArgs<ExtArgs>
-  beSpokeDetails?: boolean | Prisma.Production$beSpokeDetailsArgs<ExtArgs>
-  stockTransfer?: boolean | Prisma.Production$stockTransferArgs<ExtArgs>
+  parent?: boolean | Prisma.Production$parentArgs<ExtArgs>
+  children?: boolean | Prisma.Production$childrenArgs<ExtArgs>
+  items?: boolean | Prisma.Production$itemsArgs<ExtArgs>
+  deliveries?: boolean | Prisma.Production$deliveriesArgs<ExtArgs>
+  _count?: boolean | Prisma.ProductionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["production"]>
 
 export type ProductionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  storeId?: boolean
-  producedVariantId?: boolean
-  quantityProduced?: boolean
-  type?: boolean
+  code?: boolean
   status?: boolean
-  notes?: boolean
   targetDate?: boolean
+  notes?: boolean
+  parentProductionId?: boolean
+  completedAt?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.Production$variantArgs<ExtArgs>
+  parent?: boolean | Prisma.Production$parentArgs<ExtArgs>
 }, ExtArgs["result"]["production"]>
 
 export type ProductionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  storeId?: boolean
-  producedVariantId?: boolean
-  quantityProduced?: boolean
-  type?: boolean
+  code?: boolean
   status?: boolean
-  notes?: boolean
   targetDate?: boolean
+  notes?: boolean
+  parentProductionId?: boolean
+  completedAt?: boolean
   createdAt?: boolean
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.Production$variantArgs<ExtArgs>
+  parent?: boolean | Prisma.Production$parentArgs<ExtArgs>
 }, ExtArgs["result"]["production"]>
 
 export type ProductionSelectScalar = {
   id?: boolean
-  storeId?: boolean
-  producedVariantId?: boolean
-  quantityProduced?: boolean
-  type?: boolean
+  code?: boolean
   status?: boolean
-  notes?: boolean
   targetDate?: boolean
+  notes?: boolean
+  parentProductionId?: boolean
+  completedAt?: boolean
   createdAt?: boolean
 }
 
-export type ProductionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "storeId" | "producedVariantId" | "quantityProduced" | "type" | "status" | "notes" | "targetDate" | "createdAt", ExtArgs["result"]["production"]>
+export type ProductionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "status" | "targetDate" | "notes" | "parentProductionId" | "completedAt" | "createdAt", ExtArgs["result"]["production"]>
 export type ProductionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.Production$variantArgs<ExtArgs>
-  beSpokeDetails?: boolean | Prisma.Production$beSpokeDetailsArgs<ExtArgs>
-  stockTransfer?: boolean | Prisma.Production$stockTransferArgs<ExtArgs>
+  parent?: boolean | Prisma.Production$parentArgs<ExtArgs>
+  children?: boolean | Prisma.Production$childrenArgs<ExtArgs>
+  items?: boolean | Prisma.Production$itemsArgs<ExtArgs>
+  deliveries?: boolean | Prisma.Production$deliveriesArgs<ExtArgs>
+  _count?: boolean | Prisma.ProductionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.Production$variantArgs<ExtArgs>
+  parent?: boolean | Prisma.Production$parentArgs<ExtArgs>
 }
 export type ProductionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  store?: boolean | Prisma.StoreDefaultArgs<ExtArgs>
-  variant?: boolean | Prisma.Production$variantArgs<ExtArgs>
+  parent?: boolean | Prisma.Production$parentArgs<ExtArgs>
 }
 
 export type $ProductionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Production"
   objects: {
-    store: Prisma.$StorePayload<ExtArgs>
-    variant: Prisma.$ProductVariantPayload<ExtArgs> | null
-    beSpokeDetails: Prisma.$BeSpokeDetailsPayload<ExtArgs> | null
-    /**
-     * Kiriman yang terbentuk otomatis saat produksi ini selesai, bila hasilnya
-     * ditujukan untuk toko selain rumah produksi.
-     */
-    stockTransfer: Prisma.$StockTransferPayload<ExtArgs> | null
+    parent: Prisma.$ProductionPayload<ExtArgs> | null
+    children: Prisma.$ProductionPayload<ExtArgs>[]
+    items: Prisma.$ProductionItemPayload<ExtArgs>[]
+    deliveries: Prisma.$ProductionDeliveryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
-    storeId: bigint
-    producedVariantId: bigint | null
-    quantityProduced: number
-    type: $Enums.ProductionType
+    code: string
     status: $Enums.ProductionStatus
-    notes: string | null
     targetDate: Date
+    notes: string | null
+    /**
+     * Batch ini melanjutkan sisa target batch sebelumnya yang ditutup lebih
+     * awal. Menjaga jejaknya, bukan memulai dari nol tanpa asal-usul.
+     */
+    parentProductionId: bigint | null
+    completedAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["production"]>
   composites: {}
@@ -1456,10 +1405,10 @@ readonly fields: ProductionFieldRefs;
  */
 export interface Prisma__ProductionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  store<T extends Prisma.StoreDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StoreDefaultArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  variant<T extends Prisma.Production$variantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Production$variantArgs<ExtArgs>>): Prisma.Prisma__ProductVariantClient<runtime.Types.Result.GetResult<Prisma.$ProductVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  beSpokeDetails<T extends Prisma.Production$beSpokeDetailsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Production$beSpokeDetailsArgs<ExtArgs>>): Prisma.Prisma__BeSpokeDetailsClient<runtime.Types.Result.GetResult<Prisma.$BeSpokeDetailsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  stockTransfer<T extends Prisma.Production$stockTransferArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Production$stockTransferArgs<ExtArgs>>): Prisma.Prisma__StockTransferClient<runtime.Types.Result.GetResult<Prisma.$StockTransferPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  parent<T extends Prisma.Production$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Production$parentArgs<ExtArgs>>): Prisma.Prisma__ProductionClient<runtime.Types.Result.GetResult<Prisma.$ProductionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  children<T extends Prisma.Production$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Production$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  items<T extends Prisma.Production$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Production$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  deliveries<T extends Prisma.Production$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Production$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductionDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1490,13 +1439,12 @@ export interface Prisma__ProductionClient<T, Null = never, ExtArgs extends runti
  */
 export interface ProductionFieldRefs {
   readonly id: Prisma.FieldRef<"Production", 'BigInt'>
-  readonly storeId: Prisma.FieldRef<"Production", 'BigInt'>
-  readonly producedVariantId: Prisma.FieldRef<"Production", 'BigInt'>
-  readonly quantityProduced: Prisma.FieldRef<"Production", 'Int'>
-  readonly type: Prisma.FieldRef<"Production", 'ProductionType'>
+  readonly code: Prisma.FieldRef<"Production", 'String'>
   readonly status: Prisma.FieldRef<"Production", 'ProductionStatus'>
-  readonly notes: Prisma.FieldRef<"Production", 'String'>
   readonly targetDate: Prisma.FieldRef<"Production", 'DateTime'>
+  readonly notes: Prisma.FieldRef<"Production", 'String'>
+  readonly parentProductionId: Prisma.FieldRef<"Production", 'BigInt'>
+  readonly completedAt: Prisma.FieldRef<"Production", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Production", 'DateTime'>
 }
     
@@ -1694,11 +1642,6 @@ export type ProductionFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Skip the first `n` Productions.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of Productions.
-   */
   distinct?: Prisma.ProductionScalarFieldEnum | Prisma.ProductionScalarFieldEnum[]
 }
 
@@ -1899,60 +1842,94 @@ export type ProductionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * Production.variant
+ * Production.parent
  */
-export type Production$variantArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Production$parentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ProductVariant
+   * Select specific fields to fetch from the Production
    */
-  select?: Prisma.ProductVariantSelect<ExtArgs> | null
+  select?: Prisma.ProductionSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ProductVariant
+   * Omit specific fields from the Production
    */
-  omit?: Prisma.ProductVariantOmit<ExtArgs> | null
+  omit?: Prisma.ProductionOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ProductVariantInclude<ExtArgs> | null
-  where?: Prisma.ProductVariantWhereInput
+  include?: Prisma.ProductionInclude<ExtArgs> | null
+  where?: Prisma.ProductionWhereInput
 }
 
 /**
- * Production.beSpokeDetails
+ * Production.children
  */
-export type Production$beSpokeDetailsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Production$childrenArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the BeSpokeDetails
+   * Select specific fields to fetch from the Production
    */
-  select?: Prisma.BeSpokeDetailsSelect<ExtArgs> | null
+  select?: Prisma.ProductionSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the BeSpokeDetails
+   * Omit specific fields from the Production
    */
-  omit?: Prisma.BeSpokeDetailsOmit<ExtArgs> | null
+  omit?: Prisma.ProductionOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.BeSpokeDetailsInclude<ExtArgs> | null
-  where?: Prisma.BeSpokeDetailsWhereInput
+  include?: Prisma.ProductionInclude<ExtArgs> | null
+  where?: Prisma.ProductionWhereInput
+  orderBy?: Prisma.ProductionOrderByWithRelationInput | Prisma.ProductionOrderByWithRelationInput[]
+  cursor?: Prisma.ProductionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductionScalarFieldEnum | Prisma.ProductionScalarFieldEnum[]
 }
 
 /**
- * Production.stockTransfer
+ * Production.items
  */
-export type Production$stockTransferArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Production$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the StockTransfer
+   * Select specific fields to fetch from the ProductionItem
    */
-  select?: Prisma.StockTransferSelect<ExtArgs> | null
+  select?: Prisma.ProductionItemSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the StockTransfer
+   * Omit specific fields from the ProductionItem
    */
-  omit?: Prisma.StockTransferOmit<ExtArgs> | null
+  omit?: Prisma.ProductionItemOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.StockTransferInclude<ExtArgs> | null
-  where?: Prisma.StockTransferWhereInput
+  include?: Prisma.ProductionItemInclude<ExtArgs> | null
+  where?: Prisma.ProductionItemWhereInput
+  orderBy?: Prisma.ProductionItemOrderByWithRelationInput | Prisma.ProductionItemOrderByWithRelationInput[]
+  cursor?: Prisma.ProductionItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductionItemScalarFieldEnum | Prisma.ProductionItemScalarFieldEnum[]
+}
+
+/**
+ * Production.deliveries
+ */
+export type Production$deliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductionDelivery
+   */
+  select?: Prisma.ProductionDeliverySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductionDelivery
+   */
+  omit?: Prisma.ProductionDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductionDeliveryInclude<ExtArgs> | null
+  where?: Prisma.ProductionDeliveryWhereInput
+  orderBy?: Prisma.ProductionDeliveryOrderByWithRelationInput | Prisma.ProductionDeliveryOrderByWithRelationInput[]
+  cursor?: Prisma.ProductionDeliveryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductionDeliveryScalarFieldEnum | Prisma.ProductionDeliveryScalarFieldEnum[]
 }
 
 /**

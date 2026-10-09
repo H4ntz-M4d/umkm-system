@@ -1,6 +1,9 @@
 import { apiFetcher } from "@/lib/api/api.fetcher";
 import managementApi from "@/lib/api/api.management";
 import {
+  PosAbandonQrisResponse,
+  PosCancelResponse,
+  PosPaymentProofResponse,
   PosTransactionGetStatusResponse,
   PosTransactionResponse,
   PosTransactionResponseMutation,
@@ -20,8 +23,23 @@ export interface PosTransactionFilters {
 }
 
 export const fetchPosTransactions = async (filters: PosTransactionFilters) => {
+  /**
+   * `page` diterjemahkan jadi `skip` di sini.
+   *
+   * Backend (PaginationSchema) hanya membaca `skip` dan `limit` — `page`
+   * diabaikan diam-diam, jadi dulu `skip` selalu 0 dan tabel terus
+   * menampilkan halaman pertama berapa pun halaman yang dipilih. Sama seperti
+   * `fetchOrders`, yang sejak awal menghitung `skip = pageIndex * pageSize`.
+   */
+  const { page, ...rest } = filters;
+  const limit = rest.limit ?? 10;
+
+  // Dulu `v !== undefined || v !== ""` — selalu benar, jadi tidak ada yang
+  // pernah tersaring. Nilai kosong kini benar-benar dibuang dari URL.
   const filter = Object.fromEntries(
-    Object.entries(filters).filter(([_, v]) => v !== undefined || v !== ""),
+    Object.entries({ ...rest, limit, skip: (page ?? 0) * limit })
+      .filter(([, v]) => v !== undefined && v !== "")
+      .map(([k, v]) => [k, String(v)]),
   );
   const queryFilters = new URLSearchParams(filter).toString();
   return await apiFetcher(
@@ -51,19 +69,43 @@ export const mutatePosTransaction = async (data: PosTransactionSchemaInput) => {
   );
 };
 
+/// Lewat apiFetcher supaya penolakan dari backend (mis. "Transaksi ini sudah
+/// lunas") sampai utuh ke kasir, bukan galat HTTP generik.
 export const uploadPaymentProof = async (
   transPosId: string,
   formData: FormData,
-) => {
-  return await managementApi
-    .post(`v1/pos-transactions/${transPosId}/upload-paymentProof`, {
+) =>
+  apiFetcher(
+    managementApi.post(`v1/pos-transactions/${transPosId}/upload-paymentProof`, {
       body: formData,
-    })
-    .json();
-};
+      /// Bawaan ky cuma 10 detik. Unggahan foto lewat jaringan kasir yang
+      /// pas-pasan kerap lebih lama, dan yang menyerah duluan adalah
+      /// permintaannya — backend tetap menyelesaikan unggahan ke Cloudinary,
+      /// sehingga kasir melihat "timeout" padahal datanya tersimpan.
+      timeout: 120_000,
+    }),
+    PosPaymentProofResponse,
+  );
 
-export const cancelPosTransaction = async (transId: string[]) => {
-  return await managementApi
-    .patch("v1/pos-transactions/cancelled", { json: transId })
-    .json();
-};
+/**
+ * Membatalkan QR yang ditinggal kasir — dialog ditutup atau QR dibuat ulang.
+ *
+ * Batas waktunya pendek: dipanggil saat dialog menutup, jadi tidak boleh
+ * menggantung lama. Kalau gagal, QR-nya tetap kadaluarsa sendiri dalam
+ * hitungan menit.
+ */
+export const abandonQrisTransaction = async (transPosId: string) =>
+  apiFetcher(
+    managementApi.patch(`v1/pos-transactions/${transPosId}/abandon-qris`, {
+      timeout: 15_000,
+    }),
+    PosAbandonQrisResponse,
+  );
+
+/// Lewat apiFetcher supaya penolakan (mis. "Transaksi yang sudah dibayar tidak
+/// bisa dibatalkan") sampai ke kasir, bukan galat HTTP generik.
+export const cancelPosTransaction = async (transId: string[]) =>
+  apiFetcher(
+    managementApi.patch("v1/pos-transactions/cancelled", { json: transId }),
+    PosCancelResponse,
+  );

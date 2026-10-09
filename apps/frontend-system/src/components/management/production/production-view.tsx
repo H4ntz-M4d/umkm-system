@@ -1,3 +1,9 @@
+"use client";
+
+import { useState } from "react";
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { InputGroupInlineStart } from "@/components/ui/search";
 import {
   Select,
@@ -8,185 +14,113 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DatePickerWithRange } from "@/components/ui/date-picker-range";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProductionData, z } from "@repo/schemas";
-import { columnsProduction } from "./column";
+import { columnsProduction, PRODUCTION_STATUS_LABEL } from "./column";
 import { DataTableProduction } from "./data-table";
 import { ProductionFilters } from "@/lib/queries/production/production.query";
-import { useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePaginationParams } from "@/hooks/use-paginations-params";
 import { useProductionOperation } from "@/hooks/management/production/use-production-operation";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { DateRange } from "react-day-picker";
-import { format } from "date-fns";
-
-type ProductionTypeData = z.infer<typeof ProductionData>;
+import { useCanManageMaster } from "@/hooks/management/use-central-store";
 
 interface ProductionViewProps {
-  dataProduction: any;
-  isLoadingDataProduction: boolean;
   filters: ProductionFilters;
-  setIdData: (id: string | undefined) => void;
 }
 
-export default function ProductionView({
-  dataProduction,
-  isLoadingDataProduction,
-  filters,
-  setIdData,
-}: ProductionViewProps) {
-  const [search, setSearch] = useState("");
-  const { deleteProductionData } = useProductionOperation({});
-  const debouncedSearch = useDebounce(search, 500);
+export default function ProductionView({ filters }: ProductionViewProps) {
   const { pagination, onPaginationChange } = usePaginationParams();
-  const searchParams = useSearchParams();
+  const canManage = useCanManageMaster();
   const router = useRouter();
   const pathName = usePathname();
-  const pageCount = dataProduction?.total
-    ? Math.ceil(dataProduction.total / pagination.pageSize)
-    : 1;
-  const deleteData = (id: string) => {
-    deleteProductionData(id);
-  };
+  const searchParams = useSearchParams();
 
-  const updateUrl = async (
-    newParams: Record<string, string | number | undefined>,
-  ) => {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(newParams).forEach(([key, value]) => {
-      if (value === undefined || value === "") {
-        params.delete(key);
-      } else {
-        params.set(key, value.toString());
-      }
-    });
+  const [search, setSearch] = useState(filters.search ?? "");
+  const debouncedSearch = useDebounce(search, 500);
 
-    router.push(`${pathName}?${params.toString()}`, { scroll: false });
-  };
+  const { productionData, removeProductionData } = useProductionOperation({
+    filters: {
+      ...filters,
+      page: pagination.pageIndex,
+      limit: pagination.pageSize,
+      search: debouncedSearch,
+    },
+  });
 
-  useEffect(() => {
-    if (debouncedSearch !== filters.search) {
-      updateUrl({
-        search: debouncedSearch,
-        skip: 0,
-      });
+  const updateUrl = (params: Record<string, string | undefined>) => {
+    const next = new URLSearchParams(searchParams.toString());
+
+    for (const [key, value] of Object.entries(params)) {
+      if (value) next.set(key, value);
+      else next.delete(key);
     }
-  }, [debouncedSearch, filters.search, updateUrl]);
 
-  const dateRange: DateRange | undefined = useMemo(() => {
-    if (!filters.dateFrom) return undefined;
-
-    return {
-      from: new Date(filters.dateFrom),
-      to: filters.dateTo ? new Date(filters.dateTo) : undefined,
-    };
-  }, [filters.dateFrom, filters.dateTo]);
-
-  const handleDateChange = (range: DateRange | undefined) => {
-    updateUrl({
-      dateFrom: range?.from ? format(range.from, "yyyy-MM-dd") : undefined,
-      dateTo: range?.to ? format(range.to, "yyyy-MM-dd") : undefined,
-      skip: 0,
-    });
+    // Filter berubah berarti jumlah halaman ikut berubah; kembali ke halaman 1
+    // supaya tidak mendarat di halaman kosong.
+    next.delete("page");
+    router.push(`${pathName}?${next.toString()}`, { scroll: false });
   };
+
+  const dateRange: DateRange | undefined = filters.dateFrom
+    ? {
+        from: new Date(filters.dateFrom),
+        to: filters.dateTo ? new Date(filters.dateTo) : undefined,
+      }
+    : undefined;
+
+  const pageCount = productionData?.total
+    ? Math.ceil(productionData.total / pagination.pageSize)
+    : 1;
 
   return (
     <>
-      <div>
-        <Tabs
-          defaultValue={"ALL"}
-          value={filters.type || "ALL"}
-          onValueChange={(val) => {
-            if (val === "ALL") {
-              updateUrl({
-                type: "",
-                skip: 0,
-              });
-            } else {
-              updateUrl({
-                type: val,
-                skip: 0,
-              });
-            }
-          }}
-        >
-          <TabsList className="bg-primary-foreground rounded-md w-[40%] justify-start h-auto lg:h-10 gap-1 p-1">
-            <TabsTrigger
-              value={"ALL"}
-              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/20"
-            >
-              All
-            </TabsTrigger>
-            <TabsTrigger
-              value={"RESTOCK"}
-              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/10"
-            >
-              Isi Stock
-            </TabsTrigger>
-            <TabsTrigger
-              value={"MADE_TO_ORDER"}
-              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/20"
-            >
-              Made To Order
-            </TabsTrigger>
-            <TabsTrigger
-              value={"BE_SPOKE"}
-              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/20"
-            >
-              Produksi Custom
-            </TabsTrigger>
-            <TabsTrigger
-              value={"PRE_ORDER"}
-              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-secondary/20"
-            >
-              Pre Order
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
       <div className="flex flex-wrap gap-3">
         <InputGroupInlineStart
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Cari kode batch, produk, atau SKU..."
         />
+
         <Select
-          value={filters.status}
-          onValueChange={(val) => {
-            if (val === "none") {
-              updateUrl({ status: "", skip: 0 });
-            } else {
-              updateUrl({ status: val, skip: 0 });
-            }
-          }}
+          value={filters.status || "none"}
+          onValueChange={(value) =>
+            updateUrl({ status: value === "none" ? undefined : value })
+          }
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-44">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent position="popper">
             <SelectGroup>
               <SelectItem value="none">Semua Status</SelectItem>
-              <SelectItem value="PLANNED">Di Rencanakan</SelectItem>
-              <SelectItem value="IN_PROGRESS">Proses</SelectItem>
-              <SelectItem value="COMPLETED">Selesai</SelectItem>
-              <SelectItem value="CANCELLED">Batal</SelectItem>
+              {Object.entries(PRODUCTION_STATUS_LABEL).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
-        <DatePickerWithRange value={dateRange} onValueChange={handleDateChange} />
+
+        <DatePickerWithRange
+          value={dateRange}
+          onValueChange={(range) =>
+            updateUrl({
+              dateFrom: range?.from
+                ? format(range.from, "yyyy-MM-dd")
+                : undefined,
+              dateTo: range?.to ? format(range.to, "yyyy-MM-dd") : undefined,
+            })
+          }
+        />
       </div>
-      <div className={"bg-muted/50 rounded-xl md:min-h-min"}>
-        {isLoadingDataProduction ? (
-          <div className={"p-8 text-center"}>Loading data ...</div>
-        ) : (
-          <DataTableProduction
-            columns={columnsProduction(setIdData, deleteData)}
-            data={dataProduction?.data ?? []}
-            pageCount={pageCount}
-            pagination={pagination}
-            onPaginationChange={onPaginationChange}
-          />
-        )}
+
+      <div className="bg-muted/50 rounded-xl md:min-h-min">
+        <DataTableProduction
+          columns={columnsProduction(removeProductionData, canManage)}
+          data={productionData?.data ?? []}
+          pageCount={pageCount}
+          pagination={pagination}
+          onPaginationChange={onPaginationChange}
+        />
       </div>
     </>
   );

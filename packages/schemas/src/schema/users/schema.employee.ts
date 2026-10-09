@@ -2,8 +2,8 @@ import z from "zod";
 import { UsersSchema } from "./users.schema";
 
 export const EmployeeSchema = UsersSchema.extend({
-    address: z.string().min(3).max(100),
-    phone: z.string().min(10).optional(),
+    address: z.string().min(3, "Alamat harus di isi lengkap").max(100),
+    phone: z.string().min(10, "Nomor Hp perlu diisi dan minimal 10 angka").optional(),
     image: z.string().max(255).optional(),
     confirmPassword: z.string().min(6, "Password konfirmasi password minimal memiliki 6 karakter")
 }).refine(
@@ -15,8 +15,8 @@ export const EmployeeSchema = UsersSchema.extend({
 )
 
 export const EmployeeUpdateSchema = UsersSchema.extend({
-    address: z.string().min(3).max(100).optional(),
-    phone: z.string().min(10).optional(),
+    address: z.string().min(3, "Alamat harus di isi lengkap").max(100).optional(),
+    phone: z.string().min(10, "Nomor Hp perlu diisi dan minimal 10 angka").optional(),
     image: z.string().max(255).optional(),
     // password update sifatnya optional
     password: z.string().min(6).optional(),

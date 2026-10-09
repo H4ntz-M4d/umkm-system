@@ -64,7 +64,7 @@ export default function ReportsView({ filters }: { filters: ReportFilters }) {
         <TabsContent value="keuangan" className="flex flex-col gap-5">
           <ReportCard
             title="Pemasukan dan pengeluaran per bulan"
-            description="Batang hijau adalah uang masuk yang sudah lunas, amber adalah uang keluar. Jarak keduanya adalah selisih bulan itu."
+            description="Batang hijau adalah uang yang benar-benar masuk pada bulan itu — termasuk DP pesanan online, dikurangi pengembalian dana. Amber adalah uang keluar, dan jarak keduanya adalah selisihnya."
             isLoading={isLoadingRevenueExpense}
             isFetching={isFetchingRevenueExpense}
             chart={<RevenueExpenseChart data={revenueExpenseData ?? []} />}

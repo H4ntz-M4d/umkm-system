@@ -50,6 +50,9 @@ export const columnsStockTransfer = (
   onReceive: (id: string) => void,
   onCancel: (id: string) => void,
   isMoving: boolean,
+  /// Membuat, mengirim, dan membatalkan kiriman adalah pekerjaan pusat.
+  /// Mengonfirmasi penerimaan TIDAK: itu justru dilakukan toko tujuan.
+  canManage = true,
 ): ColumnDef<StockTransferDataType>[] => [
   {
     accessorKey: "code",
@@ -87,6 +90,13 @@ export const columnsStockTransfer = (
     header: "Total unit",
   },
   {
+    accessorKey: "handledByName",
+    header: "Diurus oleh",
+    /// Kiriman lama dibuat sebelum kolom ini ada, jadi kosongnya ditulis apa
+    /// adanya — bukan diisi nama siapa pun.
+    cell: ({ row }) => <p>{row.original.handledByName ?? "—"}</p>,
+  },
+  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => <StatusBadge status={row.original.status} />,
@@ -109,6 +119,10 @@ export const columnsStockTransfer = (
       /// Tombol mengikuti status, bukan ditampilkan semua lalu dinonaktifkan —
       /// yang tidak berlaku tidak perlu terlihat sama sekali.
       if (status === "READY") {
+        if (!canManage) {
+          return <span className="text-muted-foreground">Menunggu pusat</span>;
+        }
+
         return (
           <div className="flex justify-center gap-2">
             <Button size="sm" disabled={isMoving} onClick={() => onSend(id)}>

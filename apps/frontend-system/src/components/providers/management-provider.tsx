@@ -1,17 +1,32 @@
 "use client";
 
-import { getAdminProfile } from "@/lib/queries/auth/auth.api";
-import { useAuth } from "@/stores/useAuth";
-import { useCustomerAuth } from "@/stores/userCustomerAuth";
-import { useEffect, useState } from "react";
-import { useAuthOperations } from "@/hooks/auth/use-auth-operation";
+import { AdminUser, useAuth } from "@/stores/useAuth";
+import { useEffect } from "react";
 
 interface ManagementProviderProps {
+  /// Profil diambil di layout (Server Component) yang memang memegang token,
+  /// lalu diturunkan ke sini.
+  user: AdminUser | null;
   children: React.ReactNode;
 }
 
-export const ManagementProvider = ({ children }: ManagementProviderProps) => {
+/**
+ * Menaruh profil admin ke store supaya layar manajemen tahu siapa yang sedang
+ * login — mis. dialog nego yang memilih dirinya sendiri sebagai pemroses.
+ *
+ * Sebelumnya komponen ini mengambil `setUser` lalu tidak pernah memakainya,
+ * sehingga `useAuth().user` selalu kosong di seluruh sisi manajemen (hanya
+ * POS yang mengisinya lewat PosProvider).
+ */
+export const ManagementProvider = ({
+  user,
+  children,
+}: ManagementProviderProps) => {
   const setUser = useAuth((s) => s.setUser);
 
-  return children;
+  useEffect(() => {
+    if (user) setUser(user);
+  }, [user, setUser]);
+
+  return <>{children}</>;
 };

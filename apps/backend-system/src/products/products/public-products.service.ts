@@ -23,25 +23,56 @@ const cardSelect = {
 } satisfies Prisma.ProductMasterSelect;
 
 /**
+ * Tipe produk yang dijual lewat storefront — sejak READY_STOCK digabung ke
+ * REGULAR, keduanya tampil. Daftarnya tetap dipertahankan supaya parameter
+ * `?type=` dari luar tetap tersaring terhadap nilai yang sah.
+ */
+const PUBLIC_PRODUCT_TYPES = [
+  ProductType.REGULAR,
+  ProductType.PRE_ORDER,
+] as const;
+
+/**
  * Katalog storefront. Read-only dan tanpa guard, jadi filter status ACTIVE
  * dipasang mati di sini — bukan dari query — supaya produk DRAFT/NONACTIVE tidak
- * pernah bisa bocor lewat parameter.
+ * pernah bisa bocor lewat parameter. Penyaringan tipe produk mengikuti aturan
+ * yang sama.
  */
 @Injectable()
 export class PublicProductsService {
+  /**
+   * Penyaring tipe selalu dibatasi `PUBLIC_PRODUCT_TYPES`.
+   *
+   * Nilai `?type=` yang tidak dikenal tidak menghasilkan apa-apa, bukan malah
+   * membuka filter: nilai dari query hanya dipakai kalau memang termasuk yang
+   * boleh dijual online, selain itu batas umumnya yang berlaku.
+   */
+  private buildTypeFilter(
+    query: PublicProductQueryDto,
+  ): Prisma.ProductMasterWhereInput {
+    const requested = query.type ? ProductType[query.type] : null;
+
+    if (
+      requested &&
+      (PUBLIC_PRODUCT_TYPES as readonly ProductType[]).includes(requested)
+    ) {
+      return { type: requested };
+    }
+
+    return { type: { in: [...PUBLIC_PRODUCT_TYPES] } };
+  }
+
   private buildWhere(
     query: PublicProductQueryDto,
   ): Prisma.ProductMasterWhereInput {
     return {
       status: ProductStatus.ACTIVE,
+      ...this.buildTypeFilter(query),
       ...(query.search?.trim() && {
         name: { contains: query.search.trim(), mode: 'insensitive' },
       }),
       ...(query.categoryId?.trim() && {
         categoryId: BigInt(query.categoryId),
-      }),
-      ...(query.type && {
-        type: ProductType[query.type],
       }),
     };
   }
@@ -97,7 +128,13 @@ export class PublicProductsService {
 
   async findPublicProductBySlug(slug: string) {
     const data = await prisma.productMaster.findFirst({
-      where: { slug, status: ProductStatus.ACTIVE },
+      /// Tipe ikut disaring, bukan hanya di listing, supaya aturan halaman
+      /// detail tidak pernah lebih longgar dari katalognya.
+      where: {
+        slug,
+        status: ProductStatus.ACTIVE,
+        type: { in: [...PUBLIC_PRODUCT_TYPES] },
+      },
       select: {
         id: true,
         name: true,

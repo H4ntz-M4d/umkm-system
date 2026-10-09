@@ -28,22 +28,22 @@ export default async function DashboardPage() {
 
   await Promise.all([
     queryClient.prefetchQuery({
-      queryKey: ["dashboard-order-trend", "daily"],
+      queryKey: ["dashboard-order-trend", "daily", ""],
       queryFn: () => fetchOrderTrend("daily"),
       staleTime: DASHBOARD_QUERY_STALE_TIME,
     }),
     queryClient.prefetchQuery({
-      queryKey: ["dashboard-expense-by-category", "monthly"],
+      queryKey: ["dashboard-expense-by-category", "monthly", ""],
       queryFn: () => fetchExpenseByCategory("monthly"),
       staleTime: DASHBOARD_QUERY_STALE_TIME,
     }),
     queryClient.prefetchQuery({
-      queryKey: ["dashboard-production-status"],
+      queryKey: ["dashboard-production-status", ""],
       queryFn: () => fetchProductionStatus(),
       staleTime: DASHBOARD_QUERY_STALE_TIME,
     }),
     queryClient.prefetchQuery({
-      queryKey: ["dashboard-omzet-trend", "daily"],
+      queryKey: ["dashboard-omzet-trend", "daily", ""],
       queryFn: () => fetchOmzetTrend("daily"),
       staleTime: DASHBOARD_QUERY_STALE_TIME,
     }),

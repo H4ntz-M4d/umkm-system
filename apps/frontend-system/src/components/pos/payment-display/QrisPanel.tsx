@@ -7,7 +7,9 @@ import { toIDR } from "../../../../utils/format-money";
 import { useAuth } from "@/stores/useAuth";
 import { useActivePosStore } from "@/hooks/pos/use-active-store";
 import { toast } from "sonner";
+import { notifyPosStockWarnings } from "@/lib/pos/stock-warning";
 import { usePosTransactionOperations } from "@/hooks/management/pos-transaction/use-posTransaction-operations";
+import { QRIS_EXPIRY_MINUTES } from "@repo/schemas";
 import { getStatusTransaction } from "@/lib/queries/pos-transaction/pos-transaction.query";
 import { setTimeout } from "timers";
 import Image from "next/image";
@@ -22,7 +24,9 @@ interface Props {
 
 type QrisState = "idle" | "loading" | "waiting" | "paid" | "expired" | "error";
 const POLL_INTERVAL = 3000; // cek setiap 3 detik
-const QR_TIMEOUT = 5 * 60 * 1000; // expired setelah 5 menit
+/// Sumbernya satu dengan `custom_expiry` yang dikirim backend ke Midtrans,
+/// supaya QR yang tertulis kadaluarsa di layar memang sudah tidak bisa dibayar.
+const QR_TIMEOUT = QRIS_EXPIRY_MINUTES * 60 * 1000;
 
 export function QrisPanel({
   total,
@@ -44,8 +48,36 @@ export function QrisPanel({
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  const { mutationPosTransactionData, isLoadingmutationPosTransactionData } =
-    usePosTransactionOperations({});
+  const {
+    mutationPosTransactionData,
+    isLoadingmutationPosTransactionData,
+    abandonQrisData,
+  } = usePosTransactionOperations({});
+
+  /**
+   * Dibaca saat komponen dilepas, jadi harus ref — bukan state.
+   *
+   * Saat dialog ditutup, effect pembersih berjalan dengan nilai state dari
+   * render terakhir yang ditutup closure-nya; ref memastikan yang terbaca
+   * keadaan sebenarnya saat itu.
+   */
+  const activeTransactionRef = useRef<string | null>(null);
+  const isPaidRef = useRef(false);
+
+  /// Membatalkan QR yang ditinggal — dipanggil saat dialog ditutup dan sebelum
+  /// membuat QR baru. Yang sudah dibayar tidak disentuh.
+  const abandonActiveQr = async () => {
+    const id = activeTransactionRef.current;
+    if (!id || isPaidRef.current) return;
+
+    activeTransactionRef.current = null;
+    try {
+      await abandonQrisData(id);
+    } catch {
+      // Toast galatnya sudah ditangani hook. QR-nya tetap kadaluarsa sendiri
+      // dalam hitungan menit, jadi kegagalan di sini tidak menahan apa pun.
+    }
+  };
   const cashier = useAuth((state) => state.user);
   const { storeId: activeStoreId } = useActivePosStore();
 
@@ -55,7 +87,9 @@ export function QrisPanel({
         const res = await getStatusTransaction(transPosId);
         if (res.data.status === "PAID") {
           stopPolling();
+          isPaidRef.current = true;
           setQrisState("paid");
+          notifyPosStockWarnings(res.data.stockWarnings);
           setTimeout(onSuccess, 1500);
         }
       } catch (error) {}
@@ -84,6 +118,9 @@ export function QrisPanel({
   };
 
   const generateQr = async () => {
+    /// QR sebelumnya dibatalkan dulu supaya tidak ada dua QR hidup untuk
+    /// transaksi yang sama.
+    await abandonActiveQr();
     setError(null);
     setTimeLeft(QR_TIMEOUT / 1000);
     setQrisState("loading");
@@ -111,6 +148,7 @@ export function QrisPanel({
       setQrUrl(result.data?.qrUrl ?? null);
       setQrisState("waiting");
       setTransactionId(result.data.id);
+      activeTransactionRef.current = result.data.id;
       startPolling(result.data.id);
       startCountdown();
     } catch (err) {
@@ -128,7 +166,19 @@ export function QrisPanel({
     if (hasGenerated.current) return;
     hasGenerated.current = true;
     generateQr();
-    return () => stopPolling();
+
+    /**
+     * Dialog ditutup atau kasir berpindah metode bayar → QR ditinggalkan.
+     *
+     * QR yang ditinggal tanpa dibatalkan tetap bisa dibayar sampai masa
+     * berlakunya habis. Kalau kasir sudah beralih ke tunai, pembayaran yang
+     * telat masuk membuat barang yang sama terbayar dua kali.
+     */
+    return () => {
+      stopPolling();
+      void abandonActiveQr();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

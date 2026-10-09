@@ -20,5 +20,19 @@ export const ExpenseSchema = z.object({
   expenseItem: z.array(ExpenseItemSchema).min(1, "Tambahkan minimal 1 item"),
 });
 
+/**
+ * Edit pengeluaran memakai bentuk yang sama dengan tambah — satu form untuk
+ * keduanya, jadi aturan validasinya tidak bisa menyimpang.
+ *
+ * Daftar itemnya diganti utuh, bukan ditambal per baris: form mengirim
+ * keadaan akhir yang terlihat admin, dan itu yang disimpan.
+ */
+export const UpdateExpenseSchema = ExpenseSchema;
+
+/// Batas lampiran bukti per pengeluaran. Ditulis sekali supaya backend,
+/// dialog, dan pesan galatnya menyebut angka yang sama.
+export const EXPENSE_PROOF_MAX_FILES = 5;
+
 export type ExpenseSchemaInput = z.input<typeof ExpenseSchema>;
+export type UpdateExpenseSchemaInput = z.input<typeof UpdateExpenseSchema>;
 export type ExpenseItemSchemaInput = z.infer<typeof ExpenseItemSchema>;

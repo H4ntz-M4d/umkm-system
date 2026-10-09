@@ -3,9 +3,8 @@ import { X } from "lucide-react";
 import type { PublicCategoryDataType } from "@repo/schemas";
 
 const TYPE_LABELS: Record<string, string> = {
-  READY_STOCK: "Ready Stock",
+  REGULAR: "Reguler",
   PRE_ORDER: "Pre-Order",
-  MADE_TO_ORDER: "Made to Order",
 };
 
 interface ProductsActiveFiltersProps {

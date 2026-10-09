@@ -7,6 +7,8 @@ import {
 } from "@/lib/queries/public/products.query";
 import { getCustomerToken } from "@/lib/api/server-token";
 import { fetchWishlistIds } from "@/lib/queries/public/wishlist.query";
+import { absoluteUrl, canonical } from "@/lib/seo/site";
+import { JsonLd, breadcrumbSchema, productSchema } from "@/lib/seo/json-ld";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -18,14 +20,24 @@ export async function generateMetadata({
   try {
     const product = await fetchPublicProductBySlug(slug);
     return {
-      title: `${product.data.name} | NurfaCraft`,
+      title: product.data.name,
       description: product.data.description,
-      openGraph: product.data.image
-        ? { images: [{ url: product.data.image }] }
-        : undefined,
+      alternates: canonical(`/products/${slug}`),
+      openGraph: {
+        type: "website",
+        title: product.data.name,
+        description: product.data.description ?? undefined,
+        url: absoluteUrl(`/products/${slug}`),
+        images: product.data.image ? [{ url: product.data.image }] : undefined,
+      },
     };
   } catch {
-    return { title: "Produk tidak ditemukan | NurfaCraft" };
+    /// Produk yang tidak ada tidak boleh ikut diindeks; halamannya memang
+    /// dijawab 404, dan penanda ini menegaskannya bagi perayap.
+    return {
+      title: "Produk tidak ditemukan",
+      robots: { index: false, follow: false },
+    };
   }
 }
 
@@ -54,15 +66,28 @@ export default async function Page({ params }: PageProps) {
   const wishlisted = new Set(wishlistIds?.data ?? []);
 
   return (
-    <ProductDetail
-      product={product.data}
-      related={
-        related?.data.filter((item) => item.id !== product.data.id).slice(0, 4) ??
-        []
-      }
-      inWishlist={wishlisted.has(product.data.id)}
-      isLoggedIn={Boolean(token)}
-      wishlistedIds={[...wishlisted]}
-    />
+    <>
+      {/* Harga, stok, dan penjualnya dinyatakan apa adanya — itu yang
+          membuat harga bisa tampil langsung di hasil pencarian. */}
+      <JsonLd data={productSchema(product.data)} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Beranda", path: "/" },
+          { name: "Koleksi", path: "/products" },
+          { name: product.data.name, path: `/products/${slug}` },
+        ])}
+      />
+      <ProductDetail
+        product={product.data}
+        related={
+          related?.data
+            .filter((item) => item.id !== product.data.id)
+            .slice(0, 4) ?? []
+        }
+        inWishlist={wishlisted.has(product.data.id)}
+        isLoggedIn={Boolean(token)}
+        wishlistedIds={[...wishlisted]}
+      />
+    </>
   );
 }

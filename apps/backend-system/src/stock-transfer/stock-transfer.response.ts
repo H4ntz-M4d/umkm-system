@@ -10,6 +10,7 @@ import { Prisma } from '@repo/db';
 export const transferInclude = {
   fromStore: { select: { name: true } },
   toStore: { select: { name: true } },
+  user: { select: { employees: { select: { name: true } } } },
   items: {
     include: {
       variant: {
@@ -38,8 +39,11 @@ export function toStockTransferResponse(entity: TransferEntity) {
     fromStoreName: entity.fromStore.name,
     toStoreId: String(entity.toStoreId),
     toStoreName: entity.toStore.name,
-    productionId: entity.productionId ? String(entity.productionId) : null,
     notes: entity.notes,
+    handledById: entity.userId ? String(entity.userId) : null,
+    /// Nama lewat relasi karyawan; akun tanpa baris karyawan tetap tampil
+    /// kosong, bukan membuat seluruh respons gagal.
+    handledByName: entity.user?.employees?.name ?? null,
     createdAt: entity.createdAt.toISOString(),
     sentAt: entity.sentAt ? entity.sentAt.toISOString() : null,
     receivedAt: entity.receivedAt ? entity.receivedAt.toISOString() : null,

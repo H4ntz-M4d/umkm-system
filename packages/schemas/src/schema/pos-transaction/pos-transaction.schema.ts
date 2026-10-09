@@ -1,3 +1,15 @@
+/**
+ * Masa berlaku QR QRIS, dipakai bersama backend dan layar kasir.
+ *
+ * Nilainya dikirim ke Midtrans sebagai `custom_expiry` DAN dipakai sebagai
+ * hitungan mundur di layar. Dulu keduanya terpisah: layar menghitung 5 menit
+ * sendiri sementara Midtrans memakai masa berlaku bawaannya yang lebih lama,
+ * sehingga QR yang sudah tertulis "kadaluarsa" di layar ternyata masih bisa
+ * dibayar — dan kasir yang sudah beralih ke tunai berisiko menerima pembayaran
+ * dua kali.
+ */
+export const QRIS_EXPIRY_MINUTES = 5;
+
 import z from "zod";
 
 export const PostTransactionStatus = z.enum([

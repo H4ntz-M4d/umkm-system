@@ -44,7 +44,7 @@ const initialData: CreateProductSchemaInput = {
   description: "",
   useVariant: true,
   status: "ACTIVE",
-  type: "READY_STOCK",
+  type: "REGULAR",
   categoryId: "",
   variants: [],
   variantsTypes: [],

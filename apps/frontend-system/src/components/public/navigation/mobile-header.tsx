@@ -78,7 +78,7 @@ export default function MobileHeader({
                   onClick={() => setMobileOpen(false)}
                   className="block px-4 py-3 rounded-xl text-sm font-medium text-primary hover:bg-secondary transition-colors"
                 >
-                  Login
+                  Masuk
                 </Link>
               )}
             </div>

@@ -34,7 +34,9 @@ export const columnsTransactionFlow =
             <CircleArrowDown className="text-red-600" size={18} />
           )}
           <p>
-            {row.original.type === "IN" ? "Transaksi Masuk" : "Transaksi Keluar"}
+            {row.original.type === "IN"
+              ? "Transaksi Masuk"
+              : "Transaksi Keluar"}
           </p>
         </div>
       ),
@@ -56,7 +58,8 @@ export const columnsTransactionFlow =
           EXPENSE: "Pengeluaran",
         };
 
-        const label = sourceLabels[transactionFlowSource] || transactionFlowSource;
+        const label =
+          sourceLabels[transactionFlowSource] || transactionFlowSource;
 
         return (
           <Badge variant="default" className="w-25 text-center">

@@ -204,7 +204,7 @@ export type ProductPreOrderDetailsGroupByOutputType = {
   _max: ProductPreOrderDetailsMaxAggregateOutputType | null
 }
 
-export type GetProductPreOrderDetailsGroupByPayload<T extends ProductPreOrderDetailsGroupByArgs> = Prisma.PrismaPromise<
+type GetProductPreOrderDetailsGroupByPayload<T extends ProductPreOrderDetailsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProductPreOrderDetailsGroupByOutputType, T['by']> &
       {
@@ -1142,11 +1142,6 @@ export type ProductPreOrderDetailsFindManyArgs<ExtArgs extends runtime.Types.Ext
    * Skip the first `n` ProductPreOrderDetails.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of ProductPreOrderDetails.
-   */
   distinct?: Prisma.ProductPreOrderDetailsScalarFieldEnum | Prisma.ProductPreOrderDetailsScalarFieldEnum[]
 }
 

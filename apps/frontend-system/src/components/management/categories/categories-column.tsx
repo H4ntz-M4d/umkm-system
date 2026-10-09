@@ -11,6 +11,8 @@ export const columnsCategories = (
   deleteById: (id: string) => void,
   setIdData: (id: string) => void,
   setIsOpen: (isOpen: boolean) => void,
+  /// Cabang hanya melihat; pengelolaan kategori milik pusat.
+  canManage = true,
 ): ColumnDef<CategoriesDataRes>[] => [
   {
     id: "id",
@@ -46,6 +48,10 @@ export const columnsCategories = (
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
+      if (!canManage) {
+        return <span className="text-muted-foreground">—</span>;
+      }
+
       return (
         <div className="flex gap-2 justify-center">
           <Button

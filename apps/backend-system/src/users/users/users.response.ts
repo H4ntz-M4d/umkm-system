@@ -32,6 +32,25 @@ export function toUsersEmployeeResponse(entity: UsersEmployeeEntity) {
   };
 }
 
+type EmployeeOptionEntity = Prisma.UsersGetPayload<{
+  select: {
+    id: true;
+    role: true;
+    employees: { select: { name: true } };
+  };
+}>;
+
+/// Dipakai dropdown pemilih karyawan. Dibuat terpisah dari
+/// `toUsersEmployeeResponse` supaya email, toko, dan status akun tidak ikut
+/// terkirim ke peran yang cuma butuh daftar nama.
+export function toEmployeeOptionResponse(entity: EmployeeOptionEntity) {
+  return {
+    id: entity.id,
+    name: entity.employees?.name ?? '-',
+    role: entity.role,
+  };
+}
+
 type UsersCustomersEntity = Prisma.UsersGetPayload<{
   select: {
     id: true;

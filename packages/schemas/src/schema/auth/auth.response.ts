@@ -15,6 +15,9 @@ export const UsersProfile = z.discriminatedUnion("role", [
     role: z.enum(["ADMIN", "GUDANG", "KASIR", "OWNER"]),
     storeId: z.string().optional().nullable(),
     storeName: z.string().optional(),
+    /// Penanda orang pusat, dihitung server. Dipakai layar untuk
+    /// menyembunyikan tombol kelola data master pada orang cabang.
+    isCentralStore: z.boolean().optional(),
   }),
 
   BaseProfile.extend({

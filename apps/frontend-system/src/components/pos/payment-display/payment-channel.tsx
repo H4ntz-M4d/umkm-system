@@ -11,9 +11,11 @@ import {
 import {
   Field,
   FieldContent,
+  FieldDescription,
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
+import { paymentChannelLabel } from "@/lib/payment/channel-label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
 import { PaymentResponseData } from "@repo/schemas";
@@ -55,6 +57,12 @@ export default function PaymentChannel({
                 <Field orientation={"horizontal"}>
                   <FieldContent>
                     <FieldTitle>{p.name}</FieldTitle>
+                    {/* Dua metode bisa sama-sama bernama "Qris"; keterangan
+                        inilah yang memberi tahu kasir mana yang otomatis dan
+                        mana yang perlu bukti. */}
+                    <FieldDescription>
+                      {paymentChannelLabel(p.channel)}
+                    </FieldDescription>
                   </FieldContent>
                   <RadioGroupItem value={p.id} />
                 </Field>

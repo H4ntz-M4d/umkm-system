@@ -40,14 +40,9 @@ export class CartService {
     });
     if (!variant) throw new NotFoundException('Varian produk tidak ditemukan');
 
-    const stock = variant.productVariantStocks[0]?.stock ?? 0;
-    if (
-      variant.productMaster.type !== 'MADE_TO_ORDER' &&
-      variant.productMaster.type !== 'PRE_ORDER'
-    ) {
-      if (stock <= 0)
-        throw new BadRequestException('Stok produk ini sedang habis');
-    }
+    /// Keranjang online tidak dibatasi stok: semua pesanan online dikerjakan
+    /// rumah produksi setelah dipesan, dan stok toko hanya dijual lewat kasir.
+    /// Kuota pre-order dijaga saat pesanan diajukan (submitOrderRequest).
 
     await prisma.$transaction(async (tx) => {
       const cart = await tx.cart.upsert({
@@ -65,15 +60,10 @@ export class CartService {
         },
       });
 
-      let quantity;
-      if (
-        variant.productMaster.type !== 'MADE_TO_ORDER' &&
-        variant.productMaster.type !== 'PRE_ORDER'
-      ) {
-        quantity = Math.min(stock, (existing?.quantity ?? 0) + dto.quantity);
-      } else {
-        quantity = dto.quantity;
-      }
+      /// Menambah varian yang sudah ada di keranjang menjumlahkan, bukan
+      /// menimpa — sama seperti keranjang tamu. Dulu jalur made-to-order
+      /// menimpanya dengan jumlah terakhir yang ditambahkan.
+      const quantity = (existing?.quantity ?? 0) + dto.quantity;
 
       await tx.cartItem.upsert({
         where: {
@@ -108,24 +98,8 @@ export class CartService {
       throw new NotFoundException('Item keranjang tidak ditemukan');
     }
 
-    const stock = item.variant.productVariantStocks[0]?.stock ?? 0;
-    if (
-      item.variant.productMaster.type !== 'MADE_TO_ORDER' &&
-      item.variant.productMaster.type !== 'PRE_ORDER'
-    ) {
-      if (stock <= 0)
-        throw new BadRequestException('Stok produk ini sedang habis');
-    }
-
-    let quantity;
-    if (
-      item.variant.productMaster.type !== 'MADE_TO_ORDER' &&
-      item.variant.productMaster.type !== 'PRE_ORDER'
-    ) {
-      quantity = Math.min(dto.quantity, stock);
-    } else {
-      quantity = dto.quantity;
-    }
+    // Tidak dibatasi stok — lihat keterangan di addItem.
+    const quantity = dto.quantity;
 
     await prisma.cartItem.update({
       where: { id: itemId },

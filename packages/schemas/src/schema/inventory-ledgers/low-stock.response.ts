@@ -9,21 +9,14 @@ import { ApiSuccessResponse } from "../../api.schema.response";
 export const LOW_STOCK_THRESHOLD = 10;
 
 /**
- * Sengaja tidak memakai `reserved_stock`.
+ * Dasar hitungnya `stock`, bukan `stock - reserved_stock`.
  *
- * Di basis kode ini `stock` sudah bersih: penjualan POS dan checkout online
- * sama-sama langsung men-decrement `stock`. Pada operasi yang sama mereka juga
- * men-increment `reserved_stock`, tapi tidak ada satu pun tempat yang
- * mengembalikannya — jadi kolom itu hanya tumbuh terus dan berperilaku sebagai
- * penghitung kumulatif "pernah terjual", bukan alokasi yang masih hidup.
- * Mengurangkannya dari `stock` berarti menghitung penjualan dua kali dan
- * menghasilkan sisa negatif.
+ * `stock` adalah stok BEBAS: penjualan kasir mengurangi langsung, dan pesanan
+ * online yang dikunci saat Lunas juga memindahkannya keluar dari `stock` ke
+ * `reserved_stock`. Mengurangkan `reserved_stock` lagi berarti menghitung stok
+ * terkunci dua kali.
  */
-export const LowStockProductType = z.enum([
-  "MADE_TO_ORDER",
-  "PRE_ORDER",
-  "READY_STOCK",
-]);
+export const LowStockProductType = z.enum(["REGULAR", "PRE_ORDER"]);
 
 export const LowStockData = z.object({
   variantId: z.string(),
@@ -39,8 +32,8 @@ export const LowStockData = z.object({
   productName: z.string(),
   /**
    * Ikut dikirim karena stok rendah hanya benar-benar berarti "perlu restock"
-   * untuk READY_STOCK. Produk made-to-order dibuat saat dipesan, dan pre-order
-   * punya kuota sendiri, jadi keduanya tidak menuntut tindakan yang sama.
+   * untuk REGULAR. Pre-order punya kuota sendiri, jadi keduanya tidak menuntut
+   * tindakan yang sama.
    */
   type: LowStockProductType,
   sku: z.string(),

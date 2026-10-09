@@ -28,16 +28,19 @@ export type AggregatePaymentMethod = {
 
 export type PaymentMethodAvgAggregateOutputType = {
   id: number | null
+  storeId: number | null
 }
 
 export type PaymentMethodSumAggregateOutputType = {
   id: bigint | null
+  storeId: bigint | null
 }
 
 export type PaymentMethodMinAggregateOutputType = {
   id: bigint | null
   name: string | null
   channel: $Enums.PaymentChannel | null
+  storeId: bigint | null
   isActive: boolean | null
 }
 
@@ -45,6 +48,7 @@ export type PaymentMethodMaxAggregateOutputType = {
   id: bigint | null
   name: string | null
   channel: $Enums.PaymentChannel | null
+  storeId: bigint | null
   isActive: boolean | null
 }
 
@@ -52,6 +56,7 @@ export type PaymentMethodCountAggregateOutputType = {
   id: number
   name: number
   channel: number
+  storeId: number
   isActive: number
   _all: number
 }
@@ -59,16 +64,19 @@ export type PaymentMethodCountAggregateOutputType = {
 
 export type PaymentMethodAvgAggregateInputType = {
   id?: true
+  storeId?: true
 }
 
 export type PaymentMethodSumAggregateInputType = {
   id?: true
+  storeId?: true
 }
 
 export type PaymentMethodMinAggregateInputType = {
   id?: true
   name?: true
   channel?: true
+  storeId?: true
   isActive?: true
 }
 
@@ -76,6 +84,7 @@ export type PaymentMethodMaxAggregateInputType = {
   id?: true
   name?: true
   channel?: true
+  storeId?: true
   isActive?: true
 }
 
@@ -83,6 +92,7 @@ export type PaymentMethodCountAggregateInputType = {
   id?: true
   name?: true
   channel?: true
+  storeId?: true
   isActive?: true
   _all?: true
 }
@@ -177,6 +187,7 @@ export type PaymentMethodGroupByOutputType = {
   id: bigint
   name: string
   channel: $Enums.PaymentChannel
+  storeId: bigint | null
   isActive: boolean
   _count: PaymentMethodCountAggregateOutputType | null
   _avg: PaymentMethodAvgAggregateOutputType | null
@@ -185,7 +196,7 @@ export type PaymentMethodGroupByOutputType = {
   _max: PaymentMethodMaxAggregateOutputType | null
 }
 
-export type GetPaymentMethodGroupByPayload<T extends PaymentMethodGroupByArgs> = Prisma.PrismaPromise<
+type GetPaymentMethodGroupByPayload<T extends PaymentMethodGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PaymentMethodGroupByOutputType, T['by']> &
       {
@@ -207,10 +218,13 @@ export type PaymentMethodWhereInput = {
   id?: Prisma.BigIntFilter<"PaymentMethod"> | bigint | number
   name?: Prisma.StringFilter<"PaymentMethod"> | string
   channel?: Prisma.EnumPaymentChannelFilter<"PaymentMethod"> | $Enums.PaymentChannel
+  storeId?: Prisma.BigIntNullableFilter<"PaymentMethod"> | bigint | number | null
   isActive?: Prisma.BoolFilter<"PaymentMethod"> | boolean
+  store?: Prisma.XOR<Prisma.StoreNullableScalarRelationFilter, Prisma.StoreWhereInput> | null
   orders?: Prisma.OrderListRelationFilter
   posTransactions?: Prisma.PosTransactionListRelationFilter
   bankAccount?: Prisma.XOR<Prisma.BankAccountNullableScalarRelationFilter, Prisma.BankAccountWhereInput> | null
+  qrisAccount?: Prisma.XOR<Prisma.QrisAccountNullableScalarRelationFilter, Prisma.QrisAccountWhereInput> | null
   transferPaymentDetail?: Prisma.TransferPaymentDetailListRelationFilter
 }
 
@@ -218,10 +232,13 @@ export type PaymentMethodOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
+  storeId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  store?: Prisma.StoreOrderByWithRelationInput
   orders?: Prisma.OrderOrderByRelationAggregateInput
   posTransactions?: Prisma.PosTransactionOrderByRelationAggregateInput
   bankAccount?: Prisma.BankAccountOrderByWithRelationInput
+  qrisAccount?: Prisma.QrisAccountOrderByWithRelationInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailOrderByRelationAggregateInput
 }
 
@@ -232,10 +249,13 @@ export type PaymentMethodWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PaymentMethodWhereInput | Prisma.PaymentMethodWhereInput[]
   name?: Prisma.StringFilter<"PaymentMethod"> | string
   channel?: Prisma.EnumPaymentChannelFilter<"PaymentMethod"> | $Enums.PaymentChannel
+  storeId?: Prisma.BigIntNullableFilter<"PaymentMethod"> | bigint | number | null
   isActive?: Prisma.BoolFilter<"PaymentMethod"> | boolean
+  store?: Prisma.XOR<Prisma.StoreNullableScalarRelationFilter, Prisma.StoreWhereInput> | null
   orders?: Prisma.OrderListRelationFilter
   posTransactions?: Prisma.PosTransactionListRelationFilter
   bankAccount?: Prisma.XOR<Prisma.BankAccountNullableScalarRelationFilter, Prisma.BankAccountWhereInput> | null
+  qrisAccount?: Prisma.XOR<Prisma.QrisAccountNullableScalarRelationFilter, Prisma.QrisAccountWhereInput> | null
   transferPaymentDetail?: Prisma.TransferPaymentDetailListRelationFilter
 }, "id">
 
@@ -243,6 +263,7 @@ export type PaymentMethodOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
+  storeId?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
   _count?: Prisma.PaymentMethodCountOrderByAggregateInput
   _avg?: Prisma.PaymentMethodAvgOrderByAggregateInput
@@ -258,6 +279,7 @@ export type PaymentMethodScalarWhereWithAggregatesInput = {
   id?: Prisma.BigIntWithAggregatesFilter<"PaymentMethod"> | bigint | number
   name?: Prisma.StringWithAggregatesFilter<"PaymentMethod"> | string
   channel?: Prisma.EnumPaymentChannelWithAggregatesFilter<"PaymentMethod"> | $Enums.PaymentChannel
+  storeId?: Prisma.BigIntNullableWithAggregatesFilter<"PaymentMethod"> | bigint | number | null
   isActive?: Prisma.BoolWithAggregatesFilter<"PaymentMethod"> | boolean
 }
 
@@ -266,9 +288,11 @@ export type PaymentMethodCreateInput = {
   name: string
   channel: $Enums.PaymentChannel
   isActive?: boolean
+  store?: Prisma.StoreCreateNestedOneWithoutPaymentMethodsInput
   orders?: Prisma.OrderCreateNestedManyWithoutPaymentInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutPaymentMethodInput
   bankAccount?: Prisma.BankAccountCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountCreateNestedOneWithoutPaymentMethodInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailCreateNestedManyWithoutPaymentMethodInput
 }
 
@@ -276,10 +300,12 @@ export type PaymentMethodUncheckedCreateInput = {
   id?: bigint | number
   name: string
   channel: $Enums.PaymentChannel
+  storeId?: bigint | number | null
   isActive?: boolean
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutPaymentInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutPaymentMethodInput
   bankAccount?: Prisma.BankAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
@@ -288,9 +314,11 @@ export type PaymentMethodUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  store?: Prisma.StoreUpdateOneWithoutPaymentMethodsNestedInput
   orders?: Prisma.OrderUpdateManyWithoutPaymentNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutPaymentMethodNestedInput
   bankAccount?: Prisma.BankAccountUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUpdateOneWithoutPaymentMethodNestedInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUpdateManyWithoutPaymentMethodNestedInput
 }
 
@@ -298,10 +326,12 @@ export type PaymentMethodUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orders?: Prisma.OrderUncheckedUpdateManyWithoutPaymentNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutPaymentMethodNestedInput
   bankAccount?: Prisma.BankAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
@@ -309,6 +339,7 @@ export type PaymentMethodCreateManyInput = {
   id?: bigint | number
   name: string
   channel: $Enums.PaymentChannel
+  storeId?: bigint | number | null
   isActive?: boolean
 }
 
@@ -323,7 +354,18 @@ export type PaymentMethodUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+}
+
+export type PaymentMethodListRelationFilter = {
+  every?: Prisma.PaymentMethodWhereInput
+  some?: Prisma.PaymentMethodWhereInput
+  none?: Prisma.PaymentMethodWhereInput
+}
+
+export type PaymentMethodOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type PaymentMethodNullableScalarRelationFilter = {
@@ -335,17 +377,20 @@ export type PaymentMethodCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type PaymentMethodAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
 }
 
 export type PaymentMethodMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
@@ -353,16 +398,60 @@ export type PaymentMethodMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   channel?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
 }
 
 export type PaymentMethodSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  storeId?: Prisma.SortOrder
 }
 
 export type PaymentMethodScalarRelationFilter = {
   is?: Prisma.PaymentMethodWhereInput
   isNot?: Prisma.PaymentMethodWhereInput
+}
+
+export type PaymentMethodCreateNestedManyWithoutStoreInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutStoreInput, Prisma.PaymentMethodUncheckedCreateWithoutStoreInput> | Prisma.PaymentMethodCreateWithoutStoreInput[] | Prisma.PaymentMethodUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutStoreInput | Prisma.PaymentMethodCreateOrConnectWithoutStoreInput[]
+  createMany?: Prisma.PaymentMethodCreateManyStoreInputEnvelope
+  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+}
+
+export type PaymentMethodUncheckedCreateNestedManyWithoutStoreInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutStoreInput, Prisma.PaymentMethodUncheckedCreateWithoutStoreInput> | Prisma.PaymentMethodCreateWithoutStoreInput[] | Prisma.PaymentMethodUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutStoreInput | Prisma.PaymentMethodCreateOrConnectWithoutStoreInput[]
+  createMany?: Prisma.PaymentMethodCreateManyStoreInputEnvelope
+  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+}
+
+export type PaymentMethodUpdateManyWithoutStoreNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutStoreInput, Prisma.PaymentMethodUncheckedCreateWithoutStoreInput> | Prisma.PaymentMethodCreateWithoutStoreInput[] | Prisma.PaymentMethodUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutStoreInput | Prisma.PaymentMethodCreateOrConnectWithoutStoreInput[]
+  upsert?: Prisma.PaymentMethodUpsertWithWhereUniqueWithoutStoreInput | Prisma.PaymentMethodUpsertWithWhereUniqueWithoutStoreInput[]
+  createMany?: Prisma.PaymentMethodCreateManyStoreInputEnvelope
+  set?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  disconnect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  delete?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  update?: Prisma.PaymentMethodUpdateWithWhereUniqueWithoutStoreInput | Prisma.PaymentMethodUpdateWithWhereUniqueWithoutStoreInput[]
+  updateMany?: Prisma.PaymentMethodUpdateManyWithWhereWithoutStoreInput | Prisma.PaymentMethodUpdateManyWithWhereWithoutStoreInput[]
+  deleteMany?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
+}
+
+export type PaymentMethodUncheckedUpdateManyWithoutStoreNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutStoreInput, Prisma.PaymentMethodUncheckedCreateWithoutStoreInput> | Prisma.PaymentMethodCreateWithoutStoreInput[] | Prisma.PaymentMethodUncheckedCreateWithoutStoreInput[]
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutStoreInput | Prisma.PaymentMethodCreateOrConnectWithoutStoreInput[]
+  upsert?: Prisma.PaymentMethodUpsertWithWhereUniqueWithoutStoreInput | Prisma.PaymentMethodUpsertWithWhereUniqueWithoutStoreInput[]
+  createMany?: Prisma.PaymentMethodCreateManyStoreInputEnvelope
+  set?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  disconnect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  delete?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  connect?: Prisma.PaymentMethodWhereUniqueInput | Prisma.PaymentMethodWhereUniqueInput[]
+  update?: Prisma.PaymentMethodUpdateWithWhereUniqueWithoutStoreInput | Prisma.PaymentMethodUpdateWithWhereUniqueWithoutStoreInput[]
+  updateMany?: Prisma.PaymentMethodUpdateManyWithWhereWithoutStoreInput | Prisma.PaymentMethodUpdateManyWithWhereWithoutStoreInput[]
+  deleteMany?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
 }
 
 export type PaymentMethodCreateNestedOneWithoutOrdersInput = {
@@ -383,6 +472,20 @@ export type PaymentMethodUpdateOneWithoutOrdersNestedInput = {
 
 export type EnumPaymentChannelFieldUpdateOperationsInput = {
   set?: $Enums.PaymentChannel
+}
+
+export type PaymentMethodCreateNestedOneWithoutQrisAccountInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutQrisAccountInput, Prisma.PaymentMethodUncheckedCreateWithoutQrisAccountInput>
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutQrisAccountInput
+  connect?: Prisma.PaymentMethodWhereUniqueInput
+}
+
+export type PaymentMethodUpdateOneRequiredWithoutQrisAccountNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentMethodCreateWithoutQrisAccountInput, Prisma.PaymentMethodUncheckedCreateWithoutQrisAccountInput>
+  connectOrCreate?: Prisma.PaymentMethodCreateOrConnectWithoutQrisAccountInput
+  upsert?: Prisma.PaymentMethodUpsertWithoutQrisAccountInput
+  connect?: Prisma.PaymentMethodWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentMethodUpdateToOneWithWhereWithoutQrisAccountInput, Prisma.PaymentMethodUpdateWithoutQrisAccountInput>, Prisma.PaymentMethodUncheckedUpdateWithoutQrisAccountInput>
 }
 
 export type PaymentMethodCreateNestedOneWithoutBankAccountInput = {
@@ -431,13 +534,76 @@ export type PaymentMethodUpdateOneWithoutPosTransactionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentMethodUpdateToOneWithWhereWithoutPosTransactionsInput, Prisma.PaymentMethodUpdateWithoutPosTransactionsInput>, Prisma.PaymentMethodUncheckedUpdateWithoutPosTransactionsInput>
 }
 
+export type PaymentMethodCreateWithoutStoreInput = {
+  id?: bigint | number
+  name: string
+  channel: $Enums.PaymentChannel
+  isActive?: boolean
+  orders?: Prisma.OrderCreateNestedManyWithoutPaymentInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutPaymentMethodInput
+  bankAccount?: Prisma.BankAccountCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountCreateNestedOneWithoutPaymentMethodInput
+  transferPaymentDetail?: Prisma.TransferPaymentDetailCreateNestedManyWithoutPaymentMethodInput
+}
+
+export type PaymentMethodUncheckedCreateWithoutStoreInput = {
+  id?: bigint | number
+  name: string
+  channel: $Enums.PaymentChannel
+  isActive?: boolean
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutPaymentInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutPaymentMethodInput
+  bankAccount?: Prisma.BankAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
+  transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedCreateNestedManyWithoutPaymentMethodInput
+}
+
+export type PaymentMethodCreateOrConnectWithoutStoreInput = {
+  where: Prisma.PaymentMethodWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutStoreInput, Prisma.PaymentMethodUncheckedCreateWithoutStoreInput>
+}
+
+export type PaymentMethodCreateManyStoreInputEnvelope = {
+  data: Prisma.PaymentMethodCreateManyStoreInput | Prisma.PaymentMethodCreateManyStoreInput[]
+  skipDuplicates?: boolean
+}
+
+export type PaymentMethodUpsertWithWhereUniqueWithoutStoreInput = {
+  where: Prisma.PaymentMethodWhereUniqueInput
+  update: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutStoreInput, Prisma.PaymentMethodUncheckedUpdateWithoutStoreInput>
+  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutStoreInput, Prisma.PaymentMethodUncheckedCreateWithoutStoreInput>
+}
+
+export type PaymentMethodUpdateWithWhereUniqueWithoutStoreInput = {
+  where: Prisma.PaymentMethodWhereUniqueInput
+  data: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutStoreInput, Prisma.PaymentMethodUncheckedUpdateWithoutStoreInput>
+}
+
+export type PaymentMethodUpdateManyWithWhereWithoutStoreInput = {
+  where: Prisma.PaymentMethodScalarWhereInput
+  data: Prisma.XOR<Prisma.PaymentMethodUpdateManyMutationInput, Prisma.PaymentMethodUncheckedUpdateManyWithoutStoreInput>
+}
+
+export type PaymentMethodScalarWhereInput = {
+  AND?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
+  OR?: Prisma.PaymentMethodScalarWhereInput[]
+  NOT?: Prisma.PaymentMethodScalarWhereInput | Prisma.PaymentMethodScalarWhereInput[]
+  id?: Prisma.BigIntFilter<"PaymentMethod"> | bigint | number
+  name?: Prisma.StringFilter<"PaymentMethod"> | string
+  channel?: Prisma.EnumPaymentChannelFilter<"PaymentMethod"> | $Enums.PaymentChannel
+  storeId?: Prisma.BigIntNullableFilter<"PaymentMethod"> | bigint | number | null
+  isActive?: Prisma.BoolFilter<"PaymentMethod"> | boolean
+}
+
 export type PaymentMethodCreateWithoutOrdersInput = {
   id?: bigint | number
   name: string
   channel: $Enums.PaymentChannel
   isActive?: boolean
+  store?: Prisma.StoreCreateNestedOneWithoutPaymentMethodsInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutPaymentMethodInput
   bankAccount?: Prisma.BankAccountCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountCreateNestedOneWithoutPaymentMethodInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailCreateNestedManyWithoutPaymentMethodInput
 }
 
@@ -445,9 +611,11 @@ export type PaymentMethodUncheckedCreateWithoutOrdersInput = {
   id?: bigint | number
   name: string
   channel: $Enums.PaymentChannel
+  storeId?: bigint | number | null
   isActive?: boolean
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutPaymentMethodInput
   bankAccount?: Prisma.BankAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
@@ -472,8 +640,10 @@ export type PaymentMethodUpdateWithoutOrdersInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  store?: Prisma.StoreUpdateOneWithoutPaymentMethodsNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutPaymentMethodNestedInput
   bankAccount?: Prisma.BankAccountUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUpdateOneWithoutPaymentMethodNestedInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUpdateManyWithoutPaymentMethodNestedInput
 }
 
@@ -481,7 +651,73 @@ export type PaymentMethodUncheckedUpdateWithoutOrdersInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutPaymentMethodNestedInput
+  bankAccount?: Prisma.BankAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
+  transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedInput
+}
+
+export type PaymentMethodCreateWithoutQrisAccountInput = {
+  id?: bigint | number
+  name: string
+  channel: $Enums.PaymentChannel
+  isActive?: boolean
+  store?: Prisma.StoreCreateNestedOneWithoutPaymentMethodsInput
+  orders?: Prisma.OrderCreateNestedManyWithoutPaymentInput
+  posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutPaymentMethodInput
+  bankAccount?: Prisma.BankAccountCreateNestedOneWithoutPaymentMethodInput
+  transferPaymentDetail?: Prisma.TransferPaymentDetailCreateNestedManyWithoutPaymentMethodInput
+}
+
+export type PaymentMethodUncheckedCreateWithoutQrisAccountInput = {
+  id?: bigint | number
+  name: string
+  channel: $Enums.PaymentChannel
+  storeId?: bigint | number | null
+  isActive?: boolean
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutPaymentInput
+  posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutPaymentMethodInput
+  bankAccount?: Prisma.BankAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
+  transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedCreateNestedManyWithoutPaymentMethodInput
+}
+
+export type PaymentMethodCreateOrConnectWithoutQrisAccountInput = {
+  where: Prisma.PaymentMethodWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutQrisAccountInput, Prisma.PaymentMethodUncheckedCreateWithoutQrisAccountInput>
+}
+
+export type PaymentMethodUpsertWithoutQrisAccountInput = {
+  update: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutQrisAccountInput, Prisma.PaymentMethodUncheckedUpdateWithoutQrisAccountInput>
+  create: Prisma.XOR<Prisma.PaymentMethodCreateWithoutQrisAccountInput, Prisma.PaymentMethodUncheckedCreateWithoutQrisAccountInput>
+  where?: Prisma.PaymentMethodWhereInput
+}
+
+export type PaymentMethodUpdateToOneWithWhereWithoutQrisAccountInput = {
+  where?: Prisma.PaymentMethodWhereInput
+  data: Prisma.XOR<Prisma.PaymentMethodUpdateWithoutQrisAccountInput, Prisma.PaymentMethodUncheckedUpdateWithoutQrisAccountInput>
+}
+
+export type PaymentMethodUpdateWithoutQrisAccountInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  store?: Prisma.StoreUpdateOneWithoutPaymentMethodsNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutPaymentNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutPaymentMethodNestedInput
+  bankAccount?: Prisma.BankAccountUpdateOneWithoutPaymentMethodNestedInput
+  transferPaymentDetail?: Prisma.TransferPaymentDetailUpdateManyWithoutPaymentMethodNestedInput
+}
+
+export type PaymentMethodUncheckedUpdateWithoutQrisAccountInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutPaymentNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutPaymentMethodNestedInput
   bankAccount?: Prisma.BankAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedInput
@@ -492,8 +728,10 @@ export type PaymentMethodCreateWithoutBankAccountInput = {
   name: string
   channel: $Enums.PaymentChannel
   isActive?: boolean
+  store?: Prisma.StoreCreateNestedOneWithoutPaymentMethodsInput
   orders?: Prisma.OrderCreateNestedManyWithoutPaymentInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountCreateNestedOneWithoutPaymentMethodInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailCreateNestedManyWithoutPaymentMethodInput
 }
 
@@ -501,9 +739,11 @@ export type PaymentMethodUncheckedCreateWithoutBankAccountInput = {
   id?: bigint | number
   name: string
   channel: $Enums.PaymentChannel
+  storeId?: bigint | number | null
   isActive?: boolean
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutPaymentInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
@@ -528,8 +768,10 @@ export type PaymentMethodUpdateWithoutBankAccountInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  store?: Prisma.StoreUpdateOneWithoutPaymentMethodsNestedInput
   orders?: Prisma.OrderUpdateManyWithoutPaymentNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUpdateOneWithoutPaymentMethodNestedInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUpdateManyWithoutPaymentMethodNestedInput
 }
 
@@ -537,9 +779,11 @@ export type PaymentMethodUncheckedUpdateWithoutBankAccountInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orders?: Prisma.OrderUncheckedUpdateManyWithoutPaymentNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedInput
 }
 
@@ -548,19 +792,23 @@ export type PaymentMethodCreateWithoutTransferPaymentDetailInput = {
   name: string
   channel: $Enums.PaymentChannel
   isActive?: boolean
+  store?: Prisma.StoreCreateNestedOneWithoutPaymentMethodsInput
   orders?: Prisma.OrderCreateNestedManyWithoutPaymentInput
   posTransactions?: Prisma.PosTransactionCreateNestedManyWithoutPaymentMethodInput
   bankAccount?: Prisma.BankAccountCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountCreateNestedOneWithoutPaymentMethodInput
 }
 
 export type PaymentMethodUncheckedCreateWithoutTransferPaymentDetailInput = {
   id?: bigint | number
   name: string
   channel: $Enums.PaymentChannel
+  storeId?: bigint | number | null
   isActive?: boolean
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutPaymentInput
   posTransactions?: Prisma.PosTransactionUncheckedCreateNestedManyWithoutPaymentMethodInput
   bankAccount?: Prisma.BankAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
 }
 
 export type PaymentMethodCreateOrConnectWithoutTransferPaymentDetailInput = {
@@ -584,19 +832,23 @@ export type PaymentMethodUpdateWithoutTransferPaymentDetailInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  store?: Prisma.StoreUpdateOneWithoutPaymentMethodsNestedInput
   orders?: Prisma.OrderUpdateManyWithoutPaymentNestedInput
   posTransactions?: Prisma.PosTransactionUpdateManyWithoutPaymentMethodNestedInput
   bankAccount?: Prisma.BankAccountUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUpdateOneWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodUncheckedUpdateWithoutTransferPaymentDetailInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orders?: Prisma.OrderUncheckedUpdateManyWithoutPaymentNestedInput
   posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutPaymentMethodNestedInput
   bankAccount?: Prisma.BankAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
 }
 
 export type PaymentMethodCreateWithoutPosTransactionsInput = {
@@ -604,8 +856,10 @@ export type PaymentMethodCreateWithoutPosTransactionsInput = {
   name: string
   channel: $Enums.PaymentChannel
   isActive?: boolean
+  store?: Prisma.StoreCreateNestedOneWithoutPaymentMethodsInput
   orders?: Prisma.OrderCreateNestedManyWithoutPaymentInput
   bankAccount?: Prisma.BankAccountCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountCreateNestedOneWithoutPaymentMethodInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailCreateNestedManyWithoutPaymentMethodInput
 }
 
@@ -613,9 +867,11 @@ export type PaymentMethodUncheckedCreateWithoutPosTransactionsInput = {
   id?: bigint | number
   name: string
   channel: $Enums.PaymentChannel
+  storeId?: bigint | number | null
   isActive?: boolean
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutPaymentInput
   bankAccount?: Prisma.BankAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
+  qrisAccount?: Prisma.QrisAccountUncheckedCreateNestedOneWithoutPaymentMethodInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
@@ -640,8 +896,10 @@ export type PaymentMethodUpdateWithoutPosTransactionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  store?: Prisma.StoreUpdateOneWithoutPaymentMethodsNestedInput
   orders?: Prisma.OrderUpdateManyWithoutPaymentNestedInput
   bankAccount?: Prisma.BankAccountUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUpdateOneWithoutPaymentMethodNestedInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUpdateManyWithoutPaymentMethodNestedInput
 }
 
@@ -649,10 +907,50 @@ export type PaymentMethodUncheckedUpdateWithoutPosTransactionsInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  storeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orders?: Prisma.OrderUncheckedUpdateManyWithoutPaymentNestedInput
   bankAccount?: Prisma.BankAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
   transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedInput
+}
+
+export type PaymentMethodCreateManyStoreInput = {
+  id?: bigint | number
+  name: string
+  channel: $Enums.PaymentChannel
+  isActive?: boolean
+}
+
+export type PaymentMethodUpdateWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  orders?: Prisma.OrderUpdateManyWithoutPaymentNestedInput
+  posTransactions?: Prisma.PosTransactionUpdateManyWithoutPaymentMethodNestedInput
+  bankAccount?: Prisma.BankAccountUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUpdateOneWithoutPaymentMethodNestedInput
+  transferPaymentDetail?: Prisma.TransferPaymentDetailUpdateManyWithoutPaymentMethodNestedInput
+}
+
+export type PaymentMethodUncheckedUpdateWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutPaymentNestedInput
+  posTransactions?: Prisma.PosTransactionUncheckedUpdateManyWithoutPaymentMethodNestedInput
+  bankAccount?: Prisma.BankAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
+  qrisAccount?: Prisma.QrisAccountUncheckedUpdateOneWithoutPaymentMethodNestedInput
+  transferPaymentDetail?: Prisma.TransferPaymentDetailUncheckedUpdateManyWithoutPaymentMethodNestedInput
+}
+
+export type PaymentMethodUncheckedUpdateManyWithoutStoreInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  channel?: Prisma.EnumPaymentChannelFieldUpdateOperationsInput | $Enums.PaymentChannel
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -708,10 +1006,13 @@ export type PaymentMethodSelect<ExtArgs extends runtime.Types.Extensions.Interna
   id?: boolean
   name?: boolean
   channel?: boolean
+  storeId?: boolean
   isActive?: boolean
+  store?: boolean | Prisma.PaymentMethod$storeArgs<ExtArgs>
   orders?: boolean | Prisma.PaymentMethod$ordersArgs<ExtArgs>
   posTransactions?: boolean | Prisma.PaymentMethod$posTransactionsArgs<ExtArgs>
   bankAccount?: boolean | Prisma.PaymentMethod$bankAccountArgs<ExtArgs>
+  qrisAccount?: boolean | Prisma.PaymentMethod$qrisAccountArgs<ExtArgs>
   transferPaymentDetail?: boolean | Prisma.PaymentMethod$transferPaymentDetailArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
@@ -720,46 +1021,68 @@ export type PaymentMethodSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   id?: boolean
   name?: boolean
   channel?: boolean
+  storeId?: boolean
   isActive?: boolean
+  store?: boolean | Prisma.PaymentMethod$storeArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
 
 export type PaymentMethodSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   channel?: boolean
+  storeId?: boolean
   isActive?: boolean
+  store?: boolean | Prisma.PaymentMethod$storeArgs<ExtArgs>
 }, ExtArgs["result"]["paymentMethod"]>
 
 export type PaymentMethodSelectScalar = {
   id?: boolean
   name?: boolean
   channel?: boolean
+  storeId?: boolean
   isActive?: boolean
 }
 
-export type PaymentMethodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "channel" | "isActive", ExtArgs["result"]["paymentMethod"]>
+export type PaymentMethodOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "channel" | "storeId" | "isActive", ExtArgs["result"]["paymentMethod"]>
 export type PaymentMethodInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  store?: boolean | Prisma.PaymentMethod$storeArgs<ExtArgs>
   orders?: boolean | Prisma.PaymentMethod$ordersArgs<ExtArgs>
   posTransactions?: boolean | Prisma.PaymentMethod$posTransactionsArgs<ExtArgs>
   bankAccount?: boolean | Prisma.PaymentMethod$bankAccountArgs<ExtArgs>
+  qrisAccount?: boolean | Prisma.PaymentMethod$qrisAccountArgs<ExtArgs>
   transferPaymentDetail?: boolean | Prisma.PaymentMethod$transferPaymentDetailArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentMethodCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type PaymentMethodIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type PaymentMethodIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type PaymentMethodIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  store?: boolean | Prisma.PaymentMethod$storeArgs<ExtArgs>
+}
+export type PaymentMethodIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  store?: boolean | Prisma.PaymentMethod$storeArgs<ExtArgs>
+}
 
 export type $PaymentMethodPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PaymentMethod"
   objects: {
+    store: Prisma.$StorePayload<ExtArgs> | null
     orders: Prisma.$OrderPayload<ExtArgs>[]
     posTransactions: Prisma.$PosTransactionPayload<ExtArgs>[]
     bankAccount: Prisma.$BankAccountPayload<ExtArgs> | null
+    qrisAccount: Prisma.$QrisAccountPayload<ExtArgs> | null
     transferPaymentDetail: Prisma.$TransferPaymentDetailPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
     name: string
     channel: $Enums.PaymentChannel
+    /**
+     * Toko pemilik metode ini. Kosong berarti berlaku di semua toko — dipakai
+     * untuk tunai, yang tidak pernah menyangkut rekening siapa pun.
+     * 
+     * Rekening bank dan QRIS selalu milik satu toko: cabang berdiri sendiri dan
+     * uangnya harus mendarat di rekening mereka, bukan di rekening toko utama.
+     * Tanpa kolom ini kasir cabang ikut melihat rekening toko lain.
+     */
+    storeId: bigint | null
     isActive: boolean
   }, ExtArgs["result"]["paymentMethod"]>
   composites: {}
@@ -1155,9 +1478,11 @@ readonly fields: PaymentMethodFieldRefs;
  */
 export interface Prisma__PaymentMethodClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  store<T extends Prisma.PaymentMethod$storeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$storeArgs<ExtArgs>>): Prisma.Prisma__StoreClient<runtime.Types.Result.GetResult<Prisma.$StorePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   orders<T extends Prisma.PaymentMethod$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   posTransactions<T extends Prisma.PaymentMethod$posTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$posTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PosTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bankAccount<T extends Prisma.PaymentMethod$bankAccountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$bankAccountArgs<ExtArgs>>): Prisma.Prisma__BankAccountClient<runtime.Types.Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  qrisAccount<T extends Prisma.PaymentMethod$qrisAccountArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$qrisAccountArgs<ExtArgs>>): Prisma.Prisma__QrisAccountClient<runtime.Types.Result.GetResult<Prisma.$QrisAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   transferPaymentDetail<T extends Prisma.PaymentMethod$transferPaymentDetailArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PaymentMethod$transferPaymentDetailArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferPaymentDetailPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1191,6 +1516,7 @@ export interface PaymentMethodFieldRefs {
   readonly id: Prisma.FieldRef<"PaymentMethod", 'BigInt'>
   readonly name: Prisma.FieldRef<"PaymentMethod", 'String'>
   readonly channel: Prisma.FieldRef<"PaymentMethod", 'PaymentChannel'>
+  readonly storeId: Prisma.FieldRef<"PaymentMethod", 'BigInt'>
   readonly isActive: Prisma.FieldRef<"PaymentMethod", 'Boolean'>
 }
     
@@ -1388,11 +1714,6 @@ export type PaymentMethodFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Skip the first `n` PaymentMethods.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of PaymentMethods.
-   */
   distinct?: Prisma.PaymentMethodScalarFieldEnum | Prisma.PaymentMethodScalarFieldEnum[]
 }
 
@@ -1446,6 +1767,10 @@ export type PaymentMethodCreateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    */
   data: Prisma.PaymentMethodCreateManyInput | Prisma.PaymentMethodCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentMethodIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1516,6 +1841,10 @@ export type PaymentMethodUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.E
    * Limit how many PaymentMethods to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentMethodIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1585,6 +1914,25 @@ export type PaymentMethodDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
+ * PaymentMethod.store
+ */
+export type PaymentMethod$storeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Store
+   */
+  select?: Prisma.StoreSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Store
+   */
+  omit?: Prisma.StoreOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StoreInclude<ExtArgs> | null
+  where?: Prisma.StoreWhereInput
+}
+
+/**
  * PaymentMethod.orders
  */
 export type PaymentMethod$ordersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1649,6 +1997,25 @@ export type PaymentMethod$bankAccountArgs<ExtArgs extends runtime.Types.Extensio
    */
   include?: Prisma.BankAccountInclude<ExtArgs> | null
   where?: Prisma.BankAccountWhereInput
+}
+
+/**
+ * PaymentMethod.qrisAccount
+ */
+export type PaymentMethod$qrisAccountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the QrisAccount
+   */
+  select?: Prisma.QrisAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the QrisAccount
+   */
+  omit?: Prisma.QrisAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QrisAccountInclude<ExtArgs> | null
+  where?: Prisma.QrisAccountWhereInput
 }
 
 /**

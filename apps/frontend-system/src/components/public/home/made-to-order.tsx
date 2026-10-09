@@ -2,13 +2,14 @@
 
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
+import { BESPOKE_MIN_QUANTITY_CUSTOM } from "@repo/schemas";
 import { Palette, Scissors, Truck } from "lucide-react";
 
 const steps = [
   {
     icon: Palette,
     title: "Pilih Desain",
-    desc: "Pilih model, warna, dan ukuran sesuai keinginanmu. Kami siap menyesuaikan.",
+    desc: "Ambil model dari katalog lalu tentukan warna dan ukurannya — berapa pun jumlahnya, bahkan satu.",
   },
   {
     icon: Scissors,
@@ -32,12 +33,26 @@ const MadeToOrder = () => {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <Badge variant={'ghost'} className="text-xs font-medium uppercase tracking-widest text-secondary">Custom Made</Badge>
+          <Badge
+            variant={"ghost"}
+            className="text-xs font-medium uppercase tracking-widest text-secondary"
+          >
+            Custom Made
+          </Badge>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2">
             Dibuat Khusus Untukmu
           </h2>
           <p className="text-muted-foreground mt-3 max-w-md mx-auto text-sm">
-            Pesanan made-to-order membutuhkan waktu 7–14 hari kerja untuk pengerjaan.
+            Pesanan made-to-order membutuhkan waktu minimal 1 bulanan pada hari kerja untuk
+            pengerjaan.
+          </p>
+          {/* Aturan jumlah minimum disebut sejak di beranda supaya pembeli
+              tidak baru mengetahuinya setelah berdiskusi panjang di
+              WhatsApp. */}
+          <p className="text-muted-foreground/80 mt-2 max-w-lg mx-auto text-xs">
+            Model di luar katalog dikerjakan mulai dari{" "}
+            {BESPOKE_MIN_QUANTITY_CUSTOM} pcs, karena polanya dirancang dari
+            nol.
           </p>
         </motion.div>
 
@@ -59,8 +74,12 @@ const MadeToOrder = () => {
                   {i + 1}
                 </span>
               </div>
-              <h3 className="font-display text-lg font-semibold text-foreground mb-2">{step.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+              <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+                {step.title}
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {step.desc}
+              </p>
             </motion.div>
           ))}
         </div>

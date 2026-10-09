@@ -1,541 +1,358 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
-import { Prisma, prisma, ProductionStatus, ProductionType } from '@repo/db';
-import { Pagination } from 'common/paginate/pagination';
 import {
-  toProductionOnlyResponse,
-  toProductionResponse,
-} from 'production/production/productions.response';
-import {
-  CreateProductionBeSpokeDto,
-  UpdateProductionDto,
-} from 'production/dto/production.dto';
-import { BeSpokeRequiredSchema } from '@repo/schemas';
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Prisma, prisma, ProductionStatus } from '@repo/db';
+import type { JwtPayload } from 'common/decorator/auth.decorator';
 import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
 import { buildExportFilename, buildWorkbook } from 'common/helpers/excel';
-import { findProductionHouse } from 'common/helpers/online-store';
 import { idFormat } from 'common/helpers/id-format';
+import { findProductionHouse } from 'common/helpers/online-store';
+import {
+  CloseProductionDto,
+  CreateProductionDto,
+  ProductionQueryDto,
+  RecordDeliveryDto,
+} from 'production/dto/production.dto';
+import {
+  productionDetailInclude,
+  productionListInclude,
+  toProductionDetailResponse,
+  toProductionResponse,
+} from './productions.response';
+
+/// Batch yang sudah tutup buku: isinya tidak boleh diubah maupun disetori.
+const CLOSED_STATUSES: ProductionStatus[] = ['COMPLETED', 'CANCELLED'];
 
 @Injectable()
 export class ProductionService {
   /// Dipakai bersama listing dan ekspor, supaya berkas Excel tidak mungkin
   /// menyaring berbeda dari yang tampil di layar.
-  private buildWhere(
-    search?: string,
-    type?: ProductionType,
-    status?: ProductionStatus,
-    dateFrom?: string,
-    dateTo?: string,
-  ): Prisma.ProductionWhereInput {
-    const whereClause: Prisma.ProductionWhereInput = {};
-
-    if (status) {
-      whereClause.status = status;
-    }
-
-    if (type) {
-      whereClause.type = type;
-    }
-
-    if (dateFrom || dateTo) {
-      whereClause.createdAt = {
-        gte: dateFrom ? toStartOfDay(dateFrom) : undefined,
-        lte: dateTo ? toEndOfDay(dateTo) : undefined,
-      };
-    }
-
-    if (search) {
-      whereClause.OR = [
-        {
-          variant: {
-            productMaster: {
-              name: {
-                contains: search,
-                mode: 'insensitive',
+  private buildWhere(query: ProductionQueryDto): Prisma.ProductionWhereInput {
+    return {
+      ...(query.status && { status: query.status }),
+      ...(query.search && {
+        OR: [
+          { code: { contains: query.search, mode: 'insensitive' } },
+          {
+            items: {
+              some: {
+                variant: {
+                  OR: [
+                    { sku: { contains: query.search, mode: 'insensitive' } },
+                    {
+                      productMaster: {
+                        name: {
+                          contains: query.search,
+                          mode: 'insensitive',
+                        },
+                      },
+                    },
+                  ],
+                },
               },
             },
           },
+        ],
+      }),
+      ...((query.dateFrom || query.dateTo) && {
+        targetDate: {
+          gte: query.dateFrom ? toStartOfDay(query.dateFrom) : undefined,
+          lte: query.dateTo ? toEndOfDay(query.dateTo) : undefined,
         },
-        {
-          beSpokeDetails: {
-            title: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-        },
-      ];
-    }
-
-    return whereClause;
+      }),
+    };
   }
 
-  async findAll(
-    pagination: Pagination,
-    search?: string,
-    type?: ProductionType,
-    status?: ProductionStatus,
-    dateFrom?: string,
-    dateTo?: string,
-  ) {
-    const skip = pagination.skip ?? 0;
-    const limit = pagination.limit ?? 10;
-    const whereClause = this.buildWhere(search, type, status, dateFrom, dateTo);
+  async findAll(query: ProductionQueryDto) {
+    const skip = query.skip ?? 0;
+    const limit = query.limit ?? 10;
+    const where = this.buildWhere(query);
 
-    const data = await prisma.production.findMany({
-      skip: skip,
-      take: limit,
-      where: whereClause,
-      orderBy: {
-        status: 'asc',
-      },
-      select: {
-        id: true,
-        storeId: true,
-        store: { select: { name: true } },
-        producedVariantId: true,
-        quantityProduced: true,
-        type: true,
-        status: true,
-        targetDate: true,
-        notes: true,
-        createdAt: true,
-        variant: {
-          select: {
-            sku: true,
-            productMaster: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-        beSpokeDetails: {
-          include: {
-            customer: true,
-          },
-        },
-      },
-    });
+    const [data, total] = await Promise.all([
+      prisma.production.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: productionListInclude,
+      }),
+      prisma.production.count({ where }),
+    ]);
 
-    const total = await prisma.production.count({
-      where: whereClause,
-    });
-    const result = data.map(toProductionResponse);
     return {
       success: true,
-      data: result,
-      meta: {
-        skip: skip,
-        limit: limit,
-        total,
-        timeStamp: new Date().toISOString(),
-      },
+      data: data.map(toProductionResponse),
+      meta: { skip, limit, total, timeStamp: new Date().toISOString() },
     };
   }
 
-  async findById(id: bigint) {
+  async summary() {
+    const grouped = await prisma.production.groupBy({
+      by: ['status'],
+      _count: { _all: true },
+    });
+
+    const countOf = (status: ProductionStatus) =>
+      grouped.find((row) => row.status === status)?._count._all ?? 0;
+
+    /**
+     * Sisa target batch yang masih berjalan.
+     *
+     * Dihitung dari baris varian, bukan dari jumlah batch: pertanyaan yang
+     * sebenarnya adalah "berapa pcs lagi yang belum jadi", dan satu batch
+     * bisa berisi ratusan pcs lintas varian.
+     */
+    const outstanding = await prisma.productionItem.aggregate({
+      where: { production: { status: { notIn: CLOSED_STATUSES } } },
+      _sum: { targetQuantity: true, deliveredQuantity: true },
+    });
+
+    const target = outstanding._sum.targetQuantity ?? 0;
+    const delivered = outstanding._sum.deliveredQuantity ?? 0;
+
+    return {
+      success: true,
+      data: {
+        planned: countOf('PLANNED'),
+        inProgress: countOf('IN_PROGRESS'),
+        completed: countOf('COMPLETED'),
+        cancelled: countOf('CANCELLED'),
+        outstandingQuantity: Math.max(target - delivered, 0),
+      },
+      meta: { timeStamp: new Date().toISOString() },
+    };
+  }
+
+  async findOne(id: bigint) {
     const data = await prisma.production.findUnique({
-      where: { id: id },
-      include: {
-        variant: {
-          select: {
-            sku: true,
-            productMaster: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-      },
+      where: { id },
+      include: productionDetailInclude,
     });
 
-    if (!data) throw new BadRequestException('Maaf data tidak ditemukan');
+    if (!data) throw new NotFoundException('Batch produksi tidak ditemukan');
 
-    return toProductionOnlyResponse(data);
+    return {
+      success: true,
+      data: toProductionDetailResponse(data),
+      meta: { timeStamp: new Date().toISOString() },
+    };
   }
 
-  async productionSummary() {
-    const planned = await prisma.production.count({
-      where: { status: 'PLANNED' },
+  /// Memastikan varian yang diminta benar-benar ada, supaya id ngawur dari
+  /// permintaan langsung ke API tidak berakhir jadi galat kunci asing 500.
+  private async assertVariantsExist(variantIds: bigint[]) {
+    const found = await prisma.productVariant.findMany({
+      where: { id: { in: variantIds } },
+      select: { id: true },
     });
 
-    const inProgress = await prisma.production.count({
-      where: { status: 'IN_PROGRESS' },
-    });
-
-    const thisMonth = new Date();
-    const startOfMonth = new Date(
-      thisMonth.getFullYear(),
-      thisMonth.getMonth(),
-      1,
-    );
-    const startOfNextMonth = new Date(
-      thisMonth.getFullYear(),
-      thisMonth.getMonth() + 1,
-      1,
-    );
-
-    const completed = await prisma.production.count({
-      where: {
-        status: 'COMPLETED',
-        createdAt: {
-          gte: startOfMonth,
-          lt: startOfNextMonth,
-        },
-      },
-    });
-
-    const cancelled = await prisma.production.count({
-      where: {
-        status: 'CANCELLED',
-        createdAt: {
-          gte: startOfMonth,
-          lt: startOfNextMonth,
-        },
-      },
-    });
-
-    const result = {
-      planned: planned ?? 0,
-      inProgress: inProgress ?? 0,
-      completed: completed ?? 0,
-      cancelled: cancelled ?? 0,
-    };
-
-    return result;
-  }
-
-  async create(data: CreateProductionBeSpokeDto) {
-    const statusMap: Record<string, ProductionStatus> = {
-      PLANNED: ProductionStatus.PLANNED,
-      IN_PROGRESS: ProductionStatus.IN_PROGRESS,
-      COMPLETED: ProductionStatus.COMPLETED,
-      CANCELLED: ProductionStatus.CANCELLED,
-    };
-    const status = statusMap[data.status] ?? ProductionStatus.PLANNED;
-
-    const typeMap: Record<string, ProductionType> = {
-      RESTOCK: ProductionType.RESTOCK,
-      MADE_TO_ORDER: ProductionType.MADE_TO_ORDER,
-      BE_SPOKE: ProductionType.BE_SPOKE,
-      PRE_ORDER: ProductionType.PRE_ORDER,
-    };
-
-    const typeData = typeMap[data.type] ?? ProductionType.RESTOCK;
-
-    if (status === 'COMPLETED' || status === 'CANCELLED') {
-      throw new BadRequestException('Maaf status tidak valid');
+    if (found.length !== variantIds.length) {
+      throw new BadRequestException(
+        'Ada varian produk yang tidak ditemukan. Muat ulang halaman lalu pilih ulang.',
+      );
     }
-
-    const transaction = await prisma.$transaction(async (tx) => {
-      const production = await tx.production.create({
-        data: {
-          storeId: BigInt(data.storeId),
-          producedVariantId: data.producedVariantId
-            ? BigInt(data.producedVariantId)
-            : null,
-          quantityProduced: data.quantityProduced,
-          status: status,
-          type: typeData,
-          notes: data.notes,
-          targetDate: data.targetDate,
-          createdAt: new Date().toISOString(),
-        },
-      });
-
-      if (data.type === 'BE_SPOKE') {
-        if (!data.bespoke) {
-          throw new BadRequestException('Data BE SPOKE kosong harap coba lagi');
-        }
-
-        const bespoke = BeSpokeRequiredSchema.parse(data.bespoke);
-
-        let customer;
-        customer = await tx.customer.findFirst({
-          where: { email: data.bespoke?.email },
-        });
-
-        if (!customer) {
-          customer = await tx.customer.create({
-            data: {
-              name: bespoke.name,
-              email: bespoke.email,
-              phone: bespoke.phone,
-            },
-          });
-        }
-
-        await tx.beSpokeDetails.create({
-          data: {
-            title: bespoke.title,
-            productionId: production.id,
-            customerId: customer.id,
-            description: bespoke.description,
-            quotedPrice: bespoke.quotedPrice,
-          },
-        });
-      }
-
-      return toProductionOnlyResponse(production);
-    });
-
-    return toProductionOnlyResponse(transaction);
   }
 
-  async updateProduction(id: bigint, data: CreateProductionBeSpokeDto) {
+  async create(data: CreateProductionDto) {
+    const variantIds = data.items.map((item) => BigInt(item.productVariantId));
+    await this.assertVariantsExist(variantIds);
+
+    const created = await prisma.production.create({
+      data: {
+        code: idFormat('PRD'),
+        status: 'PLANNED',
+        targetDate: data.targetDate,
+        notes: data.notes,
+        items: {
+          create: data.items.map((item) => ({
+            productVariantId: BigInt(item.productVariantId),
+            targetQuantity: item.targetQuantity,
+          })),
+        },
+      },
+      include: productionDetailInclude,
+    });
+
+    return {
+      success: true,
+      data: toProductionDetailResponse(created),
+      meta: { timeStamp: new Date().toISOString() },
+    };
+  }
+
+  /**
+   * Mengubah isi batch.
+   *
+   * Daftar variannya diganti utuh mengikuti form, tapi baris yang sudah
+   * pernah disetori tidak boleh hilang atau turun di bawah jumlah yang sudah
+   * masuk — stok dan riwayatnya terlanjur bergerak.
+   */
+  async update(id: bigint, data: CreateProductionDto) {
     const isExisting = await prisma.production.findUnique({
-      where: { id: id },
+      where: { id },
+      include: { items: true },
     });
 
     if (!isExisting) {
-      throw new BadRequestException('Maaf data tidak ditemukan');
+      throw new NotFoundException('Batch produksi tidak ditemukan');
     }
 
-    const statusMap: Record<string, ProductionStatus> = {
-      PLANNED: ProductionStatus.PLANNED,
-      IN_PROGRESS: ProductionStatus.IN_PROGRESS,
-      COMPLETED: ProductionStatus.COMPLETED,
-      CANCELLED: ProductionStatus.CANCELLED,
-    };
-
-    const status =
-      data.status && data.status in statusMap
-        ? statusMap[data.status]
-        : isExisting.status;
-
-    const typeMap: Record<string, ProductionType> = {
-      RESTOCK: ProductionType.RESTOCK,
-      MADE_TO_ORDER: ProductionType.MADE_TO_ORDER,
-      BE_SPOKE: ProductionType.BE_SPOKE,
-      PRE_ORDER: ProductionType.PRE_ORDER,
-    };
-
-    const typeData = typeMap[data.type] ?? isExisting.type;
-
-    if (status === 'COMPLETED' || status === 'CANCELLED') {
-      throw new BadRequestException('Maaf status tidak valid');
-    }
-
-    const transaction = await prisma.$transaction(async (tx) => {
-      const production = await tx.production.update({
-        where: { id: id },
-        data: {
-          storeId: BigInt(data.storeId),
-          producedVariantId: data.producedVariantId
-            ? BigInt(data.producedVariantId)
-            : null,
-          quantityProduced: data.quantityProduced,
-          status: status,
-          type: typeData,
-          notes: data.notes,
-          targetDate: data.targetDate,
-          createdAt: new Date().toISOString(),
-        },
-      });
-
-      const isExistingBespoke = await tx.beSpokeDetails.findUnique({
-        where: { productionId: id },
-      });
-
-      if (!isExistingBespoke) {
-        if (data.type === 'BE_SPOKE') {
-          if (!data.bespoke) {
-            throw new BadRequestException(
-              'Data BE SPOKE kosong harap coba lagi',
-            );
-          }
-
-          const bespoke = BeSpokeRequiredSchema.parse(data.bespoke);
-
-          let customer;
-          customer = await tx.customer.findFirst({
-            where: { email: data.bespoke?.email },
-          });
-
-          if (!customer) {
-            customer = await tx.customer.create({
-              data: {
-                name: bespoke?.name,
-                email: bespoke?.email,
-                phone: bespoke?.phone,
-              },
-            });
-          }
-
-          await tx.beSpokeDetails.create({
-            data: {
-              title: bespoke.title,
-              productionId: production.id,
-              customerId: customer.id,
-              description: bespoke.description,
-              quotedPrice: bespoke.quotedPrice,
-            },
-          });
-        }
-
-        return toProductionOnlyResponse(production);
-      } else {
-        if (data.type === 'BE_SPOKE') {
-          if (!data.bespoke) {
-            throw new BadRequestException(
-              'Data BE SPOKE kosong harap coba lagi',
-            );
-          }
-
-          await tx.customer.update({
-            where: { id: isExistingBespoke.customerId! },
-            data: {
-              name: data.bespoke?.name,
-              email: data.bespoke?.email,
-              phone: data.bespoke?.phone,
-            },
-          });
-
-          await tx.beSpokeDetails.update({
-            where: { productionId: id },
-            data: {
-              title: data.bespoke.title,
-              productionId: production.id,
-              customerId: isExistingBespoke?.customerId,
-              description: data.bespoke.description,
-              quotedPrice: data.bespoke.quotedPrice,
-            },
-          });
-        }
-        return toProductionOnlyResponse(production);
-      }
-    });
-
-    return toProductionOnlyResponse(transaction);
-  }
-
-  async updateStatusNotCompleted(id: bigint, data: UpdateProductionDto) {
-    const isExisting = await prisma.production.findUnique({
-      where: { id: id },
-    });
-
-    if (!isExisting) throw new HttpException('Maaf data tidak ditemukan', 404);
-
-    const statusMap: Record<string, ProductionStatus> = {
-      PLANNED: ProductionStatus.PLANNED,
-      IN_PROGRESS: ProductionStatus.IN_PROGRESS,
-      COMPLETED: ProductionStatus.COMPLETED,
-      CANCELLED: ProductionStatus.CANCELLED,
-    };
-
-    const status =
-      data.status && data.status in statusMap
-        ? statusMap[data.status]
-        : isExisting.status;
-
-    if (status === 'COMPLETED') {
-      throw new BadRequestException('Maaf status tidak valid');
-    }
-
-    const result = await prisma.production.update({
-      where: { id: id },
-      data: {
-        status: status,
-      },
-    });
-
-    return toProductionOnlyResponse(result);
-  }
-
-  async updateStatusCompleted(id: bigint, data: UpdateProductionDto) {
-    const isExisting = await prisma.production.findUnique({
-      where: { id: id },
-    });
-
-    if (!isExisting) throw new HttpException('Maaf data tidak ditemukan', 404);
-
-    if (isExisting.status === 'COMPLETED') {
+    if (CLOSED_STATUSES.includes(isExisting.status)) {
       throw new BadRequestException(
-        'Maaf, pekerjaan produksi ini sudah selesai dijalankan.',
+        'Batch yang sudah selesai atau dibatalkan tidak bisa diubah lagi',
       );
     }
 
-    if (isExisting.status === 'CANCELLED') {
-      throw new BadRequestException(
-        'Maaf, pekerjaan produksi yang sudah dibatalkan tidak bisa diselesaikan.',
-      );
-    }
+    const variantIds = data.items.map((item) => BigInt(item.productVariantId));
+    await this.assertVariantsExist(variantIds);
 
-    const statusMap: Record<string, ProductionStatus> = {
-      PLANNED: ProductionStatus.PLANNED,
-      IN_PROGRESS: ProductionStatus.IN_PROGRESS,
-      COMPLETED: ProductionStatus.COMPLETED,
-      CANCELLED: ProductionStatus.CANCELLED,
-    };
+    const requested = new Map(
+      data.items.map((item) => [
+        String(item.productVariantId),
+        item.targetQuantity,
+      ]),
+    );
 
-    const status =
-      data.status && data.status in statusMap
-        ? statusMap[data.status]
-        : isExisting.status;
+    for (const item of isExisting.items) {
+      if (item.deliveredQuantity === 0) continue;
 
-    if (status !== 'COMPLETED') {
-      throw new BadRequestException(
-        'Maaf, fungsi ini hanya menerima perubahan status ke COMPLETED',
-      );
-    }
+      const nextTarget = requested.get(String(item.productVariantId));
 
-    const transaksi = await prisma.$transaction(async (tx) => {
-      /**
-       * Perpindahan status dilakukan lebih dulu dan secara berkondisi.
-       *
-       * Pengecekan di atas dibaca sebelum transaksi dibuka, sehingga dua
-       * permintaan yang tiba bersamaan bisa sama-sama lolos dan menambah stok
-       * dua kali. `updateMany` berkondisi status menutup celah itu: yang kedua
-       * mendapati `count` nol dan seluruh transaksinya dibatalkan sebelum
-       * menyentuh stok.
-       */
-      const claimed = await tx.production.updateMany({
-        where: { id, status: { notIn: ['COMPLETED', 'CANCELLED'] } },
-        data: { status },
-      });
-
-      if (claimed.count === 0) {
+      if (nextTarget === undefined) {
         throw new BadRequestException(
-          'Status produksi sudah berubah. Muat ulang halaman untuk melihat keadaan terbaru.',
+          'Varian yang sudah pernah disetor tidak bisa dihapus dari batch. Batalkan setorannya dulu kalau memang salah.',
         );
       }
 
-      if (isExisting.producedVariantId) {
-        /**
-         * Hasil produksi mendarat di **rumah produksi**, bukan di toko yang
-         * tertulis pada produksinya.
-         *
-         * `Production.storeId` menyatakan produksi ini untuk toko mana —
-         * sebuah tujuan, bukan tempat barangnya berada. Barang yang baru
-         * selesai dirajut secara fisik ada di rumah produksi dan belum
-         * dikirim; menaruhnya langsung di stok cabang akan membuat kasir di
-         * sana bisa menjual barang yang belum tiba.
-         */
-        const productionHouse = await findProductionHouse(tx);
+      if (nextTarget < item.deliveredQuantity) {
+        throw new BadRequestException(
+          `Target varian tidak boleh lebih kecil dari yang sudah masuk (${item.deliveredQuantity} pcs).`,
+        );
+      }
+    }
+
+    const updated = await prisma.$transaction(async (tx) => {
+      /// Baris yang tidak lagi ada di form dibuang; yang tersisa di-upsert
+      /// supaya `deliveredQuantity`-nya tidak ikut hilang.
+      await tx.productionItem.deleteMany({
+        where: { productionId: id, productVariantId: { notIn: variantIds } },
+      });
+
+      for (const item of data.items) {
+        await tx.productionItem.upsert({
+          where: {
+            productionId_productVariantId: {
+              productionId: id,
+              productVariantId: BigInt(item.productVariantId),
+            },
+          },
+          update: { targetQuantity: item.targetQuantity },
+          create: {
+            productionId: id,
+            productVariantId: BigInt(item.productVariantId),
+            targetQuantity: item.targetQuantity,
+          },
+        });
+      }
+
+      return tx.production.update({
+        where: { id },
+        data: { targetDate: data.targetDate, notes: data.notes },
+        include: productionDetailInclude,
+      });
+    });
+
+    return {
+      success: true,
+      data: toProductionDetailResponse(updated),
+      meta: { timeStamp: new Date().toISOString() },
+    };
+  }
+
+  /**
+   * Mencatat satu kali antar hasil produksi.
+   *
+   * Sekali jalan: stok rumah produksi bertambah, riwayat stok mencatat barang
+   * masuk, kemajuan batch naik, dan statusnya bergerak sendiri. Acuan riwayat
+   * stok tetap batch-nya (bukan setorannya) supaya sebentuk dengan data lama.
+   */
+  async recordDelivery(id: bigint, data: RecordDeliveryDto, actor: JwtPayload) {
+    const batch = await prisma.production.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+
+    if (!batch) throw new NotFoundException('Batch produksi tidak ditemukan');
+
+    if (CLOSED_STATUSES.includes(batch.status)) {
+      throw new BadRequestException(
+        'Batch yang sudah selesai atau dibatalkan tidak bisa disetori lagi',
+      );
+    }
+
+    const lines = data.items.filter((item) => item.quantity > 0);
+    const itemById = new Map(
+      batch.items.map((item) => [String(item.id), item]),
+    );
+
+    for (const line of lines) {
+      const item = itemById.get(String(line.productionItemId));
+
+      if (!item) {
+        throw new BadRequestException(
+          'Ada varian yang bukan bagian dari batch ini. Muat ulang halaman lalu coba lagi.',
+        );
+      }
+
+      const sisa = item.targetQuantity - item.deliveredQuantity;
+      if (line.quantity > sisa) {
+        throw new BadRequestException(
+          `Jumlah yang disetor melebihi sisa target (sisa ${sisa} pcs). Kalau targetnya memang bertambah, ubah dulu batch-nya.`,
+        );
+      }
+    }
+
+    const productionHouse = await findProductionHouse();
+
+    await prisma.$transaction(async (tx) => {
+      const delivery = await tx.productionDelivery.create({
+        data: {
+          productionId: id,
+          deliveredAt: data.deliveredAt,
+          note: data.note,
+          userId: BigInt(actor.sub),
+          items: {
+            create: lines.map((line) => ({
+              productionItemId: BigInt(line.productionItemId),
+              quantity: line.quantity,
+            })),
+          },
+        },
+      });
+
+      for (const line of lines) {
+        const item = itemById.get(String(line.productionItemId))!;
+
+        await tx.productionItem.update({
+          where: { id: item.id },
+          data: { deliveredQuantity: { increment: line.quantity } },
+        });
 
         await tx.productVariantStock.upsert({
           where: {
             productVariantId_storeId: {
-              productVariantId: isExisting.producedVariantId,
+              productVariantId: item.productVariantId,
               storeId: productionHouse.id,
             },
           },
-          update: {
-            stock: {
-              increment: isExisting.quantityProduced,
-            },
-          },
+          update: { stock: { increment: line.quantity } },
           create: {
-            productVariantId: isExisting.producedVariantId,
+            productVariantId: item.productVariantId,
             storeId: productionHouse.id,
-            stock: isExisting.quantityProduced,
+            stock: line.quantity,
             reserved_stock: 0,
-          },
-          select: {
-            id: true,
-            stock: true,
-            reserved_stock: true,
           },
         });
 
@@ -543,140 +360,291 @@ export class ProductionService {
           data: {
             storeId: productionHouse.id,
             itemType: 'PRODUCT_VARIANT',
-            itemId: isExisting.producedVariantId,
+            itemId: item.productVariantId,
             direction: 'IN',
-            quantity: isExisting.quantityProduced,
+            quantity: line.quantity,
             source: 'PRODUCTION',
-            referenceId: isExisting.id,
+            referenceId: id,
+            createdAt: delivery.deliveredAt,
           },
         });
-
-        /**
-         * Produksi yang ditujukan untuk toko lain langsung melahirkan catatan
-         * kiriman berstatus siap kirim.
-         *
-         * Menyambungkan keduanya di sini, bukan menyerahkannya pada ingatan
-         * admin, supaya tidak ada produksi yang selesai lalu terlupa dikirim.
-         * `productionId` yang unik menjamin satu produksi tidak pernah
-         * melahirkan dua kiriman.
-         */
-        if (isExisting.storeId !== productionHouse.id) {
-          await tx.stockTransfer.create({
-            data: {
-              code: idFormat('TRF'),
-              fromStoreId: productionHouse.id,
-              toStoreId: isExisting.storeId,
-              productionId: isExisting.id,
-              notes: `Dibuat otomatis dari produksi #${isExisting.id}`,
-              items: {
-                create: {
-                  productVariantId: isExisting.producedVariantId,
-                  quantity: isExisting.quantityProduced,
-                },
-              },
-            },
-          });
-        }
       }
 
-      const result = await tx.production.findUniqueOrThrow({
-        where: { id: id },
+      await this.syncBatchStatus(tx, id);
+    });
+
+    return this.findOne(id);
+  }
+
+  /**
+   * Menyelaraskan status batch dengan kemajuannya.
+   *
+   * Statusnya memang tidak pernah diisi manual: belum ada yang masuk berarti
+   * Direncanakan, sebagian masuk berarti Dikerjakan, dan semua target
+   * terpenuhi berarti Selesai.
+   */
+  private async syncBatchStatus(tx: Prisma.TransactionClient, id: bigint) {
+    const items = await tx.productionItem.findMany({
+      where: { productionId: id },
+      select: { targetQuantity: true, deliveredQuantity: true },
+    });
+
+    const delivered = items.reduce(
+      (total, item) => total + item.deliveredQuantity,
+      0,
+    );
+    const isComplete =
+      items.length > 0 &&
+      items.every((item) => item.deliveredQuantity >= item.targetQuantity);
+
+    const status: ProductionStatus = isComplete
+      ? 'COMPLETED'
+      : delivered > 0
+        ? 'IN_PROGRESS'
+        : 'PLANNED';
+
+    await tx.production.update({
+      where: { id },
+      data: {
+        status,
+        completedAt: isComplete ? new Date() : null,
+      },
+    });
+  }
+
+  /**
+   * Membatalkan satu setoran yang salah input.
+   *
+   * Stoknya ditarik kembali, dan koreksinya dicatat sebagai barang keluar —
+   * bukan dengan menghapus riwayat lamanya, supaya jejaknya tetap utuh.
+   * Ditolak kalau stok bebasnya sudah tidak cukup, karena barangnya berarti
+   * sudah terjual atau terkirim.
+   */
+  async cancelDelivery(id: bigint, deliveryId: bigint) {
+    const delivery = await prisma.productionDelivery.findFirst({
+      where: { id: deliveryId, productionId: id },
+      include: { items: { include: { item: true } } },
+    });
+
+    if (!delivery) {
+      throw new NotFoundException('Setoran tidak ditemukan pada batch ini');
+    }
+
+    const productionHouse = await findProductionHouse();
+
+    const shortages: string[] = [];
+
+    for (const row of delivery.items) {
+      const stock = await prisma.productVariantStock.findUnique({
+        where: {
+          productVariantId_storeId: {
+            productVariantId: row.item.productVariantId,
+            storeId: productionHouse.id,
+          },
+        },
         include: {
-          beSpokeDetails: {
+          productVariant: {
             select: {
-              quotedPrice: true,
+              sku: true,
+              productMaster: { select: { name: true } },
             },
           },
         },
       });
 
-      if (result.type === 'BE_SPOKE') {
-        await tx.cashTransaction.create({
+      if (!stock || stock.stock < row.quantity) {
+        shortages.push(
+          `${stock?.productVariant.productMaster.name ?? 'Varian'} (${stock?.productVariant.sku ?? '-'}): perlu ${row.quantity}, stok bebas ${stock?.stock ?? 0}`,
+        );
+      }
+    }
+
+    if (shortages.length > 0) {
+      throw new BadRequestException(
+        `Setoran tidak bisa dibatalkan karena stoknya sudah tidak utuh: ${shortages.join(', ')}. Barangnya kemungkinan sudah terjual atau dikirim.`,
+      );
+    }
+
+    await prisma.$transaction(async (tx) => {
+      for (const row of delivery.items) {
+        await tx.productionItem.update({
+          where: { id: row.productionItemId },
+          data: { deliveredQuantity: { decrement: row.quantity } },
+        });
+
+        await tx.productVariantStock.update({
+          where: {
+            productVariantId_storeId: {
+              productVariantId: row.item.productVariantId,
+              storeId: productionHouse.id,
+            },
+          },
+          data: { stock: { decrement: row.quantity } },
+        });
+
+        await tx.inventoryLedger.create({
           data: {
-            type: 'IN',
+            storeId: productionHouse.id,
+            itemType: 'PRODUCT_VARIANT',
+            itemId: row.item.productVariantId,
+            direction: 'OUT',
+            quantity: row.quantity,
             source: 'PRODUCTION',
-            referenceId: result.id,
-            amount: result.beSpokeDetails?.quotedPrice ?? 0,
-            storeId: result.storeId,
+            referenceId: id,
           },
         });
       }
 
-      return result;
+      await tx.productionDelivery.delete({ where: { id: deliveryId } });
+      await this.syncBatchStatus(tx, id);
     });
 
-    return transaksi;
+    return this.findOne(id);
+  }
+
+  /**
+   * Menutup batch sebelum targetnya terpenuhi.
+   *
+   * Sisa targetnya bisa langsung dipindahkan ke batch lanjutan — sesuai cara
+   * kerjanya di lapangan: yang belum jadi dikerjakan di periode berikutnya,
+   * bukan hilang begitu saja.
+   */
+  async close(id: bigint, data: CloseProductionDto) {
+    const batch = await prisma.production.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+
+    if (!batch) throw new NotFoundException('Batch produksi tidak ditemukan');
+
+    if (CLOSED_STATUSES.includes(batch.status)) {
+      throw new BadRequestException('Batch ini sudah ditutup');
+    }
+
+    const leftovers = batch.items
+      .map((item) => ({
+        productVariantId: item.productVariantId,
+        remaining: item.targetQuantity - item.deliveredQuantity,
+      }))
+      .filter((item) => item.remaining > 0);
+
+    const hasDelivery = batch.items.some((item) => item.deliveredQuantity > 0);
+
+    const result = await prisma.$transaction(async (tx) => {
+      /// Belum ada satu pun yang masuk berarti batch ini batal, bukan
+      /// selesai — menandainya "Selesai" akan berbohong di laporan.
+      await tx.production.update({
+        where: { id },
+        data: {
+          status: hasDelivery ? 'COMPLETED' : 'CANCELLED',
+          completedAt: hasDelivery ? new Date() : null,
+        },
+      });
+
+      if (!data.createContinuation || leftovers.length === 0) return null;
+
+      return tx.production.create({
+        data: {
+          code: idFormat('PRD'),
+          status: 'PLANNED',
+          targetDate: batch.targetDate,
+          notes: `Lanjutan sisa batch ${batch.code}`,
+          parentProductionId: batch.id,
+          items: {
+            create: leftovers.map((item) => ({
+              productVariantId: item.productVariantId,
+              targetQuantity: item.remaining,
+            })),
+          },
+        },
+        select: { id: true, code: true },
+      });
+    });
+
+    return {
+      success: true,
+      data: {
+        closed: batch.code,
+        continuationCode: result?.code ?? null,
+      },
+      meta: { timeStamp: new Date().toISOString() },
+    };
   }
 
   async remove(id: bigint) {
-    const data = await prisma.production.delete({
-      where: { id: id },
+    const batch = await prisma.production.findUnique({
+      where: { id },
+      include: { items: true },
     });
 
-    return toProductionOnlyResponse(data);
+    if (!batch) throw new NotFoundException('Batch produksi tidak ditemukan');
+
+    /// Batch yang pernah disetori sudah menggerakkan stok; menghapusnya akan
+    /// membuat riwayat stok menunjuk batch yang tidak ada.
+    if (batch.items.some((item) => item.deliveredQuantity > 0)) {
+      throw new BadRequestException(
+        'Batch yang sudah punya setoran tidak bisa dihapus. Tutup batch-nya saja.',
+      );
+    }
+
+    await prisma.production.delete({ where: { id } });
+
+    return {
+      success: true,
+      data: { id },
+      meta: { timeStamp: new Date().toISOString() },
+    };
   }
 
-  /// Tanpa paginasi: filternya sama dengan listing, seluruh baris ikut terbawa.
-  async exportWorkbook(
-    search?: string,
-    type?: ProductionType,
-    status?: ProductionStatus,
-    dateFrom?: string,
-    dateTo?: string,
-  ) {
+  /// Tanpa paginasi: filternya sama dengan listing, seluruh baris ikut.
+  /// Satu baris per varian, karena itulah satuan yang dikerjakan.
+  async exportWorkbook(query: ProductionQueryDto) {
     const rows = await prisma.production.findMany({
-      where: this.buildWhere(search, type, status, dateFrom, dateTo),
+      where: this.buildWhere(query),
       orderBy: { createdAt: 'desc' },
-      select: {
-        quantityProduced: true,
-        type: true,
-        status: true,
-        targetDate: true,
-        notes: true,
-        createdAt: true,
-        variant: {
-          select: { sku: true, productMaster: { select: { name: true } } },
-        },
-        beSpokeDetails: { select: { title: true } },
-        store: { select: { name: true } },
-      },
+      include: productionListInclude,
     });
 
     const buffer = await buildWorkbook([
       {
         name: 'Produksi',
         columns: [
-          { header: 'Tanggal dibuat', key: 'createdAt', width: 16 },
-          { header: 'Produk', key: 'product', width: 34 },
-          { header: 'SKU', key: 'sku', width: 18 },
-          { header: 'Toko', key: 'store', width: 20 },
-          { header: 'Tipe', key: 'type', width: 18 },
+          { header: 'Kode batch', key: 'code', width: 22 },
           { header: 'Status', key: 'status', width: 16 },
-          { header: 'Jumlah', key: 'quantity', width: 12 },
           { header: 'Target selesai', key: 'targetDate', width: 16 },
-          { header: 'Catatan', key: 'notes', width: 34 },
+          { header: 'Produk', key: 'product', width: 32 },
+          { header: 'Varian', key: 'variant', width: 20 },
+          { header: 'SKU', key: 'sku', width: 20 },
+          { header: 'Target', key: 'target' },
+          { header: 'Sudah masuk', key: 'delivered' },
+          { header: 'Sisa', key: 'remaining' },
+          { header: 'Catatan', key: 'notes', width: 30 },
         ],
-        rows: rows.map((row) => ({
-          createdAt: row.createdAt.toISOString().slice(0, 10),
-          /// Produksi custom tidak punya varian, judulnyalah identitasnya.
-          product:
-            row.variant?.productMaster.name ?? row.beSpokeDetails?.title ?? '-',
-          sku: row.variant?.sku ?? '-',
-          store: row.store?.name ?? '-',
-          type: row.type,
-          status: row.status,
-          quantity: row.quantityProduced,
-          targetDate: row.targetDate
-            ? row.targetDate.toISOString().slice(0, 10)
-            : '-',
-          notes: row.notes ?? '-',
-        })),
+        rows: rows.flatMap((batch) =>
+          batch.items.map((item) => ({
+            code: batch.code,
+            status: batch.status,
+            targetDate: batch.targetDate.toISOString().slice(0, 10),
+            product: item.variant.productMaster.name,
+            variant: item.variant.options
+              .map((option) => option.variantValue.value)
+              .join(' - '),
+            sku: item.variant.sku,
+            target: item.targetQuantity,
+            delivered: item.deliveredQuantity,
+            remaining: Math.max(
+              item.targetQuantity - item.deliveredQuantity,
+              0,
+            ),
+            notes: batch.notes ?? '-',
+          })),
+        ),
       },
     ]);
 
     return {
       buffer,
-      filename: buildExportFilename('produksi', dateFrom, dateTo),
+      filename: buildExportFilename('produksi', query.dateFrom, query.dateTo),
     };
   }
 }

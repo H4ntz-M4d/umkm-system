@@ -1,11 +1,9 @@
 import z from "zod";
 
 export const ProductStatusEnum = z.enum(["ACTIVE", "NONACTIVE", "DRAFT"]);
-export const ProductTypeEnum = z.enum([
-  "READY_STOCK",
-  "MADE_TO_ORDER",
-  "PRE_ORDER",
-]);
+/// Cerminan `enum ProductType` di schema.prisma. READY_STOCK dan MADE_TO_ORDER
+/// sudah digabung jadi REGULAR — lihat keterangan di schema.prisma.
+export const ProductTypeEnum = z.enum(["REGULAR", "PRE_ORDER"]);
 
 export const VariantValueSchema = z
   .string()
@@ -19,7 +17,13 @@ export const VariantTypeSchema = z.object({
 
 export const VariantSchema = z.object({
   id: z.string().optional(),
-  sku: z.string().min(3, "SKU wajib diisi dan tidak boleh ada yang sama"),
+  /// Minimal 4 karakter karena pendeteksi scanner barcode USB di kasir baru
+  /// bereaksi mulai 4 karakter (use-barcode-scanner.ts) — SKU yang lebih
+  /// pendek tidak akan pernah terbaca dari label yang dicetak.
+  sku: z
+    .string()
+    .trim()
+    .min(4, "SKU minimal 4 karakter dan tidak boleh ada yang sama"),
   // Harga 0 sebelumnya lolos validasi — produk tersimpan tanpa harga tanpa
   // ada yang memberi tahu. `cost` sengaja dibiarkan boleh 0: belum semua
   // varian punya biaya modal tercatat.

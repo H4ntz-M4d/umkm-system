@@ -1,55 +1,78 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  cancelProductionDelivery,
+  closeProduction,
   createProduction,
-  deleteProduction,
-  fetchProductionData,
+  fetchProductionDetail,
+  fetchProductions,
   fetchProductionSummary,
   ProductionFilters,
+  recordProductionDelivery,
+  removeProduction,
   updateProduction,
-  updateProductionStatus,
-  updateProductionStatusCompleted,
 } from "@/lib/queries/production/production.query";
-import { toast } from "sonner";
 import {
   CreateProductionSchemaInput,
-  UpdateProductionSchemaInput,
+  RecordDeliverySchemaInput,
 } from "@repo/schemas";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const useProductionOperation = ({
   filters,
-  isTableMode = false,
+  productionId,
 }: {
   filters?: ProductionFilters;
-  isTableMode?: boolean;
+  /// Diisi layar detail batch; daftar tidak menariknya.
+  productionId?: string | null;
 }) => {
   const qc = useQueryClient();
-  const invalidate = () => qc.invalidateQueries({ queryKey: ["production"] });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["production"] });
+    qc.invalidateQueries({ queryKey: ["production-summary"] });
+    /// Setoran menggerakkan stok, jadi layar stok ikut disegarkan.
+    qc.invalidateQueries({ queryKey: ["inventory-ledgers"] });
+    qc.invalidateQueries({ queryKey: ["low-stock"] });
+  };
 
-  const getProductionData = useQuery({
+  // Pesan dari backend sudah dibuka apiFetcher jadi err.message.
+  const showError = (title: string) => (err: Error) =>
+    toast.error(title, { description: err.message });
+
+  const listQuery = useQuery({
     queryKey: ["production", filters ?? {}],
-    queryFn: () => fetchProductionData(filters ?? {}),
-    enabled: isTableMode,
+    queryFn: () => fetchProductions(filters ?? {}),
+    placeholderData: keepPreviousData,
     throwOnError: true,
   });
 
-  const getProductionSummary = useQuery({
-    queryKey: ["production"],
-    queryFn: () => fetchProductionSummary(),
-    enabled: isTableMode,
+  const summaryQuery = useQuery({
+    queryKey: ["production-summary"],
+    queryFn: fetchProductionSummary,
+    throwOnError: true,
   });
 
-  const createProductionMutation = useMutation({
+  const detailQuery = useQuery({
+    queryKey: ["production", "detail", productionId],
+    queryFn: () => fetchProductionDetail(productionId as string),
+    enabled: !!productionId,
+    throwOnError: true,
+  });
+
+  const createMutation = useMutation({
     mutationFn: createProduction,
-    onSuccess: () => {
+    onSuccess: (res) => {
       invalidate();
-      toast.success("Data produksi telah berhasil dibuat.");
+      toast.success(`Batch ${res.data.code} dibuat`);
     },
-    onError: (err) => {
-      toast.error(err.message);
-    },
+    onError: showError("Gagal membuat batch produksi"),
   });
 
-  const updateProductionMutation = useMutation({
+  const updateMutation = useMutation({
     mutationFn: ({
       id,
       data,
@@ -59,72 +82,96 @@ export const useProductionOperation = ({
     }) => updateProduction(id, data),
     onSuccess: () => {
       invalidate();
-      toast.success("Berhasil mengubah data.");
+      toast.success("Batch produksi diperbarui");
     },
-    onError: (err) => {
-      toast.error(err.message, { position: "top-center" });
-    },
+    onError: showError("Gagal memperbarui batch"),
   });
 
-  const updateProductionStatusMutation = useMutation({
+  const deliveryMutation = useMutation({
     mutationFn: ({
       id,
       data,
     }: {
       id: string;
-      data: UpdateProductionSchemaInput;
-    }) => updateProductionStatus(id, data),
-    onSuccess: () => {
+      data: RecordDeliverySchemaInput;
+    }) => recordProductionDelivery(id, data),
+    onSuccess: (res) => {
       invalidate();
-      toast.success("Berhasil mengubah status data.");
+      qc.invalidateQueries({ queryKey: ["production", "detail"] });
+      toast.success("Setoran tercatat", {
+        description:
+          res.data.status === "COMPLETED"
+            ? "Seluruh target batch terpenuhi — batch ditandai selesai."
+            : `Kemajuan batch ${res.data.totalDelivered}/${res.data.totalTarget} pcs.`,
+      });
     },
-    onError: (err) => {
-      toast.error(err.message, { position: "top-center" });
-    },
+    onError: showError("Gagal mencatat setoran"),
   });
 
-  const updateProductionStatusCompletedMutation = useMutation({
+  const cancelDeliveryMutation = useMutation({
+    mutationFn: ({ id, deliveryId }: { id: string; deliveryId: string }) =>
+      cancelProductionDelivery(id, deliveryId),
+    onSuccess: () => {
+      invalidate();
+      qc.invalidateQueries({ queryKey: ["production", "detail"] });
+      toast.success("Setoran dibatalkan dan stoknya ditarik kembali");
+    },
+    onError: showError("Gagal membatalkan setoran"),
+  });
+
+  const closeMutation = useMutation({
     mutationFn: ({
       id,
-      data,
+      createContinuation,
     }: {
       id: string;
-      data: UpdateProductionSchemaInput;
-    }) => updateProductionStatusCompleted(id, data),
-    onSuccess: () => {
+      createContinuation: boolean;
+    }) => closeProduction(id, createContinuation),
+    onSuccess: (res) => {
       invalidate();
-      toast.success("Berhasil mengubah status data.");
+      qc.invalidateQueries({ queryKey: ["production", "detail"] });
+      toast.success("Batch ditutup", {
+        description: res.data.continuationCode
+          ? `Sisa targetnya dipindahkan ke batch ${res.data.continuationCode}.`
+          : undefined,
+      });
     },
-    onError: (err) => {
-      toast.error(err.message, { position: "top-center" });
-    },
+    onError: showError("Gagal menutup batch"),
   });
 
-  const deleteProductionMutation = useMutation({
-    mutationFn: (id: string) => deleteProduction(id),
+  const removeMutation = useMutation({
+    mutationFn: (id: string) => removeProduction(id),
     onSuccess: () => {
       invalidate();
-      toast.success("Data produksi telah berhasil dihapus.");
+      toast.success("Batch produksi dihapus");
     },
-    onError: (err) => {
-      toast.error(err.message, { position: "top-center" });
-    },
+    onError: showError("Gagal menghapus batch"),
   });
 
   return {
-    dataProduction: getProductionData.data,
-    isLoadingDataProduction: getProductionData.isLoading,
-    fetchProductionSummaryData: getProductionSummary.data,
-    createProductionData: createProductionMutation.mutate,
-    isCreating: createProductionMutation.isPending,
-    updateProductionData: updateProductionMutation.mutate,
-    isUpdating: updateProductionMutation.isPending,
-    updateProductionStatusData: updateProductionStatusMutation.mutate,
-    isUpdatingStatus: updateProductionStatusMutation.isPending,
-    updateProductionStatusCompletedData:
-      updateProductionStatusCompletedMutation.mutate,
-    isUpdatingStatusCompleted:
-      updateProductionStatusCompletedMutation.isPending,
-    deleteProductionData: deleteProductionMutation.mutate,
+    productionData: listQuery.data,
+    isLoadingProduction: listQuery.isLoading,
+
+    productionSummary: summaryQuery.data,
+
+    productionDetail: detailQuery.data,
+    isLoadingDetail: detailQuery.isLoading,
+
+    createProductionData: createMutation.mutateAsync,
+    isCreating: createMutation.isPending,
+
+    updateProductionData: updateMutation.mutateAsync,
+    isUpdating: updateMutation.isPending,
+
+    recordDeliveryData: deliveryMutation.mutateAsync,
+    isRecordingDelivery: deliveryMutation.isPending,
+
+    cancelDeliveryData: cancelDeliveryMutation.mutate,
+    isCancellingDelivery: cancelDeliveryMutation.isPending,
+
+    closeProductionData: closeMutation.mutateAsync,
+    isClosing: closeMutation.isPending,
+
+    removeProductionData: removeMutation.mutate,
   };
 };

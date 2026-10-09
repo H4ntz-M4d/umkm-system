@@ -73,7 +73,15 @@ export default function ExpenseCategoryChart({
 
     const slices =
       restTotal > 0
-        ? [...top, { key: OTHER_KEY, name: "Lainnya", color: OTHER_COLOR, total: restTotal }]
+        ? [
+            ...top,
+            {
+              key: OTHER_KEY,
+              name: "Lainnya",
+              color: OTHER_COLOR,
+              total: restTotal,
+            },
+          ]
         : top;
 
     const chartConfig = slices.reduce((config, item) => {

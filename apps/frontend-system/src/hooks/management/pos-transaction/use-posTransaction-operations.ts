@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  abandonQrisTransaction,
   cancelPosTransaction,
   fetchPosTransactionParked,
   fetchPosTransactions,
@@ -8,6 +9,7 @@ import {
   uploadPaymentProof,
 } from "@/lib/queries/pos-transaction/pos-transaction.query";
 import { toast } from "sonner";
+import { notifyPosStockWarnings } from "@/lib/pos/stock-warning";
 
 export const usePosTransactionOperations = ({
   filters,
@@ -61,11 +63,33 @@ export const usePosTransactionOperations = ({
       transPosId: string;
       formData: FormData;
     }) => uploadPaymentProof(transPosId, formData),
-    onSuccess: () => {
+    onSuccess: (result) => {
       invalidate();
       toast.success("Bukti pembayaran telah berhasil diupload dan status transaksi sudah diubah ke Terbayar")
+      notifyPosStockWarnings(result.data.stockWarnings);
     },
     onError: showError("Gagal mengunggah bukti pembayaran"),
+  });
+
+  /**
+   * Tanpa toast sukses: ini berjalan diam-diam saat kasir menutup dialog, dan
+   * yang penting baginya bukan "QR berhasil dibatalkan". Yang diberitahukan
+   * justru kebalikannya — kalau pembayarannya ternyata sudah masuk.
+   */
+  const abandonQrisMutation = useMutation({
+    mutationFn: (transPosId: string) => abandonQrisTransaction(transPosId),
+    onSuccess: (result) => {
+      invalidate();
+      if (!result.data.cancelled && result.data.reason === "PAID") {
+        toast.warning("Pembayaran QRIS ternyata sudah masuk", {
+          position: "top-center",
+          duration: 10_000,
+          description:
+            "Transaksi tetap diproses sebagai lunas — jangan tagih ulang ke pembeli.",
+        });
+      }
+    },
+    onError: showError("Gagal membatalkan QR yang ditinggal"),
   });
 
   const cancelPosTransactionMutation = useMutation({
@@ -85,5 +109,6 @@ export const usePosTransactionOperations = ({
     isLoadingmutationPosTransactionData: mutationPosTransaction.isPending,
     isLoadingUploadPaymentProofData: uploadPaymentProofMutation.isPending,
     cancelPosTransactionData: cancelPosTransactionMutation.mutate,
+    abandonQrisData: abandonQrisMutation.mutateAsync,
   };
 };

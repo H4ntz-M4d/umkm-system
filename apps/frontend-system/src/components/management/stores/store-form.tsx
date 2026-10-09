@@ -10,7 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldContent, FieldError, FieldGroup } from "@/components/ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -33,7 +38,7 @@ interface StoreFormProps {
   /// di tempat yang sama dengan data yang tadi diisi.
   onSubmit: (v: FormData, onSaved: () => void) => void;
   initialData?: StoreData;
-  isOpen: boolean
+  isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 

@@ -29,21 +29,23 @@ export type AggregateShipment = {
 export type ShipmentAvgAggregateOutputType = {
   id: number | null
   orderId: number | null
-  beSpokeDetailsId: number | null
+  bespokeOrderId: number | null
   shippingCost: runtime.Decimal | null
+  unitPrice: runtime.Decimal | null
 }
 
 export type ShipmentSumAggregateOutputType = {
   id: bigint | null
   orderId: bigint | null
-  beSpokeDetailsId: bigint | null
+  bespokeOrderId: bigint | null
   shippingCost: runtime.Decimal | null
+  unitPrice: runtime.Decimal | null
 }
 
 export type ShipmentMinAggregateOutputType = {
   id: bigint | null
   orderId: bigint | null
-  beSpokeDetailsId: bigint | null
+  bespokeOrderId: bigint | null
   recipientName: string | null
   phone: string | null
   addressLine: string | null
@@ -53,13 +55,16 @@ export type ShipmentMinAggregateOutputType = {
   trackingNumber: string | null
   status: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | null
+  totalWeight: string | null
+  unitWeight: string | null
+  unitPrice: runtime.Decimal | null
   createdAt: Date | null
 }
 
 export type ShipmentMaxAggregateOutputType = {
   id: bigint | null
   orderId: bigint | null
-  beSpokeDetailsId: bigint | null
+  bespokeOrderId: bigint | null
   recipientName: string | null
   phone: string | null
   addressLine: string | null
@@ -69,13 +74,16 @@ export type ShipmentMaxAggregateOutputType = {
   trackingNumber: string | null
   status: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | null
+  totalWeight: string | null
+  unitWeight: string | null
+  unitPrice: runtime.Decimal | null
   createdAt: Date | null
 }
 
 export type ShipmentCountAggregateOutputType = {
   id: number
   orderId: number
-  beSpokeDetailsId: number
+  bespokeOrderId: number
   recipientName: number
   phone: number
   addressLine: number
@@ -85,6 +93,9 @@ export type ShipmentCountAggregateOutputType = {
   trackingNumber: number
   status: number
   shippingCost: number
+  totalWeight: number
+  unitWeight: number
+  unitPrice: number
   createdAt: number
   _all: number
 }
@@ -93,21 +104,23 @@ export type ShipmentCountAggregateOutputType = {
 export type ShipmentAvgAggregateInputType = {
   id?: true
   orderId?: true
-  beSpokeDetailsId?: true
+  bespokeOrderId?: true
   shippingCost?: true
+  unitPrice?: true
 }
 
 export type ShipmentSumAggregateInputType = {
   id?: true
   orderId?: true
-  beSpokeDetailsId?: true
+  bespokeOrderId?: true
   shippingCost?: true
+  unitPrice?: true
 }
 
 export type ShipmentMinAggregateInputType = {
   id?: true
   orderId?: true
-  beSpokeDetailsId?: true
+  bespokeOrderId?: true
   recipientName?: true
   phone?: true
   addressLine?: true
@@ -117,13 +130,16 @@ export type ShipmentMinAggregateInputType = {
   trackingNumber?: true
   status?: true
   shippingCost?: true
+  totalWeight?: true
+  unitWeight?: true
+  unitPrice?: true
   createdAt?: true
 }
 
 export type ShipmentMaxAggregateInputType = {
   id?: true
   orderId?: true
-  beSpokeDetailsId?: true
+  bespokeOrderId?: true
   recipientName?: true
   phone?: true
   addressLine?: true
@@ -133,13 +149,16 @@ export type ShipmentMaxAggregateInputType = {
   trackingNumber?: true
   status?: true
   shippingCost?: true
+  totalWeight?: true
+  unitWeight?: true
+  unitPrice?: true
   createdAt?: true
 }
 
 export type ShipmentCountAggregateInputType = {
   id?: true
   orderId?: true
-  beSpokeDetailsId?: true
+  bespokeOrderId?: true
   recipientName?: true
   phone?: true
   addressLine?: true
@@ -149,6 +168,9 @@ export type ShipmentCountAggregateInputType = {
   trackingNumber?: true
   status?: true
   shippingCost?: true
+  totalWeight?: true
+  unitWeight?: true
+  unitPrice?: true
   createdAt?: true
   _all?: true
 }
@@ -242,7 +264,7 @@ export type ShipmentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type ShipmentGroupByOutputType = {
   id: bigint
   orderId: bigint | null
-  beSpokeDetailsId: bigint | null
+  bespokeOrderId: bigint | null
   recipientName: string
   phone: string
   addressLine: string
@@ -252,6 +274,9 @@ export type ShipmentGroupByOutputType = {
   trackingNumber: string | null
   status: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal
+  totalWeight: string | null
+  unitWeight: string | null
+  unitPrice: runtime.Decimal | null
   createdAt: Date
   _count: ShipmentCountAggregateOutputType | null
   _avg: ShipmentAvgAggregateOutputType | null
@@ -260,7 +285,7 @@ export type ShipmentGroupByOutputType = {
   _max: ShipmentMaxAggregateOutputType | null
 }
 
-export type GetShipmentGroupByPayload<T extends ShipmentGroupByArgs> = Prisma.PrismaPromise<
+type GetShipmentGroupByPayload<T extends ShipmentGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ShipmentGroupByOutputType, T['by']> &
       {
@@ -281,7 +306,7 @@ export type ShipmentWhereInput = {
   NOT?: Prisma.ShipmentWhereInput | Prisma.ShipmentWhereInput[]
   id?: Prisma.BigIntFilter<"Shipment"> | bigint | number
   orderId?: Prisma.BigIntNullableFilter<"Shipment"> | bigint | number | null
-  beSpokeDetailsId?: Prisma.BigIntNullableFilter<"Shipment"> | bigint | number | null
+  bespokeOrderId?: Prisma.BigIntNullableFilter<"Shipment"> | bigint | number | null
   recipientName?: Prisma.StringFilter<"Shipment"> | string
   phone?: Prisma.StringFilter<"Shipment"> | string
   addressLine?: Prisma.StringFilter<"Shipment"> | string
@@ -291,15 +316,18 @@ export type ShipmentWhereInput = {
   trackingNumber?: Prisma.StringNullableFilter<"Shipment"> | string | null
   status?: Prisma.EnumShipmentStatusNullableFilter<"Shipment"> | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.StringNullableFilter<"Shipment"> | string | null
+  unitWeight?: Prisma.StringNullableFilter<"Shipment"> | string | null
+  unitPrice?: Prisma.DecimalNullableFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
-  beSpokeDetails?: Prisma.XOR<Prisma.BeSpokeDetailsNullableScalarRelationFilter, Prisma.BeSpokeDetailsWhereInput> | null
+  bespokeOrder?: Prisma.XOR<Prisma.BespokeOrderNullableScalarRelationFilter, Prisma.BespokeOrderWhereInput> | null
 }
 
 export type ShipmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
-  beSpokeDetailsId?: Prisma.SortOrderInput | Prisma.SortOrder
+  bespokeOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   addressLine?: Prisma.SortOrder
@@ -309,15 +337,18 @@ export type ShipmentOrderByWithRelationInput = {
   trackingNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
+  totalWeight?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitWeight?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsOrderByWithRelationInput
+  bespokeOrder?: Prisma.BespokeOrderOrderByWithRelationInput
 }
 
 export type ShipmentWhereUniqueInput = Prisma.AtLeast<{
   id?: bigint | number
   orderId?: bigint | number
-  beSpokeDetailsId?: bigint | number
+  bespokeOrderId?: bigint | number
   AND?: Prisma.ShipmentWhereInput | Prisma.ShipmentWhereInput[]
   OR?: Prisma.ShipmentWhereInput[]
   NOT?: Prisma.ShipmentWhereInput | Prisma.ShipmentWhereInput[]
@@ -330,15 +361,18 @@ export type ShipmentWhereUniqueInput = Prisma.AtLeast<{
   trackingNumber?: Prisma.StringNullableFilter<"Shipment"> | string | null
   status?: Prisma.EnumShipmentStatusNullableFilter<"Shipment"> | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.StringNullableFilter<"Shipment"> | string | null
+  unitWeight?: Prisma.StringNullableFilter<"Shipment"> | string | null
+  unitPrice?: Prisma.DecimalNullableFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"Shipment"> | Date | string
   order?: Prisma.XOR<Prisma.OrderNullableScalarRelationFilter, Prisma.OrderWhereInput> | null
-  beSpokeDetails?: Prisma.XOR<Prisma.BeSpokeDetailsNullableScalarRelationFilter, Prisma.BeSpokeDetailsWhereInput> | null
-}, "id" | "orderId" | "beSpokeDetailsId">
+  bespokeOrder?: Prisma.XOR<Prisma.BespokeOrderNullableScalarRelationFilter, Prisma.BespokeOrderWhereInput> | null
+}, "id" | "orderId" | "bespokeOrderId">
 
 export type ShipmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   orderId?: Prisma.SortOrderInput | Prisma.SortOrder
-  beSpokeDetailsId?: Prisma.SortOrderInput | Prisma.SortOrder
+  bespokeOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
   recipientName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   addressLine?: Prisma.SortOrder
@@ -348,6 +382,9 @@ export type ShipmentOrderByWithAggregationInput = {
   trackingNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
+  totalWeight?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitWeight?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ShipmentCountOrderByAggregateInput
   _avg?: Prisma.ShipmentAvgOrderByAggregateInput
@@ -362,7 +399,7 @@ export type ShipmentScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ShipmentScalarWhereWithAggregatesInput | Prisma.ShipmentScalarWhereWithAggregatesInput[]
   id?: Prisma.BigIntWithAggregatesFilter<"Shipment"> | bigint | number
   orderId?: Prisma.BigIntNullableWithAggregatesFilter<"Shipment"> | bigint | number | null
-  beSpokeDetailsId?: Prisma.BigIntNullableWithAggregatesFilter<"Shipment"> | bigint | number | null
+  bespokeOrderId?: Prisma.BigIntNullableWithAggregatesFilter<"Shipment"> | bigint | number | null
   recipientName?: Prisma.StringWithAggregatesFilter<"Shipment"> | string
   phone?: Prisma.StringWithAggregatesFilter<"Shipment"> | string
   addressLine?: Prisma.StringWithAggregatesFilter<"Shipment"> | string
@@ -372,6 +409,9 @@ export type ShipmentScalarWhereWithAggregatesInput = {
   trackingNumber?: Prisma.StringNullableWithAggregatesFilter<"Shipment"> | string | null
   status?: Prisma.EnumShipmentStatusNullableWithAggregatesFilter<"Shipment"> | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalWithAggregatesFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.StringNullableWithAggregatesFilter<"Shipment"> | string | null
+  unitWeight?: Prisma.StringNullableWithAggregatesFilter<"Shipment"> | string | null
+  unitPrice?: Prisma.DecimalNullableWithAggregatesFilter<"Shipment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Shipment"> | Date | string
 }
 
@@ -386,15 +426,18 @@ export type ShipmentCreateInput = {
   trackingNumber?: string | null
   status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: string | null
+  unitWeight?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutShipmentInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsCreateNestedOneWithoutShipmentsInput
+  bespokeOrder?: Prisma.BespokeOrderCreateNestedOneWithoutShipmentsInput
 }
 
 export type ShipmentUncheckedCreateInput = {
   id?: bigint | number
   orderId?: bigint | number | null
-  beSpokeDetailsId?: bigint | number | null
+  bespokeOrderId?: bigint | number | null
   recipientName: string
   phone: string
   addressLine: string
@@ -404,6 +447,9 @@ export type ShipmentUncheckedCreateInput = {
   trackingNumber?: string | null
   status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: string | null
+  unitWeight?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
@@ -418,15 +464,18 @@ export type ShipmentUpdateInput = {
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneWithoutShipmentNestedInput
-  beSpokeDetails?: Prisma.BeSpokeDetailsUpdateOneWithoutShipmentsNestedInput
+  bespokeOrder?: Prisma.BespokeOrderUpdateOneWithoutShipmentsNestedInput
 }
 
 export type ShipmentUncheckedUpdateInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   orderId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-  beSpokeDetailsId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  bespokeOrderId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   recipientName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine?: Prisma.StringFieldUpdateOperationsInput | string
@@ -436,13 +485,16 @@ export type ShipmentUncheckedUpdateInput = {
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ShipmentCreateManyInput = {
   id?: bigint | number
   orderId?: bigint | number | null
-  beSpokeDetailsId?: bigint | number | null
+  bespokeOrderId?: bigint | number | null
   recipientName: string
   phone: string
   addressLine: string
@@ -452,6 +504,9 @@ export type ShipmentCreateManyInput = {
   trackingNumber?: string | null
   status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: string | null
+  unitWeight?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
@@ -466,13 +521,16 @@ export type ShipmentUpdateManyMutationInput = {
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ShipmentUncheckedUpdateManyInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   orderId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
-  beSpokeDetailsId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  bespokeOrderId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   recipientName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine?: Prisma.StringFieldUpdateOperationsInput | string
@@ -482,6 +540,9 @@ export type ShipmentUncheckedUpdateManyInput = {
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -493,7 +554,7 @@ export type ShipmentNullableScalarRelationFilter = {
 export type ShipmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
-  beSpokeDetailsId?: Prisma.SortOrder
+  bespokeOrderId?: Prisma.SortOrder
   recipientName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   addressLine?: Prisma.SortOrder
@@ -503,20 +564,24 @@ export type ShipmentCountOrderByAggregateInput = {
   trackingNumber?: Prisma.SortOrder
   status?: Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
+  totalWeight?: Prisma.SortOrder
+  unitWeight?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ShipmentAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
-  beSpokeDetailsId?: Prisma.SortOrder
+  bespokeOrderId?: Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
 }
 
 export type ShipmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
-  beSpokeDetailsId?: Prisma.SortOrder
+  bespokeOrderId?: Prisma.SortOrder
   recipientName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   addressLine?: Prisma.SortOrder
@@ -526,13 +591,16 @@ export type ShipmentMaxOrderByAggregateInput = {
   trackingNumber?: Prisma.SortOrder
   status?: Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
+  totalWeight?: Prisma.SortOrder
+  unitWeight?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ShipmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
-  beSpokeDetailsId?: Prisma.SortOrder
+  bespokeOrderId?: Prisma.SortOrder
   recipientName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   addressLine?: Prisma.SortOrder
@@ -542,14 +610,18 @@ export type ShipmentMinOrderByAggregateInput = {
   trackingNumber?: Prisma.SortOrder
   status?: Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
+  totalWeight?: Prisma.SortOrder
+  unitWeight?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type ShipmentSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
-  beSpokeDetailsId?: Prisma.SortOrder
+  bespokeOrderId?: Prisma.SortOrder
   shippingCost?: Prisma.SortOrder
+  unitPrice?: Prisma.SortOrder
 }
 
 export type ShipmentCreateNestedOneWithoutOrderInput = {
@@ -584,36 +656,36 @@ export type ShipmentUncheckedUpdateOneWithoutOrderNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ShipmentUpdateToOneWithWhereWithoutOrderInput, Prisma.ShipmentUpdateWithoutOrderInput>, Prisma.ShipmentUncheckedUpdateWithoutOrderInput>
 }
 
-export type ShipmentCreateNestedOneWithoutBeSpokeDetailsInput = {
-  create?: Prisma.XOR<Prisma.ShipmentCreateWithoutBeSpokeDetailsInput, Prisma.ShipmentUncheckedCreateWithoutBeSpokeDetailsInput>
-  connectOrCreate?: Prisma.ShipmentCreateOrConnectWithoutBeSpokeDetailsInput
+export type ShipmentCreateNestedOneWithoutBespokeOrderInput = {
+  create?: Prisma.XOR<Prisma.ShipmentCreateWithoutBespokeOrderInput, Prisma.ShipmentUncheckedCreateWithoutBespokeOrderInput>
+  connectOrCreate?: Prisma.ShipmentCreateOrConnectWithoutBespokeOrderInput
   connect?: Prisma.ShipmentWhereUniqueInput
 }
 
-export type ShipmentUncheckedCreateNestedOneWithoutBeSpokeDetailsInput = {
-  create?: Prisma.XOR<Prisma.ShipmentCreateWithoutBeSpokeDetailsInput, Prisma.ShipmentUncheckedCreateWithoutBeSpokeDetailsInput>
-  connectOrCreate?: Prisma.ShipmentCreateOrConnectWithoutBeSpokeDetailsInput
+export type ShipmentUncheckedCreateNestedOneWithoutBespokeOrderInput = {
+  create?: Prisma.XOR<Prisma.ShipmentCreateWithoutBespokeOrderInput, Prisma.ShipmentUncheckedCreateWithoutBespokeOrderInput>
+  connectOrCreate?: Prisma.ShipmentCreateOrConnectWithoutBespokeOrderInput
   connect?: Prisma.ShipmentWhereUniqueInput
 }
 
-export type ShipmentUpdateOneWithoutBeSpokeDetailsNestedInput = {
-  create?: Prisma.XOR<Prisma.ShipmentCreateWithoutBeSpokeDetailsInput, Prisma.ShipmentUncheckedCreateWithoutBeSpokeDetailsInput>
-  connectOrCreate?: Prisma.ShipmentCreateOrConnectWithoutBeSpokeDetailsInput
-  upsert?: Prisma.ShipmentUpsertWithoutBeSpokeDetailsInput
+export type ShipmentUpdateOneWithoutBespokeOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.ShipmentCreateWithoutBespokeOrderInput, Prisma.ShipmentUncheckedCreateWithoutBespokeOrderInput>
+  connectOrCreate?: Prisma.ShipmentCreateOrConnectWithoutBespokeOrderInput
+  upsert?: Prisma.ShipmentUpsertWithoutBespokeOrderInput
   disconnect?: Prisma.ShipmentWhereInput | boolean
   delete?: Prisma.ShipmentWhereInput | boolean
   connect?: Prisma.ShipmentWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ShipmentUpdateToOneWithWhereWithoutBeSpokeDetailsInput, Prisma.ShipmentUpdateWithoutBeSpokeDetailsInput>, Prisma.ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShipmentUpdateToOneWithWhereWithoutBespokeOrderInput, Prisma.ShipmentUpdateWithoutBespokeOrderInput>, Prisma.ShipmentUncheckedUpdateWithoutBespokeOrderInput>
 }
 
-export type ShipmentUncheckedUpdateOneWithoutBeSpokeDetailsNestedInput = {
-  create?: Prisma.XOR<Prisma.ShipmentCreateWithoutBeSpokeDetailsInput, Prisma.ShipmentUncheckedCreateWithoutBeSpokeDetailsInput>
-  connectOrCreate?: Prisma.ShipmentCreateOrConnectWithoutBeSpokeDetailsInput
-  upsert?: Prisma.ShipmentUpsertWithoutBeSpokeDetailsInput
+export type ShipmentUncheckedUpdateOneWithoutBespokeOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.ShipmentCreateWithoutBespokeOrderInput, Prisma.ShipmentUncheckedCreateWithoutBespokeOrderInput>
+  connectOrCreate?: Prisma.ShipmentCreateOrConnectWithoutBespokeOrderInput
+  upsert?: Prisma.ShipmentUpsertWithoutBespokeOrderInput
   disconnect?: Prisma.ShipmentWhereInput | boolean
   delete?: Prisma.ShipmentWhereInput | boolean
   connect?: Prisma.ShipmentWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ShipmentUpdateToOneWithWhereWithoutBeSpokeDetailsInput, Prisma.ShipmentUpdateWithoutBeSpokeDetailsInput>, Prisma.ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ShipmentUpdateToOneWithWhereWithoutBespokeOrderInput, Prisma.ShipmentUpdateWithoutBespokeOrderInput>, Prisma.ShipmentUncheckedUpdateWithoutBespokeOrderInput>
 }
 
 export type NullableEnumShipmentStatusFieldUpdateOperationsInput = {
@@ -631,13 +703,16 @@ export type ShipmentCreateWithoutOrderInput = {
   trackingNumber?: string | null
   status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: string | null
+  unitWeight?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsCreateNestedOneWithoutShipmentsInput
+  bespokeOrder?: Prisma.BespokeOrderCreateNestedOneWithoutShipmentsInput
 }
 
 export type ShipmentUncheckedCreateWithoutOrderInput = {
   id?: bigint | number
-  beSpokeDetailsId?: bigint | number | null
+  bespokeOrderId?: bigint | number | null
   recipientName: string
   phone: string
   addressLine: string
@@ -647,6 +722,9 @@ export type ShipmentUncheckedCreateWithoutOrderInput = {
   trackingNumber?: string | null
   status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: string | null
+  unitWeight?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
@@ -677,13 +755,16 @@ export type ShipmentUpdateWithoutOrderInput = {
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  beSpokeDetails?: Prisma.BeSpokeDetailsUpdateOneWithoutShipmentsNestedInput
+  bespokeOrder?: Prisma.BespokeOrderUpdateOneWithoutShipmentsNestedInput
 }
 
 export type ShipmentUncheckedUpdateWithoutOrderInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  beSpokeDetailsId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  bespokeOrderId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   recipientName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine?: Prisma.StringFieldUpdateOperationsInput | string
@@ -693,10 +774,13 @@ export type ShipmentUncheckedUpdateWithoutOrderInput = {
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type ShipmentCreateWithoutBeSpokeDetailsInput = {
+export type ShipmentCreateWithoutBespokeOrderInput = {
   id?: bigint | number
   recipientName: string
   phone: string
@@ -707,11 +791,14 @@ export type ShipmentCreateWithoutBeSpokeDetailsInput = {
   trackingNumber?: string | null
   status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: string | null
+  unitWeight?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   order?: Prisma.OrderCreateNestedOneWithoutShipmentInput
 }
 
-export type ShipmentUncheckedCreateWithoutBeSpokeDetailsInput = {
+export type ShipmentUncheckedCreateWithoutBespokeOrderInput = {
   id?: bigint | number
   orderId?: bigint | number | null
   recipientName: string
@@ -723,26 +810,29 @@ export type ShipmentUncheckedCreateWithoutBeSpokeDetailsInput = {
   trackingNumber?: string | null
   status?: $Enums.ShipmentStatus | null
   shippingCost: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: string | null
+  unitWeight?: string | null
+  unitPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
-export type ShipmentCreateOrConnectWithoutBeSpokeDetailsInput = {
+export type ShipmentCreateOrConnectWithoutBespokeOrderInput = {
   where: Prisma.ShipmentWhereUniqueInput
-  create: Prisma.XOR<Prisma.ShipmentCreateWithoutBeSpokeDetailsInput, Prisma.ShipmentUncheckedCreateWithoutBeSpokeDetailsInput>
+  create: Prisma.XOR<Prisma.ShipmentCreateWithoutBespokeOrderInput, Prisma.ShipmentUncheckedCreateWithoutBespokeOrderInput>
 }
 
-export type ShipmentUpsertWithoutBeSpokeDetailsInput = {
-  update: Prisma.XOR<Prisma.ShipmentUpdateWithoutBeSpokeDetailsInput, Prisma.ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput>
-  create: Prisma.XOR<Prisma.ShipmentCreateWithoutBeSpokeDetailsInput, Prisma.ShipmentUncheckedCreateWithoutBeSpokeDetailsInput>
+export type ShipmentUpsertWithoutBespokeOrderInput = {
+  update: Prisma.XOR<Prisma.ShipmentUpdateWithoutBespokeOrderInput, Prisma.ShipmentUncheckedUpdateWithoutBespokeOrderInput>
+  create: Prisma.XOR<Prisma.ShipmentCreateWithoutBespokeOrderInput, Prisma.ShipmentUncheckedCreateWithoutBespokeOrderInput>
   where?: Prisma.ShipmentWhereInput
 }
 
-export type ShipmentUpdateToOneWithWhereWithoutBeSpokeDetailsInput = {
+export type ShipmentUpdateToOneWithWhereWithoutBespokeOrderInput = {
   where?: Prisma.ShipmentWhereInput
-  data: Prisma.XOR<Prisma.ShipmentUpdateWithoutBeSpokeDetailsInput, Prisma.ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput>
+  data: Prisma.XOR<Prisma.ShipmentUpdateWithoutBespokeOrderInput, Prisma.ShipmentUncheckedUpdateWithoutBespokeOrderInput>
 }
 
-export type ShipmentUpdateWithoutBeSpokeDetailsInput = {
+export type ShipmentUpdateWithoutBespokeOrderInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   recipientName?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
@@ -753,11 +843,14 @@ export type ShipmentUpdateWithoutBeSpokeDetailsInput = {
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   order?: Prisma.OrderUpdateOneWithoutShipmentNestedInput
 }
 
-export type ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput = {
+export type ShipmentUncheckedUpdateWithoutBespokeOrderInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   orderId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   recipientName?: Prisma.StringFieldUpdateOperationsInput | string
@@ -769,6 +862,9 @@ export type ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput = {
   trackingNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableEnumShipmentStatusFieldUpdateOperationsInput | $Enums.ShipmentStatus | null
   shippingCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitWeight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -777,7 +873,7 @@ export type ShipmentUncheckedUpdateWithoutBeSpokeDetailsInput = {
 export type ShipmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   orderId?: boolean
-  beSpokeDetailsId?: boolean
+  bespokeOrderId?: boolean
   recipientName?: boolean
   phone?: boolean
   addressLine?: boolean
@@ -787,15 +883,18 @@ export type ShipmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   trackingNumber?: boolean
   status?: boolean
   shippingCost?: boolean
+  totalWeight?: boolean
+  unitWeight?: boolean
+  unitPrice?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
-  beSpokeDetails?: boolean | Prisma.Shipment$beSpokeDetailsArgs<ExtArgs>
+  bespokeOrder?: boolean | Prisma.Shipment$bespokeOrderArgs<ExtArgs>
 }, ExtArgs["result"]["shipment"]>
 
 export type ShipmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   orderId?: boolean
-  beSpokeDetailsId?: boolean
+  bespokeOrderId?: boolean
   recipientName?: boolean
   phone?: boolean
   addressLine?: boolean
@@ -805,15 +904,18 @@ export type ShipmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   trackingNumber?: boolean
   status?: boolean
   shippingCost?: boolean
+  totalWeight?: boolean
+  unitWeight?: boolean
+  unitPrice?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
-  beSpokeDetails?: boolean | Prisma.Shipment$beSpokeDetailsArgs<ExtArgs>
+  bespokeOrder?: boolean | Prisma.Shipment$bespokeOrderArgs<ExtArgs>
 }, ExtArgs["result"]["shipment"]>
 
 export type ShipmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   orderId?: boolean
-  beSpokeDetailsId?: boolean
+  bespokeOrderId?: boolean
   recipientName?: boolean
   phone?: boolean
   addressLine?: boolean
@@ -823,15 +925,18 @@ export type ShipmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   trackingNumber?: boolean
   status?: boolean
   shippingCost?: boolean
+  totalWeight?: boolean
+  unitWeight?: boolean
+  unitPrice?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
-  beSpokeDetails?: boolean | Prisma.Shipment$beSpokeDetailsArgs<ExtArgs>
+  bespokeOrder?: boolean | Prisma.Shipment$bespokeOrderArgs<ExtArgs>
 }, ExtArgs["result"]["shipment"]>
 
 export type ShipmentSelectScalar = {
   id?: boolean
   orderId?: boolean
-  beSpokeDetailsId?: boolean
+  bespokeOrderId?: boolean
   recipientName?: boolean
   phone?: boolean
   addressLine?: boolean
@@ -841,33 +946,36 @@ export type ShipmentSelectScalar = {
   trackingNumber?: boolean
   status?: boolean
   shippingCost?: boolean
+  totalWeight?: boolean
+  unitWeight?: boolean
+  unitPrice?: boolean
   createdAt?: boolean
 }
 
-export type ShipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "beSpokeDetailsId" | "recipientName" | "phone" | "addressLine" | "city" | "province" | "courier" | "trackingNumber" | "status" | "shippingCost" | "createdAt", ExtArgs["result"]["shipment"]>
+export type ShipmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "bespokeOrderId" | "recipientName" | "phone" | "addressLine" | "city" | "province" | "courier" | "trackingNumber" | "status" | "shippingCost" | "totalWeight" | "unitWeight" | "unitPrice" | "createdAt", ExtArgs["result"]["shipment"]>
 export type ShipmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
-  beSpokeDetails?: boolean | Prisma.Shipment$beSpokeDetailsArgs<ExtArgs>
+  bespokeOrder?: boolean | Prisma.Shipment$bespokeOrderArgs<ExtArgs>
 }
 export type ShipmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
-  beSpokeDetails?: boolean | Prisma.Shipment$beSpokeDetailsArgs<ExtArgs>
+  bespokeOrder?: boolean | Prisma.Shipment$bespokeOrderArgs<ExtArgs>
 }
 export type ShipmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.Shipment$orderArgs<ExtArgs>
-  beSpokeDetails?: boolean | Prisma.Shipment$beSpokeDetailsArgs<ExtArgs>
+  bespokeOrder?: boolean | Prisma.Shipment$bespokeOrderArgs<ExtArgs>
 }
 
 export type $ShipmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Shipment"
   objects: {
     order: Prisma.$OrderPayload<ExtArgs> | null
-    beSpokeDetails: Prisma.$BeSpokeDetailsPayload<ExtArgs> | null
+    bespokeOrder: Prisma.$BespokeOrderPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
     orderId: bigint | null
-    beSpokeDetailsId: bigint | null
+    bespokeOrderId: bigint | null
     recipientName: string
     phone: string
     addressLine: string
@@ -877,6 +985,17 @@ export type $ShipmentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     trackingNumber: string | null
     status: $Enums.ShipmentStatus | null
     shippingCost: runtime.Decimal
+    /**
+     * Tiga kolom berikut murni catatan admin soal paket -- seperti
+     * shippingCost, tidak menambah tagihan customer dan tidak menyentuh kas.
+     * Berat ditulis apa adanya ("15 Kg") karena satuannya ikut ditulis admin.
+     */
+    totalWeight: string | null
+    unitWeight: string | null
+    /**
+     * Angka, bukan teks: harga per satuan bisa dijumlahkan dan dibandingkan.
+     */
+    unitPrice: runtime.Decimal | null
     createdAt: Date
   }, ExtArgs["result"]["shipment"]>
   composites: {}
@@ -1273,7 +1392,7 @@ readonly fields: ShipmentFieldRefs;
 export interface Prisma__ShipmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   order<T extends Prisma.Shipment$orderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shipment$orderArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  beSpokeDetails<T extends Prisma.Shipment$beSpokeDetailsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shipment$beSpokeDetailsArgs<ExtArgs>>): Prisma.Prisma__BeSpokeDetailsClient<runtime.Types.Result.GetResult<Prisma.$BeSpokeDetailsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  bespokeOrder<T extends Prisma.Shipment$bespokeOrderArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Shipment$bespokeOrderArgs<ExtArgs>>): Prisma.Prisma__BespokeOrderClient<runtime.Types.Result.GetResult<Prisma.$BespokeOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1305,7 +1424,7 @@ export interface Prisma__ShipmentClient<T, Null = never, ExtArgs extends runtime
 export interface ShipmentFieldRefs {
   readonly id: Prisma.FieldRef<"Shipment", 'BigInt'>
   readonly orderId: Prisma.FieldRef<"Shipment", 'BigInt'>
-  readonly beSpokeDetailsId: Prisma.FieldRef<"Shipment", 'BigInt'>
+  readonly bespokeOrderId: Prisma.FieldRef<"Shipment", 'BigInt'>
   readonly recipientName: Prisma.FieldRef<"Shipment", 'String'>
   readonly phone: Prisma.FieldRef<"Shipment", 'String'>
   readonly addressLine: Prisma.FieldRef<"Shipment", 'String'>
@@ -1315,6 +1434,9 @@ export interface ShipmentFieldRefs {
   readonly trackingNumber: Prisma.FieldRef<"Shipment", 'String'>
   readonly status: Prisma.FieldRef<"Shipment", 'ShipmentStatus'>
   readonly shippingCost: Prisma.FieldRef<"Shipment", 'Decimal'>
+  readonly totalWeight: Prisma.FieldRef<"Shipment", 'String'>
+  readonly unitWeight: Prisma.FieldRef<"Shipment", 'String'>
+  readonly unitPrice: Prisma.FieldRef<"Shipment", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Shipment", 'DateTime'>
 }
     
@@ -1512,11 +1634,6 @@ export type ShipmentFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Skip the first `n` Shipments.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of Shipments.
-   */
   distinct?: Prisma.ShipmentScalarFieldEnum | Prisma.ShipmentScalarFieldEnum[]
 }
 
@@ -1736,22 +1853,22 @@ export type Shipment$orderArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * Shipment.beSpokeDetails
+ * Shipment.bespokeOrder
  */
-export type Shipment$beSpokeDetailsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Shipment$bespokeOrderArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the BeSpokeDetails
+   * Select specific fields to fetch from the BespokeOrder
    */
-  select?: Prisma.BeSpokeDetailsSelect<ExtArgs> | null
+  select?: Prisma.BespokeOrderSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the BeSpokeDetails
+   * Omit specific fields from the BespokeOrder
    */
-  omit?: Prisma.BeSpokeDetailsOmit<ExtArgs> | null
+  omit?: Prisma.BespokeOrderOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.BeSpokeDetailsInclude<ExtArgs> | null
-  where?: Prisma.BeSpokeDetailsWhereInput
+  include?: Prisma.BespokeOrderInclude<ExtArgs> | null
+  where?: Prisma.BespokeOrderWhereInput
 }
 
 /**

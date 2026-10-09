@@ -17,7 +17,7 @@ export interface ProductDef {
   name: string;
   category: string;
   description: string;
-  type: "READY_STOCK" | "MADE_TO_ORDER" | "PRE_ORDER";
+  type: "REGULAR" | "PRE_ORDER";
   skuPrefix: string;
   /// Harga dasar; varian tertentu bisa menambah harga lewat `sizeSurcharge`.
   basePrice: number;
@@ -50,20 +50,18 @@ export const PRODUCTS: ProductDef[] = [
     category: "Aksesoris Kecil",
     description:
       "Gantungan kunci rajut berbentuk bunga daisy, dikerjakan tangan dengan benang katun halus. Ringan dan cocok untuk hadiah kecil.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "AK-DSY",
     basePrice: 18000,
     baseCost: 7500,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_PASTEL },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_PASTEL }],
   },
   {
     name: "Gantungan Kunci Strawberry",
     category: "Aksesoris Kecil",
     description:
       "Gantungan kunci rajut motif strawberry dengan detail daun timbul. Ukuran mungil, muat di saku.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "AK-STR",
     basePrice: 22000,
     baseCost: 9000,
@@ -76,26 +74,22 @@ export const PRODUCTS: ProductDef[] = [
     category: "Aksesoris Kecil",
     description:
       "Bros rajut berbentuk mawar dengan peniti kuat, mempermanis hijab maupun tas.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "AK-BRS",
     basePrice: 25000,
     baseCost: 10000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_PASTEL },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_PASTEL }],
   },
   {
     name: "Scrunchie Rajut Katun",
     category: "Aksesoris Kecil",
     description:
       "Ikat rambut rajut dengan karet elastis lentur, lembut dan tidak merusak rambut.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "AK-SCR",
     basePrice: 20000,
     baseCost: 8000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_CERAH },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_CERAH }],
   },
 
   // ================================ Tote Bag ================================
@@ -104,7 +98,7 @@ export const PRODUCTS: ProductDef[] = [
     category: "Tote Bag",
     description:
       "Tote bag rajut motif granny square klasik. Tali lebar sehingga nyaman di bahu, cocok untuk kuliah dan jalan santai.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "TB-GRN",
     basePrice: 145000,
     baseCost: 62000,
@@ -119,7 +113,7 @@ export const PRODUCTS: ProductDef[] = [
     category: "Tote Bag",
     description:
       "Tote bag rajut rapat berbahan katun, bentuk simpel tanpa motif. Kuat menahan beban buku dan laptop tipis.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "TB-PLS",
     basePrice: 120000,
     baseCost: 52000,
@@ -134,20 +128,18 @@ export const PRODUCTS: ProductDef[] = [
     category: "Tote Bag",
     description:
       "Tote bag ukuran mini dengan aplikasi bunga rajut. Muat dompet, ponsel, dan botol minum kecil.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "TB-MIN",
     basePrice: 95000,
     baseCost: 40000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_PASTEL },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_PASTEL }],
   },
   {
     name: "Tote Bag Jaring Market",
     category: "Tote Bag",
     description:
       "Tas jaring rajut yang melar mengikuti isi, ringan dan mudah dilipat. Andalan untuk belanja ke pasar.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "TB-JRG",
     basePrice: 88000,
     baseCost: 36000,
@@ -162,7 +154,7 @@ export const PRODUCTS: ProductDef[] = [
     category: "Tas",
     description:
       "Tas rajut bentuk bulat dengan pegangan kayu bambu. Tampilan etnik yang cocok untuk acara semi formal.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "TS-BLT",
     basePrice: 265000,
     baseCost: 118000,
@@ -175,7 +167,7 @@ export const PRODUCTS: ProductDef[] = [
     category: "Tas",
     description:
       "Tas rajut dari tali kur padat dengan lapisan furing dan resleting. Bentuknya kokoh dan tidak mudah melar.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "TS-KUR",
     basePrice: 320000,
     baseCost: 145000,
@@ -190,13 +182,11 @@ export const PRODUCTS: ProductDef[] = [
     category: "Tas",
     description:
       "Tas rajut bermotif anyaman segitiga dengan tali panjang yang bisa dilepas. Dikerjakan sesuai pesanan.",
-    type: "MADE_TO_ORDER",
+    type: "REGULAR",
     skuPrefix: "TS-SGT",
     basePrice: 385000,
     baseCost: 172000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_CERAH },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_CERAH }],
   },
   {
     name: "Tas Rajut Laptop 14 Inch",
@@ -218,20 +208,18 @@ export const PRODUCTS: ProductDef[] = [
     category: "Dompet",
     description:
       "Dompet rajut model lipat dua dengan kancing magnet, ada sekat untuk kartu dan uang kertas.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "DP-LPT",
     basePrice: 78000,
     baseCost: 33000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_PASTEL },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_PASTEL }],
   },
   {
     name: "Pouch Rajut Resleting",
     category: "Dompet",
     description:
       "Pouch rajut serbaguna dengan resleting halus. Pas untuk alat tulis, kosmetik, atau charger.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "DP-PCH",
     basePrice: 62000,
     baseCost: 26000,
@@ -246,26 +234,22 @@ export const PRODUCTS: ProductDef[] = [
     category: "Dompet",
     description:
       "Dompet koin rajut berbentuk bulat dengan tali gantung pendek, mudah diselipkan di tas.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "DP-KON",
     basePrice: 45000,
     baseCost: 18000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_PASTEL },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_PASTEL }],
   },
   {
     name: "Dompet Rajut Panjang",
     category: "Dompet",
     description:
       "Dompet rajut panjang muat uang kertas tanpa dilipat, dilengkapi enam slot kartu.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "DP-PJG",
     basePrice: 110000,
     baseCost: 47000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_DASAR },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_DASAR }],
   },
 
   // =============================== Sling Bag ================================
@@ -274,25 +258,27 @@ export const PRODUCTS: ProductDef[] = [
     category: "Sling Bag",
     description:
       "Tas selempang rajut bentuk kotak sederhana dengan tali yang bisa diatur panjangnya.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "SB-MIN",
     basePrice: 165000,
     baseCost: 71000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_DASAR },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_DASAR }],
   },
   {
     name: "Sling Bag Rajut Motif Zigzag",
     category: "Sling Bag",
     description:
       "Sling bag rajut motif zigzag dua warna dengan furing bagian dalam agar isi tidak terlihat.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "SB-ZGZ",
     basePrice: 195000,
     baseCost: 84000,
     variantTypes: [
-      { name: "Motif", isHaveVisual: true, values: ["Zigzag Krem", "Zigzag Navy", "Zigzag Terracotta"] },
+      {
+        name: "Motif",
+        isHaveVisual: true,
+        values: ["Zigzag Krem", "Zigzag Navy", "Zigzag Terracotta"],
+      },
     ],
   },
   {
@@ -300,7 +286,7 @@ export const PRODUCTS: ProductDef[] = [
     category: "Sling Bag",
     description:
       "Sling bag model bucket dengan tali serut di bagian atas. Kapasitasnya lega untuk barang harian.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "SB-BCK",
     basePrice: 215000,
     baseCost: 93000,
@@ -315,12 +301,10 @@ export const PRODUCTS: ProductDef[] = [
     category: "Sling Bag",
     description:
       "Tas selempang mungil khusus ponsel, ada satu saku belakang untuk kartu. Praktis untuk jalan singkat.",
-    type: "READY_STOCK",
+    type: "REGULAR",
     skuPrefix: "SB-PHN",
     basePrice: 85000,
     baseCost: 35000,
-    variantTypes: [
-      { name: "Warna", isHaveVisual: true, values: WARNA_PASTEL },
-    ],
+    variantTypes: [{ name: "Warna", isHaveVisual: true, values: WARNA_PASTEL }],
   },
 ];

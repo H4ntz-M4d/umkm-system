@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { PosStatus, Prisma, prisma } from '@repo/db';
@@ -12,10 +13,20 @@ import { toEndOfDay, toStartOfDay } from 'common/helpers/date-format';
 import { buildExportFilename, buildWorkbook } from 'common/helpers/excel';
 import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
+import { assertPaymentMethodForStore } from 'payment/payment/payment.service';
 import { MidtransService } from 'midtrans/midtrans.service';
+
+/// Varian yang stoknya jadi minus setelah pembayaran dicatat.
+export type PosStockWarning = {
+  productName: string;
+  sku: string;
+  stock: number;
+};
 
 @Injectable()
 export class PosTransactionService {
+  private readonly logger = new Logger(PosTransactionService.name);
+
   constructor(
     private cloudinaryService: CloudinaryService,
     private midtransService: MidtransService,
@@ -337,27 +348,68 @@ export class PosTransactionService {
       },
     });
 
+    const warnings: PosStockWarning[] = [];
+
     for (const items of data.itemTransaction) {
-      /// Stok yang dikurangi adalah stok toko tempat transaksi terjadi, bukan
-      /// stok bersama seperti sebelumnya — kasir cabang tidak lagi menggerus
-      /// stok toko utama.
-      await tx.productVariantStock.update({
+      /**
+       * Stok yang dikurangi adalah stok toko tempat transaksi terjadi.
+       *
+       * `upsert`, bukan `update`, dan TANPA menolak stok yang tidak cukup:
+       * fungsi ini juga dipanggil saat pembayaran QRIS/transfer terkonfirmasi,
+       * ketika uangnya SUDAH diterima. Menolak di titik itu tidak membatalkan
+       * pembayaran — hanya membuat transaksi yang sudah dibayar tertinggal
+       * PENDING dan webhook Midtrans gagal terus. Jadi stok boleh minus, dan
+       * hasilnya dilaporkan sebagai peringatan. Pengecekan stok cukup untuk
+       * penjualan biasa tetap ada di `upsert`, sebelum transaksi dibuat.
+       *
+       * Hanya `stock` yang dikurangi. `reserved_stock` dulu ikut ditambah di
+       * setiap penjualan tanpa pernah dikurangi; kolom itu sekarang khusus stok
+       * yang dikunci untuk pesanan online.
+       */
+      const result = await tx.productVariantStock.upsert({
         where: {
           productVariantId_storeId: {
             productVariantId: BigInt(items.productVariantId),
             storeId: storeId,
           },
         },
-        data: {
+        update: {
           stock: {
             decrement: items.quantity,
           },
-          reserved_stock: {
-            increment: items.quantity,
+        },
+        create: {
+          productVariantId: BigInt(items.productVariantId),
+          storeId: storeId,
+          stock: -items.quantity,
+          reserved_stock: 0,
+        },
+        select: {
+          stock: true,
+          productVariant: {
+            select: { sku: true, productMaster: { select: { name: true } } },
           },
         },
       });
+
+      if (result.stock < 0) {
+        warnings.push({
+          productName: result.productVariant.productMaster.name,
+          sku: result.productVariant.sku,
+          stock: result.stock,
+        });
+      }
     }
+
+    if (warnings.length > 0) {
+      this.logger.warn(
+        `Stok minus setelah transaksi kasir #${posTx}: ${warnings
+          .map((item) => `${item.sku}=${item.stock}`)
+          .join(', ')}`,
+      );
+    }
+
+    return warnings;
   }
 
   async upsert(
@@ -378,7 +430,6 @@ export class PosTransactionService {
       select: {
         productVariantId: true,
         stock: true,
-        reserved_stock: true,
         productVariant: {
           select: {
             productMaster: {
@@ -406,15 +457,37 @@ export class PosTransactionService {
           stock.productVariantId === BigInt(dataStock.productVariantId),
       );
 
-      if (itemStock && itemStock.stock < dataStock.quantity) {
+      /**
+       * Varian yang belum pernah punya baris stok di toko ini dianggap stoknya 0.
+       *
+       * Dulu kasus itu lolos dari pengecekan (`itemStock && ...`), lalu
+       * `productVariantStock.update` di paidOperation meledak dengan P2025 —
+       * kasir hanya melihat pesan generik "Data tidak ditemukan".
+       */
+      if (!itemStock) {
+        throw new BadRequestException(
+          'Stok salah satu produk belum tersedia di toko ini. Muat ulang daftar produk kasir.',
+        );
+      }
+
+      if (itemStock.stock < dataStock.quantity) {
         const variantNames = itemStock.productVariant.options
           .map((opt) => opt.variantValue.value)
           .join(' - ');
 
         throw new BadRequestException(
-          `Maaf stock dari ${itemStock.productVariant.productMaster.name} variant ${variantNames} tidak mencukupi`,
+          `Maaf stock dari ${itemStock.productVariant.productMaster.name}${
+            variantNames ? ` variant ${variantNames}` : ''
+          } tidak mencukupi (sisa ${itemStock.stock})`,
         );
       }
+    }
+
+    /// Metode pembayaran diperiksa di sini, bukan hanya disaring di layar:
+    /// permintaan bisa dikirim langsung ke API dengan id rekening milik toko
+    /// lain, dan uangnya akan tercatat masuk ke rekening yang salah.
+    if (data.paymentMethodId) {
+      await assertPaymentMethodForStore(BigInt(data.paymentMethodId), storeId);
     }
 
     const statusMap: Record<string, PosStatus> = {
@@ -589,6 +662,16 @@ export class PosTransactionService {
     return transaction;
   }
 
+  /**
+   * Konfirmasi pembayaran transfer bank lewat unggahan bukti.
+   *
+   * Dua hal yang dulu keliru dan diperbaiki di sini:
+   * 1. Bukti pembayaran dan status Lunas ditulis di LUAR transaksi database
+   *    (`prisma`, bukan `tx`). Kalau pencatatan stok/kas gagal, transaksi sudah
+   *    telanjur Lunas dengan bukti tersimpan, tapi stok dan kasnya tidak.
+   * 2. Tidak ada pengecekan status, sehingga bukti bisa diunggah lagi untuk
+   *    transaksi yang sudah Lunas dan stok/kasnya diproses dua kali.
+   */
   async uploadProodOfPayment(transPosId: bigint, file: Express.Multer.File) {
     const existingTrans = await prisma.posTransaction.findUnique({
       where: { id: transPosId },
@@ -600,16 +683,38 @@ export class PosTransactionService {
     if (!existingTrans || !existingTrans.paymentMethodId)
       throw new BadRequestException('Maaf terjadi kesalahan saat transaksi');
 
+    if (existingTrans.status !== PosStatus.PENDING) {
+      throw new BadRequestException(
+        existingTrans.status === PosStatus.PAID
+          ? 'Transaksi ini sudah lunas, bukti pembayaran tidak perlu diunggah lagi'
+          : 'Transaksi ini tidak sedang menunggu pembayaran',
+      );
+    }
+
     const imageUrl = await this.cloudinaryService.uploadImage(
       file,
       CloudinaryFolder.PAYMENT_PROOF,
     );
 
-    const transaction = await prisma.$transaction(async (tx) => {
-      await prisma.transferPaymentDetail.create({
+    return prisma.$transaction(async (tx) => {
+      /// Status dipindah dulu dan secara berkondisi: kalau dua unggahan tiba
+      /// bersamaan, yang kedua mendapati `count` nol dan dihentikan sebelum
+      /// menyentuh stok maupun kas.
+      const claimed = await tx.posTransaction.updateMany({
+        where: { id: existingTrans.id, status: PosStatus.PENDING },
+        data: { status: PosStatus.PAID },
+      });
+
+      if (claimed.count === 0) {
+        throw new BadRequestException(
+          'Status transaksi sudah berubah. Muat ulang untuk melihat keadaan terbaru.',
+        );
+      }
+
+      await tx.transferPaymentDetail.create({
         data: {
           transactionId: existingTrans.id,
-          paymentMethodId: existingTrans.paymentMethodId,
+          paymentMethodId: existingTrans.paymentMethodId!,
           paymentProof: imageUrl,
           confirmedAt: new Date(),
         },
@@ -619,42 +724,76 @@ export class PosTransactionService {
         cashierId: String(existingTrans.cashierId),
         storeId: String(existingTrans.storeId),
         transId: existingTrans.transId,
-        paymentMethodId: existingTrans.paymentMethodId
-          ? String(existingTrans.paymentMethodId)
-          : null,
-        status: existingTrans.status,
-        itemTransaction: existingTrans.items.map((item) => {
-          return {
-            price: Number(item.price),
-            productVariantId: String(item.productVariantId),
-            quantity: item.quantity,
-          };
-        }),
+        paymentMethodId: String(existingTrans.paymentMethodId),
+        status: PosStatus.PAID,
+        itemTransaction: existingTrans.items.map((item) => ({
+          price: Number(item.price),
+          productVariantId: String(item.productVariantId),
+          quantity: item.quantity,
+        })),
       };
 
-      const result = await this.completedTransaction(transPosId);
+      const stockWarnings = await this.paidOperation(
+        dataPosTrans,
+        existingTrans.id,
+        tx,
+        existingTrans.storeId,
+      );
 
-      if (result.status === 'PAID')
-        await this.paidOperation(
-          dataPosTrans,
-          existingTrans.id,
-          tx,
-          existingTrans.storeId,
-        );
+      const result = await tx.posTransaction.findUniqueOrThrow({
+        where: { id: existingTrans.id },
+      });
 
-      return result;
+      return { ...result, stockWarnings };
     });
-
-    return transaction;
   }
 
+  /**
+   * Dipolling layar QRIS kasir. Selain status, ikut melaporkan varian yang
+   * stoknya minus di toko transaksi — pelunasan QRIS dicatat lewat webhook
+   * tanpa ada kasir yang menunggu responsnya, jadi di sinilah peringatannya
+   * bisa sampai ke layar.
+   */
   async cekStatusTransaction(transPosId: bigint) {
-    return await prisma.posTransaction.findUnique({
+    const transaction = await prisma.posTransaction.findUnique({
       where: { id: transPosId },
       select: {
         status: true,
+        storeId: true,
+        items: { select: { productVariantId: true } },
       },
     });
+
+    if (!transaction) return null;
+
+    if (transaction.status !== PosStatus.PAID) {
+      return { status: transaction.status, stockWarnings: [] };
+    }
+
+    const negative = await prisma.productVariantStock.findMany({
+      where: {
+        storeId: transaction.storeId,
+        productVariantId: {
+          in: transaction.items.map((item) => item.productVariantId),
+        },
+        stock: { lt: 0 },
+      },
+      select: {
+        stock: true,
+        productVariant: {
+          select: { sku: true, productMaster: { select: { name: true } } },
+        },
+      },
+    });
+
+    return {
+      status: transaction.status,
+      stockWarnings: negative.map((row) => ({
+        productName: row.productVariant.productMaster.name,
+        sku: row.productVariant.sku,
+        stock: row.stock,
+      })),
+    };
   }
 
   /* eslint-disable */
@@ -687,12 +826,17 @@ export class PosTransactionService {
     }
 
     await prisma.$transaction(async (tx) => {
-      const dataStatus = await tx.posTransaction.update({
-        where: { id: transaction.id },
-        data: {
-          status: 'PAID',
-        },
+      /// Dipindah secara berkondisi: Midtrans bisa mengirim notifikasi yang sama
+      /// beberapa kali beruntun. Yang datang belakangan mendapati `count` nol
+      /// dan berhenti sebelum stok maupun kas diproses dua kali.
+      const claimed = await tx.posTransaction.updateMany({
+        where: { id: transaction.id, status: { not: PosStatus.PAID } },
+        data: { status: PosStatus.PAID },
       });
+
+      if (claimed.count === 0) return;
+
+      const dataStatus = { status: PosStatus.PAID };
 
       const dataPosTrans: CreatePosTransactionDto = {
         cashierId: String(transaction.cashierId),
@@ -724,25 +868,127 @@ export class PosTransactionService {
   }
   /* eslint-enable */
 
-  async completedTransaction(transPosId: bigint) {
-    return await prisma.posTransaction.update({
+  /**
+   * Membatalkan transaksi QRIS yang ditinggal kasir.
+   *
+   * Dipanggil saat dialog pembayaran ditutup atau QR dibuat ulang. Tanpa ini,
+   * QR lama tetap bisa dibayar sampai masa berlakunya habis; kalau kasir sudah
+   * beralih ke tunai, barang yang sama terbayar dua kali dan tercatat terjual
+   * dua kali.
+   *
+   * Dibatalkan juga DI MIDTRANS, bukan cuma di database kita — status lokal
+   * tidak menghentikan siapa pun memindai QR yang sudah tercetak di layar.
+   *
+   * Kalau ternyata pembayarannya sudah masuk, transaksi TIDAK dibatalkan:
+   * uangnya nyata, jadi dibiarkan diselesaikan webhook.
+   */
+  async abandonQrisTransaction(transPosId: bigint) {
+    const transaction = await prisma.posTransaction.findUnique({
       where: { id: transPosId },
-      data: {
-        status: 'PAID',
+      select: {
+        id: true,
+        transId: true,
+        status: true,
+        paymentMethod: { select: { channel: true } },
       },
     });
+
+    if (!transaction)
+      throw new BadRequestException('Transaksi tidak ditemukan');
+
+    if (transaction.status === PosStatus.PAID) {
+      return { cancelled: false, reason: 'PAID' as const };
+    }
+
+    if (transaction.status === PosStatus.CANCELLED) {
+      return { cancelled: true, reason: 'ALREADY_CANCELLED' as const };
+    }
+
+    if (transaction.paymentMethod?.channel === 'MIDTRANS') {
+      const cancelledAtMidtrans = await this.midtransService.cancelTransaction(
+        transaction.transId,
+      );
+
+      /// Midtrans menolak pembatalan antara lain ketika pembayarannya sudah
+      /// masuk. Statusnya ditanyakan supaya pembayaran yang sah tidak ikut
+      /// dibatalkan secara lokal.
+      if (!cancelledAtMidtrans) {
+        const status = await this.midtransService
+          .getTransactionStatus(transaction.transId)
+          .catch(() => null);
+
+        if (
+          status?.transactionStatus === 'settlement' ||
+          status?.transactionStatus === 'capture'
+        ) {
+          this.logger.warn(
+            `Transaksi ${transaction.transId} sudah dibayar saat hendak dibatalkan — dibiarkan untuk diselesaikan webhook.`,
+          );
+          return { cancelled: false, reason: 'PAID' as const };
+        }
+      }
+    }
+
+    const claimed = await prisma.posTransaction.updateMany({
+      where: { id: transaction.id, status: PosStatus.PENDING },
+      data: { status: PosStatus.CANCELLED },
+    });
+
+    return {
+      cancelled: claimed.count > 0,
+      reason: claimed.count > 0 ? ('CANCELLED' as const) : ('CHANGED' as const),
+    };
   }
 
+  /**
+   * Membatalkan transaksi kasir yang BELUM dibayar.
+   *
+   * Dulu status apa pun langsung diubah jadi CANCELLED, termasuk transaksi yang
+   * sudah PAID — padahal stoknya sudah dikurangi dan kasnya sudah tercatat
+   * masuk, dan pembatalan tidak mengembalikan keduanya. Transaksi lunas yang
+   * perlu dikoreksi butuh alur retur tersendiri, bukan pembatalan.
+   *
+   * Seluruh permintaan ditolak kalau ada satu saja yang tidak boleh dibatalkan,
+   * supaya kasir tidak mendapati sebagian batal dan sebagian tidak tanpa tahu
+   * yang mana.
+   */
   async cancelTransaction(transactionId: string[]) {
-    return prisma.posTransaction.updateMany({
-      where: {
-        transId: {
-          in: transactionId,
+    const cancellable: PosStatus[] = [PosStatus.PENDING, PosStatus.PARKED];
+
+    return prisma.$transaction(async (tx) => {
+      const found = await tx.posTransaction.findMany({
+        where: { transId: { in: transactionId } },
+        select: { transId: true, status: true },
+      });
+
+      const missing = transactionId.filter(
+        (id) => !found.some((item) => item.transId === id),
+      );
+      if (missing.length > 0) {
+        throw new BadRequestException(
+          `Transaksi tidak ditemukan: ${missing.join(', ')}`,
+        );
+      }
+
+      const paid = found.filter((item) => item.status === PosStatus.PAID);
+      if (paid.length > 0) {
+        throw new BadRequestException(
+          `Transaksi yang sudah dibayar tidak bisa dibatalkan: ${paid
+            .map((item) => item.transId)
+            .join(', ')}`,
+        );
+      }
+
+      /// Status ikut disaring saat update, bukan cuma dicek di atas: kalau
+      /// pembayaran QRIS masuk di antara pengecekan dan update, transaksi itu
+      /// tidak ikut terbatalkan. Yang sudah CANCELLED dilewati tanpa galat.
+      return tx.posTransaction.updateMany({
+        where: {
+          transId: { in: transactionId },
+          status: { in: cancellable },
         },
-      },
-      data: {
-        status: 'CANCELLED',
-      },
+        data: { status: PosStatus.CANCELLED },
+      });
     });
   }
 }

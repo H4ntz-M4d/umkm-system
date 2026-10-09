@@ -34,7 +34,7 @@ import { columnsVariantProducts } from "@/components/management/products/variant
 import { ProductsData, z } from "@repo/schemas";
 import { VariantTableProducts } from "@/components/management/products/variant-table";
 
-type ProductResponse = z.infer<typeof ProductsData>
+type ProductResponse = z.infer<typeof ProductsData>;
 
 interface DataTableProps<TData extends ProductResponse, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -51,7 +51,7 @@ export function DataTableProducts<TData extends ProductResponse, TValue>({
   pagination,
   onPaginationChange,
 }: DataTableProps<TData, TValue>) {
-  const [expanded, setExpanded] = useState<ExpandedState>({})
+  const [expanded, setExpanded] = useState<ExpandedState>({});
   const table = useReactTable({
     data,
     columns,
@@ -61,7 +61,7 @@ export function DataTableProducts<TData extends ProductResponse, TValue>({
     onPaginationChange,
     state: {
       pagination,
-      expanded
+      expanded,
     },
     onExpandedChange: setExpanded,
     getExpandedRowModel: getExpandedRowModel(),

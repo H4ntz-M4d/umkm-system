@@ -8,6 +8,10 @@ import { prisma } from "../../src/index";
  */
 const TABLES = [
   "cash_transaction",
+  "stock_adjustment_item",
+  "stock_adjustment",
+  "stock_transfer_item",
+  "stock_transfer",
   "inventory_ledger",
   "shipment",
   "order_item",
@@ -16,7 +20,7 @@ const TABLES = [
   "cart",
   "wishlist",
   "customer_address",
-  "be_spoke_details",
+  "bespoke_order",
   "production",
   "transfer_payment_detail",
   "pos_transaction_item",

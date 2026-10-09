@@ -11,6 +11,7 @@ import { CloudinaryService } from 'cloudinary/cloudinary.service';
 import { CloudinaryFolder } from 'cloudinary/dto/dto.cloudinary';
 import {
   toCustomerResponse,
+  toEmployeeOptionResponse,
   toEmployeeResponse,
   toUsersCustomersResponse,
   toUsersEmployeeResponse,
@@ -20,6 +21,36 @@ import {
 @Injectable()
 export class UsersService {
   constructor(private cloudinaryService: CloudinaryService) {}
+
+  /**
+   * Daftar karyawan untuk isian dropdown.
+   *
+   * Tanpa paginasi: jumlah karyawan UMKM ini puluhan, dan dropdown yang
+   * dipaginasi justru menyembunyikan nama yang dicari. Akun nonaktif dibuang
+   * karena tidak masuk akal menunjuk orang yang sudah tidak bekerja sebagai
+   * pemroses pesanan baru.
+   */
+  async findEmployeeOptions() {
+    const data = await prisma.users.findMany({
+      where: {
+        isActive: true,
+        role: { in: ['OWNER', 'ADMIN', 'KASIR', 'GUDANG'] },
+        employees: { isNot: null },
+      },
+      select: {
+        id: true,
+        role: true,
+        employees: { select: { name: true } },
+      },
+      orderBy: { employees: { name: 'asc' } },
+    });
+
+    return {
+      success: true,
+      data: data.map(toEmployeeOptionResponse),
+      meta: { timeStamp: new Date().toISOString() },
+    };
+  }
 
   // ------------------------------- Admin ------------------------------------
   async findAllAdmin(pagination: Pagination, search?: string) {

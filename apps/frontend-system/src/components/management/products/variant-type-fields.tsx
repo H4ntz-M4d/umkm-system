@@ -57,7 +57,11 @@ export default function VariantTypeFields({
     setValueInputs((prev) => ({ ...prev, [index]: "" }));
   };
 
-  const removeValue = (index: number, type: VariantTypeItem, valueIndex: number) =>
+  const removeValue = (
+    index: number,
+    type: VariantTypeItem,
+    valueIndex: number,
+  ) =>
     onUpdateType(index, {
       ...type,
       values: type.values.filter((_, i) => i !== valueIndex),

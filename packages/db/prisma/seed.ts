@@ -55,7 +55,8 @@ async function main() {
   console.log(`Karyawan          : ${await prisma.employee.count()}`);
   console.log(`Pelanggan         : ${await prisma.customer.count()}`);
   console.log(
-    `Produksi          : ${stats.production} (termasuk ${stats.bespoke} bespoke)`,
+    `Produksi          : ${stats.production}`,
+    `Pesanan custom    : ${stats.bespoke}`,
   );
   console.log(`Transaksi POS     : ${stats.pos}`);
   console.log(`Order online      : ${stats.order}`);

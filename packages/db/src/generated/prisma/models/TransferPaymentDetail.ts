@@ -200,7 +200,7 @@ export type TransferPaymentDetailGroupByOutputType = {
   _max: TransferPaymentDetailMaxAggregateOutputType | null
 }
 
-export type GetTransferPaymentDetailGroupByPayload<T extends TransferPaymentDetailGroupByArgs> = Prisma.PrismaPromise<
+type GetTransferPaymentDetailGroupByPayload<T extends TransferPaymentDetailGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<TransferPaymentDetailGroupByOutputType, T['by']> &
       {
@@ -1269,11 +1269,6 @@ export type TransferPaymentDetailFindManyArgs<ExtArgs extends runtime.Types.Exte
    * Skip the first `n` TransferPaymentDetails.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of TransferPaymentDetails.
-   */
   distinct?: Prisma.TransferPaymentDetailScalarFieldEnum | Prisma.TransferPaymentDetailScalarFieldEnum[]
 }
 

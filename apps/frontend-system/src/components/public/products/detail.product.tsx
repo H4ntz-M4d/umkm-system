@@ -12,7 +12,11 @@ import {
 } from "@repo/schemas";
 import { toIDR } from "../../../../utils/format-money";
 import ProductCard from "./products-card";
-import { isOutOfStock, productTypeBadge } from "./product-display";
+import {
+  isPreOrderSoldOut,
+  preOrderQuotaRemaining,
+  productTypeBadge,
+} from "./product-display";
 import WishlistButton from "../wishlist/wishlist-button";
 import AddToCartButton from "../cart/add-to-cart-button";
 import type { GuestCartItem } from "@/stores/cart.store";
@@ -84,10 +88,18 @@ const ProductDetail = ({
   }, [product.imageGroups, selected, selectedVariant, visualTypeNames]);
 
   const badge = productTypeBadge(product.type);
-  const stock = selectedVariant?.stock ?? 0;
-  const outOfStock = isOutOfStock(product.type, stock);
+  const quotaRemaining = preOrderQuotaRemaining(product);
+  const soldOut = isPreOrderSoldOut(product);
   const price = selectedVariant?.price ?? product.priceMin;
-  const maxQuantity = product.type === "READY_STOCK" ? Math.max(stock, 1) : 99;
+  /**
+   * Jumlah maksimum yang boleh dipilih di sini.
+   *
+   * PRE_ORDER dibatasi SISA KUOTA, supaya penolakannya tidak baru muncul
+   * nanti saat pesanan diajukan. REGULAR tidak dibatasi stok toko — pesanan
+   * online dikerjakan rumah produksi setelah dipesan — jadi cukup batas wajar.
+   */
+  const maxQuantity =
+    product.type === "PRE_ORDER" ? Math.max(quotaRemaining ?? 0, 0) : 99;
 
   const chooseOption = (typeName: string, value: string) => {
     setSelected((current) => ({ ...current, [typeName]: value }));
@@ -211,15 +223,13 @@ const ProductDetail = ({
               <span className="text-sm text-muted-foreground">·</span>
               <span
                 className={`text-sm font-medium ${
-                  outOfStock ? "text-destructive" : "text-foreground/70"
+                  soldOut ? "text-destructive" : "text-foreground/70"
                 }`}
               >
-                {outOfStock
-                  ? "Stok habis"
-                  : product.type === "READY_STOCK"
-                    ? stock > 5
-                      ? "Tersedia"
-                      : `Sisa ${stock}`
+                {soldOut
+                  ? "Kuota pre-order habis"
+                  : product.type === "PRE_ORDER"
+                    ? `Sisa kuota: ${quotaRemaining}`
                     : "Dibuat setelah dipesan"}
               </span>
             </div>
@@ -298,10 +308,8 @@ const ProductDetail = ({
               <AddToCartButton
                 item={cartItem}
                 isLoggedIn={isLoggedIn}
-                disabled={outOfStock || !selectedVariant}
-                disabledLabel={
-                  outOfStock ? "Stok Habis" : "Varian Tidak Tersedia"
-                }
+                disabled={soldOut || !selectedVariant}
+                disabledLabel={soldOut ? "Kuota Habis" : "Varian Tidak Tersedia"}
               />
               <WishlistButton
                 productMasterId={product.id}

@@ -4,6 +4,10 @@ import { prisma } from "../../src/index";
 import { CATEGORIES, PRODUCTS, type ProductDef } from "./catalog-data";
 import { roundPrice, slugify } from "./util";
 
+/// Batas akhir pemesanan pre-order pada data contoh — sesudah periode data
+/// transaksi berakhir, supaya produknya masih terlihat dibuka.
+const PRE_ORDER_END_DATE = new Date(2026, 8, 30);
+
 /// Kata sandi seragam untuk seluruh akun hasil seed. Hanya untuk data contoh.
 export const SEED_PASSWORD = "password123";
 
@@ -40,31 +44,115 @@ const EMPLOYEES = [
 ] as const;
 
 const CUSTOMERS = [
-  { name: "Ayu Wulandari", email: "ayu.wulandari@gmail.com", phone: "081234567801" },
-  { name: "Rizky Ramadhan", email: "rizky.ramadhan@gmail.com", phone: "081234567802" },
-  { name: "Salsabila Putri", email: "salsabila.putri@gmail.com", phone: "081234567803" },
-  { name: "Bagus Setiawan", email: "bagus.setiawan@gmail.com", phone: "081234567804" },
-  { name: "Nadia Rahmawati", email: "nadia.rahma@gmail.com", phone: "081234567805" },
-  { name: "Fajar Nugroho", email: "fajar.nugroho@gmail.com", phone: "081234567806" },
-  { name: "Intan Permata", email: "intan.permata@gmail.com", phone: "081234567807" },
-  { name: "Yoga Pratama", email: "yoga.pratama@gmail.com", phone: "081234567808" },
-  { name: "Mega Anggraini", email: "mega.anggraini@gmail.com", phone: "081234567809" },
-  { name: "Dimas Aditya", email: "dimas.aditya@gmail.com", phone: "081234567810" },
+  {
+    name: "Ayu Wulandari",
+    email: "ayu.wulandari@gmail.com",
+    phone: "081234567801",
+  },
+  {
+    name: "Rizky Ramadhan",
+    email: "rizky.ramadhan@gmail.com",
+    phone: "081234567802",
+  },
+  {
+    name: "Salsabila Putri",
+    email: "salsabila.putri@gmail.com",
+    phone: "081234567803",
+  },
+  {
+    name: "Bagus Setiawan",
+    email: "bagus.setiawan@gmail.com",
+    phone: "081234567804",
+  },
+  {
+    name: "Nadia Rahmawati",
+    email: "nadia.rahma@gmail.com",
+    phone: "081234567805",
+  },
+  {
+    name: "Fajar Nugroho",
+    email: "fajar.nugroho@gmail.com",
+    phone: "081234567806",
+  },
+  {
+    name: "Intan Permata",
+    email: "intan.permata@gmail.com",
+    phone: "081234567807",
+  },
+  {
+    name: "Yoga Pratama",
+    email: "yoga.pratama@gmail.com",
+    phone: "081234567808",
+  },
+  {
+    name: "Mega Anggraini",
+    email: "mega.anggraini@gmail.com",
+    phone: "081234567809",
+  },
+  {
+    name: "Dimas Aditya",
+    email: "dimas.aditya@gmail.com",
+    phone: "081234567810",
+  },
   { name: "Laras Ayu", email: "laras.ayu@gmail.com", phone: "081234567811" },
-  { name: "Wahyu Saputra", email: "wahyu.saputra@gmail.com", phone: "081234567812" },
+  {
+    name: "Wahyu Saputra",
+    email: "wahyu.saputra@gmail.com",
+    phone: "081234567812",
+  },
 ] as const;
 
 const EXPENSE_CATEGORIES = [
-  { name: "Bahan Baku", color: "#cc5933", description: "Benang, tali kur, resleting, dan bahan rajut lain" },
-  { name: "Gaji Karyawan", color: "#747a52", description: "Gaji bulanan karyawan tetap" },
-  { name: "Upah Pengrajin", color: "#8a6f4e", description: "Upah borongan pengrajin per produk" },
-  { name: "Sewa Tempat", color: "#4e6f8a", description: "Sewa ruko dan workshop" },
-  { name: "Listrik & Air", color: "#c9a227", description: "Tagihan utilitas bulanan" },
-  { name: "Internet", color: "#5b8a72", description: "Langganan internet toko" },
-  { name: "Kemasan", color: "#a4694f", description: "Paper bag, dus, kartu ucapan" },
-  { name: "Pemasaran", color: "#b05c7a", description: "Iklan media sosial dan endorse" },
-  { name: "Transportasi", color: "#6b7280", description: "Ongkos kirim bahan dan operasional" },
-  { name: "Peralatan", color: "#7c6f9c", description: "Hakpen, gunting, dan alat jahit" },
+  {
+    name: "Bahan Baku",
+    color: "#cc5933",
+    description: "Benang, tali kur, resleting, dan bahan rajut lain",
+  },
+  {
+    name: "Gaji Karyawan",
+    color: "#747a52",
+    description: "Gaji bulanan karyawan tetap",
+  },
+  {
+    name: "Upah Pengrajin",
+    color: "#8a6f4e",
+    description: "Upah borongan pengrajin per produk",
+  },
+  {
+    name: "Sewa Tempat",
+    color: "#4e6f8a",
+    description: "Sewa ruko dan workshop",
+  },
+  {
+    name: "Listrik & Air",
+    color: "#c9a227",
+    description: "Tagihan utilitas bulanan",
+  },
+  {
+    name: "Internet",
+    color: "#5b8a72",
+    description: "Langganan internet toko",
+  },
+  {
+    name: "Kemasan",
+    color: "#a4694f",
+    description: "Paper bag, dus, kartu ucapan",
+  },
+  {
+    name: "Pemasaran",
+    color: "#b05c7a",
+    description: "Iklan media sosial dan endorse",
+  },
+  {
+    name: "Transportasi",
+    color: "#6b7280",
+    description: "Ongkos kirim bahan dan operasional",
+  },
+  {
+    name: "Peralatan",
+    color: "#7c6f9c",
+    description: "Hakpen, gunting, dan alat jahit",
+  },
 ] as const;
 
 /**
@@ -76,7 +164,10 @@ function skuToken(value: string): string {
   const words = value.trim().split(/\s+/);
 
   if (words.length === 1) {
-    return words[0]!.replace(/[^a-zA-Z0-9]/g, "").slice(0, 3).toUpperCase();
+    return words[0]!
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .slice(0, 3)
+      .toUpperCase();
   }
 
   return words
@@ -93,8 +184,21 @@ function skuToken(value: string): string {
 export async function seedMaster(): Promise<MasterData> {
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
 
+  /**
+   * Satu toko, merangkap rumah produksi dan sumber pesanan online.
+   *
+   * Dua penanda itu wajib ada isinya: `findProductionHouse` dipakai produksi
+   * dan transfer stok, dan pesanan online selalu mengambil stok dari toko
+   * bertanda `isOnlineSource`. Tanpa keduanya, data contoh terlihat lengkap
+   * tapi alur produksi dan pemesanan langsung gagal.
+   */
   const store = await prisma.store.create({
-    data: { name: "Nurfa Craft Yogyakarta", isActive: true },
+    data: {
+      name: "Nurfa Craft Yogyakarta",
+      isActive: true,
+      isProductionHouse: true,
+      isOnlineSource: true,
+    },
   });
 
   // ============================== Karyawan ==================================
@@ -186,6 +290,22 @@ export async function seedMaster(): Promise<MasterData> {
         useVariant,
         type: product.type,
         status: "ACTIVE",
+        /**
+         * Produk pre-order WAJIB punya baris kuota.
+         *
+         * Storefront menganggap kuota yang tidak ada sebagai "Kuota Habis"
+         * (lihat isPreOrderSoldOut), jadi tanpa baris ini seluruh produk
+         * pre-order hasil seed tidak bisa dipesan sama sekali.
+         */
+        ...(product.type === "PRE_ORDER" && {
+          productPreOrderDetail: {
+            create: {
+              quotaTarget: 40,
+              maxQuota: 40,
+              endDate: PRE_ORDER_END_DATE,
+            },
+          },
+        }),
       },
     });
 
@@ -246,7 +366,8 @@ export async function seedMaster(): Promise<MasterData> {
       // SKU wajib unik secara global. Singkatan bisa bertabrakan untuk nilai
       // yang berawalan sama ("Zigzag Krem" vs "Zigzag Navy"), jadi nomor urut
       // ditempelkan hanya bila memang diperlukan.
-      if (usedSkus.has(sku)) sku = `${sku}-${String(sequence).padStart(2, "0")}`;
+      if (usedSkus.has(sku))
+        sku = `${sku}-${String(sequence).padStart(2, "0")}`;
       usedSkus.add(sku);
 
       // Grup gambar di-upsert per signature, sama seperti service aslinya, jadi
@@ -297,8 +418,14 @@ export async function seedMaster(): Promise<MasterData> {
       }
 
       // Stok dimulai dari nol; diisi oleh data produksi agar ledger-nya nyambung.
+      // Stok dipegang per toko sejak ada cabang, jadi barisnya menyebut toko.
       await prisma.productVariantStock.create({
-        data: { productVariantId: variant.id, stock: 0, reserved_stock: 0 },
+        data: {
+          productVariantId: variant.id,
+          storeId: store.id,
+          stock: 0,
+          reserved_stock: 0,
+        },
       });
 
       variants.push({
@@ -318,12 +445,19 @@ export async function seedMaster(): Promise<MasterData> {
   }
 
   // =========================== Metode Pembayaran ============================
+  // Tunai dibiarkan tanpa toko: berlaku di mana saja, karena tidak menyangkut
+  // rekening siapa pun. Rekening bank dan QRIS selalu milik satu toko.
   const cash = await prisma.paymentMethod.create({
     data: { name: "Cash", channel: "CASH", isActive: true },
   });
 
   const bri = await prisma.paymentMethod.create({
-    data: { name: "BRI", channel: "BANK_TRANSFER", isActive: true },
+    data: {
+      name: "BRI",
+      channel: "BANK_TRANSFER",
+      isActive: true,
+      storeId: store.id,
+    },
   });
   await prisma.bankAccount.create({
     data: {
@@ -335,7 +469,12 @@ export async function seedMaster(): Promise<MasterData> {
   });
 
   const bni = await prisma.paymentMethod.create({
-    data: { name: "BNI", channel: "BANK_TRANSFER", isActive: true },
+    data: {
+      name: "BNI",
+      channel: "BANK_TRANSFER",
+      isActive: true,
+      storeId: store.id,
+    },
   });
   await prisma.bankAccount.create({
     data: {
@@ -348,7 +487,12 @@ export async function seedMaster(): Promise<MasterData> {
 
   // QRIS lewat Midtrans — inilah metode yang dipakai checkout online.
   const qris = await prisma.paymentMethod.create({
-    data: { name: "QRIS", channel: "MIDTRANS", isActive: true },
+    data: {
+      name: "QRIS",
+      channel: "MIDTRANS",
+      isActive: true,
+      storeId: store.id,
+    },
   });
 
   // =========================== Kategori Pengeluaran =========================

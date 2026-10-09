@@ -4,7 +4,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { LedgerData, z } from "@repo/schemas";
 import { dayjs } from "@repo/utils";
 import { Badge } from "@/components/ui/badge";
-import { CircleArrowDown, CircleArrowUp, CirclePile, ShoppingBasket } from "lucide-react";
+import {
+  CircleArrowDown,
+  CircleArrowUp,
+  CirclePile,
+  ShoppingBasket,
+} from "lucide-react";
 
 type InventoryLedgerData = z.infer<typeof LedgerData>;
 export const columnsLedgers = (): ColumnDef<InventoryLedgerData>[] => [
@@ -16,7 +21,7 @@ export const columnsLedgers = (): ColumnDef<InventoryLedgerData>[] => [
   {
     accessorKey: "name",
     header: () => <p className="text-start">Nama Toko</p>,
-    cell: ({ row }) => <p className="text-start">{row.original.name}</p>
+    cell: ({ row }) => <p className="text-start">{row.original.name}</p>,
   },
   {
     accessorKey: "itemName",
@@ -58,7 +63,7 @@ export const columnsLedgers = (): ColumnDef<InventoryLedgerData>[] => [
         )}
         <p>{row.original.direction === "IN" ? "Stok Masuk" : "Stok Keluar"}</p>
       </div>
-    )
+    ),
   },
   {
     accessorKey: "quantity",
@@ -80,7 +85,11 @@ export const columnsLedgers = (): ColumnDef<InventoryLedgerData>[] => [
 
       const label = sourceLabels[ledgerSource] || ledgerSource;
 
-      return <Badge variant="default" className="w-25 text-center">{label}</Badge>;
+      return (
+        <Badge variant="default" className="w-25 text-center">
+          {label}
+        </Badge>
+      );
     },
   },
   {
@@ -88,7 +97,9 @@ export const columnsLedgers = (): ColumnDef<InventoryLedgerData>[] => [
     header: "Tanggal dibuat",
     cell: ({ row }) => (
       <p>
-        {dayjs(row.original.createdAt).locale("id").format("MMMM DD, YYYY - HH:mm")}
+        {dayjs(row.original.createdAt)
+          .locale("id")
+          .format("MMMM DD, YYYY - HH:mm")}
       </p>
     ),
   },

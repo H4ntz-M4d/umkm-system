@@ -16,6 +16,7 @@ import { columnsStockTransfer } from "./stock-transfer-column";
 import StockTransferForm from "./stock-transfer-form";
 // Tabel generik penuh, sudah dipakai di halaman inventori pada domain yang sama.
 import { DataTableLedgers } from "@/components/management/inventory-ledger/data-table";
+import { useCanManageMaster } from "@/hooks/management/use-central-store";
 
 const STATUS_OPTIONS = [
   { value: "READY", label: "Siap kirim" },
@@ -30,6 +31,7 @@ export default function StockTransferView({
   filters: StockTransferFilters;
 }) {
   const { pagination, onPaginationChange } = usePaginationParams();
+  const canManage = useCanManageMaster();
   const {
     transfersData,
     isLoadingTransfers,
@@ -102,10 +104,12 @@ export default function StockTransferView({
           )}
         </div>
 
-        <StockTransferForm
-          onSubmit={createTransfer}
-          isSubmitting={isCreating}
-        />
+        {canManage && (
+          <StockTransferForm
+            onSubmit={createTransfer}
+            isSubmitting={isCreating}
+          />
+        )}
       </div>
 
       <div className="rounded-xl bg-muted/50 md:min-h-min">
@@ -118,6 +122,7 @@ export default function StockTransferView({
               receiveTransfer,
               cancelTransfer,
               isMoving,
+              canManage,
             )}
             data={transfersData?.data ?? []}
             pagination={pagination}

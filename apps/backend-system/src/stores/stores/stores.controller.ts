@@ -16,13 +16,15 @@ import { JwtAuthGuard } from 'common/guards/guard.jwt-auth';
 import { RolesGuard } from 'common/guards/guard.roles';
 import { Roles } from 'common/decorator/roles.decorator';
 import { UserRole } from '@repo/db';
+import { CentralStoreOnly } from 'common/decorator/central-store.decorator';
+import { CentralStoreGuard } from 'common/guards/guard.central-store';
 
 /**
  * Pengelolaan toko tetap milik Owner dan Admin, tapi daftar ringkasnya dipakai
  * lebih luas: dropdown filter di halaman pesanan (Kasir) dan pemilihan toko di
  * form produksi (Gudang). Karena itu hanya `/list` yang dibuka untuk mereka.
  */
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, CentralStoreGuard)
 @Roles(UserRole.OWNER, UserRole.ADMIN)
 @Controller('/api/v1/stores')
 export class StoresController {
@@ -39,16 +41,19 @@ export class StoresController {
     return this.service.findAllStore();
   }
 
+  @CentralStoreOnly()
   @Post()
   create(@Body() dto: CreateStoreDto) {
     return this.service.create(dto);
   }
 
+  @CentralStoreOnly()
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateStoreDto) {
     return this.service.update(BigInt(id), dto);
   }
 
+  @CentralStoreOnly()
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.service.remove(id);

@@ -9,8 +9,7 @@ import { fetchLowStock } from "@/lib/queries/inventory-ledgers/low-stock.query";
 import { PRINT_LIMIT } from "@/components/management/print/print-range";
 
 const TYPE_LABEL: Record<string, string> = {
-  READY_STOCK: "Ready Stock",
-  MADE_TO_ORDER: "Made To Order",
+  REGULAR: "Reguler",
   PRE_ORDER: "Pre Order",
 };
 

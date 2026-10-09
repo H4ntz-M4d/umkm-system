@@ -1,5 +1,16 @@
 "use client";
 
+/**
+ * DORMAN — bagian dari alur bayar online Midtrans yang dinonaktifkan.
+ *
+ * Tidak dirujuk komponen mana pun sejak pemesanan dilanjutkan lewat WhatsApp
+ * (harga dan DP disepakati di sana, lalu dicatat admin). Endpoint yang
+ * dipanggilnya pun sudah dicabut dari controller backend, jadi memasangnya
+ * kembali berarti menghidupkan rute itu lebih dulu.
+ *
+ * Sengaja tidak dihapus supaya alur lama bisa dikembalikan tanpa menulis ulang.
+ */
+
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { syncOrderPayment } from "@/lib/queries/public/order.query";

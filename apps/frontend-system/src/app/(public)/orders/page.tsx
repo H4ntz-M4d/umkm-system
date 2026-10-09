@@ -7,6 +7,7 @@ import type { MyOrderQueryInput } from "@repo/schemas";
 import { getCustomerToken } from "@/lib/api/server-token";
 import { fetchMyOrders } from "@/lib/queries/public/order.query";
 import OrderStatusBadge from "@/components/public/orders/order-status";
+import ReorderButton from "@/components/public/orders/reorder-button";
 import { toIDR } from "../../../../utils/format-money";
 
 const PAGE_SIZE = 10;
@@ -15,13 +16,17 @@ export const metadata: Metadata = {
   title: "Riwayat Pesanan | NurfaCraft",
 };
 
+/// Mengikuti alur nego: diajukan → DP → lunas → dikirim → selesai.
 const STATUS_FILTERS = [
   { value: "", label: "Semua" },
-  { value: "PENDING", label: "Belum Bayar" },
-  { value: "PAID", label: "Dibayar" },
+  { value: "PENDING", label: "Mengajukan" },
+  { value: "DP", label: "DP Dibayar" },
+  { value: "PRODUCTION_DONE", label: "Produksi Selesai" },
+  { value: "PAID", label: "Lunas" },
   { value: "SHIPPED", label: "Dikirim" },
   { value: "COMPLETED", label: "Selesai" },
   { value: "CANCELLED", label: "Dibatalkan" },
+  { value: "REFUNDED", label: "Dana Dikembalikan" },
 ];
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -92,59 +97,66 @@ export default async function Page({
       ) : (
         <div className="space-y-4">
           {items.map((order) => (
-            <Link
+            /* Kartunya bukan lagi satu tautan utuh: di dalamnya ada tombol
+               "Pesan lagi", dan tombol di dalam tautan membuat kliknya ikut
+               berpindah halaman. Yang jadi tautan hanya bagian keterangannya. */
+            <div
               key={order.orderId}
-              href={`/orders/${order.orderId}`}
-              className="block rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+              className="rounded-2xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-display text-sm font-bold text-card-foreground">
-                    {order.orderId}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {new Date(order.createdAt).toLocaleString("id-ID", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
-                  </p>
-                </div>
-                <OrderStatusBadge status={order.status} />
-              </div>
-
-              <div className="mt-4 flex items-center gap-2">
-                {order.items.slice(0, 4).map((item) => (
-                  <div
-                    key={item.id}
-                    className="relative h-12 w-12 overflow-hidden rounded-lg bg-secondary/20"
-                  >
-                    {item.image && (
-                      <Image
-                        src={item.image}
-                        alt={item.productName}
-                        fill
-                        sizes="48px"
-                        className="object-cover"
-                      />
-                    )}
+              <Link href={`/orders/${order.orderId}`} className="block">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-display text-sm font-bold text-card-foreground">
+                      {order.orderId}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {new Date(order.createdAt).toLocaleString("id-ID", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </p>
                   </div>
-                ))}
-                {order.items.length > 4 && (
-                  <span className="text-xs text-muted-foreground">
-                    +{order.items.length - 4} lainnya
-                  </span>
-                )}
-              </div>
+                  <OrderStatusBadge status={order.status} />
+                </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
-                <span className="text-xs text-muted-foreground">
-                  {order.totalItems} item
-                </span>
-                <span className="font-display font-bold text-primary">
-                  {toIDR(order.totalAmount)}
-                </span>
+                <div className="mt-4 flex items-center gap-2">
+                  {order.items.slice(0, 4).map((item) => (
+                    <div
+                      key={item.id}
+                      className="relative h-12 w-12 overflow-hidden rounded-lg bg-secondary/20"
+                    >
+                      {item.image && (
+                        <Image
+                          src={item.image}
+                          alt={item.productName}
+                          fill
+                          sizes="48px"
+                          className="object-cover"
+                        />
+                      )}
+                    </div>
+                  ))}
+                  {order.items.length > 4 && (
+                    <span className="text-xs text-muted-foreground">
+                      +{order.items.length - 4} lainnya
+                    </span>
+                  )}
+                </div>
+              </Link>
+
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {order.totalItems} item
+                  </span>
+                  <span className="font-display font-bold text-primary">
+                    {toIDR(order.totalAmount)}
+                  </span>
+                </div>
+                <ReorderButton items={order.items} />
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

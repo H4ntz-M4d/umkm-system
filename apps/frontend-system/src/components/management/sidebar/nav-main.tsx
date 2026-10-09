@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -16,24 +16,28 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export interface NavItem {
-  title: string
-  url: string
-  icon?: LucideIcon
-  isActive?: boolean
+  title: string;
+  url: string;
+  icon?: LucideIcon;
+  isActive?: boolean;
   items?: {
-    title: string
-    url: string
-  }[]
+    title: string;
+    url: string;
+  }[];
 }
 
-function NavGroup({label, items, pathName}: {
-  label: string,
-  items: NavItem[],
-  pathName: string
+function NavGroup({
+  label,
+  items,
+  pathName,
+}: {
+  label: string;
+  items: NavItem[];
+  pathName: string;
 }) {
   /// Seluruh isi grup bisa tersaring habis untuk role tertentu — labelnya
   /// jangan ikut tampil kalau begitu, karena akan terlihat sebagai grup kosong.
@@ -41,18 +45,26 @@ function NavGroup({label, items, pathName}: {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">{label}</SidebarGroupLabel>
+      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+        {label}
+      </SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
           const hasSubItems = item.items && item.items.length > 0;
-          const isSubActive = item.items?.some((sub) => pathName === sub.url)
-          const isParentActive = pathName === item.url
-          
+          const isSubActive = item.items?.some((sub) => pathName === sub.url);
+          const isParentActive = pathName === item.url;
 
           if (!hasSubItems) {
             return (
-              <SidebarMenuItem key={item.title} className="flex flex-col justify-center group-data-[collapsible=icon]:items-center">
-                <SidebarMenuButton asChild isActive={isParentActive} tooltip={item.title}>
+              <SidebarMenuItem
+                key={item.title}
+                className="flex flex-col justify-center group-data-[collapsible=icon]:items-center"
+              >
+                <SidebarMenuButton
+                  asChild
+                  isActive={isParentActive}
+                  tooltip={item.title}
+                >
                   <Link href={item.url}>
                     {item.icon && <item.icon className="text-olive-600" />}
                     <span>{item.title}</span>
@@ -70,7 +82,10 @@ function NavGroup({label, items, pathName}: {
             >
               <SidebarMenuItem className="flex flex-col justify-center group-data-[collapsible=icon]:items-center">
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton isActive={isSubActive} tooltip={item.title}>
+                  <SidebarMenuButton
+                    isActive={isSubActive}
+                    tooltip={item.title}
+                  >
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -80,7 +95,10 @@ function NavGroup({label, items, pathName}: {
                   <SidebarMenuSub>
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton asChild isActive={pathName === subItem.url}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathName === subItem.url}
+                        >
                           <Link href={subItem.url}>
                             <span>{subItem.title}</span>
                           </Link>
@@ -91,28 +109,46 @@ function NavGroup({label, items, pathName}: {
                 </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>
-          )
-        }
-
-        )}
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }
 
 export function NavMain({
-  masterItems, reportAndFinanceItems, inventoryAndProductionItems, pathname
+  masterItems,
+  reportAndFinanceItems,
+  inventoryAndProductionItems,
+  publicContentItems,
+  pathname,
 }: {
-  masterItems: NavItem[],
-  reportAndFinanceItems: NavItem[],
-  inventoryAndProductionItems: NavItem[],
-  pathname: string
+  masterItems: NavItem[];
+  reportAndFinanceItems: NavItem[];
+  inventoryAndProductionItems: NavItem[];
+  /// Menu yang mengisi halaman storefront (blog, dan nanti pendaftaran
+  /// reseller) — bukan data operasional toko, jadi grupnya sendiri.
+  publicContentItems: NavItem[];
+  pathname: string;
 }) {
   return (
     <>
       <NavGroup label="Master Data" items={masterItems} pathName={pathname} />
-      <NavGroup label="Inventaris" items={inventoryAndProductionItems} pathName={pathname} />
-      <NavGroup label="Report & Finance" items={reportAndFinanceItems} pathName={pathname} />
+      <NavGroup
+        label="Inventaris"
+        items={inventoryAndProductionItems}
+        pathName={pathname}
+      />
+      <NavGroup
+        label="Report & Finance"
+        items={reportAndFinanceItems}
+        pathName={pathname}
+      />
+      <NavGroup
+        label="Konten Publik"
+        items={publicContentItems}
+        pathName={pathname}
+      />
     </>
-  )
+  );
 }

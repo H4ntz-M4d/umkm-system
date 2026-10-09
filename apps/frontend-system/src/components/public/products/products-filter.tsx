@@ -8,10 +8,11 @@ import type { PublicCategoryDataType } from "@repo/schemas";
 import { useDebounce } from "@/hooks/use-debounce";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+/// Cerminan tipe produk yang dijual storefront (lihat PUBLIC_PRODUCT_TYPES di
+/// public-products.service.ts).
 const TYPE_OPTIONS = [
-  { value: "READY_STOCK", label: "Ready Stock" },
   { value: "PRE_ORDER", label: "Pre-Order" },
-  { value: "MADE_TO_ORDER", label: "Made to Order" },
+  { value: "REGULAR", label: "Reguler" },
 ];
 
 const SORT_OPTIONS = [

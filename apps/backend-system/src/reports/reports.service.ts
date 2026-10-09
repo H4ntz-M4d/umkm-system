@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, prisma } from '@repo/db';
 import type { ReportsQueryInput, TopProductsQueryInput } from '@repo/schemas';
 import {
-  DateWindow,
+  ORDER_CASH_AMOUNT,
+  bespokeRevenue,
+  cashStoreFilter,
   expenseTotal,
   onlineRevenue,
   orderStoreFilter,
@@ -55,24 +57,32 @@ export class ReportsService {
     const [
       posCurrent,
       onlineCurrent,
+      bespokeCurrent,
       expenseCurrent,
       posPrevious,
       onlinePrevious,
+      bespokePrevious,
       expensePrevious,
     ] = await Promise.all([
       posRevenue(range, query.storeId),
       onlineRevenue(range, query.storeId),
+      bespokeRevenue(range, query.storeId),
       expenseTotal(range, query.storeId),
       posRevenue(range.previous, query.storeId),
       onlineRevenue(range.previous, query.storeId),
+      bespokeRevenue(range.previous, query.storeId),
       expenseTotal(range.previous, query.storeId),
     ]);
 
     /// Penjumlahan uang lewat Decimal, bukan float.
     const sum = (a: string, b: string) =>
       new Prisma.Decimal(a).add(new Prisma.Decimal(b));
-    const revenueCurrent = sum(posCurrent, onlineCurrent);
-    const revenuePrevious = sum(posPrevious, onlinePrevious);
+    const revenueCurrent = sum(posCurrent, onlineCurrent).add(
+      new Prisma.Decimal(bespokeCurrent),
+    );
+    const revenuePrevious = sum(posPrevious, onlinePrevious).add(
+      new Prisma.Decimal(bespokePrevious),
+    );
 
     return {
       success: true,
@@ -88,6 +98,10 @@ export class ReportsService {
         },
         revenuePos: { current: posCurrent, previous: posPrevious },
         revenueOnline: { current: onlineCurrent, previous: onlinePrevious },
+        revenueBespoke: {
+          current: bespokeCurrent,
+          previous: bespokePrevious,
+        },
         expense: { current: expenseCurrent, previous: expensePrevious },
         balance: {
           current: revenueCurrent
@@ -119,13 +133,24 @@ export class ReportsService {
     const onlineRows = await prisma.$queryRaw<
       { bucket: Date; total: string }[]
     >`
-      SELECT DATE_TRUNC('month', o."createdAt" ${WIB_SHIFT})::date AS bucket,
-             COALESCE(SUM(oi.subtotal), 0)::text AS total
-      FROM order_item oi
-      JOIN "order" o ON oi."orderId" = o.id
-      WHERE ${paidOrderCondition}
-        AND o."createdAt" BETWEEN ${range.start} AND ${range.end}
-        ${orderStoreFilter(storeId)}
+      SELECT DATE_TRUNC('month', c."createdAt" ${WIB_SHIFT})::date AS bucket,
+             COALESCE(${ORDER_CASH_AMOUNT}, 0)::text AS total
+      FROM cash_transaction c
+      WHERE c.source = 'ORDER'
+        AND c."createdAt" BETWEEN ${range.start} AND ${range.end}
+        ${cashStoreFilter(storeId)}
+      GROUP BY bucket
+    `;
+
+    const bespokeRows = await prisma.$queryRaw<
+      { bucket: Date; total: string }[]
+    >`
+      SELECT DATE_TRUNC('month', c."createdAt" ${WIB_SHIFT})::date AS bucket,
+             COALESCE(${ORDER_CASH_AMOUNT}, 0)::text AS total
+      FROM cash_transaction c
+      WHERE c.source = 'BESPOKE'
+        AND c."createdAt" BETWEEN ${range.start} AND ${range.end}
+        ${cashStoreFilter(storeId)}
       GROUP BY bucket
     `;
 
@@ -142,20 +167,24 @@ export class ReportsService {
 
     const posMap = toMonthMap(posRows);
     const onlineMap = toMonthMap(onlineRows);
+    const bespokeMap = toMonthMap(bespokeRows);
     const expenseMap = toMonthMap(expenseRows);
 
     const data = monthKeysBetween(range.dateFrom, range.dateTo).map(
       (period) => {
         const revenuePos = posMap.get(period) ?? '0';
         const revenueOnline = onlineMap.get(period) ?? '0';
+        const revenueBespoke = bespokeMap.get(period) ?? '0';
 
         return {
           period,
           revenue: new Prisma.Decimal(revenuePos)
             .add(new Prisma.Decimal(revenueOnline))
+            .add(new Prisma.Decimal(revenueBespoke))
             .toString(),
           revenuePos,
           revenueOnline,
+          revenueBespoke,
           expense: expenseMap.get(period) ?? '0',
         };
       },
@@ -318,15 +347,20 @@ export class ReportsService {
 
         UNION ALL
 
-        SELECT o."paymentMethodId" AS method_id, items.total AS amount
+        -- Pesanan online: uang yang benar-benar masuk lewat channel itu,
+        -- dikelompokkan per pesanan supaya satu pesanan dihitung satu
+        -- transaksi walau dibayar bertahap (DP lalu pelunasan).
+        SELECT o."paymentMethodId" AS method_id, cash.total AS amount
         FROM "order" o
         JOIN LATERAL (
-          SELECT COALESCE(SUM(oi.subtotal), 0) AS total
-          FROM order_item oi
-          WHERE oi."orderId" = o.id
-        ) items ON TRUE
-        WHERE ${paidOrderCondition}
-          AND o."createdAt" BETWEEN ${range.start} AND ${range.end}
+          SELECT ${ORDER_CASH_AMOUNT} AS total
+          FROM cash_transaction c
+          WHERE c.source = 'ORDER'
+            AND c."referenceId" = o.id
+            AND c."createdAt" BETWEEN ${range.start} AND ${range.end}
+            ${cashStoreFilter(storeId)}
+        ) cash ON cash.total IS NOT NULL AND cash.total <> 0
+        WHERE o."paymentMethodId" IS NOT NULL
           ${orderStoreFilter(storeId)}
       )
       SELECT m.id AS "paymentMethodId",
